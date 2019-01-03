@@ -1,0 +1,7 @@
+C:\Users\anton\Рабочий стол\DatasetScript\DatasetScript\bin\Debug\DatasetScript.exe.config
+C:\Users\anton\Рабочий стол\DatasetScript\DatasetScript\bin\Debug\DatasetScript.exe
+C:\Users\anton\Рабочий стол\DatasetScript\DatasetScript\bin\Debug\DatasetScript.pdb
+C:\Users\anton\Рабочий стол\DatasetScript\DatasetScript\obj\Debug\DatasetScript.csprojAssemblyReference.cache
+C:\Users\anton\Рабочий стол\DatasetScript\DatasetScript\obj\Debug\DatasetScript.csproj.CoreCompileInputs.cache
+C:\Users\anton\Рабочий стол\DatasetScript\DatasetScript\obj\Debug\DatasetScript.exe
+C:\Users\anton\Рабочий стол\DatasetScript\DatasetScript\obj\Debug\DatasetScript.pdb
