@@ -41,12 +41,12 @@
             // logBox
             // 
             this.logBox.BackColor = System.Drawing.Color.Black;
-            this.logBox.Font = new System.Drawing.Font("Century Gothic", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.logBox.Font = new System.Drawing.Font("Century Gothic", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.logBox.ForeColor = System.Drawing.Color.White;
-            this.logBox.Location = new System.Drawing.Point(1371, 0);
+            this.logBox.Location = new System.Drawing.Point(1117, 0);
             this.logBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.logBox.Name = "logBox";
-            this.logBox.Size = new System.Drawing.Size(526, 1000);
+            this.logBox.Size = new System.Drawing.Size(780, 1000);
             this.logBox.TabIndex = 35;
             this.logBox.Text = "";
             // 
@@ -57,7 +57,7 @@
             this.picBox.Location = new System.Drawing.Point(-4, 5);
             this.picBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.picBox.Name = "picBox";
-            this.picBox.Size = new System.Drawing.Size(1326, 1162);
+            this.picBox.Size = new System.Drawing.Size(1101, 1162);
             this.picBox.TabIndex = 37;
             this.picBox.TabStop = false;
             this.picBox.Click += new System.EventHandler(this.picBox_Click);
@@ -68,7 +68,7 @@
             this.panel1.Controls.Add(this.picBox);
             this.panel1.Location = new System.Drawing.Point(12, 56);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1352, 1000);
+            this.panel1.Size = new System.Drawing.Size(1127, 1000);
             this.panel1.TabIndex = 38;
             // 
             // trackBar1

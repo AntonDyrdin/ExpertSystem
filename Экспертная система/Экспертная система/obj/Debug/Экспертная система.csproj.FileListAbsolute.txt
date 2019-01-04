@@ -25,3 +25,17 @@ C:\Users\anton\Рабочий стол\MAIN\Экспертная система\
 D:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\bin\Debug\Newtonsoft.Json.dll
 D:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\bin\Debug\Newtonsoft.Json.pdb
 D:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\bin\Debug\Newtonsoft.Json.xml
+C:\Users\anton\Рабочий стол\ExpertSystem\Экспертная система\Экспертная система\bin\Debug\Экспертная система.exe.config
+C:\Users\anton\Рабочий стол\ExpertSystem\Экспертная система\Экспертная система\bin\Debug\Экспертная система.exe
+C:\Users\anton\Рабочий стол\ExpertSystem\Экспертная система\Экспертная система\bin\Debug\Экспертная система.pdb
+C:\Users\anton\Рабочий стол\ExpertSystem\Экспертная система\Экспертная система\bin\Debug\Newtonsoft.Json.dll
+C:\Users\anton\Рабочий стол\ExpertSystem\Экспертная система\Экспертная система\bin\Debug\Newtonsoft.Json.pdb
+C:\Users\anton\Рабочий стол\ExpertSystem\Экспертная система\Экспертная система\bin\Debug\Newtonsoft.Json.xml
+C:\Users\anton\Рабочий стол\ExpertSystem\Экспертная система\Экспертная система\obj\Debug\Экспертная система.csprojAssemblyReference.cache
+C:\Users\anton\Рабочий стол\ExpertSystem\Экспертная система\Экспертная система\obj\Debug\Экспертная_система.Form1.resources
+C:\Users\anton\Рабочий стол\ExpertSystem\Экспертная система\Экспертная система\obj\Debug\Экспертная_система.Properties.Resources.resources
+C:\Users\anton\Рабочий стол\ExpertSystem\Экспертная система\Экспертная система\obj\Debug\Экспертная система.csproj.GenerateResource.cache
+C:\Users\anton\Рабочий стол\ExpertSystem\Экспертная система\Экспертная система\obj\Debug\Экспертная система.csproj.CoreCompileInputs.cache
+C:\Users\anton\Рабочий стол\ExpertSystem\Экспертная система\Экспертная система\obj\Debug\Экспертная система.csproj.CopyComplete
+C:\Users\anton\Рабочий стол\ExpertSystem\Экспертная система\Экспертная система\obj\Debug\Экспертная система.exe
+C:\Users\anton\Рабочий стол\ExpertSystem\Экспертная система\Экспертная система\obj\Debug\Экспертная система.pdb

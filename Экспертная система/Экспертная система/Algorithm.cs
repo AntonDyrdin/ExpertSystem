@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 namespace Экспертная_система
 {
@@ -28,27 +29,52 @@ namespace Экспертная_система
         }
 
         //█==========================================█
-        //█            get_prediction                █
+        //█                                       get_prediction                                      █
         //█==========================================█
         //возвращает прогноз для одного окна
         //inputVector - матрица входных данных, в которой нулевой столбец [i,0] - прогнозируемая величина, а остальные столбцы - предикторы.
         //каждая строка - значения предикторов в j-ый временной интервал
-        public string get_prediction(double[,] inputVector)
+        public string getPrediction(double[,] inputVector)
         {
             // lastPrediction=f(inputVector)
 
             return "ошибка: метод не реализован";
         }
         //█===========================================█
-        //█            train_the_model                █
+        //█                                        train_the_model                                    █
         //█===========================================█
-        public string train_the_model(double[,,] inputVector)
+        public string train(string inputFile)
         {
-            return "обучение алгоритма " + h.getValueByName("name") + " - ошибка: метод не реализован";
+            if (h.getValueByName("inputFile") == null)
+            {
+                h.add("inputFile:" + inputFile);
+            }
+            File.WriteAllText(pathPrefix + "\\json.txt", h.toJSON(0), System.Text.Encoding.Default);
+            string result = runPythonScript(h.getValueByName("trainScriptPath"), "--jsonFile "+ '"' + pathPrefix  +"json.txt" + '"');
+            return "обучение алгоритма " + h.getValueByName("name") + " - "+ result;
         }
 
 
+        private string runPythonScript(string scriptFile, string args)
+        {
+            ProcessStartInfo start = new ProcessStartInfo();
 
+            start.FileName =@"C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\python.exe";
+            start.Arguments = '"' + scriptFile + '"' + " " +args ;
+            start.ErrorDialog = true;
+            start.RedirectStandardError = true;
+            start.UseShellExecute = false;
+            start.CreateNoWindow = true;
+            start.RedirectStandardOutput = true;
+           // log("runPythonScript:" + start.FileName + " "+start.Arguments);
+            Process process = Process.Start(start);
+            process.ProcessorAffinity = new IntPtr(0x000F);
+            StreamReader reader = process.StandardOutput;
+            StreamReader errorReader = process.StandardError;
+            string result = reader.ReadToEnd();
+            result = result + '\n' + errorReader.ReadToEnd();
+            return result;
+        }
         public string getValueByName(string name)
         { return h.getValueByName(name); }
         public void setAttributeByName(string name, int value)
@@ -60,7 +86,12 @@ namespace Экспертная_система
         public void log(String s, System.Drawing.Color col)
         {
             form1.logDelegate = new Form1.LogDelegate(form1.delegatelog);
-            form1.logBox.Invoke(form1.logDelegate, form1.logBox, new System.Diagnostics.StackTrace().ToString() + s, col);
+            form1.logBox.Invoke(form1.logDelegate, form1.logBox, s, col);
+        }
+        public void log(String s)
+        {
+            form1.logDelegate = new Form1.LogDelegate(form1.delegatelog);
+            form1.logBox.Invoke(form1.logDelegate, form1.logBox,  s, System.Drawing.Color.White);
         }
     }
 }

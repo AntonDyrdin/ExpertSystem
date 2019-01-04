@@ -92,7 +92,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Алгоритмы прогнозирования\LSTM 1\train_the_model.py" />
+    <Content Include="Алгоритмы прогнозирования\LSTM 1\trainScript.py" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

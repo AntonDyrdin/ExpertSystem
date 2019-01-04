@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-
 namespace Экспертная_система
 {
     [Serializable]
@@ -12,6 +11,12 @@ namespace Экспертная_система
         public double[,,] inputVector;
         public double[,] dataset;
         public double[,] normalizedDataset;
+        //критерий оптимальности
+        public double target_function;
+
+        //список алгоритмов(комитет)
+        public List<Algorithm> algorithms;
+
         public Expert(Form1 form1)
         {
             //чтене файла конфигурации
@@ -24,16 +29,15 @@ namespace Экспертная_система
                 }
             }
             this.form1 = form1;
-            Algorithms = new List<Algorithm>();
+            algorithms = new List<Algorithm>();
         }
         //█====================================================█
         //█            Обучить все алгоритмы                   █
         //█====================================================█
         public string trainAllAlgorithms(string inputFile, int closeColumnIndex)
         {
-
-
-
+            for (int i = 0; i < algorithms.Count; i++)
+                log(algorithms[i].train(inputFile));
 
             return "";
         }
@@ -47,9 +51,9 @@ namespace Экспертная_система
         {
             double sum = 0;
             //вызов getPrediction у каждого алгоритма прогнозирования 
-            foreach (Algorithm algorithm in Algorithms)
+            foreach (Algorithm algorithm in algorithms)
             {
-                string prediction = algorithm.get_prediction(inputVector);
+                string prediction = algorithm.getPrediction(inputVector);
                 if (!prediction.Contains("ошибка"))
                     sum = sum + Convert.ToDouble(prediction);
                 else
@@ -73,15 +77,15 @@ namespace Экспертная_система
             //!!!!!!!!!!!    ТРЕБУЕТ ДАЛЬНЕЙШЕЙ ОПТИМИЗАЦИИ (СКОРЕЕ ВСЕГО С УСЛОЖНЕНИЕМ) !!!!!!!!!!!
             double decision = 0;
             double sum = 0;
-            foreach (Algorithm algorithm in Algorithms)
+            foreach (Algorithm algorithm in algorithms)
             { sum += Convert.ToDouble(algorithm.lastPrediction); }
-            decision = sum / Algorithms.Count;
+            decision = sum / algorithms.Count;
             return decision;
         }
 
         public void Add_Algorithm(Algorithm algorithm)
         {
-            Algorithms.Add(algorithm);
+            algorithms.Add(algorithm);
         }
 
         public Expert DeepClone()
@@ -95,18 +99,6 @@ namespace Экспертная_система
                 return (Expert)formatter.Deserialize(memory_stream);
             }
         }
-
-        public void log(String s, System.Drawing.Color col)
-        {
-            form1.logDelegate = new Form1.LogDelegate(form1.delegatelog);
-            form1.logBox.Invoke(form1.logDelegate, form1.logBox, s, col);
-        }
-        //критерий оптимальности
-        public double target_function;
-
-        //список алгоритмов(комитет)
-        public List<Algorithm> Algorithms;
-
         public void prepareDataset(string inputFile, string dropColumn)
         {
             int[] colDropInd;
@@ -124,10 +116,10 @@ namespace Экспертная_система
                 allLines[i] = filledLines[i];
             }
 
-                for (int a = 0; a < Algorithms.Count; a++)
+                for (int a = 0; a < algorithms.Count; a++)
             {
 
-                int windowSie = Convert.ToInt16(Algorithms[a].getValueByName("windowSize"));
+                int windowSie = Convert.ToInt16(algorithms[a].getValueByName("windowSize"));
                 string[] featuresNames = allLines[0].Split(';');
                 int inc = 0;
                 var dropColumnNames = dropColumn.Split(';');
@@ -288,7 +280,19 @@ namespace Экспертная_система
                 }
             }
         }
+        //inputVector - матрица входных данных, в которой нулевой столбец [i,0] - прогнозируемая величина, а остальные столбцы - предикторы.
         [NonSerializedAttribute]
         private Form1 form1;
+
+        public void log(String s, System.Drawing.Color col)
+        {
+            form1.logDelegate = new Form1.LogDelegate(form1.delegatelog);
+            form1.logBox.Invoke(form1.logDelegate, form1.logBox, s, col);
+        }
+        public void log(String s)
+        {
+            form1.logDelegate = new Form1.LogDelegate(form1.delegatelog);
+            form1.logBox.Invoke(form1.logDelegate, form1.logBox, s, System.Drawing.Color.White);
+        }
     }
 }

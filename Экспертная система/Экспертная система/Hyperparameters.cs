@@ -607,9 +607,8 @@ namespace Экспертная_система
         }
         private void log(String s, System.Drawing.Color col)
         {
-            form1.logDelegate = new Form1.LogDelegate(form1.delegatelog);
-            //  form1.logBox.Invoke(form1.logDelegate, form1.logBox, new System.Diagnostics.StackTrace().ToString() + s, col);
-            form1.logBox.Invoke(form1.logDelegate, form1.logBox, s, col);
+   //         form1.logDelegate = new Form1.LogDelegate(form1.delegatelog);
+//            form1.logBox.Invoke(form1.logDelegate, form1.logBox, s, col);
         }
     }
 }

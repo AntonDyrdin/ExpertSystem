@@ -1,0 +1,8 @@
+обучение алгоритма LSTM 1 - 
+Selected GPU[0] GeForce MX150 as the process wide default device.
+Using CNTK backend
+usage: trainScript.py [-h] [--jsonFile JSONFILE]
+trainScript.py: error: unrecognized arguments: --jsonFile C:\Users\anton\Рабочий стол\ExpertSystem\\json.txt
+
+{"pathPrefix(2)":{"value":"C:\Users\anton\Рабочий стол\ExpertSystem\"}}
+{"pathPrefix(2)":{"value":"C:\Users\anton\Рабочий стол\ExpertSystem\"}}

@@ -1,0 +1,10 @@
+обучение алгоритма LSTM 1 - Namespace(jsonFile='C:\\Users\\anton\\Рабочий стол\\ExpertSystem\\json.txt')
+
+
+EXCEPTION Invalid \escape: line 1 column 39 (char 38)
+
+Selected GPU[0] GeForce MX150 as the process wide default device.
+Using CNTK backend
+
+{"pathPrefix(2)":{"value":"C:\Users\anton\Рабочий стол\ExpertSystem\"}}
+{"pathPrefix(2)":{"value":"C:\Users\anton\Рабочий стол\ExpertSystem\"}}

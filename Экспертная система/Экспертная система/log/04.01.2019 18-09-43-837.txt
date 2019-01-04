@@ -1,0 +1,30 @@
+   в Экспертная_система.Algorithm.log(String s)
+   в Экспертная_система.Algorithm.runPythonScript(String scriptFile, String args)
+   в Экспертная_система.Algorithm.train(String inputFile)
+   в Экспертная_система.Expert.trainAllAlgorithms(String inputFile, Int32 closeColumnIndex)
+   в Экспертная_система.Form1.Form1_Load(Object sender, EventArgs e)
+   в System.Windows.Forms.Form.OnLoad(EventArgs e)
+   в System.Windows.Forms.Form.OnCreateControl()
+   в System.Windows.Forms.Control.CreateControl(Boolean fIgnoreVisible)
+   в System.Windows.Forms.Control.CreateControl()
+   в System.Windows.Forms.Control.WmShowWindow(Message& m)
+   в System.Windows.Forms.Control.WndProc(Message& m)
+   в System.Windows.Forms.ScrollableControl.WndProc(Message& m)
+   в System.Windows.Forms.Form.WmShowWindow(Message& m)
+   в System.Windows.Forms.Form.WndProc(Message& m)
+   в System.Windows.Forms.Control.ControlNativeWindow.OnMessage(Message& m)
+   в System.Windows.Forms.Control.ControlNativeWindow.WndProc(Message& m)
+   в System.Windows.Forms.NativeWindow.DebuggableCallback(IntPtr hWnd, Int32 msg, IntPtr wparam, IntPtr lparam)
+   в System.Windows.Forms.UnsafeNativeMethods.SendMessage(HandleRef hWnd, Int32 msg, Int32 wParam, Int32 lParam)
+   в System.Windows.Forms.Form.SetVisibleCore(Boolean value)
+   в System.Windows.Forms.Control.set_Visible(Boolean value)
+   в System.Windows.Forms.Application.ThreadContext.RunMessageLoopInner(Int32 reason, ApplicationContext context)
+   в System.Windows.Forms.Application.ThreadContext.RunMessageLoop(Int32 reason, ApplicationContext context)
+   в System.Windows.Forms.Application.Run(Form mainForm)
+   в Экспертная_система.Program.Main()
+runPythonScript:C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\python.exe C:\Users\anton\Рабочий стол\ExpertSystem\Алгоритмы прогнозирования\LSTM_1\trainScript.py "--{"baseNode":{"pathPrefix":{"value":"C:\Users\anton\Рабочий стол\ExpertSystem\"},"name":{"value":"LSTM_1","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"},"windowSize":{"value":"4","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"},"predicted_column_index":{"value":"100"},"window_size":{"value":"20"},"features":{"value":"189"},"drop_column":{"value":"<0>"},"number_of_epochs":{"value":"10"},"split_point":{"value":"0.9"},"trainScriptPath":{"value":"C:\Users\anton\Рабочий стол\ExpertSystem\Алгоритмы прогнозирования\LSTM_1\trainScript.py"}}}"
+обучение алгоритма LSTM_1 - 
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\python.exe: can't open file '<unprintable file name>': [Errno 2] No such file or directory
+
+{"pathPrefix(2)":{"value":"C:\Users\anton\Рабочий стол\ExpertSystem\"}}
+{"pathPrefix(2)":{"value":"C:\Users\anton\Рабочий стол\ExpertSystem\"}}

@@ -11,9 +11,9 @@ namespace Экспертная_система
             InitializeComponent();
         }
 
-        private static string pathPrefix = "C:\\Users\\anton\\Рабочий стол\\MAIN\\";
+        private static string pathPrefix = "C:\\Users\\anton\\Рабочий стол\\ExpertSystem\\";
         // static string pathPrefix = @"D:\\Anton\\Desktop\\MAIN\\";
-        private string logPath = pathPrefix + @"\Экспертная система\log\" + DateTime.Now.ToString().Replace(':', '-') + '-' + DateTime.Now.Millisecond.ToString() + ".txt";
+        private string logPath = pathPrefix + @"\Экспертная система\Экспертная система\log\" + DateTime.Now.ToString().Replace(':', '-') + '-' + DateTime.Now.Millisecond.ToString() + ".txt";
         private Expert expert;
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -21,7 +21,7 @@ namespace Экспертная_система
             File.WriteAllText("config.txt", "pathPrefix:" + pathPrefix + '\n');
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             expert = new Expert(this);
-            expert.Algorithms.Add(new LSTM_1(this, "LSTM_1", 4));
+            expert.algorithms.Add(new LSTM_1(this, "LSTM 1", 4));
             expert.prepareDataset(pathPrefix + @"Временные ряды\timeSeries4.txt", "<0>");
             //expert.trainAllAlgorithms(pathPrefix + @"Временные ряды\timeSeries4Short.txt", 0);
            // expert.Algorithms[0].h.draw(0, picBox, this, 20, 200);
@@ -42,8 +42,9 @@ namespace Экспертная_система
 
             vis.enableGrid = false;
             vis.refresh();
+            expert.trainAllAlgorithms(pathPrefix + @"Временные ряды\timeSeries4.txt", 20);
           //  expert.Algorithms[0].h.draw(1, picBox, this, 20, 200);
-             //log(h.toJSON(1), Color.White);
+             log(expert.algorithms[0].h.toJSON(1), Color.White);
         }
 
 
@@ -79,7 +80,7 @@ namespace Экспертная_система
 
         private void trackBar1_Scroll(object sender, EventArgs e)
         {
-            expert.Algorithms[0].h.draw(0, picBox, this, trackBar1.Value, 200);
+            expert.algorithms[0].h.draw(0, picBox, this, trackBar1.Value, 200);
         }
 
         private void picBox_Click(object sender, EventArgs e)
