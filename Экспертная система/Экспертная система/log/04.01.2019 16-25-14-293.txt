@@ -1,2 +1,0 @@
-{"pathPrefix":{"value":"C:\Users\anton\Рабочий стол\ExpertSystem\"}}
-{"pathPrefix":{"value":"C:\Users\anton\Рабочий стол\ExpertSystem\"}}

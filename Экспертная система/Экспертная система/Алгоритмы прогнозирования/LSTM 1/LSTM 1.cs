@@ -11,7 +11,7 @@
             h.add("drop_column:<0>");
             h.add("number_of_epochs:10");
             h.add("split_point:0.9");
-            h.add("trainScriptPath:" + pathPrefix + "Экспертная система\\Экспертная система\\Алгоритмы прогнозирования\\" + name + "\\trainScript.py");
+            h.add("trainScriptPath:" + form1.pathPrefix + "Экспертная система\\Экспертная система\\Алгоритмы прогнозирования\\" + name + "\\trainScript.py");
         }
         public string get_prediction()
         {

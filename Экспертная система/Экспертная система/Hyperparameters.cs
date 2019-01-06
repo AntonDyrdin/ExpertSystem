@@ -39,7 +39,7 @@ namespace Экспертная_система
         {
             if (!attributes.Contains("name"))
             {  //если в записи атрибутов нет атрибута-имени (например "pathPrefix:D:\\Anton\\Desktop\\MAIN")
-                //добавляется атрибут-имя соответсвующее имени единственного атрибута, а его имя заменяется на "valuez"
+                //добавляется атрибут-имя соответсвующее имени единственного атрибута, а его имя заменяется на "value"
                 attributes = "name:" + attributes.Split(':')[0] + ',' + attributes.Replace(attributes.Split(':')[0], "value");
             }
             Node newNode = new Node(newNodeIdWillBe, 0, attributes);
@@ -159,7 +159,7 @@ namespace Экспертная_система
             if (node == null)
             {
                 log("аттрибут " + name + " не найден", System.Drawing.Color.Red);
-                return "аттрибут " + name + " не найден";
+                return null;
             }
             return node.getAttributeValue("value");
         }
@@ -272,6 +272,14 @@ namespace Экспертная_система
         {
             // string jsonText = JsonConvert.SerializeObject(this);
             string jsonText = buildJSON(ID);
+
+            for (int i = 1; i < jsonText.Length-1; i++)
+                if (jsonText[i] == '\\' & jsonText[i - 1] != '\\' & jsonText[i + 1] != '\\')
+                {
+                    var a = jsonText.Substring(0, i) + '\\';
+                    var b = jsonText.Substring(i, jsonText.Length -i);
+                    jsonText = a+b;
+                }
             return '{' + jsonText + '}';
         }
 

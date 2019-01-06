@@ -1,2 +1,0 @@
-аттрибут inputFile не найден
-аттрибут trainScriptPath не найден

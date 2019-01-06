@@ -6,29 +6,29 @@ namespace Экспертная_система
 {
     public partial class Form1 : Form
     {
+        public Infrastructure I;
         public Form1()
         {
             InitializeComponent();
         }
+        public string pathPrefix;
+        public Expert expert;
 
-        private static string pathPrefix = "C:\\Users\\anton\\Рабочий стол\\ExpertSystem\\";
-        // static string pathPrefix = @"D:\\Anton\\Desktop\\MAIN\\";
-        private string logPath = pathPrefix + @"\Экспертная система\Экспертная система\log\" + DateTime.Now.ToString().Replace(':', '-') + '-' + DateTime.Now.Millisecond.ToString() + ".txt";
-        private Expert expert;
-        private void Form1_Load(object sender, EventArgs e)
+        public void Form1_Load(object sender, EventArgs e)
         {
-            /////////////////  CONFIG.TXT.  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            File.WriteAllText("config.txt", "pathPrefix:" + pathPrefix + '\n');
-            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+            I = new Infrastructure(this);
+            pathPrefix = I.h.getValueByName("pathPrefix");
+
             expert = new Expert(this);
             expert.algorithms.Add(new LSTM_1(this, "LSTM 1", 4));
             expert.prepareDataset(pathPrefix + @"Временные ряды\timeSeries4.txt", "<0>");
             //expert.trainAllAlgorithms(pathPrefix + @"Временные ряды\timeSeries4Short.txt", 0);
-           // expert.Algorithms[0].h.draw(0, picBox, this, 20, 200);
+            // expert.Algorithms[0].h.draw(0, picBox, this, 20, 200);
             MultyParameterVisualizer vis = new MultyParameterVisualizer(picBox, this);
-            
-            vis.addParameter("dataset", Color.White,100);
-            vis.addParameter("normalized dataset", Color.White,200);
+
+            vis.addParameter("dataset", Color.White, 100);
+            vis.addParameter("normalized dataset", Color.White, 200);
             vis.parameters[0].functionDepth = 1;
             vis.parameters[1].functionDepth = 1;
             for (int i = 0; i < expert.dataset.GetLength(0); i++)
@@ -43,19 +43,18 @@ namespace Экспертная_система
             vis.enableGrid = false;
             vis.refresh();
             expert.trainAllAlgorithms(pathPrefix + @"Временные ряды\timeSeries4.txt", 20);
-          //  expert.Algorithms[0].h.draw(1, picBox, this, 20, 200);
-             log(expert.algorithms[0].h.toJSON(1), Color.White);
+            //  expert.Algorithms[0].h.draw(1, picBox, this, 20, 200);
+            log(expert.algorithms[0].h.toJSON(1), Color.White);
         }
 
 
-
-        private void log(String s, System.Drawing.Color col)
+        public void log(String s, System.Drawing.Color col)
         {
             this.logDelegate = new Form1.LogDelegate(this.delegatelog);
             this.logBox.Invoke(this.logDelegate, this.logBox, s, col);
             var strings = new string[1];
             strings[0] = s;
-            File.AppendAllLines(logPath, strings);
+            File.AppendAllLines(I.logPath, strings);
         }
         public void delegatelog(RichTextBox richTextBox, String s, Color col)
         {
@@ -65,12 +64,9 @@ namespace Экспертная_система
             richTextBox.SelectionStart = richTextBox.Text.Length;
             var strings = new string[1];
             strings[0] = s;
-            File.AppendAllLines(logPath, strings);
+            File.AppendAllLines(I.logPath, strings);
         }
-        public void picBoxRefresh()
-        {
-            picBox.Refresh();
-        }
+        public void picBoxRefresh() { picBox.Refresh(); }
         public delegate void LogDelegate(RichTextBox richTextBox, string is_completed, Color col);
         public LogDelegate logDelegate;
         public delegate void StringDelegate(string is_completed);
@@ -78,15 +74,11 @@ namespace Экспертная_система
         public StringDelegate stringDelegate;
         public VoidDelegate voidDelegate;
 
-        private void trackBar1_Scroll(object sender, EventArgs e)
+        public void trackBar1_Scroll(object sender, EventArgs e)
         {
-            expert.algorithms[0].h.draw(0, picBox, this, trackBar1.Value, 200);
         }
 
-        private void picBox_Click(object sender, EventArgs e)
-        {
-
-        }
+        public void picBox_Click(object sender, EventArgs e) { }
 
 
         /*  ТЕСТ РАБОТЫ КЛАССА Hyperparameters

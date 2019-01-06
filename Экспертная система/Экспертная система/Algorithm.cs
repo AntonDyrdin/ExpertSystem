@@ -9,27 +9,16 @@ namespace Экспертная_система
         public string lastPrediction;
         public Hyperparameters h;
 
-        public string pathPrefix = "";
         public Algorithm(Form1 form1, string name, int windowSize)
         {
             h = new Hyperparameters(form1);
-
-            /////////чтене файла конфигурации///////////////////////
-            var configLines = File.ReadAllLines("config.txt");
-            foreach (string line in configLines)
-            {
-                h.add(line);
-            }
-            ////////////////////////////////////////////////////////
             this.form1 = form1;
-
             h.add("name", name);
             h.add("windowSize", windowSize);
-            pathPrefix = h.getValueByName("pathPrefix");
         }
 
         //█==========================================█
-        //█                                       get_prediction                                      █
+        //█              get_prediction              █
         //█==========================================█
         //возвращает прогноз для одного окна
         //inputVector - матрица входных данных, в которой нулевой столбец [i,0] - прогнозируемая величина, а остальные столбцы - предикторы.
@@ -41,7 +30,7 @@ namespace Экспертная_система
             return "ошибка: метод не реализован";
         }
         //█===========================================█
-        //█                                        train_the_model                                    █
+        //█                  train                    █
         //█===========================================█
         public string train(string inputFile)
         {
@@ -49,8 +38,8 @@ namespace Экспертная_система
             {
                 h.add("inputFile:" + inputFile);
             }
-            File.WriteAllText(pathPrefix + "\\json.txt", h.toJSON(0), System.Text.Encoding.Default);
-            string result = runPythonScript(h.getValueByName("trainScriptPath"), "--jsonFile "+ '"' + pathPrefix  +"json.txt" + '"');
+            File.WriteAllText(form1.pathPrefix + "\\json.txt", h.toJSON(0), System.Text.Encoding.Default);
+            string result = runPythonScript(h.getValueByName("trainScriptPath"), "--jsonFile "+ '"' + form1.pathPrefix + "json.txt" + '"');
             return "обучение алгоритма " + h.getValueByName("name") + " - "+ result;
         }
 
@@ -59,7 +48,7 @@ namespace Экспертная_система
         {
             ProcessStartInfo start = new ProcessStartInfo();
 
-            start.FileName =@"C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\python.exe";
+            start.FileName =form1.I.h.getValueByName("pythonPath");
             start.Arguments = '"' + scriptFile + '"' + " " +args ;
             start.ErrorDialog = true;
             start.RedirectStandardError = true;

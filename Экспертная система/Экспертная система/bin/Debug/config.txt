@@ -1,1 +1,9 @@
-pathPrefix:C:\Users\anton\Рабочий стол\ExpertSystem\
+﻿DESKTOP-V4VJU9V
+pathPrefix:D:\Anton\Desktop\MAIN\
+pythonPath:C:\Anaconda3\python.exe
+logPath:D:\Anton\Desktop\MAIN\log\
+
+mi Air
+pathPrefix:D:\Anton\Desktop\MAIN\
+pythonPath:C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\python.exe
+logPath:D:\Anton\Desktop\MAIN\log\

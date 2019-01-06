@@ -17,7 +17,7 @@ try:
         print('\n')
     def createParser():
         parser = argparse.ArgumentParser()
-        parser.add_argument('--jsonFile', type=str, default='C:\\Users\\anton\\Рабочий стол\\ExpertSystem\\json.txt')
+        parser.add_argument('--jsonFile', type=str, default='D:\Anton\Desktop\MAIN\json.txt')
         return parser
 
     parser = createParser()
@@ -28,7 +28,7 @@ try:
     jsonFile.close()
     print(jsontext)
     h= json.loads(jsontext)
-    print(json.dumps(python_obj,indent=12,ensure_ascii=False))  
+    print(json.dumps(h,indent=12,ensure_ascii=False))  
     log(h)
     ################################
     ################################
