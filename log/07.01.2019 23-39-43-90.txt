@@ -1,0 +1,59 @@
+обучение алгоритма LSTM 1 - Namespace(jsonFile='C:\\Users\\anton\\Рабочий стол\\ExpertSystem\\json.txt')
+
+
+{"baseNode":{"name":{"value":"LSTM 1","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"},"windowSize":{"value":"4","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"},"predicted_column_index":{"value":"100"},"window_size":{"value":"20"},"features":{"value":"189"},"drop_column":{"value":"<0>"},"number_of_epochs":{"value":"10"},"split_point":{"value":"0.9"},"trainScriptPath":{"value":"C:\\Users\\anton\\Рабочий стол\\ExpertSystem\\Экспертная система\\Экспертная система\\Алгоритмы прогнозирования\\LSTM 1\\trainScript.py"},"inputFile":{"value":"C:\\Users\\anton\\Рабочий стол\\ExpertSystem\\Временные ряды\\timeSeries4.txt"}}}
+{
+            "baseNode": {
+                        "name": {
+                                    "value": "LSTM 1",
+                                    "is_categorical": "false",
+                                    "is_change": "false",
+                                    "is_change_up_or_down": "false",
+                                    "is_const": "true"
+                        },
+                        "windowSize": {
+                                    "value": "4",
+                                    "is_categorical": "false",
+                                    "is_change": "false",
+                                    "is_change_up_or_down": "false",
+                                    "is_const": "true"
+                        },
+                        "predicted_column_index": {
+                                    "value": "100"
+                        },
+                        "window_size": {
+                                    "value": "20"
+                        },
+                        "features": {
+                                    "value": "189"
+                        },
+                        "drop_column": {
+                                    "value": "<0>"
+                        },
+                        "number_of_epochs": {
+                                    "value": "10"
+                        },
+                        "split_point": {
+                                    "value": "0.9"
+                        },
+                        "trainScriptPath": {
+                                    "value": "C:\\Users\\anton\\Рабочий стол\\ExpertSystem\\Экспертная система\\Экспертная система\\Алгоритмы прогнозирования\\LSTM 1\\trainScript.py"
+                        },
+                        "inputFile": {
+                                    "value": "C:\\Users\\anton\\Рабочий стол\\ExpertSystem\\Временные ряды\\timeSeries4.txt"
+                        }
+            }
+}
+{'baseNode': {'name': {'value': 'LSTM 1', 'is_categorical': 'false', 'is_change': 'false', 'is_change_up_or_down': 'false', 'is_const': 'true'}, 'windowSize': {'value': '4', 'is_categorical': 'false', 'is_change': 'false', 'is_change_up_or_down': 'false', 'is_const': 'true'}, 'predicted_column_index': {'value': '100'}, 'window_size': {'value': '20'}, 'features': {'value': '189'}, 'drop_column': {'value': '<0>'}, 'number_of_epochs': {'value': '10'}, 'split_point': {'value': '0.9'}, 'trainScriptPath': {'value': 'C:\\Users\\anton\\Рабочий стол\\ExpertSystem\\Экспертная система\\Экспертная система\\Алгоритмы прогнозирования\\LSTM 1\\trainScript.py'}, 'inputFile': {'value': 'C:\\Users\\anton\\Рабочий стол\\ExpertSystem\\Временные ряды\\timeSeries4.txt'}}}
+
+
+
+Selected GPU[0] GeForce MX150 as the process wide default device.
+Using CNTK backend
+Traceback (most recent call last):
+  File "C:\Users\anton\Рабочий стол\ExpertSystem\Экспертная система\Экспертная система\Алгоритмы прогнозирования\LSTM 1\trainScript.py", line 37, in <module>
+    X,y = to_3D(values, window, features,CLOSE_column_index)
+NameError: name 'to_3D' is not defined
+
+{"name(2)":{"value":"LSTM 1","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"}}
+{"name(2)":{"value":"LSTM 1","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"}}

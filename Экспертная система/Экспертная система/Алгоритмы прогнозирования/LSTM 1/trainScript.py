@@ -17,33 +17,54 @@ try:
         print('\n')
     def createParser():
         parser = argparse.ArgumentParser()
-        parser.add_argument('--jsonFile', type=str, default='D:\Anton\Desktop\MAIN\json.txt')
+        #parser.add_argument('--jsonFile', type=str,
+        #default='D:\Anton\Desktop\MAIN\json.txt')
+        parser.add_argument('--jsonFile', type=str, default='C:\\Users\\anton\\Рабочий стол\\ExpertSystem\\json.txt')
         return parser
 
     parser = createParser()
     args = parser.parse_args()
     log(args)
     jsonFile = open(args.jsonFile, 'r')
-    jsontext=jsonFile.read()
+    jsontext = jsonFile.read()
     jsonFile.close()
     print(jsontext)
-    h= json.loads(jsontext)
+    h = json.loads(jsontext)
     print(json.dumps(h,indent=12,ensure_ascii=False))  
     log(h)
-    ################################
-    ################################
-    #data, window_size,features,CLOSE_column_index)
-    ################################
-    X,y = to_3D(values, window, features,CLOSE_column_index)
-    ################################
-    ################################
 
 
+    ################################
+    inputFile = open(h["baseNode"]["inputFile"]["value"])
 
-    train_X = X[train_start_point:round(X.shape[0] * (1 - split_point)), :,:]
-    test_X = X[round(X.shape[0] * (1 - split_point)):, :,:]
-    train_y = y[train_start_point:round(y.shape[0] * (1 - split_point)):]
-    test_y = y[round(y.shape[0] * (1 - split_point)):]
+    allLines = inputFile.readlines()
+    dataset = numpy.zeros((len(allLines) - 1, len(allLines[0].split(';'))),dtype=float)
+    window_size = (int)(h["baseNode"]["window_size"]["value"])
+    for i in range(1,len(allLines)):
+        for j in range(0,len(allLines[i].split(';'))):
+            try:      
+                 dataset[i - 1,j] = allLines[i].split(';')[j]
+            except:
+                 i = i
+               #print('cant convert ' + allLines[i].split(';')[j] + ' to
+               #float')
+
+    Dataset_X = numpy.zeros((dataset.shape[0] - window_size - 1, window_size,dataset.shape[1]), dtype=float)
+    Dataset_Y = numpy.zeros(dataset.shape[0] - window_size - 1, dtype=float)
+    predicted_column_index = (int)(h["baseNode"]["predicted_column_index"]["value"])
+    for i in range(0,dataset.shape[0] - window_size - 1):
+        for j in range(0,window_size):
+            for k in range(0,dataset.shape[1]):
+                Dataset_X[i,j,k] = dataset[i + j][k]
+                #вектор Y представляет собой прогнозируемое значение на шаге
+                #ряда i+1
+        Dataset_Y[i] = dataset[i + window_size,predicted_column_index]
+    train_start_point=0
+    split_point=0.9
+    train_X = Dataset_X[train_start_point:round(Dataset_X.shape[0] * (1 - split_point)), :,:]
+    test_X = Dataset_X[round(Dataset_X.shape[0] * (1 - split_point)):, :,:]
+    train_y = Dataset_Y[train_start_point:round(Dataset_Y.shape[0] * (1 - split_point)):]
+    test_y = Dataset_Y[round(Dataset_Y.shape[0] * (1 - split_point)):]
     log(y.shape)
 
     log(train_X)
@@ -82,15 +103,17 @@ try:
         pyplot.legend()
         pyplot.show()
     if namespace.save_folder != "none":
-        #model.save_weights(save_folder+'\\' +prediction_algorithm_name + '_weights.h5')
-        save_path=namespace.save_folder  +u'\\' +prediction_algorithm_name  +".h5"
-        log("сохранение модели: "+save_path)
+        #model.save_weights(save_folder+'\\' +prediction_algorithm_name +
+        #'_weights.h5')
+        save_path = namespace.save_folder + u'\\' + prediction_algorithm_name + ".h5"
+        log("сохранение модели: " + save_path)
 
-        # no such file or directory -> парсер аргументов командной строки делает все символы СТРОЧНЫМИ
+        # no such file or directory -> парсер аргументов командной строки
+        # делает все символы СТРОЧНЫМИ
         model.save(save_path)
         log("..сохранено!")
       
-    if Debug_mode==1:
+    if Debug_mode == 1:
         log("start parsing") 
         predicted = model.predict(test_X)
         log(test_X[:,0,0])

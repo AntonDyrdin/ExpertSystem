@@ -74,7 +74,7 @@ namespace Экспертная_система
         public double getDecision()
         {
             //Среднее арифметическое прогнозов алгоритмов
-            //!!!!!!!!!!!    ТРЕБУЕТ ДАЛЬНЕЙШЕЙ ОПТИМИЗАЦИИ (СКОРЕЕ ВСЕГО С УСЛОЖНЕНИЕМ) !!!!!!!!!!!
+            //!!!!!!!!!!!    ТРЕБУЕТ ДАЛЬНЕЙШЕЙ ОПТИМИЗАЦИИ !!!!!!!!!!!
             double decision = 0;
             double sum = 0;
             foreach (Algorithm algorithm in algorithms)
@@ -116,7 +116,7 @@ namespace Экспертная_система
                 allLines[i] = filledLines[i];
             }
 
-                for (int a = 0; a < algorithms.Count; a++)
+            for (int a = 0; a < algorithms.Count; a++)
             {
 
                 int windowSie = Convert.ToInt16(algorithms[a].getValueByName("windowSize"));
@@ -236,38 +236,38 @@ namespace Экспертная_система
 
                 //запись в БД
                 // int inputVectorID = Algorithms[a].h.add("name:inputVector,count:" + (allLines.Length - windowSie).ToString());
-                /*
-                                for (int i = windowSie; i < allLines.Length; i++)
-                                {   //запись в БД
-                                    //  int windowID = Algorithms[a].h.addByParentId(inputVectorID, "name:" + (i - windowSie + 1).ToString() + "stWindow,count:"+ windowSie);
 
-                                    //затем от этой позиции заполняется первое окно
-                                    for (int j = 0; j < windowSie; j++)
-                                    {     //запись в БД
-                                          // int lineID = Algorithms[a].h.addByParentId(windowID, "name:" + (j + 1).ToString() + "stLine,count:" + allLines[1].Split(',').Length );
-                                        string[] features = allLines[i - windowSie + 1 + j].Split(';');
-                                        for (int k = 0; k < features.Length; k++)
-                                        {   //запись в БД
-                                            // Algorithms[a].h.addLeafByParentId(lineID, featuresNames[k] + ":" + features[k]);
-                                            try
-                                            {
-                                                inputVector[i - windowSie, j, k] = Convert.ToDouble(features[k]);
-                                            }
-                                            catch
-                                            {
-                                                try
-                                                {
-                                                    inputVector[i - windowSie, j, k] = Convert.ToDouble(features[k].Replace('.', ','));
-                                                }
-                                                catch
-                                                {
+                for (int i = windowSie; i < allLines.Length; i++)
+                {   //запись в БД
+                    //  int windowID = Algorithms[a].h.addByParentId(inputVectorID, "name:" + (i - windowSie + 1).ToString() + "stWindow,count:"+ windowSie);
 
-                                                    inputVector[i - windowSie, j, k] = 0;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }*/
+                    //затем от этой позиции заполняется первое окно
+                    for (int j = 0; j < windowSie; j++)
+                    {     //запись в БД
+                          // int lineID = Algorithms[a].h.addByParentId(windowID, "name:" + (j + 1).ToString() + "stLine,count:" + allLines[1].Split(',').Length );
+                        string[] features = allLines[i - windowSie + 1 + j].Split(';');
+                        for (int k = 0; k < features.Length; k++)
+                        {   //запись в БД
+                            // Algorithms[a].h.addLeafByParentId(lineID, featuresNames[k] + ":" + features[k]);
+                            try
+                            {
+                                inputVector[i - windowSie, j, k] = Convert.ToDouble(features[k]);
+                            }
+                            catch
+                            {
+                                try
+                                {
+                                    inputVector[i - windowSie, j, k] = Convert.ToDouble(features[k].Replace('.', ','));
+                                }
+                                catch
+                                {
+
+                                    inputVector[i - windowSie, j, k] = 0;
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
         private void normalizeInputVector(double[,] dataset)
