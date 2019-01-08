@@ -5,3 +5,10 @@ C:\Users\anton\Рабочий стол\DatasetScript\DatasetScript\obj\Debug\Dat
 C:\Users\anton\Рабочий стол\DatasetScript\DatasetScript\obj\Debug\DatasetScript.csproj.CoreCompileInputs.cache
 C:\Users\anton\Рабочий стол\DatasetScript\DatasetScript\obj\Debug\DatasetScript.exe
 C:\Users\anton\Рабочий стол\DatasetScript\DatasetScript\obj\Debug\DatasetScript.pdb
+D:\Anton\Desktop\MAIN\DatasetScript1\DatasetScript\bin\Debug\DatasetScript.exe.config
+D:\Anton\Desktop\MAIN\DatasetScript1\DatasetScript\bin\Debug\DatasetScript.exe
+D:\Anton\Desktop\MAIN\DatasetScript1\DatasetScript\bin\Debug\DatasetScript.pdb
+D:\Anton\Desktop\MAIN\DatasetScript1\DatasetScript\obj\Debug\DatasetScript.csprojResolveAssemblyReference.cache
+D:\Anton\Desktop\MAIN\DatasetScript1\DatasetScript\obj\Debug\DatasetScript.csproj.CoreCompileInputs.cache
+D:\Anton\Desktop\MAIN\DatasetScript1\DatasetScript\obj\Debug\DatasetScript.exe
+D:\Anton\Desktop\MAIN\DatasetScript1\DatasetScript\obj\Debug\DatasetScript.pdb

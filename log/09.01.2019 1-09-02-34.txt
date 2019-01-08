@@ -1,0 +1,6 @@
+столбец <TICKER> удалён
+столбец <PER> удалён
+столбец <DATE> удалён
+столбец <TIME> удалён
+{"name":{"value":"LSTM 1","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"}}
+{"name":{"value":"LSTM 1","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"}}

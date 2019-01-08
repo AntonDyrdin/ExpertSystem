@@ -12,7 +12,7 @@ namespace Экспертная_система
         public Bitmap bitmap;
         public Form1 form1;
         public double mainFontDepth;
-        public double functionDepth = 2;
+        public double functionDepth = 1;
         public int Xmax;
         public int Ymax;
         public int Ymin = 0;

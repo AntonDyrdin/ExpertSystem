@@ -6,7 +6,7 @@ namespace DatasetScript
     {
         private static void Main(string[] args)
         {
-            var allLines = File.ReadAllLines(@"C:\Users\anton\Рабочий стол\MAIN\Временные ряды\timeSeries4.txt");
+            var allLines = File.ReadAllLines(args[0]);
             List<string> newLines = new List<string>();
             foreach (string line in allLines)
             {
@@ -17,7 +17,7 @@ namespace DatasetScript
                    // System.Console.WriteLine(newline);
                 }
             }
-            File.WriteAllLines(@"C:\Users\anton\Рабочий стол\MAIN\Временные ряды\timeSeries4.txt", newLines);
+            File.WriteAllLines(args[0], newLines);
         }
     }
 }

@@ -1,8 +1,0 @@
-обучение алгоритма LSTM 1 - 
-Traceback (most recent call last):
-  File "D:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\LSTM 1\trainScript.py", line 3, in <module>
-    import numpy
-ImportError: No module named 'numpy'
-
-{"name(2)":{"value":"LSTM 1","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"}}
-{"name(2)":{"value":"LSTM 1","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"}}

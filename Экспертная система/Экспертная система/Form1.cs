@@ -13,7 +13,7 @@ namespace Экспертная_система
         }
         public string pathPrefix;
         public Expert expert;
-
+        MultyParameterVisualizer vis;
         public void Form1_Load(object sender, EventArgs e)
         {
 
@@ -22,29 +22,22 @@ namespace Экспертная_система
 
             expert = new Expert(this);
             expert.algorithms.Add(new LSTM_1(this, "LSTM 1", 4));
-            expert.prepareDataset(pathPrefix + @"Временные ряды\timeSeries4.txt", "<0>");
-            //expert.trainAllAlgorithms(pathPrefix + @"Временные ряды\timeSeries4Short.txt", 0);
+            //expert.prepareDataset(pathPrefix + @"Временные ряды\timeSeries4.txt", "<0>");
+            expert.algorithms[0].h.add("inputFile", expert.prepareDataset(pathPrefix + @"Временные ряды\EURRUB.txt", ""));
             // expert.Algorithms[0].h.draw(0, picBox, this, 20, 200);
-            MultyParameterVisualizer vis = new MultyParameterVisualizer(picBox, this);
+             vis = new MultyParameterVisualizer(picBox, this);
 
-            vis.addParameter("dataset", Color.White, 100);
-            vis.addParameter("normalized dataset", Color.White, 200);
-            vis.parameters[0].functionDepth = 1;
-            vis.parameters[1].functionDepth = 1;
-            for (int i = 0; i < expert.dataset.GetLength(0); i++)
-            {
-                vis.addPoint(expert.dataset[i, 20], "dataset");
-            }
-            for (int i = 0; i < expert.normalizedDataset.GetLength(0); i++)
-            {
-                vis.addPoint(expert.normalizedDataset[i, 20], "normalized dataset");
-            }
+            vis.addParameter(expert.dataset, 2, "dataset", Color.White, 300);
+            vis.addParameter(expert.normalizedDataset2, 2, "normalized[2]", Color.White, 300);
+            vis.addParameter(expert.normalizedDataset2, 0, "normalized[0]", Color.White, 300);
+            vis.addParameter(expert.normalizedDataset2, 1, "normalized[1]", Color.White, 300);
+            vis.addParameter(expert.normalizedDataset2, 3, "normalized[3]", Color.White, 300);
 
             vis.enableGrid = false;
             vis.refresh();
-            expert.trainAllAlgorithms(pathPrefix + @"Временные ряды\timeSeries4.txt", 20);
+            //  expert.trainAllAlgorithms(pathPrefix + @"Временные ряды\timeSeries4.txt", 20);
             //  expert.Algorithms[0].h.draw(1, picBox, this, 20, 200);
-            log(expert.algorithms[0].h.toJSON(1), Color.White);
+            log(expert.algorithms[0].h.toJSON(0), Color.White);
         }
 
 
@@ -78,7 +71,15 @@ namespace Экспертная_система
         {
         }
 
-        public void picBox_Click(object sender, EventArgs e) { }
+        public void picBox_Click(object sender, EventArgs e)
+        {
+            expert.algorithms[0].h.draw(0, picBox, this, 30, 250);
+        }
+
+        private void picBox_DoubleClick(object sender, EventArgs e)
+        {
+            vis.refresh();
+        }
 
 
         /*  ТЕСТ РАБОТЫ КЛАССА Hyperparameters

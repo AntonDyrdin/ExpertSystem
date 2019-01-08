@@ -53,6 +53,39 @@ namespace Экспертная_система
                 addPoint(value, name);*/
             }
         }
+
+        public void addParameter(double[,] array, int index, string label, Color color, int H)
+        {
+            ParameterVisualizer newParameterVisualizer = new ParameterVisualizer(pictureBox, form1, label, color);
+            newParameterVisualizer.needToRefresh.Stop();
+            newParameterVisualizer.needToRefresh.Close();
+            newParameterVisualizer.needToRefresh.Enabled = false;
+            newParameterVisualizer.needToRefresh.Dispose();
+            newParameterVisualizer.H = H;
+            parameters.Add(newParameterVisualizer);
+
+            for (int i = 0; i < parameters.Count; i++)
+            {
+                parameters[i].yDownGap = 10;
+                parameters[i].yUpGap = 35;
+                if (i == 0)
+                    parameters[i].Ymin = 0;
+                else
+                {
+                    parameters[i].Ymin = parameters[i - 1].Ymin + parameters[i].H;
+                }
+                if (i == parameters.Count - 1)
+                    parameters[i].Ymax = H;
+                parameters[i].multy = true;
+
+            }
+            parameters[parameters.Count - 1].multy = false;
+
+            for (int i = 0; i < array.GetLength(0); i++)
+            {
+                addPoint(array[i, index], label);
+            }
+        }
         public void addParameter(string label, Color color, int H)
         {
             ParameterVisualizer newParameterVisualizer = new ParameterVisualizer(pictureBox, form1, label, color);
@@ -100,9 +133,11 @@ namespace Экспертная_система
                 if (i == 0)
                     parameters[i].Ymin = 0;
                 else
-                    parameters[i].Ymin = parameters[i - 1].Ymax;
-
-                parameters[i].Ymax = parameters[i].Ymin+H;
+                {
+                    parameters[i].Ymin = parameters[i - 1].Ymin + parameters[i].H;
+                }
+                if (i == parameters.Count - 1)
+                    parameters[i].Ymax = H;
                 parameters[i].multy = true;
 
             }
@@ -118,7 +153,7 @@ namespace Экспертная_система
                 }
             }
             bool isFirstTime = true;
-        drawHyperparametersAgain:
+            drawHyperparametersAgain:
             for (int i = 0; i < parameters.Count; i++)
             {
                 bitmap = parameters[i].multyRefresh(bitmap);
