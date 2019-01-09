@@ -252,7 +252,10 @@ namespace Экспертная_система
             {
                 for (int k = 0; k < dataset.GetLength(1); k++)
                 {
+                    if (previousLine[k]!=0)
                     normalizedDataset2[i, k] = dataset[i + 1, k] / previousLine[k];
+                                           else
+                        normalizedDataset2[i, k]=0;
                 }
                 for (int j = 0; j < dataset.GetLength(1); j++)
                     previousLine[j] = dataset[i + 1, j];

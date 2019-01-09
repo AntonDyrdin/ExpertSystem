@@ -18,8 +18,9 @@ try:
     def createParser():
         parser = argparse.ArgumentParser()
         #parser.add_argument('--jsonFile', type=str,
-        #default='D:\Anton\Desktop\MAIN\json.txt')
-        parser.add_argument('--jsonFile', type=str, default='C:\\Users\\anton\\Рабочий стол\\ExpertSystem\\json.txt')
+        parser.add_argument('--jsonFile', type=str, default='D:\Anton\Desktop\MAIN\json.txt')
+       # parser.add_argument('--jsonFile', type=str,
+       # default='C:\\Users\\anton\\Рабочий стол\\ExpertSystem\\json.txt')
         return parser
 
     parser = createParser()
@@ -41,14 +42,12 @@ try:
     dataset = numpy.zeros((len(allLines) - 1, len(allLines[0].split(';'))),dtype=float)
     window_size = (int)(h["baseNode"]["window_size"]["value"])
     for i in range(1,len(allLines)):
-        for j in range(0,len(allLines[i].split(';'))):
-            try:      
-                 dataset[i - 1,j] = allLines[i].split(';')[j]
-            except:
-                 i = i
-               #print('cant convert ' + allLines[i].split(';')[j] + ' to
-               #float')
+        for j in range(0,len(allLines[i].split(';'))):   
+            featureStringValue = allLines[i].split(';')[j]
+            if featureStringValue!='\n':     
+                dataset[i - 1,j] = (float)(allLines[i].split(';')[j])
 
+    print(dataset.shape)
     Dataset_X = numpy.zeros((dataset.shape[0] - window_size - 1, window_size,dataset.shape[1]), dtype=float)
     Dataset_Y = numpy.zeros(dataset.shape[0] - window_size - 1, dtype=float)
     predicted_column_index = (int)(h["baseNode"]["predicted_column_index"]["value"])
@@ -59,13 +58,13 @@ try:
                 #вектор Y представляет собой прогнозируемое значение на шаге
                 #ряда i+1
         Dataset_Y[i] = dataset[i + window_size,predicted_column_index]
-    train_start_point=0
-    split_point=0.9
+    train_start_point = 0
+    split_point = 0.9
     train_X = Dataset_X[train_start_point:round(Dataset_X.shape[0] * (1 - split_point)), :,:]
     test_X = Dataset_X[round(Dataset_X.shape[0] * (1 - split_point)):, :,:]
     train_y = Dataset_Y[train_start_point:round(Dataset_Y.shape[0] * (1 - split_point)):]
     test_y = Dataset_Y[round(Dataset_Y.shape[0] * (1 - split_point)):]
-    log(y.shape)
+
 
     log(train_X)
     log(test_X)
@@ -74,50 +73,45 @@ try:
 
     model = Sequential()         
 
-    model.add(LSTM(layer_specification_array[i], input_shape=(train_X.shape[1], train_X.shape[2])))
-    model.add(LSTM(layer_specification_array[i], input_shape=(train_X.shape[1], train_X.shape[2]),return_sequences=True))
-    model.add(LSTM(layer_specification_array[i]))
-    model.add(LSTM(layer_specification_array[i],return_sequences=True))
-    model.add(Dense(layer_specification_array[i],activation='sigmoid'))
-    model.add(Dropout(layer_specification_array[i]))
+    model.add(LSTM(30, input_shape=(train_X.shape[1], train_X.shape[2])))
+    model.add(Dense(15,activation='sigmoid'))
+    model.add(Dense(1,activation='sigmoid'))
                                                                   
-    log("компиляция НС")
+    log("компиляция НС...")
         
-    model.compile(loss=loss, optimizer=optimizer,metrics=['accuracy'])
+    model.compile(loss='mean_squared_error', optimizer='adam',metrics=['accuracy'])
     log("НС скомпилированна")
 
     
     log("обучение НС")
         
-    history = model.fit(train_X, train_y, epochs=number_of_epochs, batch_size=batch_size, validation_data=(test_X, test_y), verbose=2, shuffle=False) 
+    history = model.fit(train_X, train_y, epochs=1, batch_size=30, validation_data=(test_X, test_y), verbose=2, shuffle=False) 
     
     log("построение графиков")
-    if Debug_mode == 1:    
-        pyplot.plot(history.history['loss'], label='train')
-        pyplot.plot(history.history['val_loss'], label='test')
-        pyplot.legend()
-        pyplot.show()
-    if Debug_mode == 1:    
-        pyplot.plot(history.history['acc'], label='acc')
-        pyplot.plot(history.history['val_acc'], label='val_acc')
-        pyplot.legend()
-        pyplot.show()
-    if namespace.save_folder != "none":
+    pyplot.plot(history.history['loss'], label='train')
+    pyplot.plot(history.history['val_loss'], label='test')
+    pyplot.legend()
+    pyplot.show()   
+    pyplot.plot(history.history['acc'], label='acc')
+    pyplot.plot(history.history['val_acc'], label='val_acc')
+    pyplot.legend()
+    pyplot.show()
+   # if namespace.save_folder != "none":
         #model.save_weights(save_folder+'\\' +prediction_algorithm_name +
         #'_weights.h5')
-        save_path = namespace.save_folder + u'\\' + prediction_algorithm_name + ".h5"
-        log("сохранение модели: " + save_path)
+     #   save_path = namespace.save_folder + u'\\' + prediction_algorithm_name + ".h5"
+    #    log("сохранение модели: " + save_path)
 
         # no such file or directory -> парсер аргументов командной строки
         # делает все символы СТРОЧНЫМИ
-        model.save(save_path)
-        log("..сохранено!")
+   #     model.save(save_path)
+   #     log("..сохранено!")
       
-    if Debug_mode == 1:
-        log("start parsing") 
-        predicted = model.predict(test_X)
-        log(test_X[:,0,0])
-        log(predicted[:,0])
+  #  if Debug_mode == 1:
+    log("start parsing") 
+    predicted = model.predict(test_X)
+    log(test_X[:,0,0])
+    log(predicted[:,0])
 
 
 

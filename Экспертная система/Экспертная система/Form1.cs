@@ -18,24 +18,24 @@ namespace Экспертная_система
         {
 
             I = new Infrastructure(this);
+            vis = new MultyParameterVisualizer(picBox, this);
+
             pathPrefix = I.h.getValueByName("pathPrefix");
 
             expert = new Expert(this);
-            expert.algorithms.Add(new LSTM_1(this, "LSTM 1", 4));
-            //expert.prepareDataset(pathPrefix + @"Временные ряды\timeSeries4.txt", "<0>");
-            expert.algorithms[0].h.add("inputFile", expert.prepareDataset(pathPrefix + @"Временные ряды\EURRUB.txt", ""));
-            // expert.Algorithms[0].h.draw(0, picBox, this, 20, 200);
-             vis = new MultyParameterVisualizer(picBox, this);
+            expert.algorithms.Add(new LSTM_1(this, "LSTM 1", 40));
+             expert.algorithms[0].h.add("inputFile", expert.prepareDataset(pathPrefix + @"Временные ряды\timeSeries4.txt", ""));
+            expert.algorithms[0].h.add("inputFile", pathPrefix + @"Временные ряды\timeSeries4-dataset.txt");
 
-            vis.addParameter(expert.dataset, 2, "dataset", Color.White, 300);
+          vis.addParameter(expert.dataset, 2, "dataset", Color.White, 300);
             vis.addParameter(expert.normalizedDataset2, 2, "normalized[2]", Color.White, 300);
             vis.addParameter(expert.normalizedDataset2, 0, "normalized[0]", Color.White, 300);
             vis.addParameter(expert.normalizedDataset2, 1, "normalized[1]", Color.White, 300);
-            vis.addParameter(expert.normalizedDataset2, 3, "normalized[3]", Color.White, 300);
+            vis.addParameter(expert.normalizedDataset2, 3, "normalized[3]", Color.White, 300);   
 
             vis.enableGrid = false;
             vis.refresh();
-            //  expert.trainAllAlgorithms(pathPrefix + @"Временные ряды\timeSeries4.txt", 20);
+            expert.trainAllAlgorithms(pathPrefix + @"Временные ряды\timeSeries4.txt", 100);
             //  expert.Algorithms[0].h.draw(1, picBox, this, 20, 200);
             log(expert.algorithms[0].h.toJSON(0), Color.White);
         }

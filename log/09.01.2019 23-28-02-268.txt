@@ -1,0 +1,217 @@
+обучение алгоритма LSTM 1 - Namespace(jsonFile='D:\\Anton\\Desktop\\MAIN\\json.txt')
+
+
+{"baseNode":{"name":{"value":"LSTM 1","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"},"windowSize":{"value":"40","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"},"predicted_column_index":{"value":"100"},"window_size":{"value":"20"},"features":{"value":"189"},"drop_column":{"value":"<0>"},"number_of_epochs":{"value":"10"},"split_point":{"value":"0.9"},"trainScriptPath":{"value":"D:\\Anton\\Desktop\\MAIN\\Экспертная система\\Экспертная система\\Алгоритмы прогнозирования\\LSTM 1\\trainScript.py"},"inputFile":{"value":"D:\\Anton\\Desktop\\MAIN\\Временные ряды\\timeSeries4-dataset.txt","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"},"inputFile(2)":{"value":"D:\\Anton\\Desktop\\MAIN\\Временные ряды\\timeSeries4-dataset.txt","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"}}}
+{
+            "baseNode": {
+                        "name": {
+                                    "value": "LSTM 1",
+                                    "is_categorical": "false",
+                                    "is_change": "false",
+                                    "is_change_up_or_down": "false",
+                                    "is_const": "true"
+                        },
+                        "windowSize": {
+                                    "value": "40",
+                                    "is_categorical": "false",
+                                    "is_change": "false",
+                                    "is_change_up_or_down": "false",
+                                    "is_const": "true"
+                        },
+                        "predicted_column_index": {
+                                    "value": "100"
+                        },
+                        "window_size": {
+                                    "value": "20"
+                        },
+                        "features": {
+                                    "value": "189"
+                        },
+                        "drop_column": {
+                                    "value": "<0>"
+                        },
+                        "number_of_epochs": {
+                                    "value": "10"
+                        },
+                        "split_point": {
+                                    "value": "0.9"
+                        },
+                        "trainScriptPath": {
+                                    "value": "D:\\Anton\\Desktop\\MAIN\\Экспертная система\\Экспертная система\\Алгоритмы прогнозирования\\LSTM 1\\trainScript.py"
+                        },
+                        "inputFile": {
+                                    "value": "D:\\Anton\\Desktop\\MAIN\\Временные ряды\\timeSeries4-dataset.txt",
+                                    "is_categorical": "false",
+                                    "is_change": "false",
+                                    "is_change_up_or_down": "false",
+                                    "is_const": "true"
+                        },
+                        "inputFile(2)": {
+                                    "value": "D:\\Anton\\Desktop\\MAIN\\Временные ряды\\timeSeries4-dataset.txt",
+                                    "is_categorical": "false",
+                                    "is_change": "false",
+                                    "is_change_up_or_down": "false",
+                                    "is_const": "true"
+                        }
+            }
+}
+{'baseNode': {'name': {'value': 'LSTM 1', 'is_categorical': 'false', 'is_change': 'false', 'is_change_up_or_down': 'false', 'is_const': 'true'}, 'windowSize': {'value': '40', 'is_categorical': 'false', 'is_change': 'false', 'is_change_up_or_down': 'false', 'is_const': 'true'}, 'predicted_column_index': {'value': '100'}, 'window_size': {'value': '20'}, 'features': {'value': '189'}, 'drop_column': {'value': '<0>'}, 'number_of_epochs': {'value': '10'}, 'split_point': {'value': '0.9'}, 'trainScriptPath': {'value': 'D:\\Anton\\Desktop\\MAIN\\Экспертная система\\Экспертная система\\Алгоритмы прогнозирования\\LSTM 1\\trainScript.py'}, 'inputFile': {'value': 'D:\\Anton\\Desktop\\MAIN\\Временные ряды\\timeSeries4-dataset.txt', 'is_categorical': 'false', 'is_change': 'false', 'is_change_up_or_down': 'false', 'is_const': 'true'}, 'inputFile(2)': {'value': 'D:\\Anton\\Desktop\\MAIN\\Временные ряды\\timeSeries4-dataset.txt', 'is_categorical': 'false', 'is_change': 'false', 'is_change_up_or_down': 'false', 'is_const': 'true'}}}
+
+
+(1436, 190)
+[[[ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  ..., 
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]]
+
+ [[ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  ..., 
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]]
+
+ [[ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  ..., 
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]]
+
+ ..., 
+ [[ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  ..., 
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]]
+
+ [[ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  ..., 
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]]
+
+ [[ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  ..., 
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]]]
+
+
+[[[ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  ..., 
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]]
+
+ [[ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  ..., 
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]]
+
+ [[ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  ..., 
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]]
+
+ ..., 
+ [[ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  ..., 
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.   0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.   0.5  0. ]]
+
+ [[ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  ..., 
+  [ 0.   0.5  0.5 ...,  0.   0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.   0.5  0. ]
+  [ 0.   0.5  0.5 ...,  1.   0.   0. ]]
+
+ [[ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  [ 0.   0.5  0.5 ...,  0.5  0.5  0. ]
+  ..., 
+  [ 0.   0.5  0.5 ...,  0.   0.5  0. ]
+  [ 0.   0.5  0.5 ...,  1.   0.   0. ]
+  [ 0.   0.5  0.5 ...,  1.   0.   0. ]]]
+
+
+[ 0.5   0.5   0.5   0.5   0.5   0.5   0.5   0.5   0.5   0.5   0.5   0.5
+  0.5   0.5   0.5   0.5   0.    1.    1.    0.    0.    0.    1.    0.5
+  0.5   0.5   0.    1.    1.    1.    0.    0.    1.    0.99  0.5   0.5
+  0.5   0.    1.    1.    1.    0.    0.    0.    1.    0.5   0.5   0.
+  0.99  0.    1.    1.    1.    0.    0.    0.    1.    0.5   0.99  0.5   0.
+  0.99  0.    1.    1.    1.    1.    0.    0.    0.    1.    0.99  0.5
+  0.5   0.5   0.5   0.    0.    1.    1.    1.    0.    0.    0.    0.    1.
+  0.99  0.5   0.5   0.5   0.5   0.5   0.5   0.    0.5   1.    1.    1.    0.
+  0.    0.    0.    1.    0.99  0.5   0.5   0.    0.99  0.5   0.5   0.5   0.
+  1.    1.    1.    1.    0.93  0.    0.    0.    0.    1.    0.99  0.5
+  0.5   0.5   0.5   0.5   0.5   0.5   0.    0.    0.    1.    1.    1.    1.
+  0.    0.    0.    0.  ]
+
+
+[ 0.    1.    0.99 ...,  1.    1.    0.  ]
+
+
+компиляция НС...
+
+
+НС скомпилированна
+
+
+обучение НС
+
+
+Train on 141 samples, validate on 1274 samples
+Epoch 1/5
+0s - loss: 0.1648 - acc: 0.3191 - val_loss: 0.0979 - val_acc: 0.1978
+Epoch 2/5
+0s - loss: 0.1617 - acc: 0.2553 - val_loss: 0.0980 - val_acc: 0.1727
+Epoch 3/5
+0s - loss: 0.1614 - acc: 0.2624 - val_loss: 0.0979 - val_acc: 0.1727
+Epoch 4/5
+0s - loss: 0.1609 - acc: 0.2624 - val_loss: 0.0977 - val_acc: 0.1743
+Epoch 5/5
+0s - loss: 0.1604 - acc: 0.3404 - val_loss: 0.0976 - val_acc: 0.1876
+построение графиков
+
+
+start parsing
+
+
+[ 0.  0.  0. ...,  0.  0.  0.]
+
+
+[ 0.49792007  0.49963883  0.50234747 ...,  0.50480759  0.50409311
+  0.50101644]
+
+
+successfully_trained
+
+Using Theano backend.
+
+{"baseNode":{"name":{"value":"LSTM 1","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"},"windowSize":{"value":"40","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"},"predicted_column_index":{"value":"100"},"window_size":{"value":"20"},"features":{"value":"189"},"drop_column":{"value":"<0>"},"number_of_epochs":{"value":"10"},"split_point":{"value":"0.9"},"trainScriptPath":{"value":"D:\\Anton\\Desktop\\MAIN\\Экспертная система\\Экспертная система\\Алгоритмы прогнозирования\\LSTM 1\\trainScript.py"},"inputFile":{"value":"D:\\Anton\\Desktop\\MAIN\\Временные ряды\\timeSeries4-dataset.txt","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"},"inputFile(2)":{"value":"D:\\Anton\\Desktop\\MAIN\\Временные ряды\\timeSeries4-dataset.txt","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"}}}
+{"baseNode":{"name":{"value":"LSTM 1","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"},"windowSize":{"value":"40","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"},"predicted_column_index":{"value":"100"},"window_size":{"value":"20"},"features":{"value":"189"},"drop_column":{"value":"<0>"},"number_of_epochs":{"value":"10"},"split_point":{"value":"0.9"},"trainScriptPath":{"value":"D:\\Anton\\Desktop\\MAIN\\Экспертная система\\Экспертная система\\Алгоритмы прогнозирования\\LSTM 1\\trainScript.py"},"inputFile":{"value":"D:\\Anton\\Desktop\\MAIN\\Временные ряды\\timeSeries4-dataset.txt","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"},"inputFile(2)":{"value":"D:\\Anton\\Desktop\\MAIN\\Временные ряды\\timeSeries4-dataset.txt","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"}}}
