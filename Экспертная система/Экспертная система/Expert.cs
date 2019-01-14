@@ -26,10 +26,10 @@ namespace Экспертная_система
         //█====================================================█
         //█            Обучить все алгоритмы                   █
         //█====================================================█
-        public string trainAllAlgorithms(string inputFile, int closeColumnIndex)
+        public string trainAllAlgorithms()
         {
             for (int i = 0; i < algorithms.Count; i++)
-                log(algorithms[i].train(inputFile));
+                log(algorithms[i].train());
 
             return "";
         }
@@ -252,10 +252,10 @@ namespace Экспертная_система
             {
                 for (int k = 0; k < dataset.GetLength(1); k++)
                 {
-                    if (previousLine[k]!=0)
-                    normalizedDataset2[i, k] = dataset[i + 1, k] / previousLine[k];
-                                           else
-                        normalizedDataset2[i, k]=0;
+                    if (previousLine[k] != 0)
+                        normalizedDataset2[i, k] = Convert.ToDouble(dataset[i + 1, k]) / Convert.ToDouble(previousLine[k]);
+                    else
+                        normalizedDataset2[i, k] = 0;
                 }
                 for (int j = 0; j < dataset.GetLength(1); j++)
                     previousLine[j] = dataset[i + 1, j];
@@ -273,16 +273,20 @@ namespace Экспертная_система
                     //для увеличение стандартного отклонения сначала вычислим имеющееся i-ое отклонение, приведя к 0 - среднему
                     normalizedDataset2[i, k] = normalizedDataset2[i, k] - 0.5;
                     //а затем отмасштабируем
-                    normalizedDataset2[i, k] = normalizedDataset2[i, k] * (1 / (Math.Abs(normalizedDataset2[i, k] + 0.03)));
+                    //normalizedDataset2[i, k] = normalizedDataset2[i, k] * (1 / (Math.Abs(normalizedDataset2[i, k] + 0.03)));
                     //вернём к 0.5 - среднему
                     normalizedDataset2[i, k] = normalizedDataset2[i, k] + 0.5;
 
 
                     //и подровняем выбросы
                     if (normalizedDataset2[i, k] > 1)
-                    { normalizedDataset2[i, k] = 1; }
+                    {
+                        normalizedDataset2[i, k] = 1;
+                    }
                     else if (normalizedDataset2[i, k] < 0)
-                    { normalizedDataset2[i, k] = 0; }
+                    {
+                        normalizedDataset2[i, k] = 0;
+                    }
 
                     if (normalizedDataset1[i, k] > 1)
                     { normalizedDataset1[i, k] = 1; }

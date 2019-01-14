@@ -4,6 +4,6 @@ pythonPath:C:\Anaconda3\python.exe
 logPath:D:\Anton\Desktop\MAIN\log\
 
 DESKTOP-B3G20T0
-pathPrefix:C:\Users\anton\Рабочий стол\ExpertSystem\
+pathPrefix:C:\Users\anton\Рабочий стол\MAIN\
 pythonPath:C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\python.exe
-logPath:C:\Users\anton\Рабочий стол\ExpertSystem\log\
+logPath:C:\Users\anton\Рабочий стол\MAIN\log\

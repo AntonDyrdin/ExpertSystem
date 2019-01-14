@@ -9,12 +9,11 @@ namespace Экспертная_система
         public string lastPrediction;
         public Hyperparameters h;
 
-        public Algorithm(Form1 form1, string name, int windowSize)
+        public Algorithm(Form1 form1, string name)
         {
             h = new Hyperparameters(form1);
             this.form1 = form1;
             h.add("name", name);
-            h.add("windowSize", windowSize);
         }
 
         //█==========================================█
@@ -29,40 +28,71 @@ namespace Экспертная_система
 
             return "ошибка: метод не реализован";
         }
+
         //█===========================================█
         //█                  train                    █
         //█===========================================█
-        public string train(string inputFile)
+        private System.Threading.Thread trainingThread;
+        public string train()
         {
             if (h.getValueByName("inputFile") == null)
             {
-                h.add("inputFile:" + inputFile);
+                log("файл датасета не задан");
             }
             File.WriteAllText(form1.pathPrefix + "\\json.txt", h.toJSON(0), System.Text.Encoding.Default);
-            string result = runPythonScript(h.getValueByName("trainScriptPath"), "--jsonFile "+ '"' + form1.pathPrefix + "json.txt" + '"');
-            return "обучение алгоритма " + h.getValueByName("name") + " - "+ result;
+            scriptFile = h.getValueByName("trainScriptPath");
+            args = "--jsonFile " + '"' + form1.pathPrefix + "json.txt" + '"';
+            trainingThread = new System.Threading.Thread(trainingThreadMethod);
+            trainingThread.Start();
+            return "обучение алгоритма " + h.getValueByName("name") + "...";
         }
 
+        private string scriptFile;
+        private string args;
+
+        private void trainingThreadMethod()
+        {
+            runPythonScript(scriptFile, args);
+            //   log("training comlete", Color.Green);
+        }
 
         private string runPythonScript(string scriptFile, string args)
         {
             ProcessStartInfo start = new ProcessStartInfo();
 
-            start.FileName =form1.I.h.getValueByName("pythonPath");
-            start.Arguments = '"' + scriptFile + '"' + " " +args ;
+            start.FileName = form1.I.h.getValueByName("pythonPath");
+            start.Arguments = '"' + scriptFile + '"' + " " + args;
             start.ErrorDialog = true;
             start.RedirectStandardError = true;
             start.UseShellExecute = false;
             start.CreateNoWindow = true;
             start.RedirectStandardOutput = true;
-           // log("runPythonScript:" + start.FileName + " "+start.Arguments);
+            // log("runPythonScript:" + start.FileName + " "+start.Arguments);
             Process process = Process.Start(start);
             process.ProcessorAffinity = new IntPtr(0x000F);
-            StreamReader reader = process.StandardOutput;
+
+            int blockSize = 1;
+            //Буфер для считываемых данных
+            char[] buffer = new char[blockSize];
+            StreamReader standardOutputReader = process.StandardOutput;
+            int size = 0;
+            string line = "";
+            size = standardOutputReader.Read(buffer, 0, blockSize);
+            while (size > 0)
+            {
+                size = standardOutputReader.Read(buffer, 0, blockSize);
+                line += new string(buffer);
+                if (line.Contains("\n"))
+                {
+                    log(line);
+                    line = "";
+                }
+            }
             StreamReader errorReader = process.StandardError;
-            string result = reader.ReadToEnd();
-            result = result + '\n' + errorReader.ReadToEnd();
-            return result;
+            //string result = reader.ReadToEnd();
+            log(errorReader.ReadToEnd());
+         //   log(standardOutputReader.ReadToEnd());
+            return "";
         }
         public string getValueByName(string name)
         { return h.getValueByName(name); }
@@ -80,7 +110,7 @@ namespace Экспертная_система
         public void log(String s)
         {
             form1.logDelegate = new Form1.LogDelegate(form1.delegatelog);
-            form1.logBox.Invoke(form1.logDelegate, form1.logBox,  s, System.Drawing.Color.White);
+            form1.logBox.Invoke(form1.logDelegate, form1.logBox, s, System.Drawing.Color.White);
         }
     }
 }

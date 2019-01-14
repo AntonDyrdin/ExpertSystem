@@ -14,25 +14,25 @@ try:
     prediction_algorithm_name = 'LSTM_1'
     def log(s):
         print(s)
-        print('\n')
+       # print('\n')
     def createParser():
         parser = argparse.ArgumentParser()
         #parser.add_argument('--jsonFile', type=str,
-        parser.add_argument('--jsonFile', type=str, default='D:\Anton\Desktop\MAIN\json.txt')
        # parser.add_argument('--jsonFile', type=str,
-       # default='C:\\Users\\anton\\Рабочий стол\\ExpertSystem\\json.txt')
+       # default='D:\Anton\Desktop\MAIN\json.txt')
+       # parser.add_argument('--jsonFile', type=str,
+        parser.add_argument('--jsonFile', type=str,default='C:\\Users\\anton\\Рабочий стол\\MAIN\\json.txt')
         return parser
 
     parser = createParser()
     args = parser.parse_args()
-    log(args)
+   # log(args)
     jsonFile = open(args.jsonFile, 'r')
     jsontext = jsonFile.read()
     jsonFile.close()
     print(jsontext)
     h = json.loads(jsontext)
     print(json.dumps(h,indent=12,ensure_ascii=False))  
-    log(h)
 
 
     ################################
@@ -44,7 +44,7 @@ try:
     for i in range(1,len(allLines)):
         for j in range(0,len(allLines[i].split(';'))):   
             featureStringValue = allLines[i].split(';')[j]
-            if featureStringValue!='\n':     
+            if featureStringValue != '\n':     
                 dataset[i - 1,j] = (float)(allLines[i].split(';')[j])
 
     print(dataset.shape)
@@ -59,22 +59,22 @@ try:
                 #ряда i+1
         Dataset_Y[i] = dataset[i + window_size,predicted_column_index]
     train_start_point = 0
-    split_point = 0.9
-    train_X = Dataset_X[train_start_point:round(Dataset_X.shape[0] * (1 - split_point)), :,:]
-    test_X = Dataset_X[round(Dataset_X.shape[0] * (1 - split_point)):, :,:]
-    train_y = Dataset_Y[train_start_point:round(Dataset_Y.shape[0] * (1 - split_point)):]
-    test_y = Dataset_Y[round(Dataset_Y.shape[0] * (1 - split_point)):]
+    split_point = (float)(h["baseNode"]["split_point"]["value"])
+    train_X = Dataset_X[train_start_point:round(Dataset_X.shape[0] * (split_point)), :,:]
+    test_X = Dataset_X[round(Dataset_X.shape[0] * (split_point)):, :,:]
+    train_y = Dataset_Y[train_start_point:round(Dataset_Y.shape[0] * (split_point)):]
+    test_y = Dataset_Y[round(Dataset_Y.shape[0] * (split_point)):]
 
 
-    log(train_X)
-    log(test_X)
-    log(train_y)
-    log(test_y)
+    #log(train_X)
+    #log(test_X)
+    #log(train_y)
+    #log(test_y)
 
     model = Sequential()         
 
-    model.add(LSTM(30, input_shape=(train_X.shape[1], train_X.shape[2])))
-    model.add(Dense(15,activation='sigmoid'))
+    model.add(LSTM(3, input_shape=(train_X.shape[1], train_X.shape[2])))
+    model.add(Dense(1,activation='sigmoid'))
     model.add(Dense(1,activation='sigmoid'))
                                                                   
     log("компиляция НС...")
@@ -85,21 +85,22 @@ try:
     
     log("обучение НС")
         
-    history = model.fit(train_X, train_y, epochs=1, batch_size=30, validation_data=(test_X, test_y), verbose=2, shuffle=False) 
+    history = model.fit(train_X, train_y, epochs=(int)(h["baseNode"]["number_of_epochs"]["value"]), batch_size=3, validation_data=(test_X, test_y), verbose=2, shuffle=False) 
     
     log("построение графиков")
-    pyplot.plot(history.history['loss'], label='train')
-    pyplot.plot(history.history['val_loss'], label='test')
-    pyplot.legend()
-    pyplot.show()   
-    pyplot.plot(history.history['acc'], label='acc')
-    pyplot.plot(history.history['val_acc'], label='val_acc')
-    pyplot.legend()
-    pyplot.show()
+   # pyplot.plot(history.history['loss'], label='train')
+   # pyplot.plot(history.history['val_loss'], label='test')
+   # pyplot.legend()
+   # pyplot.show()
+   # pyplot.plot(history.history['acc'], label='acc')
+   # pyplot.plot(history.history['val_acc'], label='val_acc')
+   # pyplot.legend()
+   # pyplot.show()
    # if namespace.save_folder != "none":
         #model.save_weights(save_folder+'\\' +prediction_algorithm_name +
         #'_weights.h5')
-     #   save_path = namespace.save_folder + u'\\' + prediction_algorithm_name + ".h5"
+     #   save_path = namespace.save_folder + u'\\' + prediction_algorithm_name
+     #   + ".h5"
     #    log("сохранение модели: " + save_path)
 
         # no such file or directory -> парсер аргументов командной строки
@@ -109,10 +110,33 @@ try:
       
   #  if Debug_mode == 1:
     log("start parsing") 
+   # test_X=Dataset_X
     predicted = model.predict(test_X)
-    log(test_X[:,0,0])
-    log(predicted[:,0])
+    #log(predicted[:,0])
+    log('NEW LOG')
+   # log(test_X.shape)
+    #log(test_X)
+    log(predicted.shape)
+    #log(predicted)
+    predictionsFile = open(h["baseNode"]["pathPrefix"]["value"]+'predictions.txt', 'w')
+    head = ''
+    for i in range(0,len(allLines[0].split(';'))):
+        head = head + allLines[0].split(';')[i] +';'
+    head=head[0:-1]
+    head=head.replace('\n','')
+    #predicted feature is
+    #allLines[0].split(';')[(int)(h["baseNode"]["predicted_column_index"]["value"])]
+    log( h["baseNode"]["pathPrefix"]["value"]+'predictions.txt')
+    head = head + '(predicted -> )' + allLines[0].split(';')[(int)(h["baseNode"]["predicted_column_index"]["value"])]
+    predictionsFile.write(head+'\n')
 
+    for i in range(0,test_X.shape[0]):
+        line = ''
+        for k in range(0,test_X.shape[2]): 
+            line = line + (str)(test_X[i,window_size-1,k]) + ';'
+        line = line + (str)(predicted[i,0])
+        predictionsFile.write(line+'\n')
+    predictionsFile.close()
 
 
     print("successfully_trained")          

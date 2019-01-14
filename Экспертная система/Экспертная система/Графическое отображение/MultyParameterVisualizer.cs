@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 namespace Экспертная_система
 {
@@ -143,6 +144,47 @@ namespace Экспертная_система
             }
             parameters[parameters.Count - 1].multy = false;
         }
+
+        public void addCSV(string file, string columnName, int H)
+        {
+            var allLines = File.ReadAllLines(file);
+            int indCol = 0;
+            if (columnName == "LAST_COLUMN")
+            { indCol = allLines[0].Split(';').Length - 1; }
+            else
+                for (int i = 0; i < allLines[0].Split(';').Length; i++)
+                {
+                    var str = allLines[0].Split(';')[i];
+                    if (allLines[0].Split(';')[i] == columnName)
+                    {
+                        indCol = i;
+                        break;
+                    }
+
+                }
+
+            addParameter(columnName, Color.White, H);
+            for (int i = 1; i < allLines.Length; i++)
+            {
+                //string str = allLines[i].Split(';')[indCol];
+                string str1 = allLines[i].Split(';')[indCol + 1];
+                addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol + 1].Replace('.', ',')), columnName);
+            }
+        }
+        public void addCSV(string file, int columnIndex, int H)
+        {
+            var allLines = File.ReadAllLines(file);
+            int indCol = columnIndex;
+            string columnName = allLines[0].Split(';')[indCol];
+
+            addParameter(columnName, Color.White, H);
+            for (int i = 1; i < allLines.Length; i++)
+            {
+                //string str = allLines[i].Split(';')[indCol];
+                string str1 = allLines[i].Split(';')[indCol + 1];
+                addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol + 1].Replace('.', ',')), columnName);
+            }
+        }
         public void refresh()
         {
             if (!enableGrid)
@@ -153,7 +195,7 @@ namespace Экспертная_система
                 }
             }
             bool isFirstTime = true;
-            drawHyperparametersAgain:
+        drawHyperparametersAgain:
             for (int i = 0; i < parameters.Count; i++)
             {
                 bitmap = parameters[i].multyRefresh(bitmap);
