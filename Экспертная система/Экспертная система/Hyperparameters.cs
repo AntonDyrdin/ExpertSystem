@@ -22,7 +22,7 @@ namespace Экспертная_система
         public Bitmap bitmap;
 
         public List<Node> nodes = new List<Node>();
-       public int Y=0;
+        public int Y = 0;
         ////////////////// ADD //////////////////////////////
         public void add(int parentID, string name, string category, string categories)
         {
@@ -273,12 +273,12 @@ namespace Экспертная_система
             // string jsonText = JsonConvert.SerializeObject(this);
             string jsonText = buildJSON(ID);
 
-            for (int i = 1; i < jsonText.Length-1; i++)
+            for (int i = 1; i < jsonText.Length - 1; i++)
                 if (jsonText[i] == '\\' & jsonText[i - 1] != '\\' & jsonText[i + 1] != '\\')
                 {
                     var a = jsonText.Substring(0, i) + '\\';
-                    var b = jsonText.Substring(i, jsonText.Length -i);
-                    jsonText = a+b;
+                    var b = jsonText.Substring(i, jsonText.Length - i);
+                    jsonText = a + b;
                 }
             return '{' + jsonText + '}';
         }
@@ -567,9 +567,9 @@ namespace Экспертная_система
         {
             y += Y;
             if (x > picBox.Width)
-             picBox.Width = Convert.ToInt16(x); 
+                picBox.Width = Convert.ToInt16(x);
             else
-            if (y > picBox.Width)
+            if (y > picBox.Height)
                 picBox.Height = Convert.ToInt16(y);
             else
                 try
@@ -588,11 +588,11 @@ namespace Экспертная_система
             if (y > picBox.Height)
                 picBox.Height = Convert.ToInt16(y);
             else
-            try
-            {
-                g.DrawString(s, new Font("Consolas", Convert.ToInt16(depth)), brush, new Point(Convert.ToInt16(Math.Round(x)), Convert.ToInt16(Math.Round(y))));
-            }
-            catch { }
+                try
+                {
+                    g.DrawString(s, new Font("Consolas", Convert.ToInt16(depth)), brush, new Point(Convert.ToInt16(Math.Round(x)), Convert.ToInt16(Math.Round(y))));
+                }
+                catch { }
         }
 
         public void drawLine(Color col, double depth, double x1, double y1, double x2, double y2)
@@ -615,8 +615,8 @@ namespace Экспертная_система
         }
         private void log(String s, System.Drawing.Color col)
         {
-   //         form1.logDelegate = new Form1.LogDelegate(form1.delegatelog);
-//            form1.logBox.Invoke(form1.logDelegate, form1.logBox, s, col);
+            //         form1.logDelegate = new Form1.LogDelegate(form1.delegatelog);
+            //            form1.logBox.Invoke(form1.logDelegate, form1.logBox, s, col);
         }
     }
 }

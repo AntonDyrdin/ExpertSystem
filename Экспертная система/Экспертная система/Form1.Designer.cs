@@ -46,7 +46,7 @@
             this.logBox.Location = new System.Drawing.Point(1000, 0);
             this.logBox.Margin = new System.Windows.Forms.Padding(4);
             this.logBox.Name = "logBox";
-            this.logBox.Size = new System.Drawing.Size(854, 920);
+            this.logBox.Size = new System.Drawing.Size(911, 1037);
             this.logBox.TabIndex = 35;
             this.logBox.Text = "";
             // 

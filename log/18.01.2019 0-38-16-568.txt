@@ -1,0 +1,160 @@
+
+
+
+
+обучение алгоритма LSTM 1...
+"baseNode":{"name":{"value":"LSTM 1","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"},"predicted_column_index":{"value":"100"},"drop_column":{"value":"<DATE>"},"trainScriptPath":{"value":"C:\\Users\\anton\\Рабочий стол\\MAIN\\Экспертная система\\Экспертная система\\Алгоритмы прогнозирования\\LSTM 1\\trainScript.py"},"save_folder":{"value":"none"},"NN_sctruct":{"layer1":{"value":"LSTM","neurons_count":"3"},"layer2":{"value":"Dense","neurons_count":"1","activation":"sigmoid"},"layer3":{"value":"Dense","neurons_count":"1","activation":"sigmoid"}},"number_of_epochs":{"value":"1"},"split_point":{"value":"0.9"},"batch_size":{"value":"20"},"loss":{"value":"mean_squared_error"},"optimizer":{"value":"adam"},"window_size":{"value":"5"},"inputFile":{"value":"C:\\Users\\anton\\Рабочий стол\\MAIN\\Временные ряды\\test-dataset.txt","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"},"pathPrefix":{"value":"C:\\Users\\anton\\Рабочий стол\\MAIN\\","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"}}}
+
+{
+
+            "baseNode": {
+
+                        "name": {
+
+                                    "value": "LSTM 1",
+
+                                    "is_categorical": "false",
+
+                                    "is_change": "false",
+
+                                    "is_change_up_or_down": "false",
+
+                                    "is_const": "true"
+
+                        },
+
+                        "predicted_column_index": {
+
+                                    "value": "100"
+
+                        },
+
+                        "drop_column": {
+
+                                    "value": "<DATE>"
+
+                        },
+
+                        "trainScriptPath": {
+
+                                    "value": "C:\\Users\\anton\\Рабочий стол\\MAIN\\Экспертная система\\Экспертная система\\Алгоритмы прогнозирования\\LSTM 1\\trainScript.py"
+
+                        },
+
+                        "save_folder": {
+
+                                    "value": "none"
+
+                        },
+
+                        "NN_sctruct": {
+
+                                    "layer1": {
+
+                                                "value": "LSTM",
+
+                                                "neurons_count": "3"
+
+                                    },
+
+                                    "layer2": {
+
+                                                "value": "Dense",
+
+                                                "neurons_count": "1",
+
+                                                "activation": "sigmoid"
+
+                                    },
+
+                                    "layer3": {
+
+                                                "value": "Dense",
+
+                                                "neurons_count": "1",
+
+                                                "activation": "sigmoid"
+
+                                    }
+
+                        },
+
+                        "number_of_epochs": {
+
+                                    "value": "1"
+
+                        },
+
+                        "split_point": {
+
+                                    "value": "0.9"
+
+                        },
+
+                        "batch_size": {
+
+                                    "value": "20"
+
+                        },
+
+                        "loss": {
+
+                                    "value": "mean_squared_error"
+
+                        },
+
+                        "optimizer": {
+
+                                    "value": "adam"
+
+                        },
+
+                        "window_size": {
+
+                                    "value": "5"
+
+                        },
+
+                        "inputFile": {
+
+                                    "value": "C:\\Users\\anton\\Рабочий стол\\MAIN\\Временные ряды\\test-dataset.txt",
+
+                                    "is_categorical": "false",
+
+                                    "is_change": "false",
+
+                                    "is_change_up_or_down": "false",
+
+                                    "is_const": "true"
+
+                        },
+
+                        "pathPrefix": {
+
+                                    "value": "C:\\Users\\anton\\Рабочий стол\\MAIN\\",
+
+                                    "is_categorical": "false",
+
+                                    "is_change": "false",
+
+                                    "is_change_up_or_down": "false",
+
+                                    "is_const": "true"
+
+                        }
+
+            }
+
+}
+
+(11, 4)
+
+
+
+Selected GPU[0] GeForce MX150 as the process wide default device.
+Using CNTK backend
+Traceback (most recent call last):
+  File "C:\Users\anton\Рабочий стол\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\LSTM 1\trainScript.py", line 67, in <module>
+    Dataset_Y[i] = dataset[i + window_size,predicted_column_index]
+IndexError: index 100 is out of bounds for axis 1 with size 4
+

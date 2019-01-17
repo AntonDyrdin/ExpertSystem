@@ -39,9 +39,10 @@ namespace Экспертная_система
             {
                 log("файл датасета не задан");
             }
-            File.WriteAllText(form1.pathPrefix + "\\json.txt", h.toJSON(0), System.Text.Encoding.Default);
             scriptFile = h.getValueByName("trainScriptPath");
-            args = "--jsonFile " + '"' + form1.pathPrefix + "json.txt" + '"';
+            string jsonFilePath = System.IO.Path.GetDirectoryName(scriptFile) + "\\json.txt";
+            File.WriteAllText(jsonFilePath, h.toJSON(0), System.Text.Encoding.Default);
+            args = "--jsonFile " + '"' + jsonFilePath + '"';
             trainingThread = new System.Threading.Thread(trainingThreadMethod);
             trainingThread.Start();
             return "обучение алгоритма " + h.getValueByName("name") + "...";
@@ -53,7 +54,6 @@ namespace Экспертная_система
         private void trainingThreadMethod()
         {
             runPythonScript(scriptFile, args);
-            //   log("training comlete", Color.Green);
         }
 
         private string runPythonScript(string scriptFile, string args)

@@ -22,12 +22,12 @@ namespace Экспертная_система
             vis = new MultyParameterVisualizer(picBox, this);
             expert = new Expert(this);
             log("");
-
+            log("");
 
             pathPrefix = I.h.getValueByName("pathPrefix");
             expert.algorithms.Add(new LSTM_1(this, "LSTM 1"));
-            expert.algorithms[0].h.add("inputFile", expert.prepareDataset(pathPrefix + @"Временные ряды\timeSeries4.txt", ""));
-            expert.algorithms[0].h.add("inputFile", pathPrefix + @"Временные ряды\timeSeries4-dataset.txt");
+          //  expert.algorithms[0].h.add("inputFile", expert.prepareDataset(pathPrefix + @"Временные ряды\test.txt", ""));
+            expert.algorithms[0].h.add("inputFile", pathPrefix + @"Временные ряды\test-dataset.txt");
             expert.algorithms[0].h.add("pathPrefix", pathPrefix);
             expert.trainAllAlgorithms();
   
@@ -77,7 +77,7 @@ namespace Экспертная_система
 
         public void picBox_Click(object sender, EventArgs e)
         {
-            expert.algorithms[0].h.draw(0, picBox, this, 30, 250);
+            expert.algorithms[0].h.draw(0, picBox, this, 15, 150);
         }
 
         private void picBox_DoubleClick(object sender, EventArgs e)
