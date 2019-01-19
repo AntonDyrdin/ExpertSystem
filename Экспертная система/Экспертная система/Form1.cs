@@ -14,6 +14,7 @@ namespace Экспертная_система
         public string pathPrefix;
         public Expert expert;
         private MultyParameterVisualizer vis;
+        private ImgDataset visPredictions;
         public void Form1_Load(object sender, EventArgs e)
         {
 
@@ -26,14 +27,14 @@ namespace Экспертная_система
 
             pathPrefix = I.h.getValueByName("pathPrefix");
             expert.algorithms.Add(new LSTM_1(this, "LSTM 1"));
-          //  expert.algorithms[0].h.add("inputFile", expert.prepareDataset(pathPrefix + @"Временные ряды\test.txt", ""));
-            expert.algorithms[0].h.add("inputFile", pathPrefix + @"Временные ряды\test-dataset.txt");
+
+            //visPredictions = new ImgDataset(pathPrefix + @"Временные ряды\Gradient.png",false, this);
+            //visPredictions.Save(pathPrefix + @"Временные ряды\imgDatasetCSV.txt");
+            //expert.algorithms[0].h.add("inputFile", expert.prepareDataset(pathPrefix + @"Временные ряды\imgDatasetCSV.txt", ""));
+            expert.algorithms[0].h.add("inputFile", pathPrefix + @"Временные ряды\imgDatasetCSV-dataset.txt");
             expert.algorithms[0].h.add("pathPrefix", pathPrefix);
-           // expert.trainAllAlgorithms();
-  
-         
-          //  expert.Algorithms[0].h.draw(1, picBox, this, 20, 200);
-            // log(expert.algorithms[0].h.toJSON(0), Color.White);
+
+            expert.trainAllAlgorithms();
         }
 
 
@@ -77,7 +78,11 @@ namespace Экспертная_система
 
         public void picBox_Click(object sender, EventArgs e)
         {
-            expert.algorithms[0].h.draw(0, picBox, this, 20, 200);
+
+            visPredictions = new ImgDataset(pathPrefix + "predictions.txt", this);
+            visPredictions.drawImgWhithPredictions(pathPrefix + "predictions.txt", "LAST_COLUMN", expert.algorithms[0].h.getValueByName("split_point"), expert.algorithms[0].h.getValueByName("predicted_column_index"));
+
+            //            expert.algorithms[0].h.draw(0, picBox, this, 20, 200);
         }
 
         private void picBox_DoubleClick(object sender, EventArgs e)
@@ -87,8 +92,8 @@ namespace Экспертная_система
             //  vis.addParameter(expert.normalizedDataset2, 1, "normalized[1]", Color.White, 300);
             // vis.addParameter(expert.normalizedDataset2, 3, "normalized[3]", Color.White, 300); 
             vis.clear();
-            vis.addCSV(expert.algorithms[0].h.getValueByName("pathPrefix") +"predictions.txt",Convert.ToInt16(expert.algorithms[0].h.getValueByName("predicted_column_index")), 300);
-            vis.addCSV(expert.algorithms[0].h.getValueByName("pathPrefix") + "predictions.txt", "LAST_COLUMN", 300);
+            vis.addCSV(pathPrefix + "predictions.txt", Convert.ToInt16(expert.algorithms[0].h.getValueByName("predicted_column_index")), 300);
+            vis.addCSV(pathPrefix + "predictions.txt", "LAST_COLUMN", 300);
             vis.enableGrid = false;
             vis.refresh();
         }

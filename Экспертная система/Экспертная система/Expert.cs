@@ -112,7 +112,7 @@ namespace Экспертная_система
             }
 
             // int windowSie = Convert.ToInt16(algorithms[a].getValueByName("windowSize"));
-            string[] featuresNames = allLines[0].Split(';');
+            string[] featuresNames = allLines[0].Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
 
             //drop column
             var dropColumnNames = dropColumn.Split(';');
@@ -160,7 +160,7 @@ namespace Экспертная_система
             //формирование матрицы dataset
             for (int i = 1; i < allLines.Length; i++)
             {
-                string[] features = allLines[i].Split(';');
+                string[] features = allLines[i].Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
 
                 int shift = 0;
                 for (int k = 0; k < features.Length; k++)
@@ -273,7 +273,7 @@ namespace Экспертная_система
                     //для увеличение стандартного отклонения сначала вычислим имеющееся i-ое отклонение, приведя к 0 - среднему
                     normalizedDataset2[i, k] = normalizedDataset2[i, k] - 0.5;
                     //а затем отмасштабируем
-                    //normalizedDataset2[i, k] = normalizedDataset2[i, k] * (1 / (Math.Abs(normalizedDataset2[i, k] + 0.03)));
+                    //  normalizedDataset2[i, k] = normalizedDataset2[i, k] * (1 / (Math.Abs(normalizedDataset2[i, k] + 0.03)));
                     //вернём к 0.5 - среднему
                     normalizedDataset2[i, k] = normalizedDataset2[i, k] + 0.5;
 

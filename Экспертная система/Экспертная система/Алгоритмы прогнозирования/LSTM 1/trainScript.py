@@ -19,7 +19,8 @@ try:
     def createParser():
         parser = argparse.ArgumentParser()
         parser.add_argument('--jsonFile',type=str,default='D:\Anton\Desktop\MAIN\json.txt')
-       # parser.add_argument('--jsonFile', type=str,default='C:\\Users\\anton\\Рабочий стол\\MAIN\\json.txt')
+       # parser.add_argument('--jsonFile',
+       # type=str,default='C:\\Users\\anton\\Рабочий стол\\MAIN\\json.txt')
         return parser
     def h(nodeName):
         return  jsonObj["baseNode"][nodeName]["value"]
@@ -87,8 +88,7 @@ try:
     history = model.fit(train_X, train_y, epochs=(int)(h("number_of_epochs")), batch_size=(int)(h("batch_size")), validation_data=(test_X, test_y), verbose=2, shuffle=False) 
     
     if h("save_folder") != "none":
-        model.save_weights(save_folder+'\\' +prediction_algorithm_name +
-        '_weights.h5')
+        model.save_weights(save_folder + '\\' + prediction_algorithm_name + '_weights.h5')
         save_path = namespace.save_folder + u'\\' + prediction_algorithm_name
         + ".h5"
         log("сохранение модели: " + save_path)
@@ -97,9 +97,20 @@ try:
         # делает все символы СТРОЧНЫМИ
         model.save(save_path)
         log("..сохранено!")
-      
+    
+    sum = 0    
+    
+
     predicted = model.predict(test_X)
     log(predicted.shape)
+    for i in range(0,test_X.shape[0]):
+        sum = sum + predicted[i,0]
+    avg = sum / predicted.shape[0]
+    print('AVG = '+(str)(avg))
+    for i in range(0,test_X.shape[0]):
+        predicted[i,0]=predicted[i,0]-avg
+        predicted[i,0]=predicted[i,0]*100
+        predicted[i,0]=predicted[i,0]+0.5
     predictionsFile = open(h("pathPrefix") + 'predictions.txt', 'w')
     head = ''
     for i in range(0,len(allLines[0].split(';'))):

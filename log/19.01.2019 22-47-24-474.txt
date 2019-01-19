@@ -3,7 +3,7 @@
 
 
 обучение алгоритма LSTM 1...
-"baseNode":{"name":{"value":"LSTM 1","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"},"predicted_column_index":{"value":"1"},"drop_column":{"value":"<DATE>"},"trainScriptPath":{"value":"C:\\Users\\anton\\Рабочий стол\\MAIN\\Экспертная система\\Экспертная система\\Алгоритмы прогнозирования\\LSTM 1\\trainScript.py"},"save_folder":{"value":"none"},"NN_sctruct":{"layer1":{"value":"LSTM","neurons_count":"3"},"layer2":{"value":"Dense","neurons_count":"1","activation":"sigmoid"},"layer3":{"value":"Dense","neurons_count":"1","activation":"sigmoid"}},"number_of_epochs":{"value":"5"},"split_point":{"value":"0.01"},"batch_size":{"value":"20"},"loss":{"value":"mean_squared_error"},"optimizer":{"value":"adam"},"window_size":{"value":"5"},"inputFile":{"value":"C:\\Users\\anton\\Рабочий стол\\MAIN\\Временные ряды\\test-dataset.txt","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"},"pathPrefix":{"value":"C:\\Users\\anton\\Рабочий стол\\MAIN\\","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"}}}
+"baseNode":{"name":{"value":"LSTM 1","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"},"predicted_column_index":{"value":"50"},"drop_column":{"value":"<DATE>"},"trainScriptPath":{"value":"C:\\Users\\anton\\Рабочий стол\\MAIN\\Экспертная система\\Экспертная система\\Алгоритмы прогнозирования\\LSTM 1\\trainScript.py"},"save_folder":{"value":"none"},"NN_sctruct":{"layer1":{"value":"LSTM","neurons_count":"3"},"layer2":{"value":"Dense","neurons_count":"1","activation":"sigmoid"},"layer3":{"value":"Dense","neurons_count":"1","activation":"sigmoid"}},"number_of_epochs":{"value":"1"},"split_point":{"value":"0.5"},"batch_size":{"value":"20"},"loss":{"value":"mean_squared_error"},"optimizer":{"value":"adam"},"window_size":{"value":"5"},"inputFile":{"value":"C:\\Users\\anton\\Рабочий стол\\MAIN\\Временные ряды\\imgDatasetCSV-dataset.txt","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"},"pathPrefix":{"value":"C:\\Users\\anton\\Рабочий стол\\MAIN\\","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"}}}
 
 {
 
@@ -25,7 +25,7 @@
 
                         "predicted_column_index": {
 
-                                    "value": "1"
+                                    "value": "50"
 
                         },
 
@@ -81,13 +81,13 @@
 
                         "number_of_epochs": {
 
-                                    "value": "5"
+                                    "value": "1"
 
                         },
 
                         "split_point": {
 
-                                    "value": "0.01"
+                                    "value": "0.5"
 
                         },
 
@@ -117,7 +117,7 @@
 
                         "inputFile": {
 
-                                    "value": "C:\\Users\\anton\\Рабочий стол\\MAIN\\Временные ряды\\test-dataset.txt",
+                                    "value": "C:\\Users\\anton\\Рабочий стол\\MAIN\\Временные ряды\\imgDatasetCSV-dataset.txt",
 
                                     "is_categorical": "false",
 
@@ -147,7 +147,7 @@
 
 }
 
-(11, 4)
+(364, 86)
 
 компиляция НС...
 
@@ -155,24 +155,24 @@
 
 обучение НС...
 
-Train on 0 samples, validate on 5 samples
+Train on 180 samples, validate on 179 samples
 
-Epoch 1/5
+Epoch 1/1
+
+ - 0s - loss: 0.0090 - acc: 0.0000e+00 - val_loss: 0.0118 - val_acc: 0.0112
+
+(179, 1)
 
 
 
 Selected GPU[0] GeForce MX150 as the process wide default device.
 Using CNTK backend
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input4") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input540") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
 Traceback (most recent call last):
-  File "C:\Users\anton\Рабочий стол\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\LSTM 1\trainScript.py", line 89, in <module>
-    history = model.fit(train_X, train_y, epochs=(int)(h("number_of_epochs")), batch_size=(int)(h("batch_size")), validation_data=(test_X, test_y), verbose=2, shuffle=False) 
-  File "C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\keras\engine\training.py", line 1039, in fit
-    validation_steps=validation_steps)
-  File "C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\keras\engine\training_arrays.py", line 217, in fit_loop
-    callbacks.on_epoch_end(epoch, epoch_logs)
-  File "C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\keras\callbacks.py", line 79, in on_epoch_end
-    callback.on_epoch_end(epoch, logs)
-  File "C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\keras\callbacks.py", line 338, in on_epoch_end
-    self.progbar.update(self.seen, self.log_values)
-AttributeError: 'ProgbarLogger' object has no attribute 'log_values'
+  File "C:\Users\anton\Рабочий стол\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\LSTM 1\trainScript.py", line 108, in <module>
+    avg = sum / predicted.Shape[0]
+AttributeError: 'numpy.ndarray' object has no attribute 'Shape'
 

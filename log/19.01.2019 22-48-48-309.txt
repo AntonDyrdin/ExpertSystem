@@ -3,7 +3,7 @@
 
 
 обучение алгоритма LSTM 1...
-"baseNode":{"name":{"value":"LSTM 1","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"},"predicted_column_index":{"value":"1"},"drop_column":{"value":"<DATE>"},"trainScriptPath":{"value":"C:\\Users\\anton\\Рабочий стол\\MAIN\\Экспертная система\\Экспертная система\\Алгоритмы прогнозирования\\LSTM 1\\trainScript.py"},"save_folder":{"value":"none"},"NN_sctruct":{"layer1":{"value":"LSTM","neurons_count":"3"},"layer2":{"value":"Dense","neurons_count":"1","activation":"sigmoid"},"layer3":{"value":"Dense","neurons_count":"1","activation":"sigmoid"}},"number_of_epochs":{"value":"5"},"split_point":{"value":"0.2"},"batch_size":{"value":"20"},"loss":{"value":"mean_squared_error"},"optimizer":{"value":"adam"},"window_size":{"value":"5"},"inputFile":{"value":"C:\\Users\\anton\\Рабочий стол\\MAIN\\Временные ряды\\test-dataset.txt","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"},"pathPrefix":{"value":"C:\\Users\\anton\\Рабочий стол\\MAIN\\","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"}}}
+"baseNode":{"name":{"value":"LSTM 1","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"},"predicted_column_index":{"value":"50"},"drop_column":{"value":"<DATE>"},"trainScriptPath":{"value":"C:\\Users\\anton\\Рабочий стол\\MAIN\\Экспертная система\\Экспертная система\\Алгоритмы прогнозирования\\LSTM 1\\trainScript.py"},"save_folder":{"value":"none"},"NN_sctruct":{"layer1":{"value":"LSTM","neurons_count":"3"},"layer2":{"value":"Dense","neurons_count":"1","activation":"sigmoid"},"layer3":{"value":"Dense","neurons_count":"1","activation":"sigmoid"}},"number_of_epochs":{"value":"1"},"split_point":{"value":"0.5"},"batch_size":{"value":"20"},"loss":{"value":"mean_squared_error"},"optimizer":{"value":"adam"},"window_size":{"value":"5"},"inputFile":{"value":"C:\\Users\\anton\\Рабочий стол\\MAIN\\Временные ряды\\imgDatasetCSV-dataset.txt","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"},"pathPrefix":{"value":"C:\\Users\\anton\\Рабочий стол\\MAIN\\","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"}}}
 
 {
 
@@ -25,7 +25,7 @@
 
                         "predicted_column_index": {
 
-                                    "value": "1"
+                                    "value": "50"
 
                         },
 
@@ -81,13 +81,13 @@
 
                         "number_of_epochs": {
 
-                                    "value": "5"
+                                    "value": "1"
 
                         },
 
                         "split_point": {
 
-                                    "value": "0.2"
+                                    "value": "0.5"
 
                         },
 
@@ -117,7 +117,7 @@
 
                         "inputFile": {
 
-                                    "value": "C:\\Users\\anton\\Рабочий стол\\MAIN\\Временные ряды\\test-dataset.txt",
+                                    "value": "C:\\Users\\anton\\Рабочий стол\\MAIN\\Временные ряды\\imgDatasetCSV-dataset.txt",
 
                                     "is_categorical": "false",
 
@@ -147,7 +147,7 @@
 
 }
 
-(11, 4)
+(364, 86)
 
 компиляция НС...
 
@@ -155,29 +155,15 @@
 
 обучение НС...
 
-Train on 1 samples, validate on 4 samples
+Train on 180 samples, validate on 179 samples
 
-Epoch 1/5
+Epoch 1/1
 
- - 0s - loss: 0.0784 - acc: 0.0000e+00 - val_loss: 0.1998 - val_acc: 0.0000e+00
+ - 0s - loss: 0.0888 - acc: 0.0167 - val_loss: 0.0732 - val_acc: 0.0168
 
-Epoch 2/5
+(179, 1)
 
- - 0s - loss: 0.0779 - acc: 0.0000e+00 - val_loss: 0.1991 - val_acc: 0.0000e+00
-
-Epoch 3/5
-
- - 0s - loss: 0.0774 - acc: 0.0000e+00 - val_loss: 0.1985 - val_acc: 0.0000e+00
-
-Epoch 4/5
-
- - 0s - loss: 0.0770 - acc: 0.0000e+00 - val_loss: 0.1978 - val_acc: 0.0000e+00
-
-Epoch 5/5
-
- - 0s - loss: 0.0765 - acc: 0.0000e+00 - val_loss: 0.1972 - val_acc: 0.0000e+00
-
-(4, 1)
+AVG = 0.7452201530254087
 
 C:\Users\anton\Рабочий стол\MAIN\predictions.txt
 

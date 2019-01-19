@@ -111,9 +111,9 @@
         #endregion
 
         public System.Windows.Forms.RichTextBox logBox;
-        private System.Windows.Forms.PictureBox picBox;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.TrackBar trackBar1;
+        public System.Windows.Forms.PictureBox picBox;
+        public System.Windows.Forms.Panel panel1;
+        public System.Windows.Forms.TrackBar trackBar1;
     }
 }
 

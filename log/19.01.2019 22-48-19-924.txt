@@ -3,7 +3,7 @@
 
 
 обучение алгоритма LSTM 1...
-"baseNode":{"name":{"value":"LSTM 1","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"},"predicted_column_index":{"value":"1"},"drop_column":{"value":"<DATE>"},"trainScriptPath":{"value":"D:\\Anton\\Desktop\\MAIN\\Экспертная система\\Экспертная система\\Алгоритмы прогнозирования\\LSTM 1\\trainScript.py"},"save_folder":{"value":"none"},"NN_sctruct":{"layer1":{"value":"LSTM","neurons_count":"3"},"layer2":{"value":"Dense","neurons_count":"1","activation":"sigmoid"},"layer3":{"value":"Dense","neurons_count":"1","activation":"sigmoid"}},"number_of_epochs":{"value":"5"},"split_point":{"value":"0.2"},"batch_size":{"value":"20"},"loss":{"value":"mean_squared_error"},"optimizer":{"value":"adam"},"window_size":{"value":"5"},"inputFile":{"value":"D:\\Anton\\Desktop\\MAIN\\Временные ряды\\test-dataset.txt","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"},"pathPrefix":{"value":"D:\\Anton\\Desktop\\MAIN\\","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"}}}
+"baseNode":{"name":{"value":"LSTM 1","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"},"predicted_column_index":{"value":"50"},"drop_column":{"value":"<DATE>"},"trainScriptPath":{"value":"C:\\Users\\anton\\Рабочий стол\\MAIN\\Экспертная система\\Экспертная система\\Алгоритмы прогнозирования\\LSTM 1\\trainScript.py"},"save_folder":{"value":"none"},"NN_sctruct":{"layer1":{"value":"LSTM","neurons_count":"3"},"layer2":{"value":"Dense","neurons_count":"1","activation":"sigmoid"},"layer3":{"value":"Dense","neurons_count":"1","activation":"sigmoid"}},"number_of_epochs":{"value":"1"},"split_point":{"value":"0.5"},"batch_size":{"value":"20"},"loss":{"value":"mean_squared_error"},"optimizer":{"value":"adam"},"window_size":{"value":"5"},"inputFile":{"value":"C:\\Users\\anton\\Рабочий стол\\MAIN\\Временные ряды\\imgDatasetCSV-dataset.txt","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"},"pathPrefix":{"value":"C:\\Users\\anton\\Рабочий стол\\MAIN\\","is_categorical":"false","is_change":"false","is_change_up_or_down":"false","is_const":"true"}}}
 
 {
 
@@ -25,7 +25,7 @@
 
                         "predicted_column_index": {
 
-                                    "value": "1"
+                                    "value": "50"
 
                         },
 
@@ -37,7 +37,7 @@
 
                         "trainScriptPath": {
 
-                                    "value": "D:\\Anton\\Desktop\\MAIN\\Экспертная система\\Экспертная система\\Алгоритмы прогнозирования\\LSTM 1\\trainScript.py"
+                                    "value": "C:\\Users\\anton\\Рабочий стол\\MAIN\\Экспертная система\\Экспертная система\\Алгоритмы прогнозирования\\LSTM 1\\trainScript.py"
 
                         },
 
@@ -81,13 +81,13 @@
 
                         "number_of_epochs": {
 
-                                    "value": "5"
+                                    "value": "1"
 
                         },
 
                         "split_point": {
 
-                                    "value": "0.2"
+                                    "value": "0.5"
 
                         },
 
@@ -117,7 +117,7 @@
 
                         "inputFile": {
 
-                                    "value": "D:\\Anton\\Desktop\\MAIN\\Временные ряды\\test-dataset.txt",
+                                    "value": "C:\\Users\\anton\\Рабочий стол\\MAIN\\Временные ряды\\imgDatasetCSV-dataset.txt",
 
                                     "is_categorical": "false",
 
@@ -131,7 +131,7 @@
 
                         "pathPrefix": {
 
-                                    "value": "D:\\Anton\\Desktop\\MAIN\\",
+                                    "value": "C:\\Users\\anton\\Рабочий стол\\MAIN\\",
 
                                     "is_categorical": "false",
 
@@ -147,7 +147,7 @@
 
 }
 
-(11, 4)
+(364, 86)
 
 компиляция НС...
 
@@ -155,35 +155,24 @@
 
 обучение НС...
 
-Train on 1 samples, validate on 5 samples
+Train on 180 samples, validate on 179 samples
 
-Epoch 1/5
+Epoch 1/1
 
-0s - loss: 0.0033 - acc: 0.0000e+00 - val_loss: 0.1024 - val_acc: 0.4000
+ - 0s - loss: 0.0367 - acc: 0.0167 - val_loss: 0.0336 - val_acc: 0.0168
 
-Epoch 2/5
-
-0s - loss: 0.0033 - acc: 0.0000e+00 - val_loss: 0.1022 - val_acc: 0.4000
-
-Epoch 3/5
-
-0s - loss: 0.0032 - acc: 0.0000e+00 - val_loss: 0.1020 - val_acc: 0.4000
-
-Epoch 4/5
-
-0s - loss: 0.0032 - acc: 0.0000e+00 - val_loss: 0.1018 - val_acc: 0.4000
-
-Epoch 5/5
-
-0s - loss: 0.0031 - acc: 0.0000e+00 - val_loss: 0.1016 - val_acc: 0.4000
-
-(5, 1)
-
-D:\Anton\Desktop\MAIN\predictions.txt
-
-successfully_trained
+(179, 1)
 
 
 
-Using Theano backend.
+Selected GPU[0] GeForce MX150 as the process wide default device.
+Using CNTK backend
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input4") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input540") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+Traceback (most recent call last):
+  File "C:\Users\anton\Рабочий стол\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\LSTM 1\trainScript.py", line 109, in <module>
+    pint('AVG = '+(str)(avg))
+NameError: name 'pint' is not defined
 
