@@ -100,35 +100,6 @@ namespace Экспертная_система
 
             for (int i = 0; i < parameters.Count; i++)
             {
-                /*  int minEqualMaxCount = 0;
-                    for (int j = 0; j < parameters.Count; j++)
-                    {
-                        if (parameters[j].maxY == parameters[j].minY)
-                            minEqualMaxCount++;
-                    }
-                    if (parameters[i].maxY == parameters[i].minY && i == 0)
-                    {
-                        parameters[i].Ymax = hmin;
-                        parameters[i].Ymin = 0;
-                    }
-                    else
-                    if (parameters[i].maxY != parameters[i].minY && i == 0)
-                    {
-                        parameters[i].Ymax = (Ymax - (minEqualMaxCount * hmin)) / (parameters.Count - minEqualMaxCount);
-                        parameters[i].Ymin = 0;
-                    }
-                    else
-                    if (parameters[i].maxY != parameters[i].minY)
-                    {
-                        parameters[i].Ymin = parameters[i - 1].Ymax;
-                        parameters[i].Ymax = parameters[i - 1].Ymax + ((Ymax - (minEqualMaxCount * hmin)) / (parameters.Count - minEqualMaxCount));
-                    }
-                    else
-                    {
-                        parameters[i].Ymin = parameters[i - 1].Ymax;
-                        parameters[i].Ymax = parameters[i - 1].Ymax + hmin;
-                    }
-                       */
                 parameters[i].yDownGap = 10;
                 parameters[i].yUpGap = 35;
                 if (i == 0)
@@ -195,7 +166,7 @@ namespace Экспертная_система
                 }
             }
             bool isFirstTime = true;
-        drawHyperparametersAgain:
+            drawHyperparametersAgain:
             for (int i = 0; i < parameters.Count; i++)
             {
                 bitmap = parameters[i].multyRefresh(bitmap);
@@ -210,6 +181,13 @@ namespace Экспертная_система
             {
                 isFirstTime = false;
                 goto drawHyperparametersAgain;
+            }
+        }
+        public void clear()
+        {
+            for (int i = 0; i < parameters.Count; i++)
+            {
+                parameters.Clear();
             }
         }
 

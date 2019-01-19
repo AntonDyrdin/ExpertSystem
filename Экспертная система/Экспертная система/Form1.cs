@@ -29,7 +29,7 @@ namespace Экспертная_система
           //  expert.algorithms[0].h.add("inputFile", expert.prepareDataset(pathPrefix + @"Временные ряды\test.txt", ""));
             expert.algorithms[0].h.add("inputFile", pathPrefix + @"Временные ряды\test-dataset.txt");
             expert.algorithms[0].h.add("pathPrefix", pathPrefix);
-            expert.trainAllAlgorithms();
+           // expert.trainAllAlgorithms();
   
          
           //  expert.Algorithms[0].h.draw(1, picBox, this, 20, 200);
@@ -77,7 +77,7 @@ namespace Экспертная_система
 
         public void picBox_Click(object sender, EventArgs e)
         {
-            expert.algorithms[0].h.draw(0, picBox, this, 15, 150);
+            expert.algorithms[0].h.draw(0, picBox, this, 20, 200);
         }
 
         private void picBox_DoubleClick(object sender, EventArgs e)
@@ -86,6 +86,7 @@ namespace Экспертная_система
             //  vis.addParameter(expert.normalizedDataset2, 0, "normalized[0]", Color.White, 300);
             //  vis.addParameter(expert.normalizedDataset2, 1, "normalized[1]", Color.White, 300);
             // vis.addParameter(expert.normalizedDataset2, 3, "normalized[3]", Color.White, 300); 
+            vis.clear();
             vis.addCSV(expert.algorithms[0].h.getValueByName("pathPrefix") +"predictions.txt",Convert.ToInt16(expert.algorithms[0].h.getValueByName("predicted_column_index")), 300);
             vis.addCSV(expert.algorithms[0].h.getValueByName("pathPrefix") + "predictions.txt", "LAST_COLUMN", 300);
             vis.enableGrid = false;

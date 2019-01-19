@@ -44,9 +44,8 @@
             this.logBox.Font = new System.Drawing.Font("Century Gothic", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.logBox.ForeColor = System.Drawing.Color.White;
             this.logBox.Location = new System.Drawing.Point(1000, 0);
-            this.logBox.Margin = new System.Windows.Forms.Padding(4);
             this.logBox.Name = "logBox";
-            this.logBox.Size = new System.Drawing.Size(911, 1037);
+            this.logBox.Size = new System.Drawing.Size(920, 1000);
             this.logBox.TabIndex = 35;
             this.logBox.Text = "";
             // 
@@ -54,10 +53,9 @@
             // 
             this.picBox.BackColor = System.Drawing.Color.Black;
             this.picBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.picBox.Location = new System.Drawing.Point(4, 0);
-            this.picBox.Margin = new System.Windows.Forms.Padding(4);
+            this.picBox.Location = new System.Drawing.Point(3, 0);
             this.picBox.Name = "picBox";
-            this.picBox.Size = new System.Drawing.Size(1000, 299);
+            this.picBox.Size = new System.Drawing.Size(1000, 949);
             this.picBox.TabIndex = 37;
             this.picBox.TabStop = false;
             this.picBox.Click += new System.EventHandler(this.picBox_Click);
@@ -68,17 +66,19 @@
             this.panel1.AutoScroll = true;
             this.panel1.Controls.Add(this.picBox);
             this.panel1.Location = new System.Drawing.Point(0, 0);
+            this.panel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1000, 1000);
+            this.panel1.Size = new System.Drawing.Size(1000, 1080);
             this.panel1.TabIndex = 38;
             // 
             // trackBar1
             // 
-            this.trackBar1.Location = new System.Drawing.Point(-1050, 16);
+            this.trackBar1.Location = new System.Drawing.Point(-700, 11);
+            this.trackBar1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.trackBar1.Maximum = 30;
             this.trackBar1.Minimum = 5;
             this.trackBar1.Name = "trackBar1";
-            this.trackBar1.Size = new System.Drawing.Size(1094, 69);
+            this.trackBar1.Size = new System.Drawing.Size(729, 45);
             this.trackBar1.SmallChange = 3;
             this.trackBar1.TabIndex = 38;
             this.trackBar1.Value = 20;
@@ -86,16 +86,15 @@
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.BackColor = System.Drawing.Color.Black;
-            this.ClientSize = new System.Drawing.Size(1924, 1050);
+            this.ClientSize = new System.Drawing.Size(1904, 961);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.trackBar1);
             this.Controls.Add(this.logBox);
             this.DoubleBuffered = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Экспертная система";
