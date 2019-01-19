@@ -18,9 +18,8 @@ try:
 
     def createParser():
         parser = argparse.ArgumentParser()
-       # parser.add_argument('--jsonFile',
-       # type=str,default='D:\Anton\Desktop\MAIN\json.txt')
-        parser.add_argument('--jsonFile', type=str,default='C:\\Users\\anton\\Рабочий стол\\MAIN\\json.txt')
+        parser.add_argument('--jsonFile',type=str,default='D:\Anton\Desktop\MAIN\json.txt')
+       # parser.add_argument('--jsonFile', type=str,default='C:\\Users\\anton\\Рабочий стол\\MAIN\\json.txt')
         return parser
     def h(nodeName):
         return  jsonObj["baseNode"][nodeName]["value"]
@@ -55,15 +54,14 @@ try:
                 dataset[i - 1,j] = (float)(allLines[i].split(';')[j])
 
     print(dataset.shape)
-    Dataset_X = numpy.zeros((dataset.shape[0] - window_size - 1, window_size,dataset.shape[1]), dtype=float)
-    Dataset_Y = numpy.zeros(dataset.shape[0] - window_size - 1, dtype=float)
+    Dataset_X = numpy.zeros((dataset.shape[0] - window_size, window_size,dataset.shape[1]), dtype=float)
+    Dataset_Y = numpy.zeros(dataset.shape[0] - window_size, dtype=float)
     predicted_column_index = (int)(h("predicted_column_index"))
-    for i in range(0,dataset.shape[0] - window_size - 1):
+    for i in range(0,dataset.shape[0] - window_size):
         for j in range(0,window_size):
             for k in range(0,dataset.shape[1]):
                 Dataset_X[i,j,k] = dataset[i + j][k]
-                #вектор Y представляет собой прогнозируемое значение на шаге
-                #ряда i+1
+                #вектор Y представляет собой прогнозируемое значение
         Dataset_Y[i] = dataset[i + window_size,predicted_column_index]
     train_start_point = 0
     split_point = (float)(h("split_point"))

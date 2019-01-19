@@ -86,8 +86,8 @@ namespace Экспертная_система
             //  vis.addParameter(expert.normalizedDataset2, 0, "normalized[0]", Color.White, 300);
             //  vis.addParameter(expert.normalizedDataset2, 1, "normalized[1]", Color.White, 300);
             // vis.addParameter(expert.normalizedDataset2, 3, "normalized[3]", Color.White, 300); 
-            vis.addCSV(@"C:\Users\anton\Рабочий стол\MAIN\predictions.txt",Convert.ToInt16(expert.algorithms[0].h.getValueByName("predicted_column_index")), 300);
-            vis.addCSV(@"C:\Users\anton\Рабочий стол\MAIN\predictions.txt","LAST_COLUMN", 300);
+            vis.addCSV(expert.algorithms[0].h.getValueByName("pathPrefix") +"predictions.txt",Convert.ToInt16(expert.algorithms[0].h.getValueByName("predicted_column_index")), 300);
+            vis.addCSV(expert.algorithms[0].h.getValueByName("pathPrefix") + "predictions.txt", "LAST_COLUMN", 300);
             vis.enableGrid = false;
             vis.refresh();
         }
