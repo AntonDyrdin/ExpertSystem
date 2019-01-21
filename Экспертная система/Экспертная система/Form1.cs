@@ -13,14 +13,14 @@ namespace Экспертная_система
         }
         public string pathPrefix;
         public Expert expert;
-        private MultyParameterVisualizer vis;
+        private MultiParameterVisualizer vis;
         private ImgDataset visPredictions;
         public void Form1_Load(object sender, EventArgs e)
         {
 
 
             I = new Infrastructure(this);
-            vis = new MultyParameterVisualizer(picBox, this);
+            vis = new MultiParameterVisualizer(picBox, this);
             expert = new Expert(this);
             log("");
             log("");
@@ -28,20 +28,69 @@ namespace Экспертная_система
             pathPrefix = I.h.getValueByName("pathPrefix");
             expert.algorithms.Add(new LSTM_1(this, "LSTM 1"));
 
-            //visPredictions = new ImgDataset(pathPrefix + @"Временные ряды\Gradient.png",false, this);
-            //visPredictions.Save(pathPrefix + @"Временные ряды\imgDatasetCSV.txt");
-            //expert.algorithms[0].h.add("inputFile", expert.prepareDataset(pathPrefix + @"Временные ряды\imgDatasetCSV.txt", ""));
+          //  expert.algorithms[0].h.add("inputFile", expert.prepareDataset(pathPrefix + @"Временные ряды\imgDatasetCSV.txt", ""));
             expert.algorithms[0].h.add("inputFile", pathPrefix + @"Временные ряды\imgDatasetCSV-dataset.txt");
             expert.algorithms[0].h.add("pathPrefix", pathPrefix);
 
-            expert.trainAllAlgorithms();
+          //  expert.trainAllAlgorithms();
+        }
+
+        private void Hyperparameters_Click(object sender, EventArgs e)
+        {
+            expert.algorithms[0].h.draw(0, picBox, this, 20, 200);
+        }
+        private void Charts_Click(object sender, EventArgs e)
+        {
+            //  vis.addParameter(expert.dataset, 2, "dataset", Color.White, 300);
+            //  vis.addParameter(expert.normalizedDataset2, 2, "normalized[2]", Color.White, 300);
+            //  vis.addParameter(expert.normalizedDataset2, 0, "normalized[0]", Color.White, 300);
+            //  vis.addParameter(expert.normalizedDataset2, 1, "normalized[1]", Color.White, 300);
+            // vis.addParameter(expert.normalizedDataset2, 3, "normalized[3]", Color.White, 300); 
+            vis.clear();
+            vis.addCSV(pathPrefix + "predictions.txt", Convert.ToInt16(expert.algorithms[0].h.getValueByName("predicted_column_index")), 300);
+            vis.addCSV(pathPrefix + "predictions.txt", "LAST_COLUMN", 300);
+            vis.enableGrid = false;
+            vis.refresh();
         }
 
 
+        private void ImgDataset_Click(object sender, EventArgs e)
+        {
+            visPredictions = new ImgDataset(pathPrefix + "predictions.txt", this);
+            visPredictions.drawImgWhithPredictions(pathPrefix + "predictions.txt", "LAST_COLUMN", expert.algorithms[0].h.getValueByName("split_point"), expert.algorithms[0].h.getValueByName("predicted_column_index"));
+        }
+
+
+        public void trackBar1_Scroll(object sender, EventArgs e) { }
+        public void picBox_Click(object sender, EventArgs e) { }
+        private void picBox_DoubleClick(object sender, EventArgs e) { }
+        private void logBox_TextChanged(object sender, EventArgs e) { }
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox1.Checked)
+            {
+                expert.algorithms[0].h.lightsOn = true;
+                picBox.BackColor = Color.White;
+                logBox.BackColor = Color.White;
+                logBox.ForeColor = Color.Black;
+                vis.lightsOn = true;
+            }
+            else
+            {
+                expert.algorithms[0].h.lightsOn = false;
+                picBox.BackColor = Color.Black;
+                logBox.BackColor = Color.Black;
+                logBox.ForeColor = Color.White;
+                vis.lightsOn = false;
+            }
+        }
         public void log(String s, System.Drawing.Color col)
         {
             this.logDelegate = new Form1.LogDelegate(this.delegatelog);
-            this.logBox.Invoke(this.logDelegate, this.logBox, s, col);
+            if (checkBox1.Checked)
+                this.logBox.Invoke(this.logDelegate, this.logBox, s, Color.Black);
+            else
+                this.logBox.Invoke(this.logDelegate, this.logBox, s, col);
             var strings = new string[1];
             strings[0] = s;
             File.AppendAllLines(I.logPath, strings);
@@ -71,34 +120,6 @@ namespace Экспертная_система
         public delegate void VoidDelegate();
         public StringDelegate stringDelegate;
         public VoidDelegate voidDelegate;
-
-        public void trackBar1_Scroll(object sender, EventArgs e)
-        {
-        }
-
-        public void picBox_Click(object sender, EventArgs e)
-        {
-
-            visPredictions = new ImgDataset(pathPrefix + "predictions.txt", this);
-            visPredictions.drawImgWhithPredictions(pathPrefix + "predictions.txt", "LAST_COLUMN", expert.algorithms[0].h.getValueByName("split_point"), expert.algorithms[0].h.getValueByName("predicted_column_index"));
-
-            //            expert.algorithms[0].h.draw(0, picBox, this, 20, 200);
-        }
-
-        private void picBox_DoubleClick(object sender, EventArgs e)
-        {     //  vis.addParameter(expert.dataset, 2, "dataset", Color.White, 300);
-            //  vis.addParameter(expert.normalizedDataset2, 2, "normalized[2]", Color.White, 300);
-            //  vis.addParameter(expert.normalizedDataset2, 0, "normalized[0]", Color.White, 300);
-            //  vis.addParameter(expert.normalizedDataset2, 1, "normalized[1]", Color.White, 300);
-            // vis.addParameter(expert.normalizedDataset2, 3, "normalized[3]", Color.White, 300); 
-            vis.clear();
-            vis.addCSV(pathPrefix + "predictions.txt", Convert.ToInt16(expert.algorithms[0].h.getValueByName("predicted_column_index")), 300);
-            vis.addCSV(pathPrefix + "predictions.txt", "LAST_COLUMN", 300);
-            vis.enableGrid = false;
-            vis.refresh();
-        }
-
-
         /*  ТЕСТ РАБОТЫ КЛАССА Hyperparameters
           
             Hyperparameters h = new Hyperparameters(this);

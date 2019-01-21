@@ -23,6 +23,7 @@ namespace Экспертная_система
 
         public List<Node> nodes = new List<Node>();
         public int Y = 0;
+        public bool lightsOn = false;
         ////////////////// ADD //////////////////////////////
         public void add(int parentID, string name, string category, string categories)
         {
@@ -242,7 +243,7 @@ namespace Экспертная_система
         public void draw(int rootId, PictureBox target_pictureBox, Form1 form1, int h, int columnWidth)
         {
             bool isFirstTime = true;
-        drawHyperparametersAgain:
+            drawHyperparametersAgain:
 
             totalAttributesNumber = 0;
             deepnessRate = 0;
@@ -258,6 +259,8 @@ namespace Экспертная_система
 
             bitmap = new Bitmap(picBox.Width, picBox.Height);
             g = Graphics.FromImage(bitmap);
+             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBilinear;
             recurciveAttributeDRAW(rootId);
             refresh();
             if (isFirstTime)
@@ -560,21 +563,22 @@ namespace Экспертная_система
             picBox.Image = bitmap;
             form1.voidDelegate = new Form1.VoidDelegate(form1.Refresh);
             form1.logBox.Invoke(form1.voidDelegate);
-            bitmap = new Bitmap(picBox.Width, picBox.Height);
-            g = Graphics.FromImage(bitmap);
+
         }
         public void drawString(string s, double depth, double x, double y)
         {
-            y += Y;
             if (x > picBox.Width)
                 picBox.Width = Convert.ToInt16(x);
             else
-            if (y > picBox.Height)
+            if (y > picBox.Width)
                 picBox.Height = Convert.ToInt16(y);
             else
                 try
                 {
-                    g.DrawString(s, new Font("Consolas", Convert.ToInt16(depth)), Brushes.White, new Point(Convert.ToInt16(Math.Round(x)), Convert.ToInt16(Math.Round(y))));
+                    if (lightsOn)
+                        g.DrawString(s, new Font(form1.logBox.Font.Name, Convert.ToInt16(depth)), Brushes.Black, new Point(Convert.ToInt16(Math.Round(x)), Convert.ToInt16(Math.Round(y))));
+                    else
+                        g.DrawString(s, new Font(form1.logBox.Font.Name, Convert.ToInt16(depth)), Brushes.White, new Point(Convert.ToInt16(Math.Round(x)), Convert.ToInt16(Math.Round(y))));
                 }
                 catch { }
         }
@@ -590,7 +594,15 @@ namespace Экспертная_система
             else
                 try
                 {
-                    g.DrawString(s, new Font("Consolas", Convert.ToInt16(depth)), brush, new Point(Convert.ToInt16(Math.Round(x)), Convert.ToInt16(Math.Round(y))));
+                    if (lightsOn)
+                    {
+                        if (brush == Brushes.White)
+                            g.DrawString(s, new Font(form1.logBox.Font.Name, Convert.ToInt16(depth)), Brushes.Black, new Point(Convert.ToInt16(Math.Round(x)), Convert.ToInt16(Math.Round(y))));
+                        else
+                            g.DrawString(s, new Font(form1.logBox.Font.Name, Convert.ToInt16(depth)), brush, new Point(Convert.ToInt16(Math.Round(x)), Convert.ToInt16(Math.Round(y))));
+                    }
+                    else
+                        g.DrawString(s, new Font(form1.logBox.Font.Name, Convert.ToInt16(depth)), brush, new Point(Convert.ToInt16(Math.Round(x)), Convert.ToInt16(Math.Round(y))));
                 }
                 catch { }
         }

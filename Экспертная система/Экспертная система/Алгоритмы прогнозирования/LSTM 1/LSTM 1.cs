@@ -25,7 +25,7 @@
             h.add("batch_size:20");
             h.add("name:loss,value:mean_squared_error");
             h.add("name:optimizer,value:adam");
-            h.add("window_size:5");
+            h.add("window_size:20");
         }
         public string get_prediction()
         {

@@ -30,6 +30,8 @@ namespace Экспертная_система
         public System.Timers.Timer needToRefresh;
         //высота диаграммы в пикселах
         public int H;
+
+        public bool lightsOn = false;
         public ParameterVisualizer(PictureBox target_picBox, Form1 form1, string label, Color color)
         {
             multy = false;
@@ -44,7 +46,8 @@ namespace Экспертная_система
             this.picBox = target_picBox;
             bitmap = new Bitmap(picBox.Width, picBox.Height);
             g = Graphics.FromImage(bitmap);
-
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBilinear;
             Xmax = picBox.Width;
             Ymax = picBox.Height;
             functions[0].label = label;
@@ -83,7 +86,7 @@ namespace Экспертная_система
             }
 
             Random r = new Random();
-        addFunction:
+            addFunction:
             try
             {
                 functions.Add(new Function(name, Color.FromArgb(255, functions[0].color.R + r.Next(-255, 255), functions[0].color.G + r.Next(-255, 255), functions[0].color.B + r.Next(-255, 255))));
@@ -93,7 +96,7 @@ namespace Экспертная_система
                 functions[functions.Count - 1].points.Add(point);
             }
             catch { goto addFunction; }
-        addPointOver:;
+            addPointOver:;
         }
         public void addPoint(double inc, double y)
         {
@@ -158,12 +161,11 @@ namespace Экспертная_система
                     }
                 }
             }
-            //  picBox.Image = null;
+
+            if (lightsOn)
+            { picBox.BackColor = Color.White; }
             picBox.Image = bitmap;
-            // form1.voidDelegate = new Form1.VoidDelegate(form1.Refresh);
-            //form1.richTextBox1.Invoke(form1.voidDelegate);
-            bitmap = new Bitmap(picBox.Width, picBox.Height);
-            g = Graphics.FromImage(bitmap);
+
         }
         public Bitmap multyRefresh(Bitmap bitmap)
         {
@@ -315,22 +317,10 @@ namespace Экспертная_система
             else
                 try
                 {
-                    g.DrawString(s, new Font("Consolas", Convert.ToInt16(depth)), Brushes.White, new Point(Convert.ToInt16(Math.Round(x)), Convert.ToInt16(Math.Round(y))));
-                }
-                catch { }
-        }
-        /////////////////////////////////Brushes.[Color]
-        public void drawString(string s, Brush brush, double depth, double x, double y)
-        {
-            if (x > picBox.Width)
-                picBox.Width = Convert.ToInt16(x);
-            else
-            if (y > picBox.Height)
-                picBox.Height = Convert.ToInt16(y);
-            else
-                try
-                {
-                    g.DrawString(s, new Font("Consolas", Convert.ToInt16(depth)), brush, new Point(Convert.ToInt16(Math.Round(x)), Convert.ToInt16(Math.Round(y))));
+                    if (lightsOn)
+                    g.DrawString(s, new Font(form1.logBox.Font.Name, Convert.ToInt16(depth)), Brushes.Black, new Point(Convert.ToInt16(Math.Round(x)), Convert.ToInt16(Math.Round(y))));
+                    else
+                        g.DrawString(s, new Font(form1.logBox.Font.Name, Convert.ToInt16(depth)), Brushes.White, new Point(Convert.ToInt16(Math.Round(x)), Convert.ToInt16(Math.Round(y))));
                 }
                 catch { }
         }
@@ -350,7 +340,11 @@ namespace Экспертная_система
             if (y2 > picBox.Height)
                 picBox.Height = Convert.ToInt16(y2);
             else
+                 if (lightsOn)
+                g.DrawLine(new Pen(Color.Black, Convert.ToInt16(depth)), Convert.ToInt16(Math.Round(x1)), Convert.ToInt16(Math.Round(y1)), Convert.ToInt16(Math.Round(x2)), Convert.ToInt16(Math.Round(y2)));
+            else
                 g.DrawLine(new Pen(col, Convert.ToInt16(depth)), Convert.ToInt16(Math.Round(x1)), Convert.ToInt16(Math.Round(y1)), Convert.ToInt16(Math.Round(x2)), Convert.ToInt16(Math.Round(y2)));
+
         }
 
         private int lastCount;

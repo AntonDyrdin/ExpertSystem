@@ -99,7 +99,7 @@ namespace Экспертная_система
 
                 }
 
-            int Xshift = Convert.ToInt16((allLines.Length - 1) * Convert.ToDouble(split_point.Replace('.', ',')));
+           // int Xshift = Convert.ToInt16((allLines.Length - 1) * Convert.ToDouble(split_point.Replace('.', ',')));
 
             for (int i = 1; i < allLines.Length; i++)
             {
@@ -113,7 +113,7 @@ namespace Экспертная_система
                     AbsVal = 0;
                 for (int j = predColIndINT; j < bmp.Height; j++)
                 {
-                    bmp.SetPixel(i, j, Color.FromArgb(255, AbsVal, AbsVal, AbsVal));
+                    bmp.SetPixel(i-1, j, Color.FromArgb(255, AbsVal, AbsVal, AbsVal));
                 }
             }
             refresh();
