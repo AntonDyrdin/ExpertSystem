@@ -339,7 +339,13 @@ namespace Экспертная_система
                 }
             }
         }
-        //inputVector - матрица входных данных, в которой нулевой столбец [i,0] - прогнозируемая величина, а остальные столбцы - предикторы.
+
+        public Hyperparameters h()
+        {
+            return algorithms[0].h;
+        }
+
+
         [NonSerializedAttribute]
         private Form1 form1;
 

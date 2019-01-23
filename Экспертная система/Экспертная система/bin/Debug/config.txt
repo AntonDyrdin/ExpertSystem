@@ -7,3 +7,8 @@ DESKTOP-B3G20T0
 pathPrefix:C:\Users\anton\Рабочий стол\MAIN\
 pythonPath:C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\python.exe
 logPath:C:\Users\anton\Рабочий стол\MAIN\log\
+
+SUPPORT3
+pathPrefix:\\storage\UserProfiles\Desktop\Dyrdin\Рабочий стол\ExpertSystem-master\
+pythonPath:C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\python.exe
+logPath:\\storage\UserProfiles\Desktop\Dyrdin\Рабочий стол\ExpertSystem-master\log\

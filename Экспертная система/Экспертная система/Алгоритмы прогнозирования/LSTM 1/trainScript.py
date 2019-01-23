@@ -111,13 +111,13 @@ try:
         predicted[i,0]=predicted[i,0]-avg
         predicted[i,0]=predicted[i,0]*100
         predicted[i,0]=predicted[i,0]+0.5
-    predictionsFile = open(h("pathPrefix") + 'predictions.txt', 'w')
+    predictionsFile = open(h("predictionsFilePath"), 'w')
     head = ''
     for i in range(0,len(allLines[0].split(';'))):
         head = head + allLines[0].split(';')[i] + ';'
     head = head[0:-1]
     head = head.replace('\n','')
-    log(h("pathPrefix") + 'predictions.txt')
+    log(h("predictionsFilePath"))
     head = head + '(predicted -> )' + allLines[0].split(';')[(int)(h("predicted_column_index"))]
     predictionsFile.write(head + '\n')
 

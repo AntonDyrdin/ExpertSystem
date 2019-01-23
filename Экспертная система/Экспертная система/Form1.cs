@@ -28,16 +28,19 @@ namespace Экспертная_система
             pathPrefix = I.h.getValueByName("pathPrefix");
             expert.algorithms.Add(new LSTM_1(this, "LSTM 1"));
 
-          //  expert.algorithms[0].h.add("inputFile", expert.prepareDataset(pathPrefix + @"Временные ряды\imgDatasetCSV.txt", ""));
-            expert.algorithms[0].h.add("inputFile", pathPrefix + @"Временные ряды\imgDatasetCSV-dataset.txt");
-            expert.algorithms[0].h.add("pathPrefix", pathPrefix);
+            //  expert.h().add("inputFile", expert.prepareDataset(pathPrefix + @"Временные ряды\imgDatasetCSV.txt", ""));
+            expert.h().add("inputFile", pathPrefix + @"Временные ряды\imgDatasetCSV-dataset.txt");
+            expert.h().add("pathPrefix", pathPrefix);
+            expert.algorithms[0].getAccAndStdDev(File.ReadAllLines(pathPrefix + "predictions.txt"));
+            log("accuracy = "+expert.algorithms[0].accuracy.ToString());
+            log("stdDev = " + expert.algorithms[0].stdDev.ToString());
 
           //  expert.trainAllAlgorithms();
         }
 
         private void Hyperparameters_Click(object sender, EventArgs e)
         {
-            expert.algorithms[0].h.draw(0, picBox, this, 20, 200);
+            expert.h().draw(0, picBox, this, 20, 200);
         }
         private void Charts_Click(object sender, EventArgs e)
         {
@@ -47,7 +50,7 @@ namespace Экспертная_система
             //  vis.addParameter(expert.normalizedDataset2, 1, "normalized[1]", Color.White, 300);
             // vis.addParameter(expert.normalizedDataset2, 3, "normalized[3]", Color.White, 300); 
             vis.clear();
-            vis.addCSV(pathPrefix + "predictions.txt", Convert.ToInt16(expert.algorithms[0].h.getValueByName("predicted_column_index")), 300);
+            vis.addCSV(pathPrefix + "predictions.txt", Convert.ToInt16(expert.h().getValueByName("predicted_column_index")), 300);
             vis.addCSV(pathPrefix + "predictions.txt", "LAST_COLUMN", 300);
             vis.enableGrid = false;
             vis.refresh();
@@ -57,7 +60,7 @@ namespace Экспертная_система
         private void ImgDataset_Click(object sender, EventArgs e)
         {
             visPredictions = new ImgDataset(pathPrefix + "predictions.txt", this);
-            visPredictions.drawImgWhithPredictions(pathPrefix + "predictions.txt", "LAST_COLUMN", expert.algorithms[0].h.getValueByName("split_point"), expert.algorithms[0].h.getValueByName("predicted_column_index"));
+            visPredictions.drawImgWhithPredictions(pathPrefix + "predictions.txt", "LAST_COLUMN", expert.h().getValueByName("split_point"), expert.h().getValueByName("predicted_column_index"));
         }
 
 

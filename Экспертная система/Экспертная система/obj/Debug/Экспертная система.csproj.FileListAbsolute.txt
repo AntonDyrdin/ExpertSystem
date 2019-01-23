@@ -39,3 +39,17 @@ C:\Users\anton\Рабочий стол\ExpertSystem\Экспертная сис�
 C:\Users\anton\Рабочий стол\ExpertSystem\Экспертная система\Экспертная система\obj\Debug\Экспертная система.csproj.CopyComplete
 C:\Users\anton\Рабочий стол\ExpertSystem\Экспертная система\Экспертная система\obj\Debug\Экспертная система.exe
 C:\Users\anton\Рабочий стол\ExpertSystem\Экспертная система\Экспертная система\obj\Debug\Экспертная система.pdb
+\\storage\UserProfiles\Desktop\Dyrdin\Рабочий стол\ExpertSystem-master\Экспертная система\Экспертная система\bin\Debug\Экспертная система.exe.config
+\\storage\UserProfiles\Desktop\Dyrdin\Рабочий стол\ExpertSystem-master\Экспертная система\Экспертная система\bin\Debug\Экспертная система.exe
+\\storage\UserProfiles\Desktop\Dyrdin\Рабочий стол\ExpertSystem-master\Экспертная система\Экспертная система\bin\Debug\Экспертная система.pdb
+\\storage\UserProfiles\Desktop\Dyrdin\Рабочий стол\ExpertSystem-master\Экспертная система\Экспертная система\bin\Debug\Newtonsoft.Json.dll
+\\storage\UserProfiles\Desktop\Dyrdin\Рабочий стол\ExpertSystem-master\Экспертная система\Экспертная система\bin\Debug\Newtonsoft.Json.pdb
+\\storage\UserProfiles\Desktop\Dyrdin\Рабочий стол\ExpertSystem-master\Экспертная система\Экспертная система\bin\Debug\Newtonsoft.Json.xml
+\\storage\UserProfiles\Desktop\Dyrdin\Рабочий стол\ExpertSystem-master\Экспертная система\Экспертная система\obj\Debug\Экспертная система.csprojAssemblyReference.cache
+\\storage\UserProfiles\Desktop\Dyrdin\Рабочий стол\ExpertSystem-master\Экспертная система\Экспертная система\obj\Debug\Экспертная_система.Form1.resources
+\\storage\UserProfiles\Desktop\Dyrdin\Рабочий стол\ExpertSystem-master\Экспертная система\Экспертная система\obj\Debug\Экспертная_система.Properties.Resources.resources
+\\storage\UserProfiles\Desktop\Dyrdin\Рабочий стол\ExpertSystem-master\Экспертная система\Экспертная система\obj\Debug\Экспертная система.csproj.GenerateResource.cache
+\\storage\UserProfiles\Desktop\Dyrdin\Рабочий стол\ExpertSystem-master\Экспертная система\Экспертная система\obj\Debug\Экспертная система.csproj.CoreCompileInputs.cache
+\\storage\UserProfiles\Desktop\Dyrdin\Рабочий стол\ExpertSystem-master\Экспертная система\Экспертная система\obj\Debug\Экспертная система.csproj.CopyComplete
+\\storage\UserProfiles\Desktop\Dyrdin\Рабочий стол\ExpertSystem-master\Экспертная система\Экспертная система\obj\Debug\Экспертная система.exe
+\\storage\UserProfiles\Desktop\Dyrdin\Рабочий стол\ExpertSystem-master\Экспертная система\Экспертная система\obj\Debug\Экспертная система.pdb

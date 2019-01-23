@@ -11,6 +11,39 @@ namespace Экспертная_система
         public string logPath;
         public Hyperparameters h;
         public int maxlogFilesCount = 10;
+        public Infrastructure(Form1 form1)
+        {
+            h = new Hyperparameters(form1);
+
+            form1.logBox.Text += (Environment.MachineName);
+
+            /////////чтене файла конфигурации///////////////////////
+            var configLines = File.ReadAllLines("config.txt");
+
+            for (int i = 0; i < configLines.Length; i++)
+            {
+                //параметры конфигурации начинаются со строки содержащей имя компа
+                if (configLines[i].Contains(Environment.MachineName))
+                {
+                    for (int j = i + 1; j < configLines.Length; j++)
+                    {
+                        //параметры конфигурации заканчиваются, когда встречается пустая строка
+                        if (configLines[j] != "")
+                        {
+                            if (h.getValueByName(configLines[j].Split(':')[0]) == null)
+                                h.add(configLines[j]);
+                        }
+                        else
+                            break;
+                    }
+                    break;
+                }
+            }
+            ////////////////////////////////////////////////////////
+
+
+            newLog();
+        }
         public Infrastructure(Hyperparameters h, Form1 form1)
         {
             form1.logBox.Text += (Environment.MachineName);
@@ -73,39 +106,5 @@ namespace Экспертная_система
                 }
             }
         }
-        public Infrastructure(Form1 form1)
-        {
-            h = new Hyperparameters(form1);
-
-            form1.logBox.Text += (Environment.MachineName);
-
-            /////////чтене файла конфигурации///////////////////////
-            var configLines = File.ReadAllLines("config.txt");
-
-            for (int i = 0; i < configLines.Length; i++)
-            {
-                //параметры конфигурации начинаются со строки содержащей имя компа
-                if (configLines[i].Contains(Environment.MachineName))
-                {
-                    for (int j = i + 1; j < configLines.Length; j++)
-                    {
-                        //параметры конфигурации заканчиваются, когда встречается пустая строка
-                        if (configLines[j] != "")
-                        {
-                            if (h.getValueByName(configLines[j].Split(':')[0]) == null)
-                                h.add(configLines[j]);
-                        }
-                        else
-                            break;
-                    }
-                    break;
-                }
-            }
-            ////////////////////////////////////////////////////////
-
-
-            newLog();
-        }
-
     }
 }

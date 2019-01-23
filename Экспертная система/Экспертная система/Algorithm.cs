@@ -16,9 +16,9 @@ namespace Экспертная_система
             h.add("name", name);
         }
 
-        //█==========================================█
+        //█=====================█
         //█              get_prediction              █
-        //█==========================================█
+        //█=====================█
         //возвращает прогноз для одного окна
         //inputVector - матрица входных данных, в которой нулевой столбец [i,0] - прогнозируемая величина, а остальные столбцы - предикторы.
         //каждая строка - значения предикторов в j-ый временной интервал
@@ -29,10 +29,10 @@ namespace Экспертная_система
             return "ошибка: метод не реализован";
         }
 
-        //█===========================================█
+        //█===================█
         //█                  train                    █
-        //█===========================================█
-        private System.Threading.Thread trainingThread;
+        //█===================█
+        public System.Threading.Thread trainingThread;
         public string train()
         {
             if (h.getValueByName("inputFile") == null)
@@ -41,6 +41,8 @@ namespace Экспертная_система
             }
             scriptFile = h.getValueByName("trainScriptPath");
             string jsonFilePath = System.IO.Path.GetDirectoryName(scriptFile) + "\\json.txt";
+            string predictionsFilePath = System.IO.Path.GetDirectoryName(scriptFile) + "\\predictions.txt";
+            h.add("predictionsFilePath", predictionsFilePath);
             File.WriteAllText(jsonFilePath, h.toJSON(0), System.Text.Encoding.Default);
             args = "--jsonFile " + '"' + jsonFilePath + '"';
             trainingThread = new System.Threading.Thread(trainingThreadMethod);
@@ -48,15 +50,58 @@ namespace Экспертная_система
             return "обучение алгоритма " + h.getValueByName("name") + "...";
         }
 
-        private string scriptFile;
-        private string args;
-
-        private void trainingThreadMethod()
+        public string scriptFile;
+        public string args;
+        public double stdDev;
+        public double accuracy;
+        public void trainingThreadMethod()
         {
             runPythonScript(scriptFile, args);
-        }
 
-        private string runPythonScript(string scriptFile, string args)
+            string[] predictionsCSV = null;
+            //попытка прочитать данные из файла, полученного из скрипта 
+            try
+            {
+                predictionsCSV = File.ReadAllLines(h.getValueByName("predictionsFilePath"));
+            }
+            catch { }
+            //если данные имеются, то определить показатели точности прогнозирования
+            if (predictionsCSV != null)
+            {
+                getAccAndStdDev(predictionsCSV);
+            }
+        }
+        public void getAccAndStdDev(string [] predictionsCSV)
+        {
+            double sqrtSum = 0;
+            int rightCount = 0;
+            int leftCount = 0;
+            int inc = 0;
+            double predictedValue = Convert.ToDouble(predictionsCSV[1].Split(';')[Convert.ToInt16(h.getValueByName("predicted_column_index"))].Replace('.', ','));
+            for (int i = 1; i < predictionsCSV.Length-1; i++)
+            {
+                var features = predictionsCSV[i].Split(';');
+              
+                double realValue = Convert.ToDouble(features[features.Length - 1].Replace('.', ','));
+                if (realValue > 0.5 && predictedValue > 0.5)
+                { rightCount++; }
+                else
+                      if (realValue < 0.5 && predictedValue < 0.5)
+                { rightCount++; }
+                else
+                    if (realValue > 0.5 && predictedValue < 0.5)
+                { leftCount++; }
+                else
+                if (realValue < 0.5 && predictedValue > 0.5)
+                { leftCount++; }
+                sqrtSum += (realValue - predictedValue) * (realValue - predictedValue);
+                inc++;
+                predictedValue  = Convert.ToDouble(features[Convert.ToInt16(h.getValueByName("predicted_column_index"))].Replace('.', ','));
+            }
+            accuracy = Convert.ToDouble(rightCount ) / Convert.ToDouble(leftCount);
+            stdDev = sqrtSum / inc;
+        }
+        public string runPythonScript(string scriptFile, string args)
         {
             ProcessStartInfo start = new ProcessStartInfo();
 
@@ -71,7 +116,7 @@ namespace Экспертная_система
             Process process = Process.Start(start);
             process.ProcessorAffinity = new IntPtr(0x000F);
 
-            int blockSize = 1;
+            int blockSize = 5;
             //Буфер для считываемых данных
             char[] buffer = new char[blockSize];
             StreamReader standardOutputReader = process.StandardOutput;
@@ -91,9 +136,10 @@ namespace Экспертная_система
             StreamReader errorReader = process.StandardError;
             //string result = reader.ReadToEnd();
             log(errorReader.ReadToEnd());
-         //   log(standardOutputReader.ReadToEnd());
+            //   log(standardOutputReader.ReadToEnd());
             return "";
         }
+
         public string getValueByName(string name)
         { return h.getValueByName(name); }
         public void setAttributeByName(string name, int value)
