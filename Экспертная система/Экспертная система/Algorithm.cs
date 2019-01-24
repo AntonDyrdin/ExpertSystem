@@ -8,16 +8,22 @@ namespace Экспертная_система
         public Form1 form1;
         public string lastPrediction;
         public Hyperparameters h;
-
+        public string jsonFilePath;
+        public string predictionsFilePath;
+        public string trainScriptPath;
+        public string args;
+        public double stdDev;
+        public double accuracy;
         public Algorithm(Form1 form1, string name)
         {
             h = new Hyperparameters(form1);
             this.form1 = form1;
             h.add("name", name);
+
         }
 
         //█=====================█
-        //█              get_prediction              █
+        //█////get_prediction///█
         //█=====================█
         //возвращает прогноз для одного окна
         //inputVector - матрица входных данных, в которой нулевой столбец [i,0] - прогнозируемая величина, а остальные столбцы - предикторы.
@@ -30,7 +36,7 @@ namespace Экспертная_система
         }
 
         //█===================█
-        //█                  train                    █
+        //█//////train////////█
         //█===================█
         public System.Threading.Thread trainingThread;
         public string train()
@@ -39,10 +45,7 @@ namespace Экспертная_система
             {
                 log("файл датасета не задан");
             }
-            scriptFile = h.getValueByName("trainScriptPath");
-            string jsonFilePath = System.IO.Path.GetDirectoryName(scriptFile) + "\\json.txt";
-            string predictionsFilePath = System.IO.Path.GetDirectoryName(scriptFile) + "\\predictions.txt";
-            h.add("predictionsFilePath", predictionsFilePath);
+
             File.WriteAllText(jsonFilePath, h.toJSON(0), System.Text.Encoding.Default);
             args = "--jsonFile " + '"' + jsonFilePath + '"';
             trainingThread = new System.Threading.Thread(trainingThreadMethod);
@@ -50,13 +53,10 @@ namespace Экспертная_система
             return "обучение алгоритма " + h.getValueByName("name") + "...";
         }
 
-        public string scriptFile;
-        public string args;
-        public double stdDev;
-        public double accuracy;
+
         public void trainingThreadMethod()
         {
-            runPythonScript(scriptFile, args);
+            runPythonScript(trainScriptPath, args);
 
             string[] predictionsCSV = null;
             //попытка прочитать данные из файла, полученного из скрипта 
@@ -100,6 +100,8 @@ namespace Экспертная_система
             }
             accuracy = Convert.ToDouble(rightCount ) / Convert.ToDouble(leftCount);
             stdDev = sqrtSum / inc;
+            log("accuracy = " +accuracy.ToString());
+            log("stdDev = " +stdDev.ToString());
         }
         public string runPythonScript(string scriptFile, string args)
         {
@@ -116,13 +118,14 @@ namespace Экспертная_система
             Process process = Process.Start(start);
             process.ProcessorAffinity = new IntPtr(0x000F);
 
-            int blockSize = 5;
+            int blockSize = 1;
             //Буфер для считываемых данных
             char[] buffer = new char[blockSize];
             StreamReader standardOutputReader = process.StandardOutput;
             int size = 0;
             string line = "";
             size = standardOutputReader.Read(buffer, 0, blockSize);
+            line += new string(buffer);
             while (size > 0)
             {
                 size = standardOutputReader.Read(buffer, 0, blockSize);

@@ -41,18 +41,28 @@ namespace Экспертная_система
             bool is_new = true;
             foreach (ParameterVisualizer visualizer in parameters)
             {
+                foreach (Function function in visualizer.functions)
+                {
+                    if (function.label == name)
+                    {
+                        is_new = false;
+                        visualizer.addPoint(value, name);
+                        break;
+                    }
+                }
                 if (visualizer.label == name)
                 {
                     is_new = false;
                     visualizer.addPoint(value, name);
+                    break;
                 }
             }
             if (is_new)
             {
-                /*Random r = new Random();
+                Random r = new Random();
                 //  addParameter(name, Color.FromArgb(255, r.Next(0, 255), r.Next(0, 255), r.Next(0, 255)));
-                addParameter(name, Color.FromArgb(255, 161, 14, 233));
-                addPoint(value, name);*/
+                addParameter(name, Color.FromArgb(255, 161, 14, 233), 300);
+                addPoint(value, name);
             }
         }
 
@@ -117,31 +127,62 @@ namespace Экспертная_система
             parameters[parameters.Count - 1].multy = false;
         }
 
-        public void addCSV(string file, string columnName, int H)
+        public void addCSV(string file, string name, string columnName, int H)
         {
+
             var allLines = File.ReadAllLines(file);
             int indCol = 0;
             if (columnName == "LAST_COLUMN")
             { indCol = allLines[0].Split(';').Length - 1; }
             else
-                for (int i = 0; i < allLines[0].Split(';').Length; i++)
+            {
+                try
                 {
-                    var str = allLines[0].Split(';')[i];
-                    if (allLines[0].Split(';')[i] == columnName)
+                    indCol = Convert.ToInt16(columnName);
+                }
+                catch
+                {
+                    for (int i = 0; i < allLines[0].Split(';').Length; i++)
                     {
-                        indCol = i;
-                        break;
-                    }
+                        var str = allLines[0].Split(';')[i];
+                        if (allLines[0].Split(';')[i] == columnName)
+                        {
+                            indCol = i;
+                            break;
+                        }
 
+                    }
+                }
+            }
+            bool is_new = true;
+            int parameterInd = 0;
+            for (int i = 0; i < parameters.Count; i++)
+            {
+                if (parameters[i].label == name)
+                {
+                    is_new = false;
+                    parameterInd = i;
                 }
 
-            addParameter(columnName, Color.White, H);
-            for (int i = 1; i < allLines.Length; i++)
-            {
-                //string str = allLines[i].Split(';')[indCol];
-                string str1 = allLines[i].Split(';')[indCol + 1];
-                addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol + 1].Replace('.', ',')), columnName);
             }
+            if (is_new)
+            {
+                addParameter(name, Color.White, H);
+                parameters[parameters.Count - 1].functions[0].label = allLines[0].Split(';')[indCol];
+                for (int i = 1; i < allLines.Length; i++)
+                {
+                    addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol ].Replace('.', ',')), allLines[0].Split(';')[indCol]);
+                }
+            }
+            else
+            {
+                for (int i = 1; i < allLines.Length; i++)
+                {
+                    var awerawr = allLines[0].Split(';');
+                    parameters[parameterInd].addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol ].Replace('.', ',')), allLines[0].Split(';')[indCol]);
+                }
+            }
+
         }
         public void addCSV(string file, int columnIndex, int H)
         {
@@ -152,7 +193,6 @@ namespace Экспертная_система
             addParameter(columnName, Color.White, H);
             for (int i = 1; i < allLines.Length; i++)
             {
-                //string str = allLines[i].Split(';')[indCol];
                 string str1 = allLines[i].Split(';')[indCol + 1];
                 addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol + 1].Replace('.', ',')), columnName);
             }

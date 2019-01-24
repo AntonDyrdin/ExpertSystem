@@ -103,7 +103,9 @@ namespace Экспертная_система
             foreach (string line in allLines)
             {
                 if (line != "")
-                { filledLines.Add(line); }
+                {
+                    filledLines.Add(line);
+                }
             }
             allLines = new string[filledLines.Count];
             for (int i = 0; i < allLines.Length; i++)
@@ -273,7 +275,7 @@ namespace Экспертная_система
                     //для увеличение стандартного отклонения сначала вычислим имеющееся i-ое отклонение, приведя к 0 - среднему
                     normalizedDataset2[i, k] = normalizedDataset2[i, k] - 0.5;
                     //а затем отмасштабируем
-                    //  normalizedDataset2[i, k] = normalizedDataset2[i, k] * (1 / (Math.Abs(normalizedDataset2[i, k] + 0.03)));
+                    //normalizedDataset2[i, k] = normalizedDataset2[i, k] * (1 / (Math.Abs(normalizedDataset2[i, k] + 0.5)));
                     //вернём к 0.5 - среднему
                     normalizedDataset2[i, k] = normalizedDataset2[i, k] + 0.5;
 
@@ -313,14 +315,14 @@ namespace Экспертная_система
 
 
 
-            for (int i = 1; i < normalizedDataset2.GetLength(0); i++)
+            for (int i = 0; i < normalizedDataset2.GetLength(0); i++)
             {
                 for (int k = 0; k < normalizedDataset2.GetLength(1); k++)
-                {
-                    if ((normalizedDataset2[i, k]).ToString().Replace(',', '.').Length > 4)
-                        toWrite[i] += (normalizedDataset2[i, k]).ToString().Replace(',', '.').Substring(0, 4) + ';';
+                {   
+                    if ((normalizedDataset2[i, k]).ToString().Replace(',', '.').Length > 8)
+                        toWrite[i+1] += (normalizedDataset2[i, k]).ToString().Replace(',', '.').Substring(0, 8) + ';';
                     else
-                        toWrite[i] += (normalizedDataset2[i, k]).ToString().Replace(',', '.') + ';';
+                        toWrite[i+1] += (normalizedDataset2[i, k]).ToString().Replace(',', '.') + ';';
                 }
             }
 

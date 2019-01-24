@@ -71,8 +71,8 @@ namespace Экспертная_система
         }
         public void addPoint(double y, string name)
         {
-            if (functions.Count == 1 && name != functions[0].label && functions[0].label == label)
-                functions[0].label = name;
+           // if (functions.Count == 1 && name != functions[0].label && functions[0].label == label)
+           //     functions[0].label = name;
             for (int i = 0; i < functions.Count; i++)
             {
                 if (functions[i].label == name)

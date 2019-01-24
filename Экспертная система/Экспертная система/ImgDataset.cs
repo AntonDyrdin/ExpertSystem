@@ -12,12 +12,12 @@ namespace Экспертная_система
 
         public ImgDataset(string pathToImageFile, bool toInvertPixelsBrightness, Form1 form1)
         {
-           
+
             this.form1 = form1;
 
             bmp = new Bitmap(Image.FromFile(pathToImageFile));
 
-            csvLines = new string[bmp.Width+1];
+            csvLines = new string[bmp.Width + 1];
             string head = "";
 
             for (int j = 0; j < bmp.Height; j++)
@@ -56,7 +56,7 @@ namespace Экспертная_система
             this.form1 = form1;
 
             csvLines = System.IO.File.ReadAllLines(pathToDatasetFile);
-            bmp = new Bitmap(csvLines.Length , csvLines[0].Split(';').Length+1);
+            bmp = new Bitmap(csvLines.Length, csvLines[0].Split(';').Length + 1);
             for (int i = 1; i < csvLines.Length; i++)
             {
                 var features = csvLines[i].Split(';');
@@ -68,7 +68,6 @@ namespace Экспертная_система
                         AbsVal = 255;
                     else if (AbsVal < 0)
                         AbsVal = 0;
-                    bmp.SetPixel(i-1, j, Color.FromArgb(255, AbsVal, AbsVal, AbsVal));
                 }
             }
             refresh();
@@ -79,7 +78,7 @@ namespace Экспертная_система
         public Form1 form1;
         public PictureBox picBox;
 
-        public void drawImgWhithPredictions(string outputCSVFile, string predictionsColumnName, string split_point,string predColInd)
+        public void drawImgWhithPredictions(string outputCSVFile, string predictionsColumnName, string split_point, string predColInd)
         {
             int predColIndINT = Convert.ToInt16(predColInd);
 
@@ -99,21 +98,42 @@ namespace Экспертная_система
 
                 }
 
-           // int Xshift = Convert.ToInt16((allLines.Length - 1) * Convert.ToDouble(split_point.Replace('.', ',')));
+            // int Xshift = Convert.ToInt16((allLines.Length - 1) * Convert.ToDouble(split_point.Replace('.', ',')));
 
             for (int i = 1; i < allLines.Length; i++)
             {
-                string str1 = allLines[i].Split(';')[indCol + 1];
 
-                int AbsVal = Convert.ToInt16(Convert.ToDouble(allLines[i].Split(';')[indCol + 1].Replace('.', ',')) * 255);
 
-                if (AbsVal > 255)
-                    AbsVal = 255;
-                else if (AbsVal < 0)
-                    AbsVal = 0;
+                int realValue = Convert.ToInt16(Convert.ToDouble(allLines[i].Split(';')[predColIndINT].Replace('.', ',')) * 255);
+                int predictedValue = Convert.ToInt16(Convert.ToDouble(allLines[i].Split(';')[indCol + 1].Replace('.', ',')) * 255);
+
+                if (predictedValue > 255)
+                    predictedValue = 255;
+                else if (predictedValue < 0)
+                    predictedValue = 0;
                 for (int j = predColIndINT; j < bmp.Height; j++)
                 {
-                    bmp.SetPixel(i-1, j, Color.FromArgb(255, AbsVal, AbsVal, AbsVal));
+
+
+                    if (realValue > 128 && predictedValue > 128)
+                    {
+                        bmp.SetPixel(i, j, Color.FromArgb(255, 0, predictedValue, 0));
+                    }
+                    else
+                    if (realValue < 128 && predictedValue < 128)
+                    {
+                        bmp.SetPixel(i, j, Color.FromArgb(255, 0, predictedValue, 0));
+                    }
+                    else
+                    if (realValue > 128 && predictedValue < 128)
+                    {
+                        bmp.SetPixel(i, j, Color.FromArgb(255, predictedValue, 0, 0));
+                    }
+                    else
+                    if (realValue < 128 && predictedValue > 128)
+                    {
+                        bmp.SetPixel(i, j, Color.FromArgb(255, predictedValue, 0, 0));
+                    }
                 }
             }
             refresh();
@@ -122,9 +142,9 @@ namespace Экспертная_система
         public void refresh()
         {
             picBox = form1.picBox;
-            picBox.Image = new Bitmap(bmp,new Size(bmp.Width * 4, bmp.Height * 4));
+            picBox.Image = new Bitmap(bmp, new Size(picBox.Width , picBox.Height));
         }
-     
+
         public void log(String s, System.Drawing.Color col)
         {
             form1.logDelegate = new Form1.LogDelegate(form1.delegatelog);

@@ -1,26 +1,33 @@
 try:
+    prediction_algorithm_name = 'LSTM_1'
+    def log(s):
+        print(s)
+    log("СКРИПТ ОБУЧЕНИЯ " + prediction_algorithm_name + " ЗАПУЩЕН...") 
+    import time
+    tempTime = time.time()
+
+    def getTime(tempTime):
+        offset = time.time() - tempTime
+        tempTime = time.time()
+        return str( offset )[0:5]+" сек."
+    
+        
+
     import argparse
     import numpy
     import json
-    from pandas import read_csv
-    from datetime import datetime
-    from matplotlib import pyplot
-    from pandas import DataFrame
-    from pandas import concat
     from keras.models import Sequential
     from keras.layers import Dense
     from keras.layers import LSTM
     from keras.layers import Dropout
-    prediction_algorithm_name = 'LSTM_1'
 
-    def log(s):
-        print(s)
+    log("> время загрузки библиотек : "+ getTime(tempTime))  
+
 
     def createParser():
         parser = argparse.ArgumentParser()
-        parser.add_argument('--jsonFile',type=str,default='D:\Anton\Desktop\MAIN\json.txt')
-       # parser.add_argument('--jsonFile',
-       # type=str,default='C:\\Users\\anton\\Рабочий стол\\MAIN\\json.txt')
+        parser.add_argument('--jsonFile',type=str,default='D:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\LSTM 1\json.txt')
+       # parser.add_argument('--jsonFile',type=str,default='C:\Users\anton\Рабочий стол\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\LSTM 1\json.txt')
         return parser
     def h(nodeName):
         return  jsonObj["baseNode"][nodeName]["value"]
@@ -39,9 +46,8 @@ try:
     jsonFile = open(args.jsonFile, 'r')
     jsontext = jsonFile.read()
     jsonFile.close()
-    print(jsontext)
     jsonObj = json.loads(jsontext)
-    print(json.dumps(jsonObj,indent=12,ensure_ascii=False))  
+    #print(json.dumps(jsonObj,indent=12,ensure_ascii=False))  
 
     inputFile = open(h("inputFile"))
 
@@ -71,16 +77,21 @@ try:
     train_y = Dataset_Y[train_start_point:round(Dataset_Y.shape[0] * (split_point)):]
     test_y = Dataset_Y[round(Dataset_Y.shape[0] * (split_point)):]
 
+    print("> время чтения данных  : ", getTime(tempTime))  
+
     model = Sequential()         
 
     model.add(LSTM(getAttr2int("NN_sctruct","layer1","neurons_count"), input_shape=(train_X.shape[1], train_X.shape[2])))
+    model.add(Dropout(0.2))
     model.add(Dense(getAttr2int("NN_sctruct","layer2","neurons_count"),activation=getAttr2("NN_sctruct","layer2","activation")))
+    model.add(Dropout(0.2))
     model.add(Dense(getAttr2int("NN_sctruct","layer3","neurons_count"),activation=getAttr2("NN_sctruct","layer3","activation")))
                                                                   
     log("компиляция НС...")
         
     model.compile(loss=h("loss"), optimizer=h("optimizer"),metrics=['accuracy'])
-    log("НС скомпилированна")
+    log("> время компиляции НС  : "+ getTime(tempTime))    
+
 
     
     log("обучение НС...")
@@ -96,21 +107,21 @@ try:
         # no such file or directory -> парсер аргументов командной строки
         # делает все символы СТРОЧНЫМИ
         model.save(save_path)
-        log("..сохранено!")
+        log("> время сохранения НС  : "+ getTime(tempTime)) 
     
     sum = 0    
     
-
+    log("создание тестового прогноза")
     predicted = model.predict(test_X)
     log(predicted.shape)
     for i in range(0,test_X.shape[0]):
         sum = sum + predicted[i,0]
     avg = sum / predicted.shape[0]
-    print('AVG = '+(str)(avg))
+    print('AVG = ' + (str)(avg))
     for i in range(0,test_X.shape[0]):
-        predicted[i,0]=predicted[i,0]-avg
-        predicted[i,0]=predicted[i,0]*100
-        predicted[i,0]=predicted[i,0]+0.5
+        predicted[i,0] = predicted[i,0] - avg
+        predicted[i,0] = predicted[i,0] * 100
+        predicted[i,0] = predicted[i,0] + 0.5
     predictionsFile = open(h("predictionsFilePath"), 'w')
     head = ''
     for i in range(0,len(allLines[0].split(';'))):
@@ -128,7 +139,7 @@ try:
         line = line + (str)(predicted[i,0])
         predictionsFile.write(line + '\n')
     predictionsFile.close()
-
-    print("successfully_trained")          
+    log("> время создания и записи тестового прогноза  : "+ getTime(tempTime)) 
+    log("____END____")    
 except ValueError as e:
     print("EXCEPTION", e)
