@@ -127,13 +127,15 @@ namespace Экспертная_система
             parameters[parameters.Count - 1].multy = false;
         }
 
-        public void addCSV(string file, string name, string columnName, int H)
+        public void addCSV(string file, string name, string columnName,string chartName, int H,double splitPoint)
         {
 
             var allLines = File.ReadAllLines(file);
             int indCol = 0;
             if (columnName == "LAST_COLUMN")
-            { indCol = allLines[0].Split(';').Length - 1; }
+            {
+                indCol = allLines[0].Split(';').Length - 1;
+            }
             else
             {
                 try
@@ -165,24 +167,79 @@ namespace Экспертная_система
                 }
 
             }
+            int start =  1+Convert.ToInt32(splitPoint * (allLines.Length -1));
             if (is_new)
             {
                 addParameter(name, Color.White, H);
-                parameters[parameters.Count - 1].functions[0].label = allLines[0].Split(';')[indCol];
-                for (int i = 1; i < allLines.Length; i++)
+                parameters[parameters.Count - 1].functions[0].label = chartName;
+                for (int i = start; i < allLines.Length; i++)
                 {
-                    addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol ].Replace('.', ',')), allLines[0].Split(';')[indCol]);
+                    addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol ].Replace('.', ',')), chartName);
                 }
             }
             else
             {
-                for (int i = 1; i < allLines.Length; i++)
+                for (int i = start; i < allLines.Length; i++)
                 {
-                    var awerawr = allLines[0].Split(';');
-                    parameters[parameterInd].addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol ].Replace('.', ',')), allLines[0].Split(';')[indCol]);
+                    var val = allLines[i].Split(';')[indCol];
+                    parameters[parameterInd].addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol ].Replace('.', ',')), chartName);
+
                 }
             }
 
+        }
+        public void addCSV(string file, string name, string columnName, int H, double splitPoint)
+        {
+
+            var allLines = File.ReadAllLines(file);
+            int indCol = 0;
+            if (columnName == "LAST_COLUMN")
+            { indCol = allLines[0].Split(';').Length - 1; }
+            else
+            {
+                try
+                {
+                    indCol = Convert.ToInt16(columnName);
+                }
+                catch
+                {
+                    for (int i = 0; i < allLines[0].Split(';').Length; i++)
+                    {
+                        var str = allLines[0].Split(';')[i];
+                        if (allLines[0].Split(';')[i] == columnName)
+                        {
+                            indCol = i;
+                            break;
+                        }
+                    }
+                }
+            }
+            bool is_new = true;
+            int parameterInd = 0;
+            for (int i = 0; i < parameters.Count; i++)
+            {
+                if (parameters[i].label == name)
+                {
+                    is_new = false;
+                    parameterInd = i;
+                }
+            }
+            int start = 1 + Convert.ToInt32(splitPoint * (allLines.Length - 1));
+            if (is_new)
+            {
+                addParameter(name, Color.White, H);
+                for (int i = start; i < allLines.Length; i++)
+                {
+                    addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol].Replace('.', ',')), name);
+                }
+            }
+            else
+            {
+                for (int i = start; i < allLines.Length; i++)
+                {
+                    parameters[parameterInd].addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol].Replace('.', ',')), name);
+                }
+            }
         }
         public void addCSV(string file, int columnIndex, int H)
         {

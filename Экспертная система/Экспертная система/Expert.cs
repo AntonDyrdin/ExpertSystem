@@ -250,7 +250,7 @@ namespace Экспертная_система
 
 
             //___________i/(i-1)__________________
-            for (int i = 0; i < normalizedDataset1.GetLength(0) - 1; i++)
+            for (int i = 0; i < dataset.GetLength(0) - 1; i++)
             {
                 for (int k = 0; k < dataset.GetLength(1); k++)
                 {
@@ -266,7 +266,7 @@ namespace Экспертная_система
             /////////////////////////////////
             //////     СГЛАЖИВАНИЕ    ///////
             /////////////////////////////////
-            for (int i = 0; i < dataset.GetLength(0) - 1; i++)
+            for (int i = 0; i < dataset.GetLength(0)-1; i++)
             {
                 for (int k = 0; k < dataset.GetLength(1); k++)
                 {
@@ -312,7 +312,7 @@ namespace Экспертная_система
                 if (!dropIt)
                     toWrite[0] += featuresNames[k] + ';';
             }
-
+            toWrite[0] = toWrite[0].Remove(toWrite[0].Length - 1, 1);
 
 
             for (int i = 0; i < normalizedDataset2.GetLength(0); i++)
@@ -324,6 +324,7 @@ namespace Экспертная_система
                     else
                         toWrite[i+1] += (normalizedDataset2[i, k]).ToString().Replace(',', '.') + ';';
                 }
+                toWrite[i + 1] = toWrite[i + 1].Remove(toWrite[i + 1].Length - 1, 1);
             }
 
 

@@ -105,7 +105,7 @@ namespace Экспертная_система
 
 
                 int realValue = Convert.ToInt16(Convert.ToDouble(allLines[i].Split(';')[predColIndINT].Replace('.', ',')) * 255);
-                int predictedValue = Convert.ToInt16(Convert.ToDouble(allLines[i].Split(';')[indCol + 1].Replace('.', ',')) * 255);
+                int predictedValue = Convert.ToInt16(Convert.ToDouble(allLines[i].Split(';')[indCol ].Replace('.', ',')) * 255);
 
                 if (predictedValue > 255)
                     predictedValue = 255;

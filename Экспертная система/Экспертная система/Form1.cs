@@ -28,13 +28,13 @@ namespace Экспертная_система
             pathPrefix = I.h.getValueByName("pathPrefix");
             expert.algorithms.Add(new LSTM_1(this, "LSTM 1"));
 
-            expert.h().add("inputFile", expert.prepareDataset(pathPrefix + @"Временные ряды\EURRUB.txt", ""));
-            // expert.h().add("inputFile", pathPrefix + @"Временные ряды\imgDatasetCSV-dataset.txt");
+          expert.h().add("inputFile", expert.prepareDataset(pathPrefix + @"Временные ряды\EURRUB.txt", "<TIME>;<TICKER>;<PER>;<DATE>;<VOL>"));
+            // expert.h().add("inputFile", pathPrefix + @"Временные ряды\EURRUB-dataset.txt");
             expert.h().add("pathPrefix", pathPrefix);
             // expert.algorithms[0].getAccAndStdDev(File.ReadAllLines(expert.algorithms[0].predictionsFilePath));
 
 
-            //expert.trainAllAlgorithms();
+            expert.trainAllAlgorithms();
         }
 
         private void Hyperparameters_Click(object sender, EventArgs e)
@@ -49,11 +49,11 @@ namespace Экспертная_система
             //  vis.addParameter(expert.normalizedDataset2, 1, "normalized[1]", Color.White, 300);
             // vis.addParameter(expert.normalizedDataset2, 3, "normalized[3]", Color.White, 300); 
             vis.clear();
-            vis.addCSV(pathPrefix + @"Временные ряды\EURRUB.txt", "<CLOSE>", "<CLOSE>", 300);
-            vis.addCSV(pathPrefix + @"Временные ряды\EURRUB-dataset.txt", "normal<CLOSE>", "<CLOSE>", 300);
-            vis.addCSV(expert.algorithms[0].predictionsFilePath,"realVSpredictions" ,expert.h().getValueByName("predicted_column_index"), 1000);
-            vis.addCSV(expert.algorithms[0].predictionsFilePath, "realVSpredictions", "LAST_COLUMN", 300);
-            vis.enableGrid = false;
+            vis.addCSV(pathPrefix + @"Временные ряды\EURRUB.txt", "Real close value", "<CLOSE>", 300, 0);
+            vis.addCSV(pathPrefix + @"Временные ряды\EURRUB-dataset.txt", "Normalized close value", "<CLOSE>", 300, 0);
+            vis.addCSV(expert.algorithms[0].predictionsFilePath, "realVSpredictions", expert.h().getValueByName("predicted_column_index"), "predicted feature", 300, 0);
+            vis.addCSV(expert.algorithms[0].predictionsFilePath, "realVSpredictions", "LAST_COLUMN", "predictions", 300, 0);
+            vis.enableGrid = true;
             vis.refresh();
         }
 

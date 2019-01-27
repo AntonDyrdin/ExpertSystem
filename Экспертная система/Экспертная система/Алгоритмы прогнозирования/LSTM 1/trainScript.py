@@ -120,18 +120,18 @@ try:
     print('AVG = ' + (str)(avg))
     for i in range(0,test_X.shape[0]):
         predicted[i,0] = predicted[i,0] - avg
-        predicted[i,0] = predicted[i,0] * 100
+        predicted[i,0] = predicted[i,0] * 1000
         predicted[i,0] = predicted[i,0] + 0.5
     predictionsFile = open(h("predictionsFilePath"), 'w')
     head = ''
     for i in range(0,len(allLines[0].split(';'))):
         head = head + allLines[0].split(';')[i] + ';'
     head = head[0:-1]
-    head = head.replace('\n','')
+    head = head.replace('\n',';')
     log(h("predictionsFilePath"))
     head = head + '(predicted -> )' + allLines[0].split(';')[(int)(h("predicted_column_index"))]
-    predictionsFile.write(head + '\n')
-
+    predictionsFile.write(head )
+    print("test_X.shape",test_X.shape )
     for i in range(0,test_X.shape[0]):
         line = ''
         for k in range(0,test_X.shape[2]): 
