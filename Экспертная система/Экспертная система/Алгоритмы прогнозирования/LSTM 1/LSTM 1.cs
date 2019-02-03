@@ -5,7 +5,7 @@
         //public Form1 form1;
         public LSTM_1(Form1 form1, string name) : base(form1, name)
         {
-            h.add("predicted_column_index:3");
+            h.add("predicted_column_index:2");
             h.add("drop_column:<DATE>");
 
             h.add("trainScriptPath:" + form1.pathPrefix + "Экспертная система\\Экспертная система\\Алгоритмы прогнозирования\\" + name + "\\trainScript.py");
@@ -26,11 +26,11 @@
             //ПАРАМЕТРЫ ОБУЧЕНИЯ//
             //////////////////////
             h.add("number_of_epochs:1");
-            h.add("split_point:0.95");
+            h.add("split_point:0.8");
             h.add("batch_size:200");
             h.add("name:loss,value:mean_squared_error");
             h.add("name:optimizer,value:adam");
-            h.add("window_size:40");
+            h.add("window_size:10");
         }
         public string get_prediction()
         {

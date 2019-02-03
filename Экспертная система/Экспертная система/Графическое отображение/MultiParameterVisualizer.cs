@@ -47,14 +47,14 @@ namespace Экспертная_система
                     {
                         is_new = false;
                         visualizer.addPoint(value, name);
-                        break;
+                        goto endOfAddPoint;
                     }
                 }
                 if (visualizer.label == name)
                 {
                     is_new = false;
                     visualizer.addPoint(value, name);
-                    break;
+                    goto endOfAddPoint;
                 }
             }
             if (is_new)
@@ -64,6 +64,8 @@ namespace Экспертная_система
                 addParameter(name, Color.FromArgb(255, 161, 14, 233), 300);
                 addPoint(value, name);
             }
+            endOfAddPoint:
+            is_new = false;
         }
 
         public void addParameter(double[,] array, int index, string label, Color color, int H)
@@ -127,7 +129,7 @@ namespace Экспертная_система
             parameters[parameters.Count - 1].multy = false;
         }
 
-        public void addCSV(string file, string name, string columnName,string chartName, int H,double splitPoint)
+        public void addCSV(string file, string name, string columnName, string chartName, int H, double splitPoint, int shift)
         {
 
             var allLines = File.ReadAllLines(file);
@@ -167,28 +169,48 @@ namespace Экспертная_система
                 }
 
             }
-            int start =  1+Convert.ToInt32(splitPoint * (allLines.Length -1));
+            int start = 1 + Convert.ToInt32(splitPoint * (allLines.Length - 1));
             if (is_new)
             {
                 addParameter(name, Color.White, H);
                 parameters[parameters.Count - 1].functions[0].label = chartName;
-                for (int i = start; i < allLines.Length; i++)
+                if (shift > 0)
                 {
-                    addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol ].Replace('.', ',')), chartName);
+                    for (int i = 0; i < shift; i++)
+                        addPoint(Convert.ToDouble(allLines[start].Split(';')[indCol].Replace('.', ',')), chartName);
+
+                    for (int i = start; i < allLines.Length - shift; i++)
+                        addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol].Replace('.', ',')), chartName);
+                }
+                else
+                {
+                    for (int i = start+(-shift); i < allLines.Length; i++)
+                        addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol].Replace('.', ',')), chartName);
                 }
             }
             else
             {
-                for (int i = start; i < allLines.Length; i++)
+                if (shift > 0)
                 {
-                    var val = allLines[i].Split(';')[indCol];
-                    parameters[parameterInd].addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol ].Replace('.', ',')), chartName);
+                    for (int i = 0; i < shift; i++)
+                        parameters[parameterInd].addPoint(Convert.ToDouble(allLines[start].Split(';')[indCol].Replace('.', ',')), chartName);
 
+                    for (int i = start; i < allLines.Length - shift; i++)
+                    {
+                        var val = allLines[i].Split(';')[indCol];
+                        parameters[parameterInd].addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol].Replace('.', ',')), chartName);
+
+                    }
+                }
+                else
+                {
+                    for (int i = start + (-shift); i < allLines.Length; i++)
+                        parameters[parameterInd].addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol].Replace('.', ',')), chartName);
                 }
             }
 
         }
-        public void addCSV(string file, string name, string columnName, int H, double splitPoint)
+        public void addCSV(string file, string name, string columnName, int H, double splitPoint, int shift)
         {
 
             var allLines = File.ReadAllLines(file);
@@ -228,27 +250,49 @@ namespace Экспертная_система
             if (is_new)
             {
                 addParameter(name, Color.White, H);
-                for (int i = start; i < allLines.Length; i++)
+                if (shift > 0)
                 {
-                    addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol].Replace('.', ',')), name);
+                    for (int i = 0; i < shift; i++)
+                        addPoint(Convert.ToDouble(allLines[start].Split(';')[indCol].Replace('.', ',')), name);
+
+                    for (int i = start; i < allLines.Length - shift; i++)
+                        addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol].Replace('.', ',')), name);
+                }
+                else
+                {
+                    for (int i = start + (-shift); i < allLines.Length; i++)
+                        addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol].Replace('.', ',')), name);
                 }
             }
             else
             {
-                for (int i = start; i < allLines.Length; i++)
+                if (shift > 0)
                 {
-                    parameters[parameterInd].addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol].Replace('.', ',')), name);
+                    for (int i = 0; i < shift; i++)
+                        parameters[parameterInd].addPoint(Convert.ToDouble(allLines[start].Split(';')[indCol].Replace('.', ',')), name);
+
+                    for (int i = start; i < allLines.Length - shift; i++)
+                        parameters[parameterInd].addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol].Replace('.', ',')), name);
+                }
+                else
+                {
+                    for (int i = start + (-shift); i < allLines.Length; i++)
+                        parameters[parameterInd].addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol].Replace('.', ',')), name);
                 }
             }
         }
-        public void addCSV(string file, int columnIndex, int H)
+        public void addCSV(string file, int columnIndex, int H, int shift)
         {
             var allLines = File.ReadAllLines(file);
             int indCol = columnIndex;
             string columnName = allLines[0].Split(';')[indCol];
 
             addParameter(columnName, Color.White, H);
-            for (int i = 1; i < allLines.Length; i++)
+
+            for (int i = 0; i < shift; i++)
+                addPoint(Convert.ToDouble(allLines[0].Split(';')[indCol].Replace('.', ',')), columnName);
+
+            for (int i = 1; i < allLines.Length - shift; i++)
             {
                 string str1 = allLines[i].Split(';')[indCol + 1];
                 addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol + 1].Replace('.', ',')), columnName);
@@ -257,12 +301,15 @@ namespace Экспертная_система
         public void refresh()
         {
             if (!enableGrid)
-            {
                 for (int i = 0; i < parameters.Count; i++)
                 {
                     parameters[i].enableGrid = false;
                 }
-            }
+            else
+                for (int i = 0; i < parameters.Count; i++)
+                {
+                    parameters[i].enableGrid = true;
+                }
             if (lightsOn)
             {
                 for (int i = 0; i < parameters.Count; i++)

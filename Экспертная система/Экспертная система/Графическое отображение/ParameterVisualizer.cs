@@ -233,14 +233,14 @@ namespace Экспертная_система
             if (functions.Count > 1)
                 for (int i = 0; i < functions.Count; i++)
                 {
-                    drawLine(functions[i].color, mainFontDepth, Xmax - Xmax / 20, Ymin + Ymax / 30 + i * mainFontDepth, Xmax, Ymin + Ymax / 30 + i * mainFontDepth);
-                    drawString(functions[i].label, mainFontDepth, Xmax - Xmax / 20 - functions[i].label.Length * mainFontDepth, Ymin + Ymax / 30 + i * mainFontDepth - mainFontDepth);
+                    drawLine(functions[i].color, mainFontDepth, Xmax - Xmax / 20, Ymin + Ymax / 30 + i *( mainFontDepth * 1.2), Xmax, Ymin + Ymax / 30 + i * (mainFontDepth * 1.2));
+                    drawString(functions[i].label, mainFontDepth, Xmax - Xmax / 20 - functions[i].label.Length *( mainFontDepth * 1.2), Ymin + Ymax / 30 + i *( mainFontDepth * 1.2) - mainFontDepth);
                 }
 
 
             drawString(label, mainFontDepth, Xmax / 2 - (label.Length * mainFontDepth / 2), Ymin);
 
-
+               
             //   drawLine(Color.White, 2, xZeroGap, 0, xZeroGap, Ymax);
 
 
@@ -292,7 +292,7 @@ namespace Экспертная_система
             {
                 for (int i = 0; i < Xmax / dx; i++)
                 {
-                    drawLine(Color.FromArgb(255, Math.Abs(picBox.BackColor.R - 255), Math.Abs(picBox.BackColor.R - 255), Math.Abs(picBox.BackColor.R - 255)), 1, xZeroGap + dx * i, 0, xZeroGap + dx * i, Ymin + Ymax - (mainFontDepth * 2));
+                    drawLine(Color.FromArgb(50, Math.Abs(picBox.BackColor.R - 255), Math.Abs(picBox.BackColor.R - 255), Math.Abs(picBox.BackColor.R - 255)), 1, xZeroGap + dx * i, Ymin, xZeroGap + dx * i, Ymin + Ymax - (mainFontDepth * 2));
 
                     if (!multy)
                     {
@@ -309,9 +309,7 @@ namespace Экспертная_система
         }
         public void drawString(string s, double depth, double x, double y)
         {
-            if (x > picBox.Width)
-                picBox.Width = Convert.ToInt16(x);
-            else
+            
             if (y > picBox.Width)
                 picBox.Height = Convert.ToInt16(y);
             else
@@ -328,12 +326,7 @@ namespace Экспертная_система
 
         public void drawLine(Color col, double depth, double x1, double y1, double x2, double y2)
         {
-            if (x1 > picBox.Width)
-                picBox.Width = Convert.ToInt16(x1);
-            else
-            if (x2 > picBox.Width)
-                picBox.Width = Convert.ToInt16(x2);
-            else
+            
             if (y1 > picBox.Height)
                 picBox.Height = Convert.ToInt16(y1);
             else

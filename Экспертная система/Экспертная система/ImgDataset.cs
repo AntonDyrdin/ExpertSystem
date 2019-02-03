@@ -100,12 +100,13 @@ namespace Экспертная_система
 
             // int Xshift = Convert.ToInt16((allLines.Length - 1) * Convert.ToDouble(split_point.Replace('.', ',')));
 
-            for (int i = 1; i < allLines.Length; i++)
+            for (int i = 1; i < allLines.Length-1; i++)
             {
 
-
-                int realValue = Convert.ToInt16(Convert.ToDouble(allLines[i].Split(';')[predColIndINT].Replace('.', ',')) * 255);
-                int predictedValue = Convert.ToInt16(Convert.ToDouble(allLines[i].Split(';')[indCol ].Replace('.', ',')) * 255);
+                //реальное значение находится в будущем, поэтому [i+1]
+                int realValue = Convert.ToInt16(Convert.ToDouble(allLines[i + 1].Split(';')[predColIndINT].Replace('.', ',')) * 255);
+                //прогноз получен сейчас, поэтому [i]
+                int predictedValue = Convert.ToInt16(Convert.ToDouble(allLines[i].Split(';')[indCol].Replace('.', ',')) * 255);
 
                 if (predictedValue > 255)
                     predictedValue = 255;
@@ -142,7 +143,7 @@ namespace Экспертная_система
         public void refresh()
         {
             picBox = form1.picBox;
-            picBox.Image = new Bitmap(bmp, new Size(picBox.Width , picBox.Height));
+            picBox.Image = new Bitmap(bmp, new Size(picBox.Width, picBox.Height));
         }
 
         public void log(String s, System.Drawing.Color col)

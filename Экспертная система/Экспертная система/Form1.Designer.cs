@@ -47,9 +47,9 @@
             this.logBox.BackColor = System.Drawing.Color.Black;
             this.logBox.Font = new System.Drawing.Font("Century Gothic", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.logBox.ForeColor = System.Drawing.Color.White;
-            this.logBox.Location = new System.Drawing.Point(1000, 62);
+            this.logBox.Location = new System.Drawing.Point(1387, 62);
             this.logBox.Name = "logBox";
-            this.logBox.Size = new System.Drawing.Size(920, 938);
+            this.logBox.Size = new System.Drawing.Size(533, 938);
             this.logBox.TabIndex = 35;
             this.logBox.Text = "";
             this.logBox.TextChanged += new System.EventHandler(this.logBox_TextChanged);
@@ -60,7 +60,7 @@
             this.picBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.picBox.Location = new System.Drawing.Point(3, 0);
             this.picBox.Name = "picBox";
-            this.picBox.Size = new System.Drawing.Size(1000, 1000);
+            this.picBox.Size = new System.Drawing.Size(1376, 1000);
             this.picBox.TabIndex = 37;
             this.picBox.TabStop = false;
             this.picBox.Click += new System.EventHandler(this.picBox_Click);
@@ -73,7 +73,7 @@
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Margin = new System.Windows.Forms.Padding(2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1000, 1080);
+            this.panel1.Size = new System.Drawing.Size(1382, 1080);
             this.panel1.TabIndex = 38;
             // 
             // trackBar1
@@ -93,7 +93,7 @@
             // 
             this.checkBox1.AutoSize = true;
             this.checkBox1.ForeColor = System.Drawing.Color.White;
-            this.checkBox1.Location = new System.Drawing.Point(1000, 3);
+            this.checkBox1.Location = new System.Drawing.Point(1387, 27);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(72, 17);
             this.checkBox1.TabIndex = 38;
@@ -105,9 +105,9 @@
             // 
             this.buttonHyperparameters.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonHyperparameters.ForeColor = System.Drawing.Color.Aqua;
-            this.buttonHyperparameters.Location = new System.Drawing.Point(1114, 11);
+            this.buttonHyperparameters.Location = new System.Drawing.Point(1490, 12);
             this.buttonHyperparameters.Name = "buttonHyperparameters";
-            this.buttonHyperparameters.Size = new System.Drawing.Size(150, 44);
+            this.buttonHyperparameters.Size = new System.Drawing.Size(129, 44);
             this.buttonHyperparameters.TabIndex = 39;
             this.buttonHyperparameters.Text = "Hyperparameters";
             this.buttonHyperparameters.UseVisualStyleBackColor = true;
@@ -117,9 +117,9 @@
             // 
             this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button2.ForeColor = System.Drawing.Color.Magenta;
-            this.button2.Location = new System.Drawing.Point(1270, 11);
+            this.button2.Location = new System.Drawing.Point(1625, 12);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(150, 44);
+            this.button2.Size = new System.Drawing.Size(129, 44);
             this.button2.TabIndex = 40;
             this.button2.Text = "Charts";
             this.button2.UseVisualStyleBackColor = true;
@@ -129,9 +129,9 @@
             // 
             this.button3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button3.ForeColor = System.Drawing.Color.Yellow;
-            this.button3.Location = new System.Drawing.Point(1426, 11);
+            this.button3.Location = new System.Drawing.Point(1760, 12);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(150, 44);
+            this.button3.Size = new System.Drawing.Size(129, 44);
             this.button3.TabIndex = 41;
             this.button3.Text = "ImgDataset";
             this.button3.UseVisualStyleBackColor = true;

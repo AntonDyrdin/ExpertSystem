@@ -71,18 +71,19 @@ namespace Экспертная_система
                 getAccAndStdDev(predictionsCSV);
             }
         }
-        public void getAccAndStdDev(string [] predictionsCSV)
+        public void getAccAndStdDev(string[] predictionsCSV)
         {
             double sqrtSum = 0;
             int rightCount = 0;
             int leftCount = 0;
             int inc = 0;
-            double predictedValue = Convert.ToDouble(predictionsCSV[1].Split(';')[Convert.ToInt16(h.getValueByName("predicted_column_index"))].Replace('.', ','));
             for (int i = 1; i < predictionsCSV.Length-1; i++)
             {
                 var features = predictionsCSV[i].Split(';');
-              
-                double realValue = Convert.ToDouble(features[features.Length - 1].Replace('.', ','));
+
+                double predictedValue = Convert.ToDouble(predictionsCSV[i].Split(';')[features.Length - 1].Replace('.', ','));
+                double realValue = Convert.ToDouble(predictionsCSV[i+1].Split(';')[Convert.ToInt16(h.getValueByName("predicted_column_index"))].Replace('.', ','));
+
                 if (realValue > 0.5 && predictedValue > 0.5)
                 { rightCount++; }
                 else
@@ -96,12 +97,12 @@ namespace Экспертная_система
                 { leftCount++; }
                 sqrtSum += (realValue - predictedValue) * (realValue - predictedValue);
                 inc++;
-                predictedValue  = Convert.ToDouble(features[Convert.ToInt16(h.getValueByName("predicted_column_index"))].Replace('.', ','));
+
             }
-            accuracy = Convert.ToDouble(rightCount ) / Convert.ToDouble(leftCount);
+            accuracy = Convert.ToDouble(rightCount) / Convert.ToDouble(leftCount);
             stdDev = sqrtSum / inc;
-            log("accuracy = " +accuracy.ToString());
-            log("stdDev = " +stdDev.ToString());
+            log("accuracy = " + accuracy.ToString());
+            log("stdDev = " + stdDev.ToString());
         }
         public string runPythonScript(string scriptFile, string args)
         {

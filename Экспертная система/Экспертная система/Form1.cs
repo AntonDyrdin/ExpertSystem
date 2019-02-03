@@ -15,6 +15,7 @@ namespace Экспертная_система
         public Expert expert;
         private MultiParameterVisualizer vis;
         private ImgDataset visPredictions;
+        public string sourceDataFile;
         public void Form1_Load(object sender, EventArgs e)
         {
 
@@ -28,13 +29,14 @@ namespace Экспертная_система
             pathPrefix = I.h.getValueByName("pathPrefix");
             expert.algorithms.Add(new LSTM_1(this, "LSTM 1"));
 
-          expert.h().add("inputFile", expert.prepareDataset(pathPrefix + @"Временные ряды\EURRUB.txt", "<TIME>;<TICKER>;<PER>;<DATE>;<VOL>"));
+            sourceDataFile = pathPrefix + @"Временные ряды\EURRUB.txt";
+            expert.h().add("inputFile", expert.prepareDataset(sourceDataFile, "<TIME>;<TICKER>;<PER>;<DATE>;<VOL>"));
             // expert.h().add("inputFile", pathPrefix + @"Временные ряды\EURRUB-dataset.txt");
             expert.h().add("pathPrefix", pathPrefix);
-            // expert.algorithms[0].getAccAndStdDev(File.ReadAllLines(expert.algorithms[0].predictionsFilePath));
+          //  expert.algorithms[0].getAccAndStdDev(File.ReadAllLines(expert.algorithms[0].predictionsFilePath));
 
 
-            expert.trainAllAlgorithms();
+          //expert.trainAllAlgorithms();
         }
 
         private void Hyperparameters_Click(object sender, EventArgs e)
@@ -43,17 +45,21 @@ namespace Экспертная_система
         }
         private void Charts_Click(object sender, EventArgs e)
         {
-            //  vis.addParameter(expert.dataset, 2, "dataset", Color.White, 300);
-            //  vis.addParameter(expert.normalizedDataset2, 2, "normalized[2]", Color.White, 300);
-            //  vis.addParameter(expert.normalizedDataset2, 0, "normalized[0]", Color.White, 300);
-            //  vis.addParameter(expert.normalizedDataset2, 1, "normalized[1]", Color.White, 300);
-            // vis.addParameter(expert.normalizedDataset2, 3, "normalized[3]", Color.White, 300); 
-            vis.clear();
-            vis.addCSV(pathPrefix + @"Временные ряды\EURRUB.txt", "Real close value", "<CLOSE>", 300, 0);
-            vis.addCSV(pathPrefix + @"Временные ряды\EURRUB-dataset.txt", "Normalized close value", "<CLOSE>", 300, 0);
-            vis.addCSV(expert.algorithms[0].predictionsFilePath, "realVSpredictions", expert.h().getValueByName("predicted_column_index"), "predicted feature", 300, 0);
-            vis.addCSV(expert.algorithms[0].predictionsFilePath, "realVSpredictions", "LAST_COLUMN", "predictions", 300, 0);
+            double hidedPart = 0;
+
             vis.enableGrid = true;
+
+            vis.clear();
+            /*  vis.addParameter(expert.dataset1, 2, "dataset1", Color.White, 300);
+              vis.addParameter(expert.dataset2, 2, "dataset2", Color.White, 300);
+              vis.addParameter(expert.dataset3, 2, "dataset3", Color.White, 300); */
+            double split_point = Convert.ToDouble(expert.h().getValueByName("split_point").Replace('.', ','));
+
+           vis.addCSV(sourceDataFile, "Real close value", "<CLOSE>", 500, split_point + (1 - split_point) * hidedPart, -2);
+           // vis.addCSV(sourceDataFile, "Real close value", expert.h().getValueByName("predicted_column_index"), 500, split_point + (1 - split_point) * hidedPart, -2);
+            vis.addCSV(expert.algorithms[0].predictionsFilePath, "realVSpredictions", expert.h().getValueByName("predicted_column_index"), "real", 500, hidedPart, -1);
+            vis.addCSV(expert.algorithms[0].predictionsFilePath, "realVSpredictions", "LAST_COLUMN", "predictions", 500, hidedPart, 0);
+
             vis.refresh();
         }
 

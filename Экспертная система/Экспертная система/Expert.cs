@@ -9,9 +9,9 @@ namespace Экспертная_система
     {
         public double[,,] inputVector;
         public double[,] dataset;
-        public double[,] normalizedDataset1;
-        public double[,] normalizedDataset2;
-        public double[,] normalizedDataset3;
+        public double[,] dataset1;
+        public double[,] dataset2;
+        public double[,] dataset3;
         //критерий оптимальности
         public double target_function;
 
@@ -196,108 +196,22 @@ namespace Экспертная_система
                         }
                 }
             }
-            normalizedDataset1 = new double[dataset.GetLength(0) - 1, dataset.GetLength(1)];
-            for (int i = 0; i < dataset.GetLength(0) - 1; i++)
-            {
-                for (int k = 0; k < dataset.GetLength(1); k++)
-                {
-                    normalizedDataset1[i, k] = 0;
-                }
-            }
-            //тупое масштабирование 
-            /*    var subt = new double[dataset.GetLength(1)];
-                for (int j = 0; j < dataset.GetLength(1); j++)
-                    subt[j] = dataset[0, j];
-                for (int i = 0; i < dataset.GetLength(0) - 1; i++)
-                {
-                    for (int k = 0; k < dataset.GetLength(1); k++)
-                    {
-                        if (subt[k] > dataset[i + 1, k])
-                        { subt[k] = dataset[i + 1, k]; }
-                    }
-                }
-                var div = new double[dataset.GetLength(1)];
-                for (int j = 0; j < dataset.GetLength(1); j++)
-                    div[j] = dataset[0, j];
-                for (int i = 0; i < dataset.GetLength(0) - 1; i++)
-                {
-                    for (int k = 0; k < dataset.GetLength(1); k++)
-                    {
-                        if (div[k] < (dataset[i + 1, k] - subt[k]))
-                        { div[k] = (dataset[i + 1, k] - subt[k]); }
-                    }
-                }
-                normalizedDataset1 = new double[dataset.GetLength(0), dataset.GetLength(1)];
 
-                for (int i = 0; i < dataset.GetLength(0) - 1; i++)
-                {
-                    for (int k = 0; k < dataset.GetLength(1); k++)
-                    {
-                        normalizedDataset1[i, k] = (dataset[i + 1, k] - subt[k]) / div[k];
-                    }
-                }
-                   */
+
             ////////////////////////////////////////////////
             ///////////   НОРМАЛИЗАЦИЯ i/(i-1)   ///////////
             ////////////////////////////////////////////////
-            //первая строка датасета удаляется из-за нормализации типа i/(i-1)
-            normalizedDataset2 = new double[dataset.GetLength(0) - 1, dataset.GetLength(1)];
-
-            //заполнение строки для первой итерации алгоритма   ____i/(i-1)__
-            double[] previousLine = new double[dataset.GetLength(1)];
-            for (int j = 0; j < dataset.GetLength(1); j++)
-                previousLine[j] = dataset[0, j];
+            dataset1 = normalize2(dataset);
 
 
-            //___________i/(i-1)__________________
-            for (int i = 0; i < dataset.GetLength(0) - 1; i++)
-            {
-                for (int k = 0; k < dataset.GetLength(1); k++)
-                {
-                    if (previousLine[k] != 0)
-                        normalizedDataset2[i, k] = Convert.ToDouble(dataset[i + 1, k]) / Convert.ToDouble(previousLine[k]);
-                    else
-                        normalizedDataset2[i, k] = 0;
-                }
-                for (int j = 0; j < dataset.GetLength(1); j++)
-                    previousLine[j] = dataset[i + 1, j];
-            }
 
             /////////////////////////////////
             //////     СГЛАЖИВАНИЕ    ///////
             /////////////////////////////////
-            for (int i = 0; i < dataset.GetLength(0)-1; i++)
-            {
-                for (int k = 0; k < dataset.GetLength(1); k++)
-                {
-                    //приведение его к 0.5 - среднему делением на 2
-                    normalizedDataset2[i, k] = normalizedDataset2[i, k] / 2;
-                    //для увеличение стандартного отклонения сначала вычислим имеющееся i-ое отклонение, приведя к 0 - среднему
-                    normalizedDataset2[i, k] = normalizedDataset2[i, k] - 0.5;
-                    //а затем отмасштабируем
-                    //normalizedDataset2[i, k] = normalizedDataset2[i, k] * (1 / (Math.Abs(normalizedDataset2[i, k] + 0.5)));
-                    //вернём к 0.5 - среднему
-                    normalizedDataset2[i, k] = normalizedDataset2[i, k] + 0.5;
+            dataset2 = levelOff2(dataset1);
 
 
-                    //и подровняем выбросы
-                    if (normalizedDataset2[i, k] > 1)
-                    {
-                        normalizedDataset2[i, k] = 1;
-                    }
-                    else if (normalizedDataset2[i, k] < 0)
-                    {
-                        normalizedDataset2[i, k] = 0;
-                    }
-
-                    if (normalizedDataset1[i, k] > 1)
-                    { normalizedDataset1[i, k] = 1; }
-                    else if (normalizedDataset1[i, k] < 0)
-                    { normalizedDataset1[i, k] = 0; }
-                }
-            }
-
-            string[] toWrite = new string[normalizedDataset2.GetLength(0) + 1];
+            string[] toWrite = new string[dataset2.GetLength(0) + 1];
             for (int k = 0; k < featuresNames.Length; k++)
             {
                 bool dropIt = false;
@@ -315,14 +229,14 @@ namespace Экспертная_система
             toWrite[0] = toWrite[0].Remove(toWrite[0].Length - 1, 1);
 
 
-            for (int i = 0; i < normalizedDataset2.GetLength(0); i++)
+            for (int i = 0; i < dataset2.GetLength(0); i++)
             {
-                for (int k = 0; k < normalizedDataset2.GetLength(1); k++)
-                {   
-                    if ((normalizedDataset2[i, k]).ToString().Replace(',', '.').Length > 8)
-                        toWrite[i+1] += (normalizedDataset2[i, k]).ToString().Replace(',', '.').Substring(0, 8) + ';';
+                for (int k = 0; k < dataset2.GetLength(1); k++)
+                {
+                    if ((dataset2[i, k]).ToString().Replace(',', '.').Length > 8)
+                        toWrite[i + 1] += (dataset2[i, k]).ToString().Replace(',', '.').Substring(0, 8) + ';';
                     else
-                        toWrite[i+1] += (normalizedDataset2[i, k]).ToString().Replace(',', '.') + ';';
+                        toWrite[i + 1] += (dataset2[i, k]).ToString().Replace(',', '.') + ';';
                 }
                 toWrite[i + 1] = toWrite[i + 1].Remove(toWrite[i + 1].Length - 1, 1);
             }
@@ -361,6 +275,161 @@ namespace Экспертная_система
         {
             form1.logDelegate = new Form1.LogDelegate(form1.delegatelog);
             form1.logBox.Invoke(form1.logDelegate, form1.logBox, s, System.Drawing.Color.White);
+        }
+        double[,] normalize1(double[,] inputDataset)
+        {
+
+            ////////////////////////////////////////////////
+            ///////////   НОРМАЛИЗАЦИЯ i/(i-1)   ///////////
+            ////////////////////////////////////////////////
+            //первая строка датасета удаляется из-за нормализации типа i/(i-1)
+            double[,] normalizedDataset2 = new double[inputDataset.GetLength(0) - 1, inputDataset.GetLength(1)];
+
+            //заполнение строки previousLine для первой итерации алгоритма   ____i/(i-1)__
+            double[] previousLine = new double[inputDataset.GetLength(1)];
+            for (int j = 0; j < inputDataset.GetLength(1); j++)
+                previousLine[j] = inputDataset[0, j];
+
+
+            //___________i/(i-1)__________________
+            for (int i = 0; i < inputDataset.GetLength(0) - 1; i++)
+            {
+                for (int k = 0; k < inputDataset.GetLength(1); k++)
+                {
+                    if (previousLine[k] != 0)
+                        normalizedDataset2[i, k] = Convert.ToDouble(inputDataset[i + 1, k]) / Convert.ToDouble(previousLine[k]);
+                    else
+                        normalizedDataset2[i, k] = 0;
+                }
+                for (int j = 0; j < inputDataset.GetLength(1); j++)
+                    previousLine[j] = inputDataset[i + 1, j];
+            }
+            return normalizedDataset2;
+        }
+        double[,] normalize2(double[,] inputDataset)
+        {
+
+            ////////////////////////////////////////////////
+            ///////////   НОРМАЛИЗАЦИЯ i/(i-1)   ///////////
+            ////////////////////////////////////////////////
+            //первая строка датасета удаляется из-за нормализации типа i/(i-1)
+            double[,] normalizedDataset2 = new double[inputDataset.GetLength(0) - 1, inputDataset.GetLength(1)];
+
+            //заполнение строки previousLine для первой итерации алгоритма   ____i/(i-1)__
+            double[] previousLine = new double[inputDataset.GetLength(1)];
+            for (int j = 0; j < inputDataset.GetLength(1); j++)
+                previousLine[j] = inputDataset[0, j];
+
+
+            //___________i-(i-1)__________________
+            for (int i = 0; i < inputDataset.GetLength(0) - 1; i++)
+            {
+                for (int k = 0; k < inputDataset.GetLength(1); k++)
+                {
+                    if (previousLine[k] != 0)
+                        normalizedDataset2[i, k] = Convert.ToDouble(inputDataset[i + 1, k]) - Convert.ToDouble(previousLine[k]);
+                    else
+                        normalizedDataset2[i, k] = 0;
+                }
+                for (int j = 0; j < inputDataset.GetLength(1); j++)
+                    previousLine[j] = inputDataset[i + 1, j];
+            }
+            return normalizedDataset2;
+        }
+        double[,] levelOff1(double[,] inputDataset)
+        {
+            double[,] levelOffDataset = new double[inputDataset.GetLength(0), inputDataset.GetLength(1)];
+            /////////////////////////////////
+            //////     СГЛАЖИВАНИЕ    ///////
+            /////////////////////////////////
+            for (int i = 0; i < inputDataset.GetLength(0) - 1; i++)
+            {
+                for (int k = 0; k < inputDataset.GetLength(1); k++)
+                {
+                    //приведение его к 0.5 - среднему делением на 2
+                    levelOffDataset[i, k] = levelOffDataset[i, k] / 2;
+                    //для увеличение стандартного отклонения сначала вычислим имеющееся i-ое отклонение, приведя к 0 - среднему
+                    levelOffDataset[i, k] = levelOffDataset[i, k] - 0.5;
+                    //а затем отмасштабируем
+                    //levelOffDataset[i, k] = levelOffDataset[i, k] * (1 / (Math.Abs(levelOffDataset[i, k] + 0.5)));
+                    //вернём к 0.5 - среднему
+                    levelOffDataset[i, k] = levelOffDataset[i, k] + 0.5;
+                    //и подровняем выбросы
+                    if (levelOffDataset[i, k] > 1)
+                    {
+                        levelOffDataset[i, k] = 1;
+                    }
+                    else if (levelOffDataset[i, k] < 0)
+                    {
+                        levelOffDataset[i, k] = 0;
+                    }
+                }
+            }
+            return levelOffDataset;
+        }
+        double[,] levelOff2(double[,] inputDataset)
+        {
+            double[,] levelOffDataset = new double[inputDataset.GetLength(0), inputDataset.GetLength(1)];
+            /////////////////////////////////
+            //////     СГЛАЖИВАНИЕ    ///////
+            /////////////////////////////////
+            for (int i = 0; i < inputDataset.GetLength(0) - 1; i++)
+            {
+                for (int k = 0; k < inputDataset.GetLength(1); k++)
+                {
+                    //масштабирование
+                    //  levelOffDataset[i, k] = levelOffDataset[i, k] * (1 / (Math.Abs(levelOffDataset[i, k] + 0.5)));
+                    //0.5 - среднее
+                    levelOffDataset[i, k] = inputDataset[i, k] + 0.5;
+                    //выбросы
+                    if (levelOffDataset[i, k] > 1)
+                    {
+                        levelOffDataset[i, k] = 1;
+                    }
+                    else if (levelOffDataset[i, k] < 0)
+                    {
+                        levelOffDataset[i, k] = 0;
+                    }
+                }
+            }
+            return levelOffDataset;
+        }
+        double[,] scale(double[,] inputDataset)
+        {
+            //масштабирование 
+
+            double[,] scaleedDataset = new double[inputDataset.GetLength(0), inputDataset.GetLength(1)];
+            var subt = new double[dataset.GetLength(1)];
+            for (int j = 0; j < dataset.GetLength(1); j++)
+                subt[j] = dataset[0, j];
+            for (int i = 0; i < dataset.GetLength(0) - 1; i++)
+            {
+                for (int k = 0; k < dataset.GetLength(1); k++)
+                {
+                    if (subt[k] > dataset[i + 1, k])
+                    { subt[k] = dataset[i + 1, k]; }
+                }
+            }
+            var div = new double[dataset.GetLength(1)];
+            for (int j = 0; j < dataset.GetLength(1); j++)
+                div[j] = dataset[0, j];
+            for (int i = 0; i < dataset.GetLength(0) - 1; i++)
+            {
+                for (int k = 0; k < dataset.GetLength(1); k++)
+                {
+                    if (div[k] < (dataset[i + 1, k] - subt[k]))
+                    { div[k] = (dataset[i + 1, k] - subt[k]); }
+                }
+            }
+
+            for (int i = 0; i < dataset.GetLength(0); i++)
+            {
+                for (int k = 0; k < dataset.GetLength(1); k++)
+                {
+                    scaleedDataset[i, k] = (dataset[i, k] - subt[k]) / div[k];
+                }
+            }
+            return scaleedDataset;
         }
     }
 }
