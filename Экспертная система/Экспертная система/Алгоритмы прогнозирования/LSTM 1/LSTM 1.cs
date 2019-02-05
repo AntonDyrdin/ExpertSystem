@@ -27,10 +27,6 @@
             h.add("name:optimizer,value:adam");
             h.add("window_size:10");
         }
-        public string get_prediction()
-        {
-            return "ошибка: метод не реализован";
-        }
 
     }
 }

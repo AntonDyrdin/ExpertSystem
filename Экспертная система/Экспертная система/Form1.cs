@@ -29,15 +29,17 @@ namespace Экспертная_система
 
             pathPrefix = I.h.getValueByName("path_prefix");
             expert.algorithms.Add(new LSTM_1(this, "LSTM 1"));
-
+            expert.algorithms.Add(new ANN_1(this, "ANN 1"));
             sourceDataFile = pathPrefix + @"Временные ряды\EURRUB.txt";
-            expert.h().add("input_file", expert.savePreparedDataset(sourceDataFile, "<TIME>;<TICKER>;<PER>;<DATE>;<VOL>"));
+            expert.algorithms[0].h.add("input_file", expert.savePreparedDataset(sourceDataFile, "<TIME>;<TICKER>;<PER>;<DATE>;<VOL>"));
+            expert.algorithms[1].h.add("input_file", expert.savePreparedDataset(sourceDataFile, "<TIME>;<TICKER>;<PER>;<DATE>;<VOL>"));
+
             // expert.h().add("inputFile", pathPrefix + @"Временные ряды\EURRUB-dataset.txt");
             expert.h().add("path_prefix", pathPrefix);
             //  expert.algorithms[0].getAccAndStdDev(File.ReadAllLines(expert.algorithms[0].predictionsFilePath));
 
-            expert.test(new DateTime(2010, 2, 10), new DateTime(2010, 3, 10), sourceDataFile);
-        //  expert.trainAllAlgorithms();
+           // expert.test(new DateTime(2010, 2, 10), new DateTime(2010, 3, 10), sourceDataFile);
+          expert.trainAllAlgorithms();
         }
 
         private void Hyperparameters_Click(object sender, EventArgs e)

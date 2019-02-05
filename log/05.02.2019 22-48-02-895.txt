@@ -1,0 +1,23 @@
+
+
+
+
+обучение алгоритма LSTM 1...
+файл датасета не задан
+обучение алгоритма ANN 1...
+СКРИПТ ОБУЧЕНИЯ ANN 1 ЗАПУЩЕН...
+
+> время загрузки библиотек : 1.584 сек.
+
+
+
+Using Theano backend.
+Traceback (most recent call last):
+  File "D:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\ANN 1\train_script.py", line 54, in <module>
+    inputFile = open(h("input_file"))
+  File "D:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\ANN 1\train_script.py", line 32, in h
+    return  jsonObj["baseNode"][nodeName]["value"]
+KeyError: 'input_file'
+
+accuracy = 0,885615251299827
+stdDev = 0,379819017320337

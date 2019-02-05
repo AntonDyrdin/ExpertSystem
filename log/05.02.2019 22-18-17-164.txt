@@ -1,0 +1,49 @@
+
+
+
+
+обучение алгоритма ANN 1...
+СКРИПТ ОБУЧЕНИЯ ANN 1 ЗАПУЩЕН...
+
+> время загрузки библиотек : 1.647 сек.
+
+(5570, 4)
+
+> время чтения данных  :  1.716 сек.
+
+компиляция НС...
+
+> время компиляции НС  : 2.448 сек.
+
+обучение НС...
+
+Train on 4448 samples, validate on 1112 samples
+
+Epoch 1/1
+
+0s - loss: 0.0504 - acc: 0.0207 - val_loss: 0.1443 - val_acc: 0.2149
+
+сохранение модели: D:\Anton\weights.h5
+
+> время сохранения НС  : 4.348 сек.
+
+создание тестового прогноза
+
+(1112, 1)
+
+AVG = 0.453862365014
+
+D:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\ANN 1\predictions.txt
+
+test_X.shape (1112, 10)
+
+
+
+Using Theano backend.
+Traceback (most recent call last):
+  File "D:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\ANN 1\train_script.py", line 148, in <module>
+    for k in range(0,test_X.shape[2]): 
+IndexError: tuple index out of range
+
+accuracy = не число
+stdDev = не число
