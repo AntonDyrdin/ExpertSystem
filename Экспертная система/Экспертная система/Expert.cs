@@ -12,6 +12,7 @@ namespace Экспертная_система
         public double[,] dataset1;
         public double[,] dataset2;
         public double[,] dataset3;
+        private string period = "day";
         //критерий оптимальности
         public double target_function;
 
@@ -23,9 +24,9 @@ namespace Экспертная_система
             this.form1 = form1;
             algorithms = new List<Algorithm>();
         }
-        //█====================================================█
+        //█============================█
         //█            Обучить все алгоритмы                   █
-        //█====================================================█
+        //█============================█
         public string trainAllAlgorithms()
         {
             for (int i = 0; i < algorithms.Count; i++)
@@ -36,45 +37,100 @@ namespace Экспертная_система
         //получить прогноз для одного окна  
         //inputVector - матрица входных данных, в которой нулевой столбец [i,0] - прогнозируемая величина, а остальные столбцы - предикторы.
         //каждая строка - значения предикторов в j-ый временной интервал
-        //█====================================================█
+        //█===========================█
         //█            Получить прогноз                        █
-        //█====================================================█
-        public double getPrediction(double[,] inputVector)
+        //█===========================█
+        public double getPrediction(string[] input)
         {
             double sum = 0;
             //вызов getPrediction у каждого алгоритма прогнозирования 
             foreach (Algorithm algorithm in algorithms)
             {
-                string prediction = algorithm.getPrediction(inputVector);
-                if (!prediction.Contains("ошибка"))
-                    sum = sum + Convert.ToDouble(prediction);
-                else
-                    log("метод getPrediction() вернул ошибку [" + prediction + "] при вызове с входным вектором" + inputVector.ToString(), System.Drawing.Color.Red);
+                double prediction = algorithm.getPrediction(input);
+                sum = sum + prediction;
             }
             //нахождение среднего арифметичкеского ответов комитета
 
-            //возврат полуечнного значения
+            //возврат полученного значения
 
-            return -1;
+            return sum / algorithms.Count;
         }
 
-        //█====================================================█
+        //█==================================█
         //█   узнать решение системы принятия решений          █
-        //█====================================================█
+        //█==================================█
         //узнать решение системы принятия решений для одного окна
         //возвращает количество единиц котируемой валюты, которое нужно купить или продать (если возвращено значение меньше нуля)
-        public double getDecision()
+        public double getDecision(string[] input)
         {
             //Среднее арифметическое прогнозов алгоритмов
             //!!!!!!!!!!!    ТРЕБУЕТ ДАЛЬНЕЙШЕЙ ОПТИМИЗАЦИИ !!!!!!!!!!!
             double decision = 0;
             double sum = 0;
             foreach (Algorithm algorithm in algorithms)
-            { sum += Convert.ToDouble(algorithm.lastPrediction); }
+            { sum += Convert.ToDouble(algorithm.getPrediction(input)); }
             decision = sum / algorithms.Count;
             return decision;
         }
+        public string test(DateTime date1, DateTime date2, string rawDatasetFilePath)
+        {
+            if (date1 < date2)
+            {
+                foreach (Algorithm algorithm in algorithms)
+                    algorithm.runGetPredictionScript();
+                while (date1 < date2)
+                {
+                    bool dateExist = false;
+                    string dateStr = "";
+                    if (date1.Day < 10) dateStr += "0" + date1.Day.ToString(); else dateStr += date1.Day.ToString();
+                    dateStr += '/';
+                    if (date1.Month < 10) dateStr += "0" + date1.Month.ToString(); else dateStr += date1.Month.ToString();
+                    dateStr += '/';
+                    dateStr += date1.Year.ToString().Substring(2, 2);
 
+                    int windowSize = Convert.ToInt32(algorithms[0].getValueByName("window_size"));
+                    //+1 для заголовка;+1 для нормализации i/(i-1)
+                    string[] input = new string[windowSize+1+1];
+                    var allLines = skipEmptyLines(File.ReadAllLines(rawDatasetFilePath));
+                    //копирование заголовка
+                    input[0] = allLines[0];
+                    for (int i = 1; i < allLines.Length; i++)
+                    {
+
+                        if (allLines[i].Contains(dateStr))
+                        {
+                            dateExist = true;
+                            for (int j = 0; j < windowSize+1; j++)
+                            { //    запись в БД
+                              // int lineID = Algorithms[a].h.addByParentId(windowID, "name:" + (j + 1).ToString() + "stLine,count:" + allLines[1].Split(',').Length );
+                              //j+1, так как первая строка - заголовок
+                                input[j+1] = allLines[i - windowSize  + j];
+                            }
+                        }
+                    }
+                    double y = 0;
+                    if (dateExist)
+                    {
+                        input = prepareDataset(input, algorithms[0].getValueByName("drop_columns"));
+
+                        y = getDecision(input);
+
+                    }
+                    else
+                    {
+                        log("дата " + dateStr + " не найдена в файле " + rawDatasetFilePath);
+                    }
+
+                    if (period == "day")
+                        date1 = date1.AddDays(1);
+                    if (period == "hour")
+                        date1 = date1.AddHours(1);
+                }
+            }
+            else
+                log("date1>date2 !");
+            return "expert has been tested";
+        }
         public void Add_Algorithm(Algorithm algorithm)
         {
             algorithms.Add(algorithm);
@@ -94,24 +150,20 @@ namespace Экспертная_система
 
         //метод делающий из временного ряда (*.csv) датасет, пригодный для передачи в train.py скрипт
         //возвращает путь к файлу датасета
-        public string prepareDataset(string inputFile, string dropColumn)
+        public string savePreparedDataset(string inputFile, string dropColumn)
+        {
+            File.WriteAllLines(inputFile.Replace(".txt", "-dataset.txt"), prepareDataset(inputFile, dropColumn));
+            return inputFile.Replace(".txt", "-dataset.txt");
+        }
+        public string[] prepareDataset(string inputFile, string dropColumn)
+        {
+            var allLines = skipEmptyLines(File.ReadAllLines(inputFile));
+            return prepareDataset(allLines, dropColumn);
+        }
+
+        public string[] prepareDataset(string[] allLines, string dropColumn)
         {
             List<int> colDropInd;
-            var allLines = File.ReadAllLines(inputFile);
-            //пропуск пустых строк
-            List<string> filledLines = new List<string>();
-            foreach (string line in allLines)
-            {
-                if (line != "")
-                {
-                    filledLines.Add(line);
-                }
-            }
-            allLines = new string[filledLines.Count];
-            for (int i = 0; i < allLines.Length; i++)
-            {
-                allLines[i] = filledLines[i];
-            }
 
             // int windowSie = Convert.ToInt16(algorithms[a].getValueByName("windowSize"));
             string[] featuresNames = allLines[0].Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
@@ -241,21 +293,10 @@ namespace Экспертная_система
                 toWrite[i + 1] = toWrite[i + 1].Remove(toWrite[i + 1].Length - 1, 1);
             }
 
-
-            File.WriteAllLines(inputFile.Replace(".txt", "-dataset.txt"), toWrite);
-            return inputFile.Replace(".txt", "-dataset.txt");
+            return toWrite;
         }
 
-        private void normalizeInputVector(double[,] dataset)
-        {
-            for (int i = 0; i < dataset.GetLength(0); i++)
-            {
-                for (int j = 0; j < dataset.GetLength(1); j++)
-                {
 
-                }
-            }
-        }
 
         public Hyperparameters h()
         {
@@ -276,7 +317,8 @@ namespace Экспертная_система
             form1.logDelegate = new Form1.LogDelegate(form1.delegatelog);
             form1.logBox.Invoke(form1.logDelegate, form1.logBox, s, System.Drawing.Color.White);
         }
-        double[,] normalize1(double[,] inputDataset)
+
+        private double[,] normalize1(double[,] inputDataset)
         {
 
             ////////////////////////////////////////////////
@@ -306,7 +348,8 @@ namespace Экспертная_система
             }
             return normalizedDataset2;
         }
-        double[,] normalize2(double[,] inputDataset)
+
+        private double[,] normalize2(double[,] inputDataset)
         {
 
             ////////////////////////////////////////////////
@@ -336,13 +379,14 @@ namespace Экспертная_система
             }
             return normalizedDataset2;
         }
-        double[,] levelOff1(double[,] inputDataset)
+
+        private double[,] levelOff1(double[,] inputDataset)
         {
             double[,] levelOffDataset = new double[inputDataset.GetLength(0), inputDataset.GetLength(1)];
             /////////////////////////////////
             //////     СГЛАЖИВАНИЕ    ///////
             /////////////////////////////////
-            for (int i = 0; i < inputDataset.GetLength(0) - 1; i++)
+            for (int i = 0; i < inputDataset.GetLength(0) ; i++)
             {
                 for (int k = 0; k < inputDataset.GetLength(1); k++)
                 {
@@ -367,13 +411,14 @@ namespace Экспертная_система
             }
             return levelOffDataset;
         }
-        double[,] levelOff2(double[,] inputDataset)
+
+        private double[,] levelOff2(double[,] inputDataset)
         {
             double[,] levelOffDataset = new double[inputDataset.GetLength(0), inputDataset.GetLength(1)];
             /////////////////////////////////
             //////     СГЛАЖИВАНИЕ    ///////
             /////////////////////////////////
-            for (int i = 0; i < inputDataset.GetLength(0) - 1; i++)
+            for (int i = 0; i < inputDataset.GetLength(0) ; i++)
             {
                 for (int k = 0; k < inputDataset.GetLength(1); k++)
                 {
@@ -394,7 +439,8 @@ namespace Экспертная_система
             }
             return levelOffDataset;
         }
-        double[,] scale(double[,] inputDataset)
+
+        private double[,] scale(double[,] inputDataset)
         {
             //масштабирование 
 
@@ -431,8 +477,34 @@ namespace Экспертная_система
             }
             return scaleedDataset;
         }
+
+        private string[] skipEmptyLines(string[] allLines)
+        {
+
+            //пропуск пустых строк
+            List<string> filledLines = new List<string>();
+            foreach (string line in allLines)
+            {
+                if (line != "")
+                {
+                    filledLines.Add(line);
+                }
+            }
+            var res = new string[filledLines.Count];
+            for (int i = 0; i < allLines.Length; i++)
+            {
+                res[i] = filledLines[i];
+            }
+
+            return res;
+        }
     }
 }
+/* double[,] csvToDoubleArray(string[] csv)
+         { }
+         string[] doubleArrayToCSV(double[,] doubleArray)
+         { }*/
+
 /*
          inputVector = new double[allLines.Length - windowSie, windowSie, allLines[1].Split(',').Length];
          //формирование входного вектора начинается с позиции последней строки первого окна

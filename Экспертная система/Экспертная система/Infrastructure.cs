@@ -16,7 +16,13 @@ namespace Экспертная_система
             h = new Hyperparameters(form1);
 
             form1.logBox.Text += (Environment.MachineName);
-
+            if (Environment.MachineName == "DESKTOP-B3G20T0")
+            {
+                form1.trackBar1.SetBounds(1000, 1000, 10, 10);
+                form1.panel1.SetBounds(500, 0, 700, 650);
+                form1.logBox.SetBounds(0, 0, 500, 650);
+                form1.picBox.SetBounds(500, 0, 700, 1000);
+            }
             /////////чтене файла конфигурации///////////////////////
             var configLines = File.ReadAllLines("config.txt");
 
@@ -73,8 +79,8 @@ namespace Экспертная_система
         }
         void newLog()
         {
-            logPath = h.getValueByName("logPath") + DateTime.Now.ToString().Replace(':', '-') + '-' + DateTime.Now.Millisecond.ToString() + ".txt";
-            var logs = System.IO.Directory.GetFiles(h.getValueByName("logPath"));
+            logPath = h.getValueByName("log_path") + DateTime.Now.ToString().Replace(':', '-') + '-' + DateTime.Now.Millisecond.ToString() + ".txt";
+            var logs = System.IO.Directory.GetFiles(h.getValueByName("log_path"));
 
             if (logs.Length > maxlogFilesCount)
             {

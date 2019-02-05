@@ -2,19 +2,14 @@
 {
     public class LSTM_1 : Algorithm
     {
-        //public Form1 form1;
+
         public LSTM_1(Form1 form1, string name) : base(form1, name)
         {
+            
             h.add("predicted_column_index:2");
-            h.add("drop_column:<DATE>");
+            h.add("drop_columns:<TIME>;<TICKER>;<PER>;<DATE>;<VOL>");
 
-            h.add("trainScriptPath:" + form1.pathPrefix + "Экспертная система\\Экспертная система\\Алгоритмы прогнозирования\\" + name + "\\trainScript.py");
-            trainScriptPath = h.getValueByName("trainScriptPath");
-            jsonFilePath = System.IO.Path.GetDirectoryName(trainScriptPath) + "\\json.txt";
-            predictionsFilePath = System.IO.Path.GetDirectoryName(trainScriptPath) + "\\predictions.txt";
-            h.add("predictionsFilePath", predictionsFilePath);
-
-            h.add("save_folder:none");
+          
             ///////////////////////
             //СТРУКТУРА НЕЙРОСЕТИ//
             ///////////////////////

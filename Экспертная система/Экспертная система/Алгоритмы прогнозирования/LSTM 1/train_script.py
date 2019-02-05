@@ -1,5 +1,5 @@
 try:
-    prediction_algorithm_name = 'LSTM_1'
+    prediction_algorithm_name = 'LSTM 1'
     def log(s):
         print(s)
     log("СКРИПТ ОБУЧЕНИЯ " + prediction_algorithm_name + " ЗАПУЩЕН...") 
@@ -15,7 +15,7 @@ try:
 
     import argparse
     import numpy
-    import json
+    
     from keras.models import Sequential
     from keras.layers import Dense
     from keras.layers import LSTM
@@ -26,8 +26,8 @@ try:
 
     def createParser():
         parser = argparse.ArgumentParser()
-        parser.add_argument('--jsonFile',type=str,default='D:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\LSTM 1\json.txt')
-       # parser.add_argument('--jsonFile',type=str,default='C:\Users\anton\Рабочий стол\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\LSTM 1\json.txt')
+        parser.add_argument('--json_file_path',type=str,default='D:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\LSTM 1\json.txt')
+       # parser.add_argument('--json_file_path',type=str,default='C:\Users\anton\Рабочий стол\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\LSTM 1\json.txt')
         return parser
     def h(nodeName):
         return  jsonObj["baseNode"][nodeName]["value"]
@@ -43,13 +43,13 @@ try:
 
     parser = createParser()
     args = parser.parse_args()
-    jsonFile = open(args.jsonFile, 'r')
+    jsonFile = open(args.json_file_path, 'r')
     jsontext = jsonFile.read()
     jsonFile.close()
     jsonObj = json.loads(jsontext)
     #print(json.dumps(jsonObj,indent=12,ensure_ascii=False))  
 
-    inputFile = open(h("inputFile"))
+    inputFile = open(h("input_file"))
 
     allLines = inputFile.readlines()
     dataset = numpy.zeros((len(allLines) - 1, len(allLines[0].split(';'))),dtype=float)
@@ -99,9 +99,8 @@ try:
     history = model.fit(train_X, train_y, epochs=(int)(h("number_of_epochs")), batch_size=(int)(h("batch_size")), validation_data=(test_X, test_y), verbose=2, shuffle=False) 
     
     if h("save_folder") != "none":
-        model.save_weights(save_folder + '\\' + prediction_algorithm_name + '_weights.h5')
-        save_path = namespace.save_folder + u'\\' + prediction_algorithm_name
-        + ".h5"
+        model.save_weights(h("save_folder") + '\\' +  'weights.h5')
+        save_path = h("save_folder")  + u'\\' + 'weights.h5'
         log("сохранение модели: " + save_path)
 
         # no such file or directory -> парсер аргументов командной строки
@@ -122,14 +121,14 @@ try:
         predicted[i,0] = predicted[i,0] - avg
         predicted[i,0] = predicted[i,0] * 100
         predicted[i,0] = predicted[i,0] + 0.5
-    predictionsFile = open(h("predictionsFilePath"), 'w')
+    predictionsFile = open(h("predictions_file_path"), 'w')
     head = ''
     for i in range(0,len(allLines[0].split(';'))):
         head = head + allLines[0].split(';')[i] + ';'
 
     head = head[0:-1]
     head = head.replace('\n',';')
-    log(h("predictionsFilePath"))
+    log(h("predictions_file_path"))
     head = head + '(predicted -> )' + allLines[0].split(';')[(int)(h("predicted_column_index"))] 
    # if  head[:-1]==';':
    #     head = head[0:-1]
@@ -145,4 +144,4 @@ try:
     log("> время создания и записи тестового прогноза  : "+ getTime(tempTime)) 
     log("____END____")    
 except ValueError as e:
-    print("EXCEPTION", e)
+    print("EXCEPTION: ", e)
