@@ -25,7 +25,7 @@ namespace Экспертная_система
             h.add("name", name);
             mainFolder = form1.pathPrefix + "Экспертная система\\Экспертная система\\Алгоритмы прогнозирования\\" + name + "\\";
             getPredictionFilePath = mainFolder + "get_prediction.py";
-            h.add("get_prediction:" + getPredictionFilePath);
+            h.add("get_prediction_script_path:" + getPredictionFilePath);
             trainScriptPath = mainFolder + "train_script.py";
             h.add("train_script_path:" + trainScriptPath);
             jsonFilePath = mainFolder + "json.txt";

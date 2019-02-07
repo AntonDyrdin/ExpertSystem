@@ -15,18 +15,19 @@ namespace Экспертная_система
         private string period = "day";
         //критерий оптимальности
         public double target_function;
-
+        public Hyperparameters H;
         //список алгоритмов(комитет)
         public List<Algorithm> algorithms;
-
-        public Expert(Form1 form1)
+        private int committeeNodeID;
+        public Expert(string expertName, Form1 form1)
         {
             this.form1 = form1;
+            H = new Hyperparameters(form1);
             algorithms = new List<Algorithm>();
+            Directory.CreateDirectory(form1.pathPrefix + expertName);
+            committeeNodeID = H.add("name:committee");
         }
-        //█============================█
-        //█            Обучить все алгоритмы                   █
-        //█============================█
+
         public string trainAllAlgorithms()
         {
             for (int i = 0; i < algorithms.Count; i++)
@@ -37,9 +38,6 @@ namespace Экспертная_система
         //получить прогноз для одного окна  
         //inputVector - матрица входных данных, в которой нулевой столбец [i,0] - прогнозируемая величина, а остальные столбцы - предикторы.
         //каждая строка - значения предикторов в j-ый временной интервал
-        //█===========================█
-        //█            Получить прогноз                        █
-        //█===========================█
         public double getPrediction(string[] input)
         {
             double sum = 0;
@@ -56,9 +54,6 @@ namespace Экспертная_система
             return sum / algorithms.Count;
         }
 
-        //█==================================█
-        //█   узнать решение системы принятия решений          █
-        //█==================================█
         //узнать решение системы принятия решений для одного окна
         //возвращает количество единиц котируемой валюты, которое нужно купить или продать (если возвращено значение меньше нуля)
         public double getDecision(string[] input)
@@ -90,7 +85,7 @@ namespace Экспертная_система
 
                     int windowSize = Convert.ToInt32(algorithms[0].getValueByName("window_size"));
                     //+1 для заголовка;+1 для нормализации i/(i-1)
-                    string[] input = new string[windowSize+1+1];
+                    string[] input = new string[windowSize + 1 + 1];
                     var allLines = skipEmptyLines(File.ReadAllLines(rawDatasetFilePath));
                     //копирование заголовка
                     input[0] = allLines[0];
@@ -100,11 +95,11 @@ namespace Экспертная_система
                         if (allLines[i].Contains(dateStr))
                         {
                             dateExist = true;
-                            for (int j = 0; j < windowSize+1; j++)
+                            for (int j = 0; j < windowSize + 1; j++)
                             { //    запись в БД
                               // int lineID = Algorithms[a].h.addByParentId(windowID, "name:" + (j + 1).ToString() + "stLine,count:" + allLines[1].Split(',').Length );
                               //j+1, так как первая строка - заголовок
-                                input[j+1] = allLines[i - windowSize  + j];
+                                input[j + 1] = allLines[i - windowSize + j];
                             }
                         }
                     }
@@ -298,11 +293,21 @@ namespace Экспертная_система
 
 
 
-        public Hyperparameters h()
+        public void synchronizeHyperparameters()
         {
-            return algorithms[0].h;
+            for (int i = 0; i < algorithms.Count; i++)
+                H.addBranch(algorithms[i].h, algorithms[i].h.getValueByName("algorithm_name"), committeeNodeID);
+            for (int i = 0; i < H.nodes.Count; i++)
+            {
+                if (H.nodes[i].parentID == 0)
+                    for (int j = 0; j < algorithms.Count; j++)
+                    {
+                        algorithms[j].h.addNode(H.nodes[i], 0);
+                    }
+            }
         }
-
+        public Hyperparameters h()
+        { return algorithms[0].h; }
 
         [NonSerializedAttribute]
         private Form1 form1;
@@ -386,7 +391,7 @@ namespace Экспертная_система
             /////////////////////////////////
             //////     СГЛАЖИВАНИЕ    ///////
             /////////////////////////////////
-            for (int i = 0; i < inputDataset.GetLength(0) ; i++)
+            for (int i = 0; i < inputDataset.GetLength(0); i++)
             {
                 for (int k = 0; k < inputDataset.GetLength(1); k++)
                 {
@@ -418,7 +423,7 @@ namespace Экспертная_система
             /////////////////////////////////
             //////     СГЛАЖИВАНИЕ    ///////
             /////////////////////////////////
-            for (int i = 0; i < inputDataset.GetLength(0) ; i++)
+            for (int i = 0; i < inputDataset.GetLength(0); i++)
             {
                 for (int k = 0; k < inputDataset.GetLength(1); k++)
                 {

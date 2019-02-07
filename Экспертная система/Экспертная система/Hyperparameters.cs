@@ -24,6 +24,35 @@ namespace Экспертная_система
         public List<Node> nodes = new List<Node>();
         public int Y = 0;
         public bool lightsOn = false;
+        public void addBranch(Hyperparameters branch, string branchName, int parentId)
+        {
+            int lastNodeId = newNodeIdWillBe;
+            for (int i = 0; i < branch.nodes.Count; i++)
+            {
+                Node newNode = branch.nodes[i].Clone();
+                if (newNode.parentID == -1)
+                {
+                    newNode.parentID = parentId;
+                    newNode.setAttribute("name", branchName);
+                }
+                else
+                    newNode.parentID = lastNodeId + newNode.parentID;
+
+                newNode.ID = lastNodeId + newNode.ID;
+                nodes.Add(newNode);
+
+                newNodeIdWillBe++;
+            }
+        }
+        public void addNode(Node node, int parentId)
+        {
+            Node newNode = node.Clone();
+            newNode.parentID = parentId;
+            newNode.ID = newNodeIdWillBe ;
+            nodes.Add(newNode);
+
+            newNodeIdWillBe++;
+        }
         ////////////////// ADD //////////////////////////////
         public void add(int parentID, string name, string category, string categories)
         {
@@ -77,13 +106,11 @@ namespace Экспертная_система
         //CONST
         public void add(string name, int value)
         {
-            add("name:" + name + ",value:" + value
-               + ",is_categorical:false,is_change:false,is_change_up_or_down:false,is_const:true");
+            add("name:" + name + ",value:" + value  );
         }
         public void add(string name, string value)
         {
-            add("name:" + name + ",value:" + value
-               + ",is_categorical:false,is_change:false,is_change_up_or_down:false,is_const:true");
+            add("name:" + name + ",value:" + value );
         }
         public void add(string name, int value, int min, int max)
         {
@@ -240,14 +267,14 @@ namespace Экспертная_система
         }
 
 
-        public void draw(int rootId, PictureBox target_pictureBox, Form1 form1, int h, int columnWidth)
+        public void draw(int rootId, PictureBox target_pictureBox, Form1 form1, int fontDepth, int columnWidth)
         {
             bool isFirstTime = true;
             drawHyperparametersAgain:
 
             totalAttributesNumber = 0;
             deepnessRate = 0;
-            this.h = h;
+            this.h = fontDepth;
             currentH = 0;
             mainDepth = Convert.ToInt16(h * 0.65);
             this.columnWidth = columnWidth;
@@ -259,7 +286,7 @@ namespace Экспертная_система
 
             bitmap = new Bitmap(picBox.Width, picBox.Height);
             g = Graphics.FromImage(bitmap);
-             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
             g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBilinear;
             recurciveAttributeDRAW(rootId);
             refresh();
@@ -567,16 +594,19 @@ namespace Экспертная_система
         }
         public void drawString(string s, double depth, double x, double y)
         {
+            y += Y;
             if (x > picBox.Width)
                 picBox.Width = Convert.ToInt16(x);
             else
-            if (y > picBox.Width)
+            if (y > picBox.Height)
                 picBox.Height = Convert.ToInt16(y);
             else
                 try
                 {
                     if (lightsOn)
-                        g.DrawString(s, new Font(form1.logBox.Font.Name, Convert.ToInt16(depth)), Brushes.Black, new Point(Convert.ToInt16(Math.Round(x)), Convert.ToInt16(Math.Round(y))));
+                    {
+                        g.DrawString(s, new Font(form1.logBox.Font.Name, Convert.ToInt16(depth)), Brushes.White, new Point(Convert.ToInt16(Math.Round(x)), Convert.ToInt16(Math.Round(y))));
+                    }
                     else
                         g.DrawString(s, new Font(form1.logBox.Font.Name, Convert.ToInt16(depth)), Brushes.White, new Point(Convert.ToInt16(Math.Round(x)), Convert.ToInt16(Math.Round(y))));
                 }
@@ -648,6 +678,16 @@ public class Node
 
             addAttribute(rawAttributes[i]);
         }
+    }
+
+    public Node Clone()
+    {
+        string attributesString = "";
+        foreach (Attribute attr in attributes)
+            attributesString += attr.name + ':' + attr.value + ',';
+        attributesString = attributesString.Remove(attributesString.Length - 1, 1);
+        Node newNode = new Node(this.ID, this.parentID, attributesString);
+        return newNode;
     }
     public void addAttribute(string nameANDvalue)
     {

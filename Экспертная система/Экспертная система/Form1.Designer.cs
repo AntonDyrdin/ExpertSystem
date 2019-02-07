@@ -58,7 +58,7 @@
             // 
             this.picBox.BackColor = System.Drawing.Color.Black;
             this.picBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.picBox.Location = new System.Drawing.Point(3, 0);
+            this.picBox.Location = new System.Drawing.Point(6, 3);
             this.picBox.Name = "picBox";
             this.picBox.Size = new System.Drawing.Size(1376, 1000);
             this.picBox.TabIndex = 37;
@@ -73,7 +73,7 @@
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Margin = new System.Windows.Forms.Padding(2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1382, 1080);
+            this.panel1.Size = new System.Drawing.Size(1382, 1030);
             this.panel1.TabIndex = 38;
             // 
             // trackBar1
