@@ -14,10 +14,10 @@ namespace Экспертная_система
             this.form1 = form1;
             addByParentId(-1, "name:baseNode");
         }
-        public Hyperparameters(string path,Form1 form1)
+        public Hyperparameters(string path, Form1 form1)
         {
             this.form1 = form1;
-            fromJSON(path,-1);
+            fromJSON(path, -1);
         }
         [NonSerializedAttribute]
         public Form1 form1;
@@ -48,11 +48,24 @@ namespace Экспертная_система
                 newNodeIdWillBe++;
             }
         }
-        public void addNode(Node node, int parentId)
+
+        public void deleteBranch(int ID)
+        {
+            var forks = getNodesByparentID(ID);
+            foreach (Node fork in forks)
+                deleteBranch(fork.ID);
+            nodes.RemoveAt(ID);
+            newNodeIdWillBe--;
+            for (int i = ID; i < nodes.Count; i++)
+            {
+                nodes[i].ID--;
+            }
+        }
+        public void addNode(Node node, int parentID)
         {
             Node newNode = node.Clone();
-            newNode.parentID = parentId;
-            newNode.ID = newNodeIdWillBe ;
+            newNode.parentID = parentID;
+            newNode.ID = newNodeIdWillBe;
             nodes.Add(newNode);
 
             newNodeIdWillBe++;
@@ -110,11 +123,11 @@ namespace Экспертная_система
         //CONST
         public void add(string name, int value)
         {
-            add("name:" + name + ",value:" + value  );
+            add("name:" + name + ",value:" + value);
         }
         public void add(string name, string value)
         {
-            add("name:" + name + ",value:" + value );
+            add("name:" + name + ",value:" + value);
         }
         public void add(string name, int value, int min, int max)
         {
@@ -197,17 +210,16 @@ namespace Экспертная_система
         }
         public List<Node> getNodeByName(string name)
         {
-            List<Node> nodes = new List<Node>();
-            Node node = null;
+            List<Node> retNodes = new List<Node>();
             for (int i = 0; i < nodes.Count; i++)
                 if (nodes[i].getAttributeValue("name") == name)
-                    nodes.Add(nodes[i]);
-            if (node == null)
+                    retNodes.Add(nodes[i]);
+            if (retNodes == null)
             {
                 log("узел " + name + " не найден", System.Drawing.Color.Red);
                 return null;
             }
-            return nodes;
+            return retNodes;
         }
 
         ////////////////// SET //////////////////////////////
@@ -722,6 +734,10 @@ public class Node
     public bool isChange()
     {
         return Convert.ToBoolean(getAttributeValue("is_change"));
+    }
+    public string name()
+    {
+        return getAttributeValue("name");
     }
     public string getValue()
     {

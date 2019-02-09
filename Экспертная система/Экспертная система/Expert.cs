@@ -298,15 +298,23 @@ namespace Экспертная_система
 
         public void synchronizeHyperparameters()
         {
+            var toReWrite = H.getNodesByparentID(committeeNodeID);
+            for (int i = 0; i < toReWrite.Count; i++)
+                H.deleteBranch(toReWrite[i].ID);
             for (int i = 0; i < algorithms.Count; i++)
                 H.addBranch(algorithms[i].h, algorithms[i].h.getValueByName("algorithm_name"), committeeNodeID);
             for (int i = 0; i < H.nodes.Count; i++)
             {
-                if (H.nodes[i].parentID == 0)
+                if (H.nodes[i].parentID == 0 && H.nodes[i].name() != "committee")
+                {
+
                     for (int j = 0; j < algorithms.Count; j++)
                     {
+                        if (algorithms[j].h.getNodeByName(H.nodes[i].name()).Count!=0)
+                            algorithms[j].h.deleteBranch(algorithms[j].h.getNodeByName(H.nodes[i].name())[0].ID);
                         algorithms[j].h.addNode(H.nodes[i], 0);
                     }
+                }
             }
         }
         public void Open()
@@ -315,7 +323,17 @@ namespace Экспертная_система
             {
                 if (Path.GetFileName(expertFolder) == expertName)
                 {
-                    H=new Hyperparameters(File.ReadAllText(expertFolder + "\\json.txt"), form1);
+                    H = new Hyperparameters(File.ReadAllText(expertFolder + "\\json.txt"), form1);
+                    committeeNodeID = H.getNodeByName("committee")[0].ID;
+                    var algorithmBranches = H.getNodesByparentID(committeeNodeID);
+                    foreach (Node algorithmBranch in algorithmBranches)
+                    {
+                        if (algorithmBranch.name() == "LSTM_1")
+                            algorithms.Add(new LSTM_1(form1, "LSTM_1"));
+                        if (algorithmBranch.name() == "ANN_1")
+                            algorithms.Add(new ANN_1(form1, "ANN_1"));
+                        algorithms[algorithms.Count - 1].h = new Hyperparameters(H.toJSON(algorithmBranch.ID), form1);
+                    }
                 }
             }
         }

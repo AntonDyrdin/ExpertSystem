@@ -36,7 +36,7 @@ namespace Экспертная_система
             h.add("weights_file_path", mainFolder+ "weights.h5");
 
 
-            h.add("save_folder:" + mainFolder);
+            h.add("save_folder:" + mainFolder);        
         }
 
         private Process predict_process;
