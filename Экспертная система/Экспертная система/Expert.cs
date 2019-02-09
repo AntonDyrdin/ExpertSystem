@@ -7,7 +7,7 @@ namespace Экспертная_система
     [Serializable]
     public class Expert
     {
-        public double[,,] inputVector;
+        public string expertName;
         public double[,] dataset;
         public double[,] dataset1;
         public double[,] dataset2;
@@ -18,14 +18,17 @@ namespace Экспертная_система
         public Hyperparameters H;
         //список алгоритмов(комитет)
         public List<Algorithm> algorithms;
-        private int committeeNodeID;
+        public int committeeNodeID;
+        public string path_prefix;
         public Expert(string expertName, Form1 form1)
         {
             this.form1 = form1;
+            path_prefix = form1.pathPrefix;
             H = new Hyperparameters(form1);
             algorithms = new List<Algorithm>();
             Directory.CreateDirectory(form1.pathPrefix + expertName);
             committeeNodeID = H.add("name:committee");
+            this.expertName = expertName;
         }
 
         public string trainAllAlgorithms()
@@ -305,6 +308,22 @@ namespace Экспертная_система
                         algorithms[j].h.addNode(H.nodes[i], 0);
                     }
             }
+        }
+        public void Open()
+        {
+            foreach (string expertFolder in Directory.GetDirectories(path_prefix))
+            {
+                if (Path.GetFileName(expertFolder) == expertName)
+                {
+                    H=new Hyperparameters(File.ReadAllText(expertFolder + "\\json.txt"), form1);
+                }
+            }
+        }
+        public string Save()
+        {
+            string path = path_prefix + expertName + "\\json.txt";
+            File.WriteAllText(path, H.toJSON(0));
+            return path;
         }
         public Hyperparameters h()
         { return algorithms[0].h; }

@@ -14,7 +14,11 @@ namespace Экспертная_система
             this.form1 = form1;
             addByParentId(-1, "name:baseNode");
         }
-
+        public Hyperparameters(string path,Form1 form1)
+        {
+            this.form1 = form1;
+            fromJSON(path,-1);
+        }
         [NonSerializedAttribute]
         public Form1 form1;
         public PictureBox picBox;
