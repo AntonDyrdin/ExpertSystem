@@ -13,7 +13,7 @@ namespace Экспертная_система
         public int maxlogFilesCount = 10;
         public Infrastructure(Form1 form1)
         {
-            h = new Hyperparameters(form1);
+            h = new Hyperparameters(form1, "Infrastructure");
 
             form1.logBox.Text += (Environment.MachineName);
             if (Environment.MachineName == "DESKTOP-B3G20T0")

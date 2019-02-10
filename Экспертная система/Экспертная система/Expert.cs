@@ -24,7 +24,7 @@ namespace Экспертная_система
         {
             this.form1 = form1;
             path_prefix = form1.pathPrefix;
-            H = new Hyperparameters(form1);
+            H = new Hyperparameters(form1, expertName);
             algorithms = new List<Algorithm>();
             Directory.CreateDirectory(form1.pathPrefix + expertName);
             committeeNodeID = H.add("name:committee");
@@ -35,7 +35,6 @@ namespace Экспертная_система
         {
             for (int i = 0; i < algorithms.Count; i++)
                 log(algorithms[i].train());
-
             return "";
         }
         //получить прогноз для одного окна  
@@ -297,12 +296,18 @@ namespace Экспертная_система
 
 
         public void synchronizeHyperparameters()
-        {
+        {          //приращение баз алгоритмов к общей базе эксперта
             var toReWrite = H.getNodesByparentID(committeeNodeID);
-            for (int i = 0; i < toReWrite.Count; i++)
-                H.deleteBranch(toReWrite[i].ID);
+            //удаление старых записей
+        for (int i = 0; i < toReWrite.Count; i++)
+            H.deleteBranch(toReWrite[i].ID);
+
+            //приращение новых к узлу  "committee"
             for (int i = 0; i < algorithms.Count; i++)
-                H.addBranch(algorithms[i].h, algorithms[i].h.getValueByName("algorithm_name"), committeeNodeID);
+            {
+           H.addBranch(algorithms[i].h, algorithms[i].name, committeeNodeID);
+                }
+         //передача параметров эксперта в базы алгоритмов
             for (int i = 0; i < H.nodes.Count; i++)
             {
                 if (H.nodes[i].parentID == 0 && H.nodes[i].name() != "committee")
@@ -315,7 +320,7 @@ namespace Экспертная_система
                         algorithms[j].h.addNode(H.nodes[i], 0);
                     }
                 }
-            }
+            }     
         }
         public void Open()
         {
@@ -341,6 +346,8 @@ namespace Экспертная_система
         {
             string path = path_prefix + expertName + "\\json.txt";
             File.WriteAllText(path, H.toJSON(0));
+            foreach (Algorithm algorithm in algorithms)
+               algorithm.Save(path_prefix+expertName+"\\"+algorithm.name + "\\");
             return path;
         }
         public Hyperparameters h()

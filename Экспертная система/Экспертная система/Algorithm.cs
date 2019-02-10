@@ -17,12 +17,12 @@ namespace Экспертная_система
         public string args;
         public double stdDev;
         public double accuracy;
-
+        public string name;
         public Algorithm(Form1 form1, string name)
         {
-            h = new Hyperparameters(form1);
+            this.name = name;
+            h = new Hyperparameters(form1,name);
             this.form1 = form1;
-            h.add("name", name);
             mainFolder = form1.pathPrefix + "Экспертная система\\Экспертная система\\Алгоритмы прогнозирования\\" + name + "\\";
             getPredictionFilePath = mainFolder + "get_prediction.py";
             h.add("get_prediction_script_path:" + getPredictionFilePath);
@@ -180,9 +180,7 @@ namespace Экспертная_система
             }
             return Y;
         }
-        //█======================================================█
-        //█            stop_get_prediction_script                █
-        //█======================================================█
+
         public void stop_get_prediction_script()
         {
             Continue = false;
@@ -193,10 +191,7 @@ namespace Экспертная_система
             else
                 log(script_conclusion + predict_process_error_stream.ReadToEnd());
         }
-        //█===================█
-        //█//////train////////█
-        //█===================█
-        public System.Threading.Thread trainingThread;
+
         public string train()
         {
             if (h.getValueByName("input_file") == null)
@@ -204,17 +199,10 @@ namespace Экспертная_система
                 log("файл датасета не задан");
             }
 
-            File.WriteAllText(jsonFilePath, h.toJSON(0), System.Text.Encoding.Default);
+            File.WriteAllText(h.getValueByName("json_file_path"), h.toJSON(0), System.Text.Encoding.Default);
             args = "--json_file_path " + '"' + jsonFilePath + '"';
-            trainingThread = new System.Threading.Thread(trainingThreadMethod);
-            trainingThread.Start();
-            return "обучение алгоритма " + h.getValueByName("name") + "...";
-        }
-
-
-        public void trainingThreadMethod()
-        {
-            runPythonScript(trainScriptPath, args);
+          
+              runPythonScript(trainScriptPath, args);
 
             string[] predictionsCSV = null;
             //попытка прочитать данные из файла, полученного из скрипта 
@@ -228,7 +216,10 @@ namespace Экспертная_система
             {
                 getAccAndStdDev(predictionsCSV);
             }
+            return "обучение алгоритма " + h.getValueByName("name") + "...";
         }
+
+
         public void getAccAndStdDev(string[] predictionsCSV)
         {
             double sqrtSum = 0;
@@ -317,7 +308,9 @@ namespace Экспертная_система
             Process process = Process.Start(start);
             return process;
         }
-        public string getValueByName(string name)
+        public abstract string Save(string path);
+
+            public string getValueByName(string name)
         { return h.getValueByName(name); }
         public void setAttributeByName(string name, int value)
         { h.setAttributeByName(name, value); }

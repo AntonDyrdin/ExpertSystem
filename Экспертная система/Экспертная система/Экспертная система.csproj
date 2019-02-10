@@ -59,8 +59,8 @@
     <Compile Include="Hyperparameters.cs" />
     <Compile Include="ImgDataset.cs" />
     <Compile Include="Infrastructure.cs" />
-    <Compile Include="Алгоритмы прогнозирования\ANN 1\ANN 1.cs" />
-    <Compile Include="Алгоритмы прогнозирования\LSTM 1\LSTM 1.cs" />
+    <Compile Include="Алгоритмы прогнозирования\ANN_1\ANN 1.cs" />
+    <Compile Include="Алгоритмы прогнозирования\LSTM_1\LSTM 1.cs" />
     <Compile Include="Графическое отображение\PopulationVisualizer.cs" />
     <Compile Include="Графическое отображение\MultiParameterVisualizer.cs" />
     <Compile Include="Графическое отображение\ParameterVisualizer.cs" />
@@ -94,10 +94,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Алгоритмы прогнозирования\ANN 1\get_prediction.py" />
-    <Content Include="Алгоритмы прогнозирования\ANN 1\train_script.py" />
-    <Content Include="Алгоритмы прогнозирования\LSTM 1\get_prediction.py" />
-    <Content Include="Алгоритмы прогнозирования\LSTM 1\train_script.py" />
+    <Content Include="Алгоритмы прогнозирования\ANN_1\get_prediction.py" />
+    <Content Include="Алгоритмы прогнозирования\ANN_1\train_script.py" />
+    <Content Include="Алгоритмы прогнозирования\LSTM_1\get_prediction.py" />
+    <Content Include="Алгоритмы прогнозирования\LSTM_1\train_script.py" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

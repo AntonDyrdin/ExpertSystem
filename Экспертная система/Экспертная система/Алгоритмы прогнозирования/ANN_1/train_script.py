@@ -1,5 +1,5 @@
 ﻿try:
-    prediction_algorithm_name = 'ANN 1'
+    prediction_algorithm_name = 'ANN_1'
     def log(s):
         print(s)
     log("СКРИПТ ОБУЧЕНИЯ " + prediction_algorithm_name + " ЗАПУЩЕН...") 
@@ -29,16 +29,16 @@
         #parser.add_argument('--json_file_path',type=str,default='C:\\Users\\anton\\Рабочий стол\\MAIN\\Экспертная система\\Экспертная система\\Алгоритмы прогнозирования\\ANN 1\\json.txt')
         return parser
     def h(nodeName):
-        return  jsonObj["baseNode"][nodeName]["value"]
+        return  jsonObj[baseNodeName][nodeName]["value"]
 
     def h2(nodeName1,nodeName2):
-        return  jsonObj["baseNode"][nodeName1][nodeName2]["value"]
+        return  jsonObj[baseNodeName][nodeName1][nodeName2]["value"]
 
     def getAttr2(nodeName1,nodeName2,attrName):
-        return  jsonObj["baseNode"][nodeName1][nodeName2][attrName]
+        return  jsonObj[baseNodeName][nodeName1][nodeName2][attrName]
 
     def getAttr2int(nodeName1,nodeName2,attrName):
-        return  (int)(jsonObj["baseNode"][nodeName1][nodeName2][attrName])
+        return  (int)(jsonObj[baseNodeName][nodeName1][nodeName2][attrName])
 
     #парсинг json файла
     parser = createParser()
@@ -48,6 +48,7 @@
     jsonFile.close()
     jsonObj = json.loads(jsontext)
     #print(json.dumps(jsonObj,indent=12,ensure_ascii=False))  
+    baseNodeName=  next((v for i, v in enumerate(jsonObj.items()) if i == 0))[0]
 
 
     #превращение входного файла в плоскую таблицу значений предикторов

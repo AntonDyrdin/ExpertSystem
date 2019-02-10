@@ -1,20 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿using System.IO;
 namespace Экспертная_система
 {
     public class ANN_1 : Algorithm
     {
         // В данной ANN количество нейронов в первом полносвязном слое равно размеру окна 
-        public int window_size=10;
-        
+        public int window_size = 10;
+
 
         public ANN_1(Form1 form1, string name) : base(form1, name)
         {
-            h.add("algorithm_name","ANN_1");
 
             h.add("predicted_column_index:2");
             h.add("drop_columns:<TIME>;<TICKER>;<PER>;<DATE>;<VOL>");
@@ -24,7 +18,7 @@ namespace Экспертная_система
             //СТРУКТУРА НЕЙРОСЕТИ//
             ///////////////////////
             int NNscructNodeId = h.add("name:NN_sctruct");
-            h.addByParentId(NNscructNodeId, "name:layer1,value:Dense,neurons_count:"+ window_size.ToString());
+            h.addByParentId(NNscructNodeId, "name:layer1,value:Dense,neurons_count:" + window_size.ToString());
             h.addByParentId(NNscructNodeId, "name:layer2,value:Dense,neurons_count:6,activation:sigmoid");
             h.addByParentId(NNscructNodeId, "name:layer3,value:Dense,neurons_count:1,activation:sigmoid");
             //////////////////////
@@ -36,6 +30,18 @@ namespace Экспертная_система
             h.add("name:loss,value:mean_squared_error");
             h.add("name:optimizer,value:adam");
             h.add("window_size:" + window_size.ToString());
+        }
+        public override string Save(string path)
+        {
+            h.getNodeByName("json_file_path")[0].setValue(path + "json.txt");
+            Directory.CreateDirectory(path);
+            File.WriteAllText(h.getValueByName("json_file_path"), h.toJSON(0));
+            h.getNodeByName("weights_file_path")[0].setValue(path + "weights.h5");
+            /* try
+             {*/
+            File.Copy(mainFolder + "weights.h5", h.getValueByName("weights_file_path"),true);/* }
+            catch { }*/
+            return path;
         }
     }
 }

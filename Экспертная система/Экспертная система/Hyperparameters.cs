@@ -9,11 +9,16 @@ namespace Экспертная_система
     public class Hyperparameters
     {
         public int newNodeIdWillBe = 0;
-        public Hyperparameters(Form1 form1)
+        public Hyperparameters(Form1 form1, string baseNodeName)
         {
             this.form1 = form1;
-            addByParentId(-1, "name:baseNode");
+            addByParentId(-1, "name:" + baseNodeName);
         }
+        /*  public Hyperparameters(Form1 form1)
+          {
+              this.form1 = form1;
+              addByParentId(-1, "name:baseNode");
+          }     */
         public Hyperparameters(string path, Form1 form1)
         {
             this.form1 = form1;
@@ -51,15 +56,35 @@ namespace Экспертная_система
 
         public void deleteBranch(int ID)
         {
+            int nodesCount1 = nodes.Count;
+            recurciveDelete(ID);
+
+           for (int i = 0; i < nodes.Count; i++)
+            {
+                if (nodes[i].name() == "delete")
+                {
+                   nodes.RemoveAt(i);
+                   newNodeIdWillBe--;
+                    i--;
+                }
+            }
+           int nodesCount2 = nodes.Count;
+            for (int i = 0; i < nodes.Count; i++)
+            {                  if (nodes[i].ID>ID)
+                nodes[i].ID -= (nodesCount1 - nodesCount2);
+                if (nodes[i].parentID > ID)
+                    nodes[i].parentID -= (nodesCount1 - nodesCount2);
+            }     
+        }
+        void recurciveDelete(int ID)
+        {
             var forks = getNodesByparentID(ID);
             foreach (Node fork in forks)
-                deleteBranch(fork.ID);
-            nodes.RemoveAt(ID);
-            newNodeIdWillBe--;
-            for (int i = ID; i < nodes.Count; i++)
             {
-                nodes[i].ID--;
+                fork.setAttribute("name", "delete");
+                recurciveDelete(fork.ID);
             }
+            getNodeById(ID).setAttribute("name", "delete");
         }
         public void addNode(Node node, int parentID)
         {
@@ -144,9 +169,15 @@ namespace Экспертная_система
             }
             else
             {
-                log("не найден параметр по ID = " + ID.ToString(), System.Drawing.Color.Red);
-                return null;
+                for (int i = 0; i < nodes.Count; i++)
+                    if (nodes[i].ID == ID)
+                        return nodes[i];
+                for (int i = ID; i >= 0; i--)
+                    if (nodes[i].ID == ID)
+                        return nodes[i];
             }
+            log("не найден параметр по ID = " + ID.ToString(), System.Drawing.Color.Red);
+            return null;
         }
 
         private int lastIdBySameParentId = 0;

@@ -1,5 +1,5 @@
 try:
-    prediction_algorithm_name = 'LSTM 1'
+    prediction_algorithm_name = 'LSTM_1'
     def log(s):
         print(s)
     log("СКРИПТ ОБУЧЕНИЯ " + prediction_algorithm_name + " ЗАПУЩЕН...") 
@@ -26,20 +26,21 @@ try:
 
     def createParser():
         parser = argparse.ArgumentParser()
-        parser.add_argument('--json_file_path',type=str,default='D:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\LSTM 1\json.txt')
+        parser.add_argument('--json_file_path',type=str,default='D:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\LSTM_1\json.txt')
        # parser.add_argument('--json_file_path',type=str,default='C:\Users\anton\Рабочий стол\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\LSTM 1\json.txt')
         return parser
+  
     def h(nodeName):
-        return  jsonObj["baseNode"][nodeName]["value"]
+        return  jsonObj[baseNodeName][nodeName]["value"]
 
     def h2(nodeName1,nodeName2):
-        return  jsonObj["baseNode"][nodeName1][nodeName2]["value"]
+        return  jsonObj[baseNodeName][nodeName1][nodeName2]["value"]
 
     def getAttr2(nodeName1,nodeName2,attrName):
-        return  jsonObj["baseNode"][nodeName1][nodeName2][attrName]
+        return  jsonObj[baseNodeName][nodeName1][nodeName2][attrName]
 
     def getAttr2int(nodeName1,nodeName2,attrName):
-        return  (int)(jsonObj["baseNode"][nodeName1][nodeName2][attrName])
+        return  (int)(jsonObj[baseNodeName][nodeName1][nodeName2][attrName])
 
     parser = createParser()
     args = parser.parse_args()
@@ -48,9 +49,11 @@ try:
     jsonFile.close()
     jsonObj = json.loads(jsontext)
     #print(json.dumps(jsonObj,indent=12,ensure_ascii=False))  
+    #
+    baseNodeName=  next((v for i, v in enumerate(jsonObj.items()) if i == 0))[0]
 
     inputFile = open(h("input_file"))
-
+           
     allLines = inputFile.readlines()
     dataset = numpy.zeros((len(allLines) - 1, len(allLines[0].split(';'))),dtype=float)
     window_size = (int)(h("window_size"))
