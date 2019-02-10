@@ -22,9 +22,6 @@ C:\Users\anton\Рабочий стол\MAIN\Экспертная система\
 C:\Users\anton\Рабочий стол\MAIN\Экспертная система\Экспертная система\bin\Debug\Newtonsoft.Json.xml
 C:\Users\anton\Рабочий стол\MAIN\Экспертная система\Экспертная система\obj\Debug\Экспертная система.csproj.CopyComplete
 C:\Users\anton\Рабочий стол\MAIN\Экспертная система\Экспертная система\bin\Debug\Newtonsoft.Json.pdb
-D:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\bin\Debug\Newtonsoft.Json.dll
-D:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\bin\Debug\Newtonsoft.Json.pdb
-D:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\bin\Debug\Newtonsoft.Json.xml
 C:\Users\anton\Рабочий стол\ExpertSystem\Экспертная система\Экспертная система\bin\Debug\Экспертная система.exe.config
 C:\Users\anton\Рабочий стол\ExpertSystem\Экспертная система\Экспертная система\bin\Debug\Экспертная система.exe
 C:\Users\anton\Рабочий стол\ExpertSystem\Экспертная система\Экспертная система\bin\Debug\Экспертная система.pdb

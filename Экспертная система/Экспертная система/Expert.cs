@@ -296,18 +296,8 @@ namespace Экспертная_система
 
 
         public void synchronizeHyperparameters()
-        {          //приращение баз алгоритмов к общей базе эксперта
-            var toReWrite = H.getNodesByparentID(committeeNodeID);
-            //удаление старых записей
-        for (int i = 0; i < toReWrite.Count; i++)
-            H.deleteBranch(toReWrite[i].ID);
-
-            //приращение новых к узлу  "committee"
-            for (int i = 0; i < algorithms.Count; i++)
-            {
-           H.addBranch(algorithms[i].h, algorithms[i].name, committeeNodeID);
-                }
-         //передача параметров эксперта в базы алгоритмов
+        {
+            //передача параметров эксперта в базы алгоритмов
             for (int i = 0; i < H.nodes.Count; i++)
             {
                 if (H.nodes[i].parentID == 0 && H.nodes[i].name() != "committee")
@@ -315,12 +305,23 @@ namespace Экспертная_система
 
                     for (int j = 0; j < algorithms.Count; j++)
                     {
-                        if (algorithms[j].h.getNodeByName(H.nodes[i].name()).Count!=0)
+                        if (algorithms[j].h.getNodeByName(H.nodes[i].name()).Count != 0)
                             algorithms[j].h.deleteBranch(algorithms[j].h.getNodeByName(H.nodes[i].name())[0].ID);
                         algorithms[j].h.addNode(H.nodes[i], 0);
                     }
                 }
-            }     
+            }
+            //приращение баз алгоритмов к общей базе эксперта
+            var toReWrite = H.getNodesByparentID(committeeNodeID);
+            //удаление старых записей
+            for (int i = 0; i < toReWrite.Count; i++)
+                H.deleteBranch(toReWrite[i].ID);
+
+            //приращение новых к узлу  "committee"
+            for (int i = 0; i < algorithms.Count; i++)
+            {
+                H.addBranch(algorithms[i].h, algorithms[i].name, committeeNodeID);
+            }
         }
         public void Open()
         {
@@ -347,7 +348,7 @@ namespace Экспертная_система
             string path = path_prefix + expertName + "\\json.txt";
             File.WriteAllText(path, H.toJSON(0));
             foreach (Algorithm algorithm in algorithms)
-               algorithm.Save(path_prefix+expertName+"\\"+algorithm.name + "\\");
+                algorithm.Save(path_prefix + expertName + "\\" + algorithm.name + "\\");
             return path;
         }
         public Hyperparameters h()

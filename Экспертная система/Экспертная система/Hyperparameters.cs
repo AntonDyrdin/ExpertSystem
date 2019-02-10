@@ -59,22 +59,23 @@ namespace Экспертная_система
             int nodesCount1 = nodes.Count;
             recurciveDelete(ID);
 
-           for (int i = 0; i < nodes.Count; i++)
+            for (int i = 0; i < nodes.Count; i++)
             {
                 if (nodes[i].name() == "delete")
                 {
-                   nodes.RemoveAt(i);
-                   newNodeIdWillBe--;
+                    nodes.RemoveAt(i);
+                    newNodeIdWillBe--;
                     i--;
                 }
             }
-           int nodesCount2 = nodes.Count;
+            int nodesCount2 = nodes.Count;
             for (int i = 0; i < nodes.Count; i++)
-            {                  if (nodes[i].ID>ID)
-                nodes[i].ID -= (nodesCount1 - nodesCount2);
+            {
+                if (nodes[i].ID > ID)
+                    nodes[i].ID -= (nodesCount1 - nodesCount2);
                 if (nodes[i].parentID > ID)
                     nodes[i].parentID -= (nodesCount1 - nodesCount2);
-            }     
+            }
         }
         void recurciveDelete(int ID)
         {
@@ -359,10 +360,10 @@ namespace Экспертная_система
                 }
             return '{' + jsonText + '}';
         }
-
+        private List<int> namesParentID = new List<int>();
         private List<string> names = new List<string>();
         private List<string> namesWhithIndex = new List<string>();
-        private string buildJSON(int ID)
+        string buildJSON(int ID)
         {
             string s = "";
 
@@ -375,18 +376,26 @@ namespace Экспертная_система
 
                 if (names.Contains(nodeName))
                 {
-                    nodeName = nodeName + "(2)";
-                    for (int i = 0; i < namesWhithIndex.Count; i++)
-                        if (namesWhithIndex[i].Split('(', ')')[0] == nodeName.Split('(', ')')[0])
-                        {
-                            string lastName = namesWhithIndex[i];
-                            namesWhithIndex.Remove(nodeName);
-                            nodeName = nodeName.Split('(', ')')[0] + '(' + (Convert.ToInt16(lastName.Split('(', ')')[1]) + 1).ToString() + ')';
-                        }
-                    namesWhithIndex.Add(nodeName);
+                    if (namesParentID[names.IndexOf(nodeName)] == node.parentID)
+                    {
+                        nodeName = nodeName + "(2)";
+                        for (int i = 0; i < namesWhithIndex.Count; i++)
+                            if (namesWhithIndex[i].Split('(', ')')[0] == nodeName.Split('(', ')')[0])
+                            {
+                                string lastName = namesWhithIndex[i];
+                                namesWhithIndex.Remove(nodeName);
+                                nodeName = nodeName.Split('(', ')')[0] + '(' + (Convert.ToInt16(lastName.Split('(', ')')[1]) + 1).ToString() + ')';
+                            }
+                        namesWhithIndex.Add(nodeName);
+                    }
+                    else
+                        namesParentID[names.IndexOf(nodeName)] = node.parentID;
                 }
                 else
+                {
                     names.Add(nodeName);
+                    namesParentID.Add(node.parentID);
+                }
                 s += '"' + nodeName + '"' + ":{";
                 foreach (Attribute attr in node.attributes)
                 {
@@ -433,6 +442,7 @@ namespace Экспертная_система
                             s += '"' + attr.name + '"' + ':' + '"' + attr.value + '"' + ',';
                     }
                 }
+                namesParentID.Clear();
                 names.Clear();
                 namesWhithIndex.Clear();
                 for (int i = 0; i < childrens.Count; i++)
