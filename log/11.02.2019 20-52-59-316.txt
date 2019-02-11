@@ -1,0 +1,95 @@
+
+
+
+
+СКРИПТ ОБУЧЕНИЯ LSTM_1 ЗАПУЩЕН...
+
+> время загрузки библиотек : 1.585 сек.
+
+(5570, 4)
+
+> время чтения данных  :  1.761 сек.
+
+компиляция НС...
+
+> время компиляции НС  : 2.625 сек.
+
+обучение НС...
+
+Train on 4448 samples, validate on 1112 samples
+
+Epoch 1/1
+
+0s - loss: 0.0571 - acc: 0.0200 - val_loss: 0.1539 - val_acc: 0.2149
+
+> время обучения  НС  : 8.770 сек.
+
+сохранение модели: D:\Anton\Desktop\MAIN\Эксперт 1\LSTM_1\weights.h5
+
+
+
+Using Theano backend.
+Traceback (most recent call last):
+  File "D:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\LSTM_1\train_script.py", line 108, in <module>
+    model.save(save_path)
+  File "C:\Anaconda3\lib\site-packages\keras\engine\topology.py", line 2506, in save
+    save_model(self, filepath, overwrite, include_optimizer)
+  File "C:\Anaconda3\lib\site-packages\keras\models.py", line 101, in save_model
+    f = h5py.File(filepath, 'w')
+  File "C:\Anaconda3\lib\site-packages\h5py\_hl\files.py", line 271, in __init__
+    fid = make_fid(name, mode, userblock_size, fapl, swmr=swmr)
+  File "C:\Anaconda3\lib\site-packages\h5py\_hl\files.py", line 107, in make_fid
+    fid = h5f.create(name, h5f.ACC_TRUNC, fapl=fapl, fcpl=fcpl)
+  File "h5py\_objects.pyx", line 54, in h5py._objects.with_phil.wrapper (C:\Minonda\conda-bld\h5py_1490029446037\work\h5py\_objects.c:2867)
+  File "h5py\_objects.pyx", line 55, in h5py._objects.with_phil.wrapper (C:\Minonda\conda-bld\h5py_1490029446037\work\h5py\_objects.c:2825)
+  File "h5py\h5f.pyx", line 98, in h5py.h5f.create (C:\Minonda\conda-bld\h5py_1490029446037\work\h5py\h5f.c:2307)
+OSError: Unable to create file (Unable to open file: name = 'd:\anton\desktop\main\эксперт 1\lstm_1\weights.h5', errno = 2, error message = 'no such file or directory', flags = 13, o_flags = 302)
+
+обучение алгоритма LSTM_1заверешно.
+СКРИПТ ОБУЧЕНИЯ ANN_1 ЗАПУЩЕН...
+
+> время загрузки библиотек : 1.416 сек.
+
+(5570, 4)
+
+> время чтения данных  :  1.483 сек.
+
+компиляция НС...
+
+> время компиляции НС  : 2.220 сек.
+
+обучение НС...
+
+Train on 4448 samples, validate on 1112 samples
+
+Epoch 1/1
+
+0s - loss: 0.0454 - acc: 0.0238 - val_loss: 0.1413 - val_acc: 0.2383
+
+> время обучения НС  : 4.057 сек.
+
+сохранение модели: D:\Anton\Desktop\MAIN\Эксперт 1\ANN_1\weights.h5
+
+> время сохранения НС  : 4.086 сек.
+
+создание тестового прогноза
+
+(1112, 1)
+
+AVG = 0.506557670214
+
+D:\Anton\Desktop\MAIN\Эксперт 1\ANN_1\predictions.txt
+
+test_X.shape:  (1112, 10)
+
+> время создания и записи тестового прогноза  : 4.212 сек.
+
+______________END________________
+
+
+
+Using Theano backend.
+
+accuracy = 1,10852713178295
+stdDev = 0,703420139345056
+обучение алгоритма ANN_1заверешно.

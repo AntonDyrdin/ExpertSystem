@@ -31,17 +31,9 @@ namespace Экспертная_система
             h.add("name:optimizer,value:adam");
             h.add("window_size:" + window_size.ToString());
         }
-        public override string Save(string path)
+        public override void Save()
         {
-            h.getNodeByName("json_file_path")[0].setValue(path + "json.txt");
-            Directory.CreateDirectory(path);
-            File.WriteAllText(h.getValueByName("json_file_path"), h.toJSON(0));
-            h.getNodeByName("weights_file_path")[0].setValue(path + "weights.h5");
-            /* try
-             {*/
-            File.Copy(mainFolder + "weights.h5", h.getValueByName("weights_file_path"),true);/* }
-            catch { }*/
-            return path;
+            File.WriteAllText(h.getValueByName("json_file_path"), h.toJSON(0), System.Text.Encoding.Default);
         }
     }
 }

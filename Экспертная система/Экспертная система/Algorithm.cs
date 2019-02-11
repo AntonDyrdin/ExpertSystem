@@ -10,10 +10,7 @@ namespace Экспертная_система
         public string lastPrediction;
         public Hyperparameters h;
         public string mainFolder;
-        public string jsonFilePath;
-        public string predictionsFilePath;
-        public string getPredictionFilePath;
-        public string trainScriptPath;
+
         public string args;
         public double stdDev;
         public double accuracy;
@@ -21,22 +18,21 @@ namespace Экспертная_система
         public Algorithm(Form1 form1, string name)
         {
             this.name = name;
-            h = new Hyperparameters(form1,name);
+            h = new Hyperparameters(form1, name);
             this.form1 = form1;
             mainFolder = form1.pathPrefix + "Экспертная система\\Экспертная система\\Алгоритмы прогнозирования\\" + name + "\\";
-            getPredictionFilePath = mainFolder + "get_prediction.py";
+           string getPredictionFilePath = mainFolder + "get_prediction.py";
             h.add("get_prediction_script_path:" + getPredictionFilePath);
-            trainScriptPath = mainFolder + "train_script.py";
+            string trainScriptPath = mainFolder + "train_script.py";
             h.add("train_script_path:" + trainScriptPath);
-            jsonFilePath = mainFolder + "json.txt";
-            h.add("json_file_path:" + jsonFilePath);
-            predictionsFilePath = mainFolder + "predictions.txt";
+            string jsonFilePath = mainFolder + "json.txt";
+            string predictionsFilePath = mainFolder + "predictions.txt";
             h.add("predictions_file_path", predictionsFilePath);
-            
-            h.add("weights_file_path", mainFolder+ "weights.h5");
 
+            h.add("json_file_path:" + jsonFilePath);
 
-            h.add("save_folder:" + mainFolder);        
+            h.add("save_folder:" + mainFolder);
+            Directory.CreateDirectory(mainFolder);
         }
 
         private Process predict_process;
@@ -50,17 +46,15 @@ namespace Экспертная_система
         private bool Continue = false;
         public void runGetPredictionScript()
         {
-            args = "--json_file_path " + '"' + jsonFilePath + '"';
-            predict_process = runProcess(getPredictionFilePath, args);
+            args = "--json_file_path " + '"' + getValueByName("json_file_path") + '"';
+            predict_process = runProcess(getValueByName("get_prediction_script_path"), args);
             predict_process_error_stream = predict_process.StandardError;
             predict_process_write_stream = predict_process.StandardInput;
             predict_process_read_stream = predict_process.StandardOutput;
 
 
         }
-        //█=====================█
-        //█////get_prediction///█
-        //█=====================█
+
         //возвращает прогноз для одного окна
         //inputVector - матрица входных данных, в которой нулевой столбец [i,0] - прогнозируемая величина, а остальные столбцы - предикторы.
         //каждая строка - значения предикторов в j-ый временной интервал
@@ -86,8 +80,8 @@ namespace Экспертная_система
                 if (inc > 10)
                 {
                     string error = predict_process.StandardError.ReadToEnd();
-                    log("Завис поток прогнозирования на этапе запуска скрипта и загрузки модели" , Color.Red);
-                    log( script_conclusion );
+                    log("Завис поток прогнозирования на этапе запуска скрипта и загрузки модели", Color.Red);
+                    log(script_conclusion);
                     log(error);
                     return -1000;
                 }
@@ -101,7 +95,7 @@ namespace Экспертная_система
                     string buffer = predict_process_read_stream.ReadLine();
                     if (script_conclusion.Contains("EXEPTION"))
                         log(script_conclusion);
-                    script_conclusion = script_conclusion +'\n'+ buffer;
+                    script_conclusion = script_conclusion + '\n' + buffer;
                     if (buffer != null)
                     {
                         if (buffer.IndexOf("next") != -1)
@@ -113,8 +107,8 @@ namespace Экспертная_система
                     {
                         if (predict_process.HasExited)
                         {
-                            log("Процесс поточного прогнозирования  остановился на этапе записи входного вектора в поток: " ,Color.Red);
-                            log( script_conclusion );
+                            log("Процесс поточного прогнозирования  остановился на этапе записи входного вектора в поток: ", Color.Red);
+                            log(script_conclusion);
                             log(predict_process_error_stream.ReadToEnd());
                             return -1000;
                         }
@@ -140,7 +134,7 @@ namespace Экспертная_система
                         log(script_conclusion);
                         script_conclusion = script_conclusion.Substring(script_conclusion.IndexOf("prediction:") + 11);
                     }
-                    
+
                 }
                 else
                 {
@@ -198,11 +192,10 @@ namespace Экспертная_система
             {
                 log("файл датасета не задан");
             }
-
             File.WriteAllText(h.getValueByName("json_file_path"), h.toJSON(0), System.Text.Encoding.Default);
-            args = "--json_file_path " + '"' + jsonFilePath + '"';
-          
-              runPythonScript(trainScriptPath, args);
+            args = "--json_file_path " + '"' + h.getValueByName("json_file_path") + '"';
+
+            runPythonScript(getValueByName("train_script_path"), args);
 
             string[] predictionsCSV = null;
             //попытка прочитать данные из файла, полученного из скрипта 
@@ -216,7 +209,7 @@ namespace Экспертная_система
             {
                 getAccAndStdDev(predictionsCSV);
             }
-            return "обучение алгоритма " + h.getValueByName("name") + "...";
+            return "обучение алгоритма " + name + "заверешно.";
         }
 
 
@@ -301,21 +294,21 @@ namespace Экспертная_система
             start.Arguments = '"' + scriptFile + '"' + " " + args;
             start.ErrorDialog = true;
             start.CreateNoWindow = true;
-           start.UseShellExecute = false;
+            start.UseShellExecute = false;
             start.RedirectStandardInput = true;
             start.RedirectStandardOutput = true;
             start.RedirectStandardError = true;
             Process process = Process.Start(start);
             return process;
         }
-        public abstract string Save(string path);
+        public abstract void Save();
 
-            public string getValueByName(string name)
+        public string getValueByName(string name)
         { return h.getValueByName(name); }
         public void setAttributeByName(string name, int value)
-        { h.setAttributeByName(name, value); }
+        { h.setValueByName(name, value); }
         public void setAttributeByName(string name, string value)
-        { h.setAttributeByName(name, value); }
+        { h.setValueByName(name, value); }
         public void variate(string name)
         { h.variate(name); }
         public void log(String s, System.Drawing.Color col)

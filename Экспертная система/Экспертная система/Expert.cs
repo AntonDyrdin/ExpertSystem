@@ -20,6 +20,11 @@ namespace Экспертная_система
         public List<Algorithm> algorithms;
         public int committeeNodeID;
         public string path_prefix;
+        public double deposit1;
+        public double deposit2;
+        public List<double> deposit1History;
+        public List<double> deposit2History;
+        public double[] committeeResponse;
         public Expert(string expertName, Form1 form1)
         {
             this.form1 = form1;
@@ -40,34 +45,35 @@ namespace Экспертная_система
         //получить прогноз для одного окна  
         //inputVector - матрица входных данных, в которой нулевой столбец [i,0] - прогнозируемая величина, а остальные столбцы - предикторы.
         //каждая строка - значения предикторов в j-ый временной интервал
-        public double getPrediction(string[] input)
+        public double[] getPrediction(string[] input)
         {
-            double sum = 0;
+            committeeResponse = new double[algorithms.Count];
             //вызов getPrediction у каждого алгоритма прогнозирования 
-            foreach (Algorithm algorithm in algorithms)
+            for (int i = 0; i < algorithms.Count; i++)
             {
-                double prediction = algorithm.getPrediction(input);
-                sum = sum + prediction;
+                committeeResponse[i] = algorithms[i].getPrediction(input);
             }
-            //нахождение среднего арифметичкеского ответов комитета
-
-            //возврат полученного значения
-
-            return sum / algorithms.Count;
+            return committeeResponse;
         }
 
         //узнать решение системы принятия решений для одного окна
         //возвращает количество единиц котируемой валюты, которое нужно купить или продать (если возвращено значение меньше нуля)
-        public double getDecision(string[] input)
+        public string getDecision(double[] committeeResponse)
         {
             //Среднее арифметическое прогнозов алгоритмов
-            //!!!!!!!!!!!    ТРЕБУЕТ ДАЛЬНЕЙШЕЙ ОПТИМИЗАЦИИ !!!!!!!!!!!
             double decision = 0;
             double sum = 0;
-            foreach (Algorithm algorithm in algorithms)
-            { sum += Convert.ToDouble(algorithm.getPrediction(input)); }
+
+            for (int i = 0; i < algorithms.Count; i++)
+            {
+                sum += committeeResponse[i];
+            }
             decision = sum / algorithms.Count;
-            return decision;
+            if (decision > 0.6)
+                return "buy";
+            if (decision < 0.4)
+                return "sell";
+            return "nothing";
         }
         public string test(DateTime date1, DateTime date2, string rawDatasetFilePath)
         {
@@ -105,13 +111,19 @@ namespace Экспертная_система
                             }
                         }
                     }
-                    double y = 0;
+                    string action = "";
                     if (dateExist)
                     {
                         input = prepareDataset(input, algorithms[0].getValueByName("drop_columns"));
-
-                        y = getDecision(input);
-
+                        var committeeResponse = getPrediction(input);
+                        action = getDecision(committeeResponse);
+                        if (action == "buy")
+                        {
+                          
+                        }
+                        if (action == "sell")
+                        {
+                        }
                     }
                     else
                     {
@@ -128,8 +140,13 @@ namespace Экспертная_система
                 log("date1>date2 !");
             return "expert has been tested";
         }
-        public void Add_Algorithm(Algorithm algorithm)
+        public void Add(Algorithm algorithm)
         {
+            Directory.CreateDirectory(path_prefix + expertName + "\\" + algorithm.name + "\\");
+            algorithm.h.setValueByName("save_folder", path_prefix + expertName + "\\" + algorithm.name + "\\");
+            algorithm.h.setValueByName("json_file_path", path_prefix + expertName + "\\" + algorithm.name + "\\json.txt");
+            algorithm.h.setValueByName("predictions_file_path", path_prefix + expertName + "\\" + algorithm.name + "\\predictions.txt");
+
             algorithms.Add(algorithm);
         }
 
@@ -329,7 +346,7 @@ namespace Экспертная_система
             {
                 if (Path.GetFileName(expertFolder) == expertName)
                 {
-                    H = new Hyperparameters(File.ReadAllText(expertFolder + "\\json.txt"), form1);
+                    H = new Hyperparameters(File.ReadAllText(expertFolder + "\\json.txt", System.Text.Encoding.Default), form1);
                     committeeNodeID = H.getNodeByName("committee")[0].ID;
                     var algorithmBranches = H.getNodesByparentID(committeeNodeID);
                     foreach (Node algorithmBranch in algorithmBranches)
@@ -346,9 +363,9 @@ namespace Экспертная_система
         public string Save()
         {
             string path = path_prefix + expertName + "\\json.txt";
-            File.WriteAllText(path, H.toJSON(0));
+            File.WriteAllText(path, H.toJSON(0), System.Text.Encoding.Default);
             foreach (Algorithm algorithm in algorithms)
-                algorithm.Save(path_prefix + expertName + "\\" + algorithm.name + "\\");
+                algorithm.Save();
             return path;
         }
         public Hyperparameters h()

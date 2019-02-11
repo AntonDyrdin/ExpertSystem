@@ -24,7 +24,7 @@ namespace Экспертная_система
                 form1.picBox.SetBounds(0, 0, 1000, 100);
             }
             /////////чтене файла конфигурации///////////////////////
-            var configLines = File.ReadAllLines("config.txt");
+            var configLines = File.ReadAllLines("CONFIG.txt");
 
             for (int i = 0; i < configLines.Length; i++)
             {
@@ -36,8 +36,12 @@ namespace Экспертная_система
                         //параметры конфигурации заканчиваются, когда встречается пустая строка
                         if (configLines[j] != "")
                         {
-                            if (h.getValueByName(configLines[j].Split(':')[0]) == null)
-                                h.add(configLines[j]);
+                            try
+                            {
+                             //   if (h.getValueByName(configLines[j].Split(':')[0]) == null)
+                                    h.add(configLines[j]);
+                            }
+                            catch { }
                         }
                         else
                             break;

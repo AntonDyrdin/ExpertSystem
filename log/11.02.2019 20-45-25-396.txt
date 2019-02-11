@@ -1,0 +1,58 @@
+
+
+
+
+СКРИПТ ОБУЧЕНИЯ LSTM_1 ЗАПУЩЕН...
+
+> время загрузки библиотек : 1.576 сек.
+
+
+
+Using Theano backend.
+Traceback (most recent call last):
+  File "D:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\LSTM_1\train_script.py", line 46, in <module>
+    jsonFile = open(args.json_file_path, 'r')
+FileNotFoundError: [Errno 2] No such file or directory: 'D:\\Anton\\Desktop\\MAIN\\Экспертная система\\Экспертная система\\Алгоритмы прогнозирования\\LSTM_1\\json.txt'
+
+обучение алгоритма LSTM_1заверешно.
+СКРИПТ ОБУЧЕНИЯ ANN_1 ЗАПУЩЕН...
+
+> время загрузки библиотек : 1.410 сек.
+
+(5570, 4)
+
+> время чтения данных  :  1.476 сек.
+
+компиляция НС...
+
+> время компиляции НС  : 2.210 сек.
+
+обучение НС...
+
+Train on 4448 samples, validate on 1112 samples
+
+Epoch 1/1
+
+0s - loss: 0.0500 - acc: 0.0211 - val_loss: 0.1424 - val_acc: 0.2158
+
+> время обучения НС  : 4.088 сек.
+
+сохранение модели: D:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\ANN_1\weights.h5
+
+> время сохранения НС  : 4.117 сек.
+
+создание тестового прогноза
+
+(1112, 1)
+
+AVG = 0.472779315876
+
+
+
+Using Theano backend.
+Traceback (most recent call last):
+  File "D:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\ANN_1\train_script.py", line 127, in <module>
+    predictionsFile = open(h("predictions_file_path"), 'w')
+FileNotFoundError: [Errno 2] No such file or directory: ''
+
+обучение алгоритма ANN_1заверешно.

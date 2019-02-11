@@ -19,10 +19,10 @@ namespace Экспертная_система
               this.form1 = form1;
               addByParentId(-1, "name:baseNode");
           }     */
-        public Hyperparameters(string path, Form1 form1)
+        public Hyperparameters(string JSON, Form1 form1)
         {
             this.form1 = form1;
-            fromJSON(path, -1);
+            fromJSON(JSON, -1);
         }
         [NonSerializedAttribute]
         public Form1 form1;
@@ -33,6 +33,15 @@ namespace Экспертная_система
         public List<Node> nodes = new List<Node>();
         public int Y = 0;
         public bool lightsOn = false;
+
+        public void replaceStringInAllValues(string oldString, string newString)
+        {
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                if (nodes[i].getAttributeValue("value") != null)
+                    nodes[i].setAttribute("value", nodes[i].getAttributeValue("value").Replace(oldString, newString));
+            }
+        }
         public void addBranch(Hyperparameters branch, string branchName, int parentId)
         {
             int lastNodeId = newNodeIdWillBe;
@@ -255,13 +264,15 @@ namespace Экспертная_система
         }
 
         ////////////////// SET //////////////////////////////
-        public void setAttributeByName(string name, int value)
+        public void setValueByName(string name, int value)
         {
-            getNodeByName("name")[0].setAttribute(name, value.ToString());
+            foreach (Node node in getNodeByName(name))
+                node.setAttribute("value", value.ToString());
         }
-        public void setAttributeByName(string name, string value)
+        public void setValueByName(string name, string value)
         {
-            getNodeByName("name")[0].setAttribute(name, value);
+            foreach (Node node in getNodeByName(name))
+                node.setAttribute("value", value);
         }
 
         ////////////////// VARIATE //////////////////////////////
@@ -714,8 +725,12 @@ namespace Экспертная_система
         }
         private void log(String s, System.Drawing.Color col)
         {
-            //         form1.logDelegate = new Form1.LogDelegate(form1.delegatelog);
-            //            form1.logBox.Invoke(form1.logDelegate, form1.logBox, s, col);
+            try
+            {
+                form1.logDelegate = new Form1.LogDelegate(form1.delegatelog);
+                form1.logBox.Invoke(form1.logDelegate, form1.logBox, s, col);
+            }
+            catch { }
         }
     }
 }
