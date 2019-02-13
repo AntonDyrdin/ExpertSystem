@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
 using System.Drawing;
+using System.IO;
 namespace Экспертная_система
 {
     public abstract class Algorithm
@@ -15,26 +15,29 @@ namespace Экспертная_система
         public double stdDev;
         public double accuracy;
         public string name;
-        public Algorithm(Form1 form1, string name)
+        public string modelName;
+        public int modelLoadingDelay = 10 * 1000;
+        public int pred_script_timeout = 5000;
+        public Algorithm(Form1 form1, string modelName)
         {
-            this.name = name;
+            this.modelName = modelName;
             h = new Hyperparameters(form1, name);
             this.form1 = form1;
+        }
+        public void fillFilePaths()
+        {
             mainFolder = form1.pathPrefix + "Экспертная система\\Экспертная система\\Алгоритмы прогнозирования\\" + name + "\\";
-           string getPredictionFilePath = mainFolder + "get_prediction.py";
+            Directory.CreateDirectory(mainFolder);
+            string getPredictionFilePath = mainFolder + "get_prediction.py";
             h.add("get_prediction_script_path:" + getPredictionFilePath);
             string trainScriptPath = mainFolder + "train_script.py";
             h.add("train_script_path:" + trainScriptPath);
             string jsonFilePath = mainFolder + "json.txt";
             string predictionsFilePath = mainFolder + "predictions.txt";
             h.add("predictions_file_path", predictionsFilePath);
-
             h.add("json_file_path:" + jsonFilePath);
-
             h.add("save_folder:" + mainFolder);
-            Directory.CreateDirectory(mainFolder);
         }
-
         private Process predict_process;
         [NonSerializedAttribute]
         private StreamReader predict_process_error_stream;
@@ -77,7 +80,7 @@ namespace Экспертная_система
                 }
                 System.Threading.Thread.Sleep(100);
                 inc++;
-                if (inc > 10)
+                if (inc > modelLoadingDelay / 100)
                 {
                     string error = predict_process.StandardError.ReadToEnd();
                     log("Завис поток прогнозирования на этапе запуска скрипта и загрузки модели", Color.Red);
@@ -121,7 +124,7 @@ namespace Экспертная_система
             Continue = false;
             inc = 0;
 
-            double pred_script_timeout = 5000;
+
             while (Continue == false && inc * 100 < pred_script_timeout)
             {
                 var buffer = predict_process_read_stream.ReadLine();
@@ -131,8 +134,9 @@ namespace Экспертная_система
                     if (script_conclusion.IndexOf("prediction:") != -1)
                     {
                         Continue = true;
-                        log(script_conclusion);
+                      //  log(script_conclusion);
                         script_conclusion = script_conclusion.Substring(script_conclusion.IndexOf("prediction:") + 11);
+                        log(script_conclusion);
                     }
 
                 }
@@ -145,8 +149,8 @@ namespace Экспертная_система
                         log(predict_process_error_stream.ReadToEnd());
                         return -1000;
                     }
-                    System.Threading.Thread.Sleep(10);
                 }
+                System.Threading.Thread.Sleep(100);
                 inc++;
             }
             if (inc * 100 >= pred_script_timeout)
@@ -172,7 +176,9 @@ namespace Экспертная_система
                 catch
                 { }
             }
+            Continue = true;
             return Y;
+
         }
 
         public void stop_get_prediction_script()

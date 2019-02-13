@@ -1,3 +1,5 @@
+prediction_algorithm_name = 'LSTM_1'
+print("СКРИПТ ПОТОЧНОГО ПРОГНОЗИРОВАНИЯ " + prediction_algorithm_name + " ЗАПУЩЕН...") 
 import time
 import sys
 import argparse
@@ -22,17 +24,19 @@ jsonFile = open(args.json_file_path, 'r')
 jsontext = jsonFile.read()
 jsonFile.close()
 jsonObj = json.loads(jsontext)
+baseNodeName=  next((v for i, v in enumerate(jsonObj.items()) if i == 0))[0]
+
 def h(nodeName):
-    return  jsonObj["baseNode"][nodeName]["value"]
+    return  jsonObj[baseNodeName][nodeName]["value"]
 
 def h2(nodeName1,nodeName2):
-    return  jsonObj["baseNode"][nodeName1][nodeName2]["value"]
+    return  jsonObj[baseNodeName][nodeName1][nodeName2]["value"]
 
 def getAttr2(nodeName1,nodeName2,attrName):
-    return  jsonObj["baseNode"][nodeName1][nodeName2][attrName]
+    return  jsonObj[baseNodeName][nodeName1][nodeName2][attrName]
 
 def getAttr2int(nodeName1,nodeName2,attrName):
-    return  (int)(jsonObj["baseNode"][nodeName1][nodeName2][attrName])
+    return  (int)(jsonObj[baseNodeName][nodeName1][nodeName2][attrName])
 
 
 
@@ -40,8 +44,11 @@ parser = createParser()
 namespace = parser.parse_args()
 print (namespace)
 
-   
-model =load_model(h("weights_file_path"))
+save_path = h("save_folder")+ 'weights.h5'  
+try:
+    model =load_model(save_path)
+except:
+    model =load_model(save_path.encode('ansi'))
 window_size=(int)(h("window_size"))
 print('model loaded')
 

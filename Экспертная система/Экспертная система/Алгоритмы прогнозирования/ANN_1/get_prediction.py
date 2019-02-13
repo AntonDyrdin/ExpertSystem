@@ -1,4 +1,6 @@
-﻿import time
+﻿prediction_algorithm_name = 'ANN_1'
+print("СКРИПТ ПОТОЧНОГО ПРОГНОЗИРОВАНИЯ " + prediction_algorithm_name + " ЗАПУЩЕН...") 
+import time
 import sys
 import argparse
 import numpy
@@ -27,17 +29,19 @@ jsonFile = open(args.json_file_path, 'r')
 jsontext = jsonFile.read()
 jsonFile.close()
 jsonObj = json.loads(jsontext)
+baseNodeName=  next((v for i, v in enumerate(jsonObj.items()) if i == 0))[0]
+
 def h(nodeName):
-    return  jsonObj["baseNode"][nodeName]["value"]
+    return  jsonObj[baseNodeName][nodeName]["value"]
 
 def h2(nodeName1,nodeName2):
-    return  jsonObj["baseNode"][nodeName1][nodeName2]["value"]
+    return  jsonObj[baseNodeName][nodeName1][nodeName2]["value"]
 
 def getAttr2(nodeName1,nodeName2,attrName):
-    return  jsonObj["baseNode"][nodeName1][nodeName2][attrName]
+    return  jsonObj[baseNodeName][nodeName1][nodeName2][attrName]
 
 def getAttr2int(nodeName1,nodeName2,attrName):
-    return  (int)(jsonObj["baseNode"][nodeName1][nodeName2][attrName])
+    return  (int)(jsonObj[baseNodeName][nodeName1][nodeName2][attrName])
 
 
 
@@ -48,8 +52,11 @@ parser = createParser()
 namespace = parser.parse_args()
 print (namespace)
 
-   
-model =load_model(h("weights_file_path"))
+save_path = h("save_folder")+ 'weights.h5'  
+try:
+    model =load_model(save_path)
+except:
+    model =load_model(save_path.encode('ansi'))
 window_size=(int)(h("window_size"))
 print('model loaded')
 
@@ -80,10 +87,9 @@ while enough==False:
                     dataset[i ,j] = (float)(lines[i].split(';')[j])
         print(dataset)
         print(dataset.shape)
-        X = numpy.zeros((1, window_size,dataset.shape[1]), dtype=float)
+        X = numpy.zeros((1,dataset.shape[0]), dtype=float)
         predicted_column_index = (int)(h("predicted_column_index"))
         for j in range(0,window_size):
-            for k in range(0,dataset.shape[1]):
-                    X[0,j,k] = dataset[j][k]
+              X[0,j] = dataset[j][predicted_column_index]
         predicted = model.predict(X)
         print("prediction:",predicted)

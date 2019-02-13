@@ -17,6 +17,8 @@ namespace Экспертная_система
         private MultiParameterVisualizer vis;
         private ImgDataset visPredictions;
         public string sourceDataFile;
+        public System.Threading.Tasks.Task mainTask;
+        public System.Threading.Thread mainThread;
         public void Form1_Load(object sender, EventArgs e)
         {
             I = new Infrastructure(this);
@@ -26,27 +28,37 @@ namespace Экспертная_система
             log("");
 
             expert = new Expert("Эксперт 1", this);
-           expert.Open();
-            //    expert.H.replaceStringInAllValues(expert.H.getValueByName("path_prefix"), pathPrefix);
 
-            var task = System.Threading.Tasks.Task.Factory.StartNew(() => { WORK(); });
+           // mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { buildAndTrain(); });
+            mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { TEST(); });
+
             expert.H.draw(0, picBox, this, 15, 150);
         }
-        public void WORK()
+        public void TEST()
         {
-     /*     expert.Add(new LSTM_1(this, "LSTM_1"));
-             expert.Add(new ANN_1(this, "ANN_1"));
-             sourceDataFile = pathPrefix + @"Временные ряды\EURRUB.txt";
-             expert.H.add("input_file", expert.savePreparedDataset(sourceDataFile, "<TIME>;<TICKER>;<PER>;<DATE>;<VOL>"));
-             expert.H.add("path_prefix", pathPrefix);
-            //   expert.test(new DateTime(2010, 2, 10), new DateTime(2010, 3, 10), sourceDataFile);     */
-           expert.synchronizeHyperparameters();
-      
-
-          expert.trainAllAlgorithms();
-
+            mainThread = System.Threading.Thread.CurrentThread;
+            expert.Open();
+            sourceDataFile = pathPrefix + @"Временные ряды\EURRUB.txt";
+            expert.H.replaceStringInAllValues(expert.H.getValueByName("path_prefix"), pathPrefix);
+            expert.synchronizeHyperparameters();
+            expert.trainAllAlgorithms();
+            expert.test(new DateTime(2010, 2, 10), new DateTime(2010, 2, 20), sourceDataFile);
+            //expert.Save();
+        }
+        public void buildAndTrain()
+        {
+            mainThread = System.Threading.Thread.CurrentThread;
+            expert.Add(new ANN_1(this, "ANN_1_[1]"));
+            expert.Add(new ANN_1(this, "ANN_1_[2]"));
+            expert.Add(new ANN_1(this, "ANN_1_[3]"));
+            sourceDataFile = pathPrefix + @"Временные ряды\EURRUB.txt";
+            expert.H.add("input_file", expert.savePreparedDataset(sourceDataFile, "<TIME>;<TICKER>;<PER>;<DATE>;<VOL>"));
+            expert.H.add("path_prefix", pathPrefix);
+            expert.H.add("drop_columns:<TIME>;<TICKER>;<PER>;<DATE>;<VOL>");
+            expert.H.add("predicted_column_index:2");
+            expert.synchronizeHyperparameters();
+            expert.trainAllAlgorithms();
             expert.Save();
-
         }
         private void Hyperparameters_Click(object sender, EventArgs e)
         {
@@ -66,7 +78,7 @@ namespace Экспертная_система
 
             vis.addCSV(sourceDataFile, "Real close value", "<CLOSE>", 500, split_point + (1 - split_point) * hidedPart, -2);
             // vis.addCSV(sourceDataFile, "Real close value", expert.h().getValueByName("predicted_column_index"), 500, split_point + (1 - split_point) * hidedPart, -2);
-            vis.addCSV(expert.algorithms[0].getValueByName("predictions_file_path" ), "realVSpredictions", expert.h().getValueByName("predicted_column_index"), "real", 500, hidedPart, -1);
+            vis.addCSV(expert.algorithms[0].getValueByName("predictions_file_path"), "realVSpredictions", expert.h().getValueByName("predicted_column_index"), "real", 500, hidedPart, -1);
             vis.addCSV(expert.algorithms[0].getValueByName("predictions_file_path"), "realVSpredictions", "LAST_COLUMN", "predictions", 500, hidedPart, 0);
 
             vis.refresh();
@@ -143,26 +155,31 @@ namespace Экспертная_система
         public delegate void VoidDelegate();
         public StringDelegate stringDelegate;
         public VoidDelegate voidDelegate;
+
+        private void RedClick(object sender, EventArgs e)
+        {
+            mainThread.Abort();
+        }
         /*  ТЕСТ РАБОТЫ КЛАССА Hyperparameters
-          
-            Hyperparameters h = new Hyperparameters(this);
-            h.addByParentId(0, "name:person,firstName:Антон,age:21");
-            var friendsId = h.addByParentId(1, "name:friends");
-            h.addByParentId(friendsId, "name:person,firstName:Сергей,age:26");
-            var friendsId1 = h.addByParentId(h.addByParentId(friendsId, "name:person,firstName:Ксения,age:18"), "name:friends");
-            h.addByParentId(friendsId1, "name:person,firstName:Павел,age:24");
-            h.addByParentId(friendsId1, "name:person,firstName:Карина,age:21");
-            h.addByParentId(friendsId, "name:person,firstName:Анна,age:24");
-            h.addByParentId(friendsId, "name:person,firstName:Александр,age:21");
-            var friendsList = h.getNodesByparentID(friendsId);
-            foreach (Node friend in friendsList)
-            { log(friend.getAttributeValue("firstName"), Color.White); }
-            var dateId = h.addByParentId(1, "name:date,day:24,month:november,year:2018");
-            h.addByParentId(1, "day:24");
 
-            h.draw(1, picBox, this);
+Hyperparameters h = new Hyperparameters(this);
+h.addByParentId(0, "name:person,firstName:Антон,age:21");
+var friendsId = h.addByParentId(1, "name:friends");
+h.addByParentId(friendsId, "name:person,firstName:Сергей,age:26");
+var friendsId1 = h.addByParentId(h.addByParentId(friendsId, "name:person,firstName:Ксения,age:18"), "name:friends");
+h.addByParentId(friendsId1, "name:person,firstName:Павел,age:24");
+h.addByParentId(friendsId1, "name:person,firstName:Карина,age:21");
+h.addByParentId(friendsId, "name:person,firstName:Анна,age:24");
+h.addByParentId(friendsId, "name:person,firstName:Александр,age:21");
+var friendsList = h.getNodesByparentID(friendsId);
+foreach (Node friend in friendsList)
+{ log(friend.getAttributeValue("firstName"), Color.White); }
+var dateId = h.addByParentId(1, "name:date,day:24,month:november,year:2018");
+h.addByParentId(1, "day:24");
 
-            log(h.toJSON(1), Color.White);*/
+h.draw(1, picBox, this);
+
+log(h.toJSON(1), Color.White);*/
 
         //System.Diagnostics.Debug.WriteLine(new System.Diagnostics.StackTrace().ToString());
 

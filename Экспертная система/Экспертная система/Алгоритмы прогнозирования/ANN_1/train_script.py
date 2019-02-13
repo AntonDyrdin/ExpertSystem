@@ -105,10 +105,13 @@ history = model.fit(train_X, train_y, epochs=(int)(h("number_of_epochs")), batch
 log("> время обучения НС  : "+ getTime(tempTime)) 
     
 if h("save_folder") != "none":
-    save_path = h("save_folder")+ 'weights.h5'
-    save_path=save_path.encode('ansi')
+    save_path = h("save_folder")+ 'weights.h5' 
     log("сохранение модели: " + h("save_folder")+ 'weights.h5')
-    model.save(save_path)
+    try:
+        model.save(save_path)
+    except:
+        save_path=save_path.encode('ansi')
+        model.save(save_path)
     log("> время сохранения НС  : "+ getTime(tempTime)) 
     
 sum = 0    

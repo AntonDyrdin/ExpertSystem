@@ -6,12 +6,8 @@ namespace Экспертная_система
 
         public LSTM_1(Form1 form1, string name) : base(form1, name)
         {
-
-
-            h.add("predicted_column_index:2");
-            h.add("drop_columns:<TIME>;<TICKER>;<PER>;<DATE>;<VOL>");
-
-
+            this.name = "LSTM_1";
+            fillFilePaths();
             ///////////////////////
             //СТРУКТУРА НЕЙРОСЕТИ//
             ///////////////////////

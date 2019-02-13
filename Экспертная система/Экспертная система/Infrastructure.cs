@@ -19,8 +19,8 @@ namespace Экспертная_система
             if (Environment.MachineName == "DESKTOP-B3G20T0")
             {
                 form1.trackBar1.SetBounds(1000, 1000, 10, 10);
-                form1.panel1.SetBounds(350, 0, 1000, 650);
-                form1.logBox.SetBounds(0, 0, 350, 650);
+                form1.panel1.SetBounds(500, 0, 1000, 650);
+                form1.logBox.SetBounds(0, 0, 500, 650);
                 form1.picBox.SetBounds(0, 0, 1000, 100);
             }
             /////////чтене файла конфигурации///////////////////////

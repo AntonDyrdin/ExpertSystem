@@ -363,7 +363,7 @@ namespace Экспертная_система
             string jsonText = buildJSON(ID);
 
             for (int i = 1; i < jsonText.Length - 1; i++)
-                if (jsonText[i] == '\\' & jsonText[i - 1] != '\\' & jsonText[i + 1] != '\\')
+                if (jsonText[i] == '\\' && jsonText[i - 1] != '\\' && jsonText[i + 1] != '\\')
                 {
                     var a = jsonText.Substring(0, i) + '\\';
                     var b = jsonText.Substring(i, jsonText.Length - i);
