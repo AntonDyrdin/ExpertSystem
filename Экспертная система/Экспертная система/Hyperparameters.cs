@@ -271,8 +271,14 @@ namespace Экспертная_система
         }
         public void setValueByName(string name, string value)
         {
+            bool setted = false;
             foreach (Node node in getNodeByName(name))
+            {
                 node.setAttribute("value", value);
+                setted = true;
+            }
+            if(setted==false)
+                add(name, value);
         }
 
         ////////////////// VARIATE //////////////////////////////

@@ -118,8 +118,15 @@ namespace Экспертная_система
                     if (date1.Month < 10) dateStr += "0" + date1.Month.ToString(); else dateStr += date1.Month.ToString();
                     dateStr += '/';
                     dateStr += date1.Year.ToString().Substring(2, 2);
-
-                    int windowSize = Convert.ToInt32(algorithms[0].getValueByName("window_size"));
+                    int[] windowSizes = new int[algorithms.Count];
+                    for (int i = 0; i < algorithms.Count; i++)
+                        windowSizes[i] = Convert.ToInt32(algorithms[i].getValueByName("window_size"));
+                    int windowSize = 0;
+                    for (int i = 0; i < windowSizes.Length; i++)
+                    {
+                        if (windowSizes[i] > windowSize)
+                            windowSize = windowSizes[i];
+                    }
                     //+1 для заголовка;+1 для нормализации i/(i-1)
                     string[] input = new string[windowSize + 1 + 1];
                     var allLines = skipEmptyLines(File.ReadAllLines(rawDatasetFilePath));

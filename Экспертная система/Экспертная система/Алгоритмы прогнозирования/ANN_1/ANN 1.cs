@@ -9,11 +9,8 @@ namespace Экспертная_система
 
         public ANN_1(Form1 form1, string name) : base(form1, name)
         {
-<<<<<<< HEAD
             System.Threading.Thread.Sleep(20);
             window_size = new System.Random().Next(2, 20);
-=======
->>>>>>> 20f1c5e4909c89b006531b36e42f5f8246b6b222
             this.name = "ANN_1";
             fillFilePaths();
             ///////////////////////

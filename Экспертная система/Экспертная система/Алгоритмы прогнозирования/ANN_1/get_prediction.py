@@ -61,7 +61,8 @@ window_size=(int)(h("window_size"))
 print('model loaded')
 print("save_path: "+save_path)
 print("window_size: "+(str)(window_size)) 
-
+AVG=(float)(h("AVG"))
+print("AVG: "+(str)(AVG))
 enough=False
 while enough==False: 
         is_end=False
@@ -95,4 +96,8 @@ while enough==False:
         print("X shape: ",X.shape)
 
         predicted = model.predict(X)
+        print(predicted)
+        predicted=predicted-AVG+0.5
+        print("AVG: "+(str)(AVG))
+        print(predicted)
         print("prediction:",predicted)

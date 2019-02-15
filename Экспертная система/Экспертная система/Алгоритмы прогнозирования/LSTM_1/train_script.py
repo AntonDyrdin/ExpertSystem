@@ -119,7 +119,9 @@ log(predicted.shape)
 for i in range(0,test_X.shape[0]):
     sum = sum + predicted[i,0]
 avg = sum / predicted.shape[0]
-print('AVG = ' + (str)(avg))
+
+
+
 for i in range(0,test_X.shape[0]):
     predicted[i,0] = predicted[i,0] - avg
     predicted[i,0] = predicted[i,0] * 100
@@ -131,7 +133,7 @@ for i in range(0,len(allLines[0].split(';'))):
 
 head = head[0:-1]
 head = head.replace('\n',';')
-log(h("predictions_file_path"))
+#log(h("predictions_file_path"))
 head = head + '(predicted -> )' + allLines[0].split(';')[(int)(h("predicted_column_index"))] 
 # if  head[:-1]==';':
 #     head = head[0:-1]
@@ -146,3 +148,7 @@ for i in range(0,test_X.shape[0]):
 predictionsFile.close()
 log("> время создания и записи тестового прогноза  : "+ getTime(tempTime)) 
 log("______________END________________")    
+RESPONSE="RESPONSE:{"
+RESPONSE=RESPONSE+ "AVG:"+(str)(avg)
+RESPONSE=RESPONSE+ "}"
+print(RESPONSE)

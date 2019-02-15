@@ -21,12 +21,9 @@ namespace Экспертная_система
         public Algorithm(Form1 form1, string modelName)
         {
             this.modelName = modelName;
-<<<<<<< HEAD
             h = new Hyperparameters(form1, modelName);
             h.add("model_name", modelName);
-=======
-            h = new Hyperparameters(form1, name);
->>>>>>> 20f1c5e4909c89b006531b36e42f5f8246b6b222
+
             this.form1 = form1;
         }
         public void fillFilePaths()
@@ -139,15 +136,9 @@ namespace Экспертная_система
                     if (script_conclusion.IndexOf("prediction:") != -1)
                     {
                         Continue = true;
-<<<<<<< HEAD
                        log(script_conclusion);
                         script_conclusion = script_conclusion.Substring(script_conclusion.IndexOf("prediction:") + 11);
                        // log(script_conclusion);
-=======
-                      //  log(script_conclusion);
-                        script_conclusion = script_conclusion.Substring(script_conclusion.IndexOf("prediction:") + 11);
-                        log(script_conclusion);
->>>>>>> 20f1c5e4909c89b006531b36e42f5f8246b6b222
                     }
 
                 }
@@ -212,8 +203,11 @@ namespace Экспертная_система
             File.WriteAllText(h.getValueByName("json_file_path"), h.toJSON(0), System.Text.Encoding.Default);
             args = "--json_file_path " + '"' + h.getValueByName("json_file_path") + '"';
 
-            runPythonScript(getValueByName("train_script_path"), args);
-
+            string response=  runPythonScript(getValueByName("train_script_path"), args);
+            response = response.Substring(response.IndexOf('{'));
+            Hyperparameters responseH = new Hyperparameters(response, form1);
+            var avg = responseH.getValueByName("AVG");
+            h.setValueByName("AVG", avg);
             string[] predictionsCSV = null;
             //попытка прочитать данные из файла, полученного из скрипта 
             try
@@ -226,6 +220,7 @@ namespace Экспертная_система
             {
                 getAccAndStdDev(predictionsCSV);
             }
+          
             return "обучение алгоритма " + name + "заверешно.";
         }
 
@@ -258,10 +253,10 @@ namespace Экспертная_система
                 inc++;
 
             }
-            accuracy = Convert.ToDouble(rightCount) / Convert.ToDouble(leftCount);
+            accuracy = Convert.ToDouble(rightCount) / Convert.ToDouble(rightCount+leftCount);
             stdDev = sqrtSum / inc;
-            log("accuracy = " + accuracy.ToString());
-            log("stdDev = " + stdDev.ToString());
+            log("accuracy = " + (accuracy*100).ToString()+" %");
+            log("stdDev = " + Math.Sqrt(stdDev).ToString());
         }
         public string runPythonScript(string scriptFile, string args)
         {
@@ -282,7 +277,7 @@ namespace Экспертная_система
             //Буфер для считываемых данных
             char[] buffer = new char[blockSize];
             StreamReader standardOutputReader = process.StandardOutput;
-            int size = 0;
+          /*  int size = 0;
             string line = "";
             size = standardOutputReader.Read(buffer, 0, blockSize);
             line += new string(buffer);
@@ -295,12 +290,13 @@ namespace Экспертная_система
                     log(line);
                     line = "";
                 }
-            }
+            }  */
             StreamReader errorReader = process.StandardError;
-            //string result = reader.ReadToEnd();
+            string response = standardOutputReader.ReadToEnd();
+            log(response);
             log(errorReader.ReadToEnd());
-            //   log(standardOutputReader.ReadToEnd());
-            return "";
+            
+            return response;
         }
 
         private Process runProcess(string scriptFile, string args)
