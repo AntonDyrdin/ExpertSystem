@@ -4,11 +4,16 @@ namespace Экспертная_система
     public class ANN_1 : Algorithm
     {
         // В данной ANN количество нейронов в первом полносвязном слое равно размеру окна 
-        public int window_size = 10;
+        public int window_size;
 
 
         public ANN_1(Form1 form1, string name) : base(form1, name)
         {
+<<<<<<< HEAD
+            System.Threading.Thread.Sleep(20);
+            window_size = new System.Random().Next(2, 20);
+=======
+>>>>>>> 20f1c5e4909c89b006531b36e42f5f8246b6b222
             this.name = "ANN_1";
             fillFilePaths();
             ///////////////////////
@@ -27,6 +32,12 @@ namespace Экспертная_система
             h.add("name:loss,value:mean_squared_error");
             h.add("name:optimizer,value:adam");
             h.add("window_size:" + window_size.ToString());
+        }
+        public override void Open(Hyperparameters h)
+        {
+            this.h = h;
+            modelName = getValueByName("model_name");
+            window_size = System.Convert.ToInt32(getValueByName("window_size"));
         }
         public override void Save()
         {

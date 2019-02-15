@@ -459,7 +459,7 @@ namespace Экспертная_система
                             algorithms.Add(new LSTM_1(form1, "LSTM_1"));
                         if (algorithmBranch.name() == "ANN_1")
                             algorithms.Add(new ANN_1(form1, "ANN_1"));
-                        algorithms[algorithms.Count - 1].h = new Hyperparameters(H.toJSON(algorithmBranch.ID), form1);
+                        algorithms[algorithms.Count - 1].Open(new Hyperparameters(H.toJSON(algorithmBranch.ID),form1));
                     }
                 }
             }

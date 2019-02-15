@@ -29,11 +29,34 @@ namespace Экспертная_система
 
             expert = new Expert("Эксперт 1", this);
 
+<<<<<<< HEAD
+          //    mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { buildAndTrain(); });
+          mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { TEST(); });
+
+           
+        }
+        public void TEST()
+        {
+            mainThread = System.Threading.Thread.CurrentThread;
+            expert.Open();
+            sourceDataFile = pathPrefix + @"Временные ряды\EURRUB.txt";
+            expert.H.replaceStringInAllValues(expert.H.getValueByName("path_prefix"), pathPrefix);
+            expert.synchronizeHyperparameters();
+            // expert.trainAllAlgorithms();
+           expert.test(new DateTime(2010, 2, 10), new DateTime(2010, 2, 13), sourceDataFile);
+=======
            // mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { buildAndTrain(); });
             mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { TEST(); });
 
+>>>>>>> 20f1c5e4909c89b006531b36e42f5f8246b6b222
             expert.H.draw(0, picBox, this, 15, 150);
+            expert.Save();
         }
+<<<<<<< HEAD
+        public void buildAndTrain()
+        {
+            mainThread = System.Threading.Thread.CurrentThread;
+=======
         public void TEST()
         {
             mainThread = System.Threading.Thread.CurrentThread;
@@ -48,6 +71,7 @@ namespace Экспертная_система
         public void buildAndTrain()
         {
             mainThread = System.Threading.Thread.CurrentThread;
+>>>>>>> 20f1c5e4909c89b006531b36e42f5f8246b6b222
             expert.Add(new ANN_1(this, "ANN_1_[1]"));
             expert.Add(new ANN_1(this, "ANN_1_[2]"));
             expert.Add(new ANN_1(this, "ANN_1_[3]"));
@@ -58,6 +82,10 @@ namespace Экспертная_система
             expert.H.add("predicted_column_index:2");
             expert.synchronizeHyperparameters();
             expert.trainAllAlgorithms();
+<<<<<<< HEAD
+            expert.H.draw(0, picBox, this, 15, 150);
+=======
+>>>>>>> 20f1c5e4909c89b006531b36e42f5f8246b6b222
             expert.Save();
         }
         private void Hyperparameters_Click(object sender, EventArgs e)

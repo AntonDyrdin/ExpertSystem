@@ -59,8 +59,8 @@ except:
     model =load_model(save_path.encode('ansi'))
 window_size=(int)(h("window_size"))
 print('model loaded')
-
- 
+print("save_path: "+save_path)
+print("window_size: "+(str)(window_size)) 
 
 enough=False
 while enough==False: 
@@ -72,12 +72,12 @@ while enough==False:
             line= input()
             if line != 'over':
                 lines.append(line)
-                print(line)
+                #print(line)
                 print('next')
                 i=i+1
             else:
                 is_end=True
-        print(" конец чтения потока")    
+       # print(" конец чтения потока")    
 
         dataset = numpy.zeros((len(lines), len(lines[0].split(';'))),dtype=float)
         for i in range(0,len(lines)):
@@ -85,11 +85,14 @@ while enough==False:
                 featureStringValue = lines[i].split(';')[j]
                 if featureStringValue != '\n':     
                     dataset[i ,j] = (float)(lines[i].split(';')[j])
-        print(dataset)
-        print(dataset.shape)
-        X = numpy.zeros((1,dataset.shape[0]), dtype=float)
+
+        print("dataset = ",dataset)
+        X = numpy.zeros((1,window_size), dtype=float)
         predicted_column_index = (int)(h("predicted_column_index"))
         for j in range(0,window_size):
-              X[0,j] = dataset[j][predicted_column_index]
+              X[0,j] = dataset[j+(len(lines)-window_size)][predicted_column_index]
+        print("X = ",X)
+        print("X shape: ",X.shape)
+
         predicted = model.predict(X)
         print("prediction:",predicted)

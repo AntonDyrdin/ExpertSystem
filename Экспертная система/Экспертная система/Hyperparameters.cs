@@ -660,68 +660,96 @@ namespace Экспертная_система
             form1.logBox.Invoke(form1.voidDelegate);
 
         }
+
+        public delegate void DrawStringDelegate(string s, double depth, double x, double y);
         public void drawString(string s, double depth, double x, double y)
         {
-            y += Y;
-            if (x > picBox.Width)
-                picBox.Width = Convert.ToInt16(x);
+            if (picBox.InvokeRequired)
+            {
+                picBox.Invoke(new DrawStringDelegate(drawString), new Object[] { s, depth, x, y }); // вызываем эту же функцию обновления состояния, но уже в UI-потоке
+            }
             else
-            if (y > picBox.Height)
-                picBox.Height = Convert.ToInt16(y);
-            else
-                try
-                {
-                    if (lightsOn)
+            {
+                // код обновления состояния контрола
+
+                y += Y;
+                if (x > picBox.Width)
+                    picBox.Width = Convert.ToInt16(x);
+                else
+                if (y > picBox.Height)
+                    picBox.Height = Convert.ToInt16(y);
+                else
+                    try
                     {
-                        g.DrawString(s, new Font(form1.logBox.Font.Name, Convert.ToInt16(depth)), Brushes.White, new Point(Convert.ToInt16(Math.Round(x)), Convert.ToInt16(Math.Round(y))));
+                        if (lightsOn)
+                        {
+                            g.DrawString(s, new Font(form1.logBox.Font.Name, Convert.ToInt16(depth)), Brushes.White, new Point(Convert.ToInt16(Math.Round(x)), Convert.ToInt16(Math.Round(y))));
+                        }
+                        else
+                            g.DrawString(s, new Font(form1.logBox.Font.Name, Convert.ToInt16(depth)), Brushes.White, new Point(Convert.ToInt16(Math.Round(x)), Convert.ToInt16(Math.Round(y))));
                     }
-                    else
-                        g.DrawString(s, new Font(form1.logBox.Font.Name, Convert.ToInt16(depth)), Brushes.White, new Point(Convert.ToInt16(Math.Round(x)), Convert.ToInt16(Math.Round(y))));
-                }
-                catch { }
+                    catch { }
+            }
         }
+
+        public delegate void DrawStringDelegate2(string s, Brush brush, double depth, double x, double y);
         /////////////////////////////////Brushes.[Color]
         public void drawString(string s, Brush brush, double depth, double x, double y)
         {
-            y += Y;
-            if (x > picBox.Width)
-                picBox.Width = Convert.ToInt16(x);
+            if (picBox.InvokeRequired)
+            {
+                picBox.Invoke(new DrawStringDelegate2(drawString), new Object[] { s, brush, depth, x, y }); // вызываем эту же функцию обновления состояния, но уже в UI-потоке
+            }
             else
-            if (y > picBox.Height)
-                picBox.Height = Convert.ToInt16(y);
-            else
-                try
-                {
-                    if (lightsOn)
+            {
+                y += Y;
+                if (x > picBox.Width)
+                    picBox.Width = Convert.ToInt16(x);
+                else
+                if (y > picBox.Height)
+                    picBox.Height = Convert.ToInt16(y);
+                else
+                    try
                     {
-                        if (brush == Brushes.White)
-                            g.DrawString(s, new Font(form1.logBox.Font.Name, Convert.ToInt16(depth)), Brushes.Black, new Point(Convert.ToInt16(Math.Round(x)), Convert.ToInt16(Math.Round(y))));
+                        if (lightsOn)
+                        {
+                            if (brush == Brushes.White)
+                                g.DrawString(s, new Font(form1.logBox.Font.Name, Convert.ToInt16(depth)), Brushes.Black, new Point(Convert.ToInt16(Math.Round(x)), Convert.ToInt16(Math.Round(y))));
+                            else
+                                g.DrawString(s, new Font(form1.logBox.Font.Name, Convert.ToInt16(depth)), brush, new Point(Convert.ToInt16(Math.Round(x)), Convert.ToInt16(Math.Round(y))));
+                        }
                         else
                             g.DrawString(s, new Font(form1.logBox.Font.Name, Convert.ToInt16(depth)), brush, new Point(Convert.ToInt16(Math.Round(x)), Convert.ToInt16(Math.Round(y))));
                     }
-                    else
-                        g.DrawString(s, new Font(form1.logBox.Font.Name, Convert.ToInt16(depth)), brush, new Point(Convert.ToInt16(Math.Round(x)), Convert.ToInt16(Math.Round(y))));
-                }
-                catch { }
+                    catch { }
+            }
         }
 
+        public delegate void DrawLineDelegate(Color col, double depth, double x1, double y1, double x2, double y2);
         public void drawLine(Color col, double depth, double x1, double y1, double x2, double y2)
         {
-            y1 += Y;
-            y2 += Y;
-            if (x1 > picBox.Width)
-                picBox.Width = Convert.ToInt16(x1);
+            if (picBox.InvokeRequired)
+            {
+                picBox.Invoke(new DrawLineDelegate(drawLine), new Object[] {  col,  depth,  x1,  y1,  x2,  y2 }); // вызываем эту же функцию обновления состояния, но уже в UI-потоке
+            }
             else
-            if (x2 > picBox.Width)
-                picBox.Width = Convert.ToInt16(x2);
-            else
-            if (y1 > picBox.Height)
-                picBox.Height = Convert.ToInt16(y1);
-            else
-            if (y2 > picBox.Height)
-                picBox.Height = Convert.ToInt16(y2);
-            else
-                g.DrawLine(new Pen(col, Convert.ToInt16(depth)), Convert.ToInt16(Math.Round(x1)), Convert.ToInt16(Math.Round(y1)), Convert.ToInt16(Math.Round(x2)), Convert.ToInt16(Math.Round(y2)));
+            {
+                y1 += Y;
+                y2 += Y;
+                if (x1 > picBox.Width)
+                    picBox.Width = Convert.ToInt16(x1);
+                else
+                if (x2 > picBox.Width)
+                    picBox.Width = Convert.ToInt16(x2);
+                else
+                if (y1 > picBox.Height)
+                    picBox.Height = Convert.ToInt16(y1);
+                else
+                if (y2 > picBox.Height)
+                    picBox.Height = Convert.ToInt16(y2);
+                else
+                    g.DrawLine(new Pen(col, Convert.ToInt16(depth)), Convert.ToInt16(Math.Round(x1)), Convert.ToInt16(Math.Round(y1)), Convert.ToInt16(Math.Round(x2)), Convert.ToInt16(Math.Round(y2)));
+            }
         }
         private void log(String s, System.Drawing.Color col)
         {

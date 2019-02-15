@@ -21,7 +21,12 @@ namespace Экспертная_система
         public Algorithm(Form1 form1, string modelName)
         {
             this.modelName = modelName;
+<<<<<<< HEAD
+            h = new Hyperparameters(form1, modelName);
+            h.add("model_name", modelName);
+=======
             h = new Hyperparameters(form1, name);
+>>>>>>> 20f1c5e4909c89b006531b36e42f5f8246b6b222
             this.form1 = form1;
         }
         public void fillFilePaths()
@@ -134,9 +139,15 @@ namespace Экспертная_система
                     if (script_conclusion.IndexOf("prediction:") != -1)
                     {
                         Continue = true;
+<<<<<<< HEAD
+                       log(script_conclusion);
+                        script_conclusion = script_conclusion.Substring(script_conclusion.IndexOf("prediction:") + 11);
+                       // log(script_conclusion);
+=======
                       //  log(script_conclusion);
                         script_conclusion = script_conclusion.Substring(script_conclusion.IndexOf("prediction:") + 11);
                         log(script_conclusion);
+>>>>>>> 20f1c5e4909c89b006531b36e42f5f8246b6b222
                     }
 
                 }
@@ -308,7 +319,8 @@ namespace Экспертная_система
             return process;
         }
         public abstract void Save();
-
+        public abstract void Open(Hyperparameters h);
+        
         public string getValueByName(string name)
         { return h.getValueByName(name); }
         public void setAttributeByName(string name, int value)

@@ -25,6 +25,11 @@ namespace Экспертная_система
             h.add("name:optimizer,value:adam");
             h.add("window_size:10");
         }
+        public override void Open(Hyperparameters h)
+        {
+            this.h = h;
+            modelName = getValueByName("model_name");
+        }
         public override void Save()
         {
             File.WriteAllText(h.getValueByName("json_file_path"), h.toJSON(0), System.Text.Encoding.Default);
