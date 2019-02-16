@@ -29,10 +29,10 @@ namespace Экспертная_система
 
             expert = new Expert("Эксперт 1", this);
 
-        //    mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { buildAndTrain(); });
+          //    mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { buildAndTrain(); });
             mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { TEST(); });
 
-           
+
         }
         public void TEST()
         {
@@ -42,7 +42,7 @@ namespace Экспертная_система
             expert.H.replaceStringInAllValues(expert.H.getValueByName("path_prefix"), pathPrefix);
             expert.synchronizeHyperparameters();
             // expert.trainAllAlgorithms();
-        //  expert.test(new DateTime(2010, 2, 10), new DateTime(2010, 2, 13), sourceDataFile);
+            expert.test(new DateTime(2010, 3, 1), new DateTime(2010, 4, 1), sourceDataFile);
             expert.H.draw(0, picBox, this, 15, 150);
             expert.Save();
         }
@@ -52,6 +52,21 @@ namespace Экспертная_система
             expert.Add(new ANN_1(this, "ANN_1_[1]"));
             expert.Add(new ANN_1(this, "ANN_1_[2]"));
             expert.Add(new ANN_1(this, "ANN_1_[3]"));
+            expert.Add(new ANN_1(this, "ANN_1_[4]"));
+            expert.Add(new ANN_1(this, "ANN_1_[5]"));
+            expert.Add(new ANN_1(this, "ANN_1_[6]"));
+            expert.Add(new ANN_1(this, "ANN_1_[7]"));
+            expert.Add(new ANN_1(this, "ANN_1_[8]"));
+
+            expert.Add(new LSTM_1(this, "LSTM_1_[1]"));
+            expert.Add(new LSTM_1(this, "LSTM_1_[2]"));
+            expert.Add(new LSTM_1(this, "LSTM_1_[3]"));
+            expert.Add(new LSTM_1(this, "LSTM_1_[4]"));
+            expert.Add(new LSTM_1(this, "LSTM_1_[5]"));
+            expert.Add(new LSTM_1(this, "LSTM_1_[6]"));
+            expert.Add(new LSTM_1(this, "LSTM_1_[7]"));
+            expert.Add(new LSTM_1(this, "LSTM_1_[8]"));
+
             sourceDataFile = pathPrefix + @"Временные ряды\EURRUB.txt";
             expert.H.add("input_file", expert.savePreparedDataset(sourceDataFile, "<TIME>;<TICKER>;<PER>;<DATE>;<VOL>"));
             expert.H.add("path_prefix", pathPrefix);

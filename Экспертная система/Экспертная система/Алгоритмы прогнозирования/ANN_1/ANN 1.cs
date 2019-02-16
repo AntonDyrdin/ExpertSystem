@@ -10,7 +10,7 @@ namespace Экспертная_система
         public ANN_1(Form1 form1, string name) : base(form1, name)
         {
             System.Threading.Thread.Sleep(20);
-            window_size = new System.Random().Next(2, 20);
+            window_size = new System.Random().Next(5, 30);
             this.name = "ANN_1";
             fillFilePaths();
             ///////////////////////
@@ -18,14 +18,14 @@ namespace Экспертная_система
             ///////////////////////
             int NNscructNodeId = h.add("name:NN_sctruct");
             h.addByParentId(NNscructNodeId, "name:layer1,value:Dense,neurons_count:" + window_size.ToString());
-            h.addByParentId(NNscructNodeId, "name:layer2,value:Dense,neurons_count:6,activation:sigmoid");
+            h.addByParentId(NNscructNodeId, "name:layer2,value:Dense,neurons_count:"+ new System.Random().Next(1, window_size).ToString()+",activation:sigmoid");
             h.addByParentId(NNscructNodeId, "name:layer3,value:Dense,neurons_count:1,activation:sigmoid");
             //////////////////////
             //ПАРАМЕТРЫ ОБУЧЕНИЯ//
             //////////////////////
-            h.add("number_of_epochs:1");
-            h.add("split_point:0.8");
-            h.add("batch_size:200");
+            h.add("number_of_epochs:1" );
+            h.add("split_point:0." + new System.Random().Next(6, 95).ToString());
+            h.add("batch_size:" + new System.Random().Next(3, 300).ToString());
             h.add("name:loss,value:mean_squared_error");
             h.add("name:optimizer,value:adam");
             h.add("window_size:" + window_size.ToString());

@@ -6,6 +6,7 @@ namespace Экспертная_система
 
         public LSTM_1(Form1 form1, string name) : base(form1, name)
         {
+            System.Threading.Thread.Sleep(20);
             this.name = "LSTM_1";
             fillFilePaths();
             ///////////////////////
@@ -19,11 +20,11 @@ namespace Экспертная_система
             //ПАРАМЕТРЫ ОБУЧЕНИЯ//
             //////////////////////
             h.add("number_of_epochs:1");
-            h.add("split_point:0.8");
-            h.add("batch_size:200");
+            h.add("split_point:0."+ new System.Random().Next(6, 95).ToString());
+            h.add("batch_size:"+new System.Random().Next(3, 300).ToString());
             h.add("name:loss,value:mean_squared_error");
             h.add("name:optimizer,value:adam");
-            h.add("window_size:10");
+            h.add("window_size:"+ new System.Random().Next(2, 30).ToString());
         }
         public override void Open(Hyperparameters h)
         {

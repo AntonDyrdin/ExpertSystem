@@ -33,7 +33,7 @@ namespace Экспертная_система
         //стоит на ВТОРОМ месте в валютной паре
         //по команде BUY значение этого депозита должно уменьшаться  пропорционально цене базовой вылюты
         //по команде SELL значение этого депозита должно расти   пропорционально цене базовой вылюты
-        public double deposit2 = 1000;
+        public double deposit2 = 500;
 
         public List<double> deposit1History;
         public List<double> deposit2History;
@@ -55,11 +55,35 @@ namespace Экспертная_система
 
         }
 
-        public string trainAllAlgorithms()
+        public void trainAllAlgorithms()
         {
             for (int i = 0; i < algorithms.Count; i++)
                 log(algorithms[i].train());
-            return "";
+            deleteAlgorithmsWithLowAccuracy(50);
+        }
+
+        public void deleteAlgorithmsWithLowAccuracy(double acceptableLevel)
+        {
+            log("Удаление моделей с низкими показателями точности прогноза.");
+            log("Допустимый уровень точности: "+ acceptableLevel+" %");
+            for (int i = 0; i < algorithms.Count; i++)
+                if (algorithms[i].accuracy < acceptableLevel)
+                {
+                    committeeNodeID = H.getNodeByName("committee")[0].ID;
+                    var algorithmBranches = H.getNodesByparentID(committeeNodeID);
+                    H.deleteBranch(algorithmBranches[i].ID);
+                    log("     Удалена модель " + algorithms[i].modelName + "accuracy = " + algorithms[i].accuracy.ToString());
+                    algorithms.RemoveAt(i);
+                   
+                    i--;
+                }
+                else
+                {
+                    algorithms[i].h.setValueByName("accuracy", algorithms[i].accuracy.ToString().Replace(',','.'));
+                }
+            log("Состав комитета после удаления:");
+            for (int i = 0; i < algorithms.Count; i++)
+                log("       " + algorithms[i].modelName + "accuracy = " + algorithms[i].accuracy.ToString());
         }
 
         public double[] getPrediction(string[] input)
@@ -68,6 +92,11 @@ namespace Экспертная_система
             for (int i = 0; i < algorithms.Count; i++)
             {
                 committeeResponse[i] = algorithms[i].getPrediction(input);
+
+                if (committeeResponse[i] > 0.5)
+                    committeeResponse[i] = 1;
+                if (committeeResponse[i] < 0.5)
+                    committeeResponse[i] = 0;
             }
             return committeeResponse;
         }
@@ -98,9 +127,11 @@ namespace Экспертная_система
             actionHistory = new List<string>();
             report = new List<string>();
             presentLine = "";
+            double closeValue = 0;
+            string action = "";
             string reportHead = "<presentDate>;<deposit1>;<deposit2>;<action>;<closeValue>;";
             foreach (Algorithm algorithm in algorithms)
-                reportHead += "<"+algorithm.modelName+">;";
+                reportHead += "<" + algorithm.modelName + ">;";
             report.Add(reportHead);
             if (date1 < date2)
             {
@@ -110,7 +141,7 @@ namespace Экспертная_система
                 {
                     string reportLine = "";
                     string closeValueStr;
-                    double closeValue = 0;
+
                     bool dateExist = false;
                     string dateStr = "";
                     if (date1.Day < 10) dateStr += "0" + date1.Day.ToString(); else dateStr += date1.Day.ToString();
@@ -148,7 +179,7 @@ namespace Экспертная_система
                         }
                     }
                     string rawInputLine = input[input.Length - 1];
-                    string action = "";
+
                     if (dateExist)
                     {
                         input = prepareDataset(input, algorithms[0].getValueByName("drop_columns"));
@@ -224,10 +255,10 @@ namespace Экспертная_система
                     //print committee response
                     string comRespStr = "committee response: ";
                     for (int i = 0; i < committeeResponse.Length; i++)
-                        comRespStr += '[' + committeeResponse[i] + "]; ";
-                    string comRespReport = "";
+                        comRespStr += " [" + committeeResponse[i] + "]; ";
+                    string committeeResponseReportLine = "";
                     for (int i = 0; i < committeeResponse.Length; i++)
-                        comRespReport += committeeResponse[i] + ";";
+                        committeeResponseReportLine += committeeResponse[i] + ";";
                     log(comRespStr);
                     log("date: " + date1.ToString());
                     log("deposit1: " + deposit1.ToString());
@@ -236,7 +267,7 @@ namespace Экспертная_система
                     log("closeValue: " + closeValue.ToString());
                     log("presentLine: " + presentLine);
 
-                    reportLine += date1.ToString() + ';' + deposit1.ToString() + ';' + deposit2.ToString() + ';' + action + ';' + closeValue.ToString() + ';'+ comRespReport + presentLine;
+                    reportLine += date1.ToString() + ';' + deposit1.ToString() + ';' + deposit2.ToString() + ';' + action + ';' + closeValue.ToString() + ';' + committeeResponseReportLine + presentLine;
                     report.Add(reportLine);
 
                     if (period == "day")
@@ -247,7 +278,14 @@ namespace Экспертная_система
             }
             else
                 log("date1>date2 !");
+            //выход с рынка
+            deposit2 = deposit2 + (closeValue * deposit1);
+            deposit1 = 0;
+            action = "exit";
+            string reportLineExit = date1.ToString() + ';' + deposit1.ToString() + ';' + deposit2.ToString() + ';' + action + ';' + closeValue.ToString() + ';';
+            report.Add(reportLineExit);
 
+            //завершение всех операций и запись отчёта
             File.WriteAllLines(path_prefix + expertName + "\\report.csv", report);
             return "expert has been tested";
         }
@@ -259,18 +297,6 @@ namespace Экспертная_система
             algorithm.h.setValueByName("predictions_file_path", path_prefix + expertName + "\\" + algorithm.modelName + "\\predictions.txt");
 
             algorithms.Add(algorithm);
-        }
-
-        public Expert DeepClone()
-        {
-            using (MemoryStream memory_stream = new MemoryStream())
-            {
-                BinaryFormatter formatter = new BinaryFormatter();
-                formatter.Serialize(memory_stream, this);
-
-                memory_stream.Position = 0;
-                return (Expert)formatter.Deserialize(memory_stream);
-            }
         }
 
         //метод делающий из временного ряда (*.csv) датасет, пригодный для передачи в train.py скрипт
@@ -466,7 +492,7 @@ namespace Экспертная_система
                             algorithms.Add(new LSTM_1(form1, "LSTM_1"));
                         if (algorithmBranch.name() == "ANN_1")
                             algorithms.Add(new ANN_1(form1, "ANN_1"));
-                        algorithms[algorithms.Count - 1].Open(new Hyperparameters(H.toJSON(algorithmBranch.ID),form1));
+                        algorithms[algorithms.Count - 1].Open(new Hyperparameters(H.toJSON(algorithmBranch.ID), form1));
                     }
                 }
             }

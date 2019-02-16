@@ -148,7 +148,7 @@ for i in range(0,test_X.shape[0]):
 predictionsFile.close()
 log("> время создания и записи тестового прогноза  : "+ getTime(tempTime)) 
 log("______________END________________")    
-RESPONSE="RESPONSE:{"
-RESPONSE=RESPONSE+ "AVG:"+(str)(avg)
-RESPONSE=RESPONSE+ "}"
+RESPONSE="{RESPONSE:{"
+RESPONSE=RESPONSE+ "AVG:{value:"+(str)(avg)
+RESPONSE=RESPONSE+ "}}}"
 print(RESPONSE)

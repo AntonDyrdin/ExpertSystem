@@ -136,9 +136,9 @@ namespace Экспертная_система
                     if (script_conclusion.IndexOf("prediction:") != -1)
                     {
                         Continue = true;
-                       log(script_conclusion);
+                      // log(script_conclusion);
                         script_conclusion = script_conclusion.Substring(script_conclusion.IndexOf("prediction:") + 11);
-                       // log(script_conclusion);
+                        log(script_conclusion);
                     }
 
                 }
@@ -253,9 +253,9 @@ namespace Экспертная_система
                 inc++;
 
             }
-            accuracy = Convert.ToDouble(rightCount) / Convert.ToDouble(rightCount+leftCount);
+            accuracy = Convert.ToDouble(rightCount) / Convert.ToDouble(rightCount+leftCount) * 100;
             stdDev = sqrtSum / inc;
-            log("accuracy = " + (accuracy*100).ToString()+" %");
+            log("accuracy = " + accuracy.ToString()+" %");
             log("stdDev = " + Math.Sqrt(stdDev).ToString());
         }
         public string runPythonScript(string scriptFile, string args)

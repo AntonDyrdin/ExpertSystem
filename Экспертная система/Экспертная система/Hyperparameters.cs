@@ -155,14 +155,18 @@ namespace Экспертная_система
             newNodeIdWillBe++;
             return newNodeIdWillBe - 1;
         }
-        //CONST
+        //INT
         public void add(string name, int value)
         {
-            add("name:" + name + ",value:" + value);
+            add("name:" + name + ",value:" + value.ToString());
         }
         public void add(string name, string value)
         {
-            add("name:" + name + ",value:" + value);
+            Node newNode = new Node(newNodeIdWillBe, 0);
+            newNode.addAttribute("name", name);
+            newNode.addAttribute("value", value);
+            nodes.Add(newNode);
+            newNodeIdWillBe++;
         }
         public void add(string name, int value, int min, int max)
         {
@@ -785,7 +789,13 @@ public class Node
             addAttribute(rawAttributes[i]);
         }
     }
+    public Node(int ID, int parentID)
+    {
+        this.ID = ID;
+        this.parentID = parentID;
 
+        attributes = new List<Attribute>();
+    }
     public Node Clone()
     {
         string attributesString = "";
