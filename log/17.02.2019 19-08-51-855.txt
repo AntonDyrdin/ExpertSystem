@@ -1,0 +1,1255 @@
+
+
+
+
+СКРИПТ ОБУЧЕНИЯ ANN_1 ЗАПУЩЕН...
+> время загрузки библиотек : 3.714 сек.
+(5570, 4)
+> время чтения данных  :  3.914 сек.
+компиляция НС...
+> время компиляции НС  : 4.978 сек.
+обучение НС...
+Train on 4988 samples, validate on 554 samples
+Epoch 1/1
+ - 0s - loss: 0.0612 - acc: 0.0535 - val_loss: 0.1083 - val_acc: 0.1426
+> время обучения НС  : 5.240 сек.
+сохранение модели: C:\Users\anton\Рабочий стол\MAIN\Эксперт 1\ANN_1_[0]\weights.h5
+> время сохранения НС  : 5.289 сек.
+создание тестового прогноза
+(554, 1)
+test_X.shape:  (554, 28)
+> время создания и записи тестового прогноза  : 5.357 сек.
+______________END________________
+{RESPONSE:{AVG:{value:0.49852389468397906}}}
+
+Selected GPU[0] GeForce MX150 as the process wide default device.
+Using CNTK backend
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input4") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input90") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+
+accuracy = 51,214953271028 %
+stdDev = 0,797431050592869
+обучение алгоритма ANN_1заверешно.
+СКРИПТ ОБУЧЕНИЯ ANN_1 ЗАПУЩЕН...
+> время загрузки библиотек : 3.280 сек.
+(5570, 4)
+> время чтения данных  :  3.414 сек.
+компиляция НС...
+> время компиляции НС  : 4.272 сек.
+обучение НС...
+Train on 1001 samples, validate on 4561 samples
+Epoch 1/1
+ - 1s - loss: 0.0473 - acc: 0.0420 - val_loss: 0.0631 - val_acc: 0.0708
+> время обучения НС  : 5.165 сек.
+сохранение модели: C:\Users\anton\Рабочий стол\MAIN\Эксперт 1\ANN_1_[1]\weights.h5
+> время сохранения НС  : 5.206 сек.
+создание тестового прогноза
+(4561, 1)
+test_X.shape:  (4561, 8)
+> время создания и записи тестового прогноза  : 5.777 сек.
+______________END________________
+{RESPONSE:{AVG:{value:0.538679822929803}}}
+
+Selected GPU[0] GeForce MX150 as the process wide default device.
+Using CNTK backend
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input4") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input90") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+
+accuracy = 51,2370670265407 %
+stdDev = 0,330491972371617
+обучение алгоритма ANN_1заверешно.
+СКРИПТ ОБУЧЕНИЯ ANN_1 ЗАПУЩЕН...
+> время загрузки библиотек : 2.933 сек.
+(5570, 4)
+> время чтения данных  :  3.124 сек.
+компиляция НС...
+> время компиляции НС  : 4.290 сек.
+обучение НС...
+Train on 2776 samples, validate on 2777 samples
+Epoch 1/1
+ - 0s - loss: 0.0786 - acc: 0.0234 - val_loss: 0.1115 - val_acc: 0.1051
+> время обучения НС  : 4.754 сек.
+сохранение модели: C:\Users\anton\Рабочий стол\MAIN\Эксперт 1\ANN_1_[2]\weights.h5
+> время сохранения НС  : 4.815 сек.
+создание тестового прогноза
+(2777, 1)
+test_X.shape:  (2777, 17)
+> время создания и записи тестового прогноза  : 5.205 сек.
+______________END________________
+{RESPONSE:{AVG:{value:0.6725136827855905}}}
+
+Selected GPU[0] GeForce MX150 as the process wide default device.
+Using CNTK backend
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input4") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input90") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+
+accuracy = 50,8818011257036 %
+stdDev = 0,512204488991116
+обучение алгоритма ANN_1заверешно.
+СКРИПТ ОБУЧЕНИЯ ANN_1 ЗАПУЩЕН...
+> время загрузки библиотек : 3.295 сек.
+(5570, 4)
+> время чтения данных  :  3.455 сек.
+компиляция НС...
+> время компиляции НС  : 4.360 сек.
+обучение НС...
+Train on 2001 samples, validate on 3556 samples
+Epoch 1/1
+ - 0s - loss: 0.0953 - acc: 0.0230 - val_loss: 0.1181 - val_acc: 0.0886
+> время обучения НС  : 4.953 сек.
+сохранение модели: C:\Users\anton\Рабочий стол\MAIN\Эксперт 1\ANN_1_[3]\weights.h5
+> время сохранения НС  : 5.030 сек.
+создание тестового прогноза
+(3556, 1)
+test_X.shape:  (3556, 13)
+> время создания и записи тестового прогноза  : 5.555 сек.
+______________END________________
+{RESPONSE:{AVG:{value:0.7215481105986543}}}
+
+Selected GPU[0] GeForce MX150 as the process wide default device.
+Using CNTK backend
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input4") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input90") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+
+accuracy = 49,7385241138873 %
+stdDev = 0,393068657732858
+обучение алгоритма ANN_1заверешно.
+СКРИПТ ОБУЧЕНИЯ ANN_1 ЗАПУЩЕН...
+> время загрузки библиотек : 3.216 сек.
+(5570, 4)
+> время чтения данных  :  3.441 сек.
+компиляция НС...
+> время компиляции НС  : 4.613 сек.
+обучение НС...
+Train on 4712 samples, validate on 831 samples
+Epoch 1/1
+ - 0s - loss: 0.0562 - acc: 0.0386 - val_loss: 0.1303 - val_acc: 0.2010
+> время обучения НС  : 4.997 сек.
+сохранение модели: C:\Users\anton\Рабочий стол\MAIN\Эксперт 1\ANN_1_[5]\weights.h5
+> время сохранения НС  : 5.058 сек.
+создание тестового прогноза
+(831, 1)
+test_X.shape:  (831, 27)
+> время создания и записи тестового прогноза  : 5.198 сек.
+______________END________________
+{RESPONSE:{AVG:{value:0.4893577418387582}}}
+
+Selected GPU[0] GeForce MX150 as the process wide default device.
+Using CNTK backend
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input4") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input90") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+
+accuracy = 48,5221674876847 %
+stdDev = 0,780384468520439
+обучение алгоритма ANN_1заверешно.
+СКРИПТ ОБУЧЕНИЯ ANN_1 ЗАПУЩЕН...
+> время загрузки библиотек : 3.312 сек.
+(5570, 4)
+> время чтения данных  :  3.533 сек.
+компиляция НС...
+> время компиляции НС  : 4.411 сек.
+обучение НС...
+Train on 3994 samples, validate on 1553 samples
+Epoch 1/1
+ - 0s - loss: 0.0923 - acc: 0.0265 - val_loss: 0.1408 - val_acc: 0.1629
+> время обучения НС  : 4.775 сек.
+сохранение модели: C:\Users\anton\Рабочий стол\MAIN\Эксперт 1\ANN_1_[13]\weights.h5
+> время сохранения НС  : 4.833 сек.
+создание тестового прогноза
+(1553, 1)
+test_X.shape:  (1553, 23)
+> время создания и записи тестового прогноза  : 5.054 сек.
+______________END________________
+{RESPONSE:{AVG:{value:0.6715439685451854}}}
+
+Selected GPU[0] GeForce MX150 as the process wide default device.
+Using CNTK backend
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input4") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input90") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+
+accuracy = 48,2917214191853 %
+stdDev = 0,766570774891213
+обучение алгоритма ANN_1заверешно.
+СКРИПТ ОБУЧЕНИЯ LSTM_1 ЗАПУЩЕН...
+> время загрузки библиотек : 3.384 сек.
+(5570, 4)
+> время чтения данных  :  3.848 сек.
+компиляция НС...
+> время компиляции НС  : 5.076 сек.
+обучение НС...
+Train on 2334 samples, validate on 3223 samples
+Epoch 1/1
+ - 1s - loss: 0.0586 - acc: 0.0176 - val_loss: 0.0918 - val_acc: 0.0890
+> время обучения  НС  : 6.280 сек.
+сохранение модели: C:\Users\anton\Рабочий стол\MAIN\Эксперт 1\LSTM_1_[0]\weights.h5
+> время сохранения НС  : 6.366 сек.
+создание тестового прогноза
+(3223, 1)
+test_X.shape (3223, 13, 4)
+> время создания и записи тестового прогноза  : 7.975 сек.
+______________END________________
+{RESPONSE:{AVG:{value:0.38125964202127804}}}
+
+Selected GPU[0] GeForce MX150 as the process wide default device.
+Using CNTK backend
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input4") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input554") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+
+accuracy = 40,1000938379731 %
+stdDev = 0,425407876035419
+обучение алгоритма LSTM_1заверешно.
+СКРИПТ ОБУЧЕНИЯ LSTM_1 ЗАПУЩЕН...
+> время загрузки библиотек : 3.218 сек.
+(5570, 4)
+> время чтения данных  :  3.780 сек.
+компиляция НС...
+> время компиляции НС  : 5.003 сек.
+обучение НС...
+Train on 3276 samples, validate on 2276 samples
+Epoch 1/1
+ - 1s - loss: 0.0467 - acc: 0.0226 - val_loss: 0.0929 - val_acc: 0.1050
+> время обучения  НС  : 6.005 сек.
+сохранение модели: C:\Users\anton\Рабочий стол\MAIN\Эксперт 1\LSTM_1_[1]\weights.h5
+> время сохранения НС  : 6.064 сек.
+создание тестового прогноза
+(2276, 1)
+test_X.shape (2276, 18, 4)
+> время создания и записи тестового прогноза  : 7.238 сек.
+______________END________________
+{RESPONSE:{AVG:{value:0.5132154602105672}}}
+
+Selected GPU[0] GeForce MX150 as the process wide default device.
+Using CNTK backend
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input4") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input554") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+
+accuracy = 46,3060686015831 %
+stdDev = 1,25809669705771
+обучение алгоритма LSTM_1заверешно.
+СКРИПТ ОБУЧЕНИЯ LSTM_1 ЗАПУЩЕН...
+> время загрузки библиотек : 3.316 сек.
+(5570, 4)
+> время чтения данных  :  3.866 сек.
+компиляция НС...
+> время компиляции НС  : 5.226 сек.
+обучение НС...
+Train on 2888 samples, validate on 2666 samples
+Epoch 1/1
+ - 1s - loss: 0.0516 - acc: 0.0159 - val_loss: 0.0862 - val_acc: 0.1032
+> время обучения  НС  : 6.328 сек.
+сохранение модели: C:\Users\anton\Рабочий стол\MAIN\Эксперт 1\LSTM_1_[4]\weights.h5
+> время сохранения НС  : 6.380 сек.
+создание тестового прогноза
+(2666, 1)
+test_X.shape (2666, 16, 4)
+> время создания и записи тестового прогноза  : 7.514 сек.
+______________END________________
+{RESPONSE:{AVG:{value:0.46850430581995356}}}
+
+Selected GPU[0] GeForce MX150 as the process wide default device.
+Using CNTK backend
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input4") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input554") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+
+accuracy = 42,4117205108941 %
+stdDev = 0,884080089720969
+обучение алгоритма LSTM_1заверешно.
+СКРИПТ ОБУЧЕНИЯ LSTM_1 ЗАПУЩЕН...
+> время загрузки библиотек : 3.433 сек.
+(5570, 4)
+> время чтения данных  :  4.360 сек.
+компиляция НС...
+> время компиляции НС  : 5.627 сек.
+обучение НС...
+Train on 4767 samples, validate on 776 samples
+Epoch 1/1
+ - 1s - loss: 0.0717 - acc: 0.0384 - val_loss: 0.1336 - val_acc: 0.1959
+> время обучения  НС  : 6.687 сек.
+сохранение модели: C:\Users\anton\Рабочий стол\MAIN\Эксперт 1\LSTM_1_[7]\weights.h5
+> время сохранения НС  : 6.752 сек.
+создание тестового прогноза
+(776, 1)
+test_X.shape (776, 27, 4)
+> время создания и записи тестового прогноза  : 7.316 сек.
+______________END________________
+{RESPONSE:{AVG:{value:0.4094835804372104}}}
+
+Selected GPU[0] GeForce MX150 as the process wide default device.
+Using CNTK backend
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input4") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input554") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+
+accuracy = 47,6129032258065 %
+stdDev = 0,605736857891838
+обучение алгоритма LSTM_1заверешно.
+СКРИПТ ОБУЧЕНИЯ LSTM_1 ЗАПУЩЕН...
+> время загрузки библиотек : 3.623 сек.
+(5570, 4)
+> время чтения данных  :  4.125 сек.
+компиляция НС...
+> время компиляции НС  : 5.237 сек.
+обучение НС...
+Train on 1613 samples, validate on 3948 samples
+Epoch 1/1
+ - 1s - loss: 0.0533 - acc: 0.0316 - val_loss: 0.0733 - val_acc: 0.0798
+> время обучения  НС  : 6.718 сек.
+сохранение модели: C:\Users\anton\Рабочий стол\MAIN\Эксперт 1\LSTM_1_[8]\weights.h5
+> время сохранения НС  : 6.799 сек.
+создание тестового прогноза
+(3948, 1)
+test_X.shape (3948, 9, 4)
+> время создания и записи тестового прогноза  : 8.345 сек.
+______________END________________
+{RESPONSE:{AVG:{value:0.5904999432109651}}}
+
+Selected GPU[0] GeForce MX150 as the process wide default device.
+Using CNTK backend
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input4") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input554") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+
+accuracy = 46,9979296066253 %
+stdDev = 0,445480535899159
+обучение алгоритма LSTM_1заверешно.
+СКРИПТ ОБУЧЕНИЯ LSTM_1 ЗАПУЩЕН...
+> время загрузки библиотек : 4.076 сек.
+(5570, 4)
+> время чтения данных  :  4.730 сек.
+компиляция НС...
+> время компиляции НС  : 6.160 сек.
+обучение НС...
+Train on 2611 samples, validate on 2945 samples
+Epoch 1/1
+ - 1s - loss: 0.0567 - acc: 0.0165 - val_loss: 0.0970 - val_acc: 0.0971
+> время обучения  НС  : 7.662 сек.
+сохранение модели: C:\Users\anton\Рабочий стол\MAIN\Эксперт 1\LSTM_1_[9]\weights.h5
+> время сохранения НС  : 7.767 сек.
+создание тестового прогноза
+(2945, 1)
+test_X.shape (2945, 14, 4)
+> время создания и записи тестового прогноза  : 9.160 сек.
+______________END________________
+{RESPONSE:{AVG:{value:0.38064501151973806}}}
+
+Selected GPU[0] GeForce MX150 as the process wide default device.
+Using CNTK backend
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input4") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input554") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+
+accuracy = 58,8095238095238 %
+stdDev = 0,32714515975193
+обучение алгоритма LSTM_1заверешно.
+СКРИПТ ОБУЧЕНИЯ LSTM_1 ЗАПУЩЕН...
+> время загрузки библиотек : 3.730 сек.
+(5570, 4)
+> время чтения данных  :  4.516 сек.
+компиляция НС...
+> время компиляции НС  : 5.891 сек.
+обучение НС...
+Train on 4381 samples, validate on 1164 samples
+Epoch 1/1
+ - 1s - loss: 0.0922 - acc: 0.0256 - val_loss: 0.1753 - val_acc: 0.2105
+> время обучения  НС  : 7.230 сек.
+сохранение модели: C:\Users\anton\Рабочий стол\MAIN\Эксперт 1\LSTM_1_[10]\weights.h5
+> время сохранения НС  : 7.318 сек.
+создание тестового прогноза
+(1164, 1)
+test_X.shape (1164, 25, 4)
+> время создания и записи тестового прогноза  : 8.060 сек.
+______________END________________
+{RESPONSE:{AVG:{value:0.6977831409968871}}}
+
+Selected GPU[0] GeForce MX150 as the process wide default device.
+Using CNTK backend
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input4") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input554") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+
+accuracy = 55,2880481513328 %
+stdDev = 1,11173718917764
+обучение алгоритма LSTM_1заверешно.
+СКРИПТ ОБУЧЕНИЯ LSTM_1 ЗАПУЩЕН...
+> время загрузки библиотек : 3.419 сек.
+(5570, 4)
+> время чтения данных  :  3.584 сек.
+компиляция НС...
+> время компиляции НС  : 4.853 сек.
+обучение НС...
+Train on 3898 samples, validate on 1670 samples
+Epoch 1/1
+ - 8s - loss: 0.0436 - acc: 0.0241 - val_loss: 0.1072 - val_acc: 0.1910
+> время обучения  НС  : 12.62 сек.
+сохранение модели: C:\Users\anton\Рабочий стол\MAIN\Эксперт 1\LSTM_1_[11]\weights.h5
+> время сохранения НС  : 12.68 сек.
+создание тестового прогноза
+(1670, 1)
+test_X.shape (1670, 2, 4)
+> время создания и записи тестового прогноза  : 13.02 сек.
+______________END________________
+{RESPONSE:{AVG:{value:0.4939596227364626}}}
+
+Selected GPU[0] GeForce MX150 as the process wide default device.
+Using CNTK backend
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input4") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input548") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+
+accuracy = 56,6546762589928 %
+stdDev = 1,0704854333084
+обучение алгоритма LSTM_1заверешно.
+СКРИПТ ОБУЧЕНИЯ LSTM_1 ЗАПУЩЕН...
+> время загрузки библиотек : 3.409 сек.
+(5570, 4)
+> время чтения данных  :  3.688 сек.
+компиляция НС...
+> время компиляции НС  : 4.869 сек.
+обучение НС...
+Train on 1335 samples, validate on 4228 samples
+Epoch 1/1
+ - 1s - loss: 0.0464 - acc: 0.0315 - val_loss: 0.0636 - val_acc: 0.0754
+> время обучения  НС  : 6.182 сек.
+сохранение модели: C:\Users\anton\Рабочий стол\MAIN\Эксперт 1\LSTM_1_[13]\weights.h5
+> время сохранения НС  : 6.230 сек.
+создание тестового прогноза
+(4228, 1)
+test_X.shape (4228, 7, 4)
+> время создания и записи тестового прогноза  : 7.610 сек.
+______________END________________
+{RESPONSE:{AVG:{value:0.5125821636550925}}}
+
+Selected GPU[0] GeForce MX150 as the process wide default device.
+Using CNTK backend
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input4") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input554") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+
+accuracy = 53,6714975845411 %
+stdDev = 0,322590614153415
+обучение алгоритма LSTM_1заверешно.
+СКРИПТ ОБУЧЕНИЯ LSTM_1 ЗАПУЩЕН...
+> время загрузки библиотек : 3.436 сек.
+(5570, 4)
+> время чтения данных  :  3.913 сек.
+компиляция НС...
+> время компиляции НС  : 5.138 сек.
+обучение НС...
+Train on 2334 samples, validate on 3223 samples
+Epoch 1/1
+ - 1s - loss: 0.0448 - acc: 0.0184 - val_loss: 0.0781 - val_acc: 0.0872
+> время обучения  НС  : 6.287 сек.
+сохранение модели: C:\Users\anton\Рабочий стол\MAIN\Эксперт 1\LSTM_1_[14]\weights.h5
+> время сохранения НС  : 6.349 сек.
+создание тестового прогноза
+(3223, 1)
+test_X.shape (3223, 13, 4)
+> время создания и записи тестового прогноза  : 7.594 сек.
+______________END________________
+{RESPONSE:{AVG:{value:0.4729728889583691}}}
+
+Selected GPU[0] GeForce MX150 as the process wide default device.
+Using CNTK backend
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input4") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input554") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+
+accuracy = 48,0137629027213 %
+stdDev = 1,66699106222123
+обучение алгоритма LSTM_1заверешно.
+СКРИПТ ОБУЧЕНИЯ LSTM_1 ЗАПУЩЕН...
+> время загрузки библиотек : 3.352 сек.
+(5570, 4)
+> время чтения данных  :  4.044 сек.
+компиляция НС...
+> время компиляции НС  : 5.310 сек.
+обучение НС...
+Train on 4105 samples, validate on 1442 samples
+Epoch 1/1
+ - 1s - loss: 0.1381 - acc: 0.0197 - val_loss: 0.2110 - val_acc: 0.1713
+> время обучения  НС  : 6.503 сек.
+сохранение модели: C:\Users\anton\Рабочий стол\MAIN\Эксперт 1\LSTM_1_[15]\weights.h5
+> время сохранения НС  : 6.564 сек.
+создание тестового прогноза
+(1442, 1)
+test_X.shape (1442, 23, 4)
+> время создания и записи тестового прогноза  : 7.335 сек.
+______________END________________
+{RESPONSE:{AVG:{value:0.2014105433027225}}}
+
+Selected GPU[0] GeForce MX150 as the process wide default device.
+Using CNTK backend
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input4") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input554") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+
+accuracy = 64,4444444444444 %
+stdDev = 0,4378173418945
+обучение алгоритма LSTM_1заверешно.
+СКРИПТ ОБУЧЕНИЯ LSTM_1 ЗАПУЩЕН...
+> время загрузки библиотек : 3.411 сек.
+(5570, 4)
+> время чтения данных  :  3.632 сек.
+компиляция НС...
+> время компиляции НС  : 4.877 сек.
+обучение НС...
+Train on 946 samples, validate on 4619 samples
+Epoch 1/1
+ - 2s - loss: 0.0480 - acc: 0.0381 - val_loss: 0.0614 - val_acc: 0.0699
+> время обучения  НС  : 6.829 сек.
+сохранение модели: C:\Users\anton\Рабочий стол\MAIN\Эксперт 1\LSTM_1_[16]\weights.h5
+> время сохранения НС  : 6.899 сек.
+создание тестового прогноза
+(4619, 1)
+test_X.shape (4619, 5, 4)
+> время создания и записи тестового прогноза  : 8.326 сек.
+______________END________________
+{RESPONSE:{AVG:{value:0.5109766125808058}}}
+
+Selected GPU[0] GeForce MX150 as the process wide default device.
+Using CNTK backend
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input4") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input554") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+
+accuracy = 43,7223695844385 %
+stdDev = 0,258822306409412
+обучение алгоритма LSTM_1заверешно.
+СКРИПТ ОБУЧЕНИЯ LSTM_1 ЗАПУЩЕН...
+> время загрузки библиотек : 3.307 сек.
+(5570, 4)
+> время чтения данных  :  3.573 сек.
+компиляция НС...
+> время компиляции НС  : 4.970 сек.
+обучение НС...
+Train on 1057 samples, validate on 4507 samples
+Epoch 1/1
+ - 2s - loss: 0.1047 - acc: 0.0331 - val_loss: 0.1129 - val_acc: 0.0663
+> время обучения  НС  : 7.050 сек.
+сохранение модели: C:\Users\anton\Рабочий стол\MAIN\Эксперт 1\LSTM_1_[18]\weights.h5
+> время сохранения НС  : 7.179 сек.
+создание тестового прогноза
+(4507, 1)
+test_X.shape (4507, 6, 4)
+> время создания и записи тестового прогноза  : 8.666 сек.
+______________END________________
+{RESPONSE:{AVG:{value:0.27867770561667804}}}
+
+Selected GPU[0] GeForce MX150 as the process wide default device.
+Using CNTK backend
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input4") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input554") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+
+accuracy = 48,9916156809427 %
+stdDev = 1,07340553721028
+обучение алгоритма LSTM_1заверешно.
+СКРИПТ ОБУЧЕНИЯ LSTM_1 ЗАПУЩЕН...
+> время загрузки библиотек : 3.697 сек.
+(5570, 4)
+> время чтения данных  :  4.283 сек.
+компиляция НС...
+> время компиляции НС  : 5.478 сек.
+обучение НС...
+Train on 2833 samples, validate on 2721 samples
+Epoch 1/1
+ - 1s - loss: 0.0927 - acc: 0.0240 - val_loss: 0.1327 - val_acc: 0.1069
+> время обучения  НС  : 6.661 сек.
+сохранение модели: C:\Users\anton\Рабочий стол\MAIN\Эксперт 1\LSTM_1_[19]\weights.h5
+> время сохранения НС  : 6.762 сек.
+создание тестового прогноза
+(2721, 1)
+test_X.shape (2721, 16, 4)
+> время создания и записи тестового прогноза  : 8.134 сек.
+______________END________________
+{RESPONSE:{AVG:{value:0.7230781510620159}}}
+
+Selected GPU[0] GeForce MX150 as the process wide default device.
+Using CNTK backend
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input4") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input554") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+
+accuracy = 39,3080603606919 %
+stdDev = 0,517710104962877
+обучение алгоритма LSTM_1заверешно.
+Удаление моделей с низкими показателями точности прогноза.
+Допустимый уровень точности: 50 %
+     Удалена модель ANN_1_[3]accuracy = 49,7385241138873
+     Удалена модель ANN_1_[5]accuracy = 48,5221674876847
+     Удалена модель ANN_1_[13]accuracy = 48,2917214191853
+     Удалена модель LSTM_1_[0]accuracy = 40,1000938379731
+     Удалена модель LSTM_1_[1]accuracy = 46,3060686015831
+     Удалена модель LSTM_1_[4]accuracy = 42,4117205108941
+     Удалена модель LSTM_1_[7]accuracy = 47,6129032258065
+     Удалена модель LSTM_1_[8]accuracy = 46,9979296066253
+     Удалена модель LSTM_1_[14]accuracy = 48,0137629027213
+     Удалена модель LSTM_1_[16]accuracy = 43,7223695844385
+     Удалена модель LSTM_1_[18]accuracy = 48,9916156809427
+     Удалена модель LSTM_1_[19]accuracy = 39,3080603606919
+Состав комитета после удаления:
+       ANN_1_[0]accuracy = 51,214953271028
+       ANN_1_[1]accuracy = 51,2370670265407
+       ANN_1_[2]accuracy = 50,8818011257036
+       LSTM_1_[9]accuracy = 58,8095238095238
+       LSTM_1_[10]accuracy = 55,2880481513328
+       LSTM_1_[11]accuracy = 56,6546762589928
+       LSTM_1_[13]accuracy = 53,6714975845411
+       LSTM_1_[15]accuracy = 64,4444444444444
+Этап загрузки модели в скрипте поточного прогнозирования пройден успешно
+ [[0.5617076]]
+
+Этап загрузки модели в скрипте поточного прогнозирования пройден успешно
+ [[0.73940015]]
+
+Этап загрузки модели в скрипте поточного прогнозирования пройден успешно
+ [[0.6743509]]
+
+Этап загрузки модели в скрипте поточного прогнозирования пройден успешно
+ [[0.37201318]]
+
+Этап загрузки модели в скрипте поточного прогнозирования пройден успешно
+ [[0.68934375]]
+
+Этап загрузки модели в скрипте поточного прогнозирования пройден успешно
+ [[0.5165514]]
+
+Этап загрузки модели в скрипте поточного прогнозирования пройден успешно
+ [[0.39387846]]
+
+Этап загрузки модели в скрипте поточного прогнозирования пройден успешно
+ [[0.0290783]]
+
+committee response:  [1];  [1];  [1];  [0];  [1];  [1];  [0];  [0]; 
+date: 01.03.2010 0:00:00
+deposit1: 1
+deposit2: 459,545
+action: buy
+closeValue: 40,455
+presentLine: 0.660000;0.619;0.303999;0.259999
+ [[0.55954564]]
+
+ [[0.73788]]
+
+ [[0.6744005]]
+
+ [[0.36911863]]
+
+ [[0.687319]]
+
+ [[0.5239527]]
+
+ [[0.39186245]]
+
+ [[0.02840936]]
+
+committee response:  [1];  [1];  [1];  [0];  [1];  [1];  [0];  [0]; 
+date: 02.03.2010 0:00:00
+deposit1: 2
+deposit2: 419,174
+action: buy
+closeValue: 40,371
+presentLine: 0.251999;0.146000;0.416000;0.533000
+ [[0.55989873]]
+
+ [[0.737841]]
+
+ [[0.67229825]]
+
+ [[0.36875805]]
+
+ [[0.6951406]]
+
+ [[0.5215397]]
+
+ [[0.3930173]]
+
+ [[0.0298484]]
+
+committee response:  [1];  [1];  [1];  [0];  [1];  [1];  [0];  [0]; 
+date: 03.03.2010 0:00:00
+deposit1: 3
+deposit2: 378,593
+action: buy
+closeValue: 40,581
+presentLine: 0.536000;0.819000;0.710000;0.68
+ [[0.5623008]]
+
+ [[0.7404573]]
+
+ [[0.6714882]]
+
+ [[0.37087455]]
+
+ [[0.68970835]]
+
+ [[0.51346517]]
+
+ [[0.39282215]]
+
+ [[0.02903545]]
+
+committee response:  [1];  [1];  [1];  [0];  [1];  [1];  [0];  [0]; 
+date: 04.03.2010 0:00:00
+deposit1: 4
+deposit2: 338,091
+action: buy
+closeValue: 40,502
+presentLine: 0.688000;0.384;0.420999;0.268999
+ [[0.56018054]]
+
+ [[0.739352]]
+
+ [[0.6701321]]
+
+ [[0.37114683]]
+
+ [[0.68813765]]
+
+ [[0.5053055]]
+
+ [[0.3900807]]
+
+ [[0.03128913]]
+
+committee response:  [1];  [1];  [1];  [0];  [1];  [1];  [0];  [0]; 
+date: 05.03.2010 0:00:00
+deposit1: 5
+deposit2: 297,672
+action: buy
+closeValue: 40,419
+presentLine: 0.265000;0.269999;0.416999;0.489000
+дата 06/03/10 не найдена в файле C:\Users\anton\Рабочий стол\MAIN\Временные ряды\EURRUB.txt
+committee response:  [1];  [1];  [1];  [0];  [1];  [1];  [0];  [0]; 
+date: 06.03.2010 0:00:00
+deposit1: 5
+deposit2: 297,672
+action: dateDoesn'tExist
+closeValue: 40,419
+presentLine: 0.265000;0.269999;0.416999;0.489000
+дата 07/03/10 не найдена в файле C:\Users\anton\Рабочий стол\MAIN\Временные ряды\EURRUB.txt
+committee response:  [1];  [1];  [1];  [0];  [1];  [1];  [0];  [0]; 
+date: 07.03.2010 0:00:00
+deposit1: 5
+deposit2: 297,672
+action: dateDoesn'tExist
+closeValue: 40,419
+presentLine: 0.265000;0.269999;0.416999;0.489000
+ [[0.5603037]]
+
+ [[0.73734796]]
+
+ [[0.6722665]]
+
+ [[0.37241936]]
+
+ [[0.6970865]]
+
+ [[0.50407195]]
+
+ [[0.39176077]]
+
+ [[0.02898124]]
+
+committee response:  [1];  [1];  [1];  [0];  [1];  [1];  [0];  [0]; 
+date: 08.03.2010 0:00:00
+deposit1: 6
+deposit2: 257,137
+action: buy
+closeValue: 40,535
+presentLine: 0.497;0.591999;0.616;0.516999
+ [[0.5518162]]
+
+ [[0.7388772]]
+
+ [[0.67248464]]
+
+ [[0.36909673]]
+
+ [[0.6900561]]
+
+ [[0.50210845]]
+
+ [[0.39131218]]
+
+ [[0.02949271]]
+
+committee response:  [1];  [1];  [1];  [0];  [1];  [1];  [0];  [0]; 
+date: 09.03.2010 0:00:00
+deposit1: 7
+deposit2: 216,792
+action: buy
+closeValue: 40,345
+presentLine: 0.507999;0.391000;0.310000;0.384999
+ [[0.5520071]]
+
+ [[0.73856807]]
+
+ [[0.66712105]]
+
+ [[0.36982298]]
+
+ [[0.68931484]]
+
+ [[0.50604916]]
+
+ [[0.3925196]]
+
+ [[0.03237706]]
+
+committee response:  [1];  [1];  [1];  [0];  [1];  [1];  [0];  [0]; 
+date: 10.03.2010 0:00:00
+deposit1: 8
+deposit2: 176,527
+action: buy
+closeValue: 40,265
+presentLine: 0.391000;0.397999;0.420000;0.412000
+ [[0.55738074]]
+
+ [[0.7379849]]
+
+ [[0.6736293]]
+
+ [[0.3713066]]
+
+ [[0.69343483]]
+
+ [[0.50462174]]
+
+ [[0.39397013]]
+
+ [[0.02831757]]
+
+committee response:  [1];  [1];  [1];  [0];  [1];  [1];  [0];  [0]; 
+date: 11.03.2010 0:00:00
+deposit1: 9
+deposit2: 136,339
+action: buy
+closeValue: 40,188
+presentLine: 0.409999;0.398000;0.423000;0.436999
+ [[0.56471705]]
+
+ [[0.74016464]]
+
+ [[0.6668145]]
+
+ [[0.37062755]]
+
+ [[0.688341]]
+
+ [[0.49759245]]
+
+ [[0.39329147]]
+
+ [[0.02951604]]
+
+committee response:  [1];  [1];  [1];  [0];  [1];  [0];  [0];  [0]; 
+date: 12.03.2010 0:00:00
+deposit1: 9
+deposit2: 136,339
+action: nothing
+closeValue: 40,229
+presentLine: 0.439;0.533000;0.540999;0.499000
+дата 13/03/10 не найдена в файле C:\Users\anton\Рабочий стол\MAIN\Временные ряды\EURRUB.txt
+committee response:  [1];  [1];  [1];  [0];  [1];  [0];  [0];  [0]; 
+date: 13.03.2010 0:00:00
+deposit1: 9
+deposit2: 136,339
+action: dateDoesn'tExist
+closeValue: 40,229
+presentLine: 0.439;0.533000;0.540999;0.499000
+дата 14/03/10 не найдена в файле C:\Users\anton\Рабочий стол\MAIN\Временные ряды\EURRUB.txt
+committee response:  [1];  [1];  [1];  [0];  [1];  [0];  [0];  [0]; 
+date: 14.03.2010 0:00:00
+deposit1: 9
+deposit2: 136,339
+action: dateDoesn'tExist
+closeValue: 40,229
+presentLine: 0.439;0.533000;0.540999;0.499000
+ [[0.56114435]]
+
+ [[0.74034667]]
+
+ [[0.67240906]]
+
+ [[0.36810333]]
+
+ [[0.6878639]]
+
+ [[0.50489473]]
+
+ [[0.38972378]]
+
+ [[0.03042886]]
+
+committee response:  [1];  [1];  [1];  [0];  [1];  [1];  [0];  [0]; 
+date: 15.03.2010 0:00:00
+deposit1: 10
+deposit2: 96,117
+action: buy
+closeValue: 40,222
+presentLine: 0.451000;0.500999;0.493000;0.527999
+ [[0.5513755]]
+
+ [[0.7390723]]
+
+ [[0.67058045]]
+
+ [[0.37241527]]
+
+ [[0.6876076]]
+
+ [[0.51211363]]
+
+ [[0.39076602]]
+
+ [[0.02943951]]
+
+committee response:  [1];  [1];  [1];  [0];  [1];  [1];  [0];  [0]; 
+date: 16.03.2010 0:00:00
+deposit1: 11
+deposit2: 56,047
+action: buy
+closeValue: 40,07
+presentLine: 0.567;0.511000;0.347999;0.236999
+ [[0.55983746]]
+
+ [[0.73736477]]
+
+ [[0.67072797]]
+
+ [[0.3717697]]
+
+ [[0.6909473]]
+
+ [[0.51801]]
+
+ [[0.39200526]]
+
+ [[0.02933526]]
+
+committee response:  [1];  [1];  [1];  [0];  [1];  [1];  [0];  [0]; 
+date: 17.03.2010 0:00:00
+deposit1: 12
+deposit2: 16,197
+action: buy
+closeValue: 39,85
+presentLine: 0.244;0.169999;0.280000;0.302
+ [[0.5610584]]
+
+ [[0.73727655]]
+
+ [[0.67393625]]
+
+ [[0.3724188]]
+
+ [[0.69233274]]
+
+ [[0.5123356]]
+
+ [[0.39367676]]
+
+ [[0.02936715]]
+
+Основной депозит исчерпан! Не возможно купить базовую валюту.
+deposit1 = 12
+deposit2 = 16,197
+committee response:  [1];  [1];  [1];  [0];  [1];  [1];  [0];  [0]; 
+date: 18.03.2010 0:00:00
+deposit1: 12
+deposit2: 16,197
+action: buy
+closeValue: 39,619
+presentLine: 0.314999;0.329000;0.268999;0.350000
+ [[0.557019]]
+
+ [[0.73986554]]
+
+ [[0.67185926]]
+
+ [[0.3690428]]
+
+ [[0.6878728]]
+
+ [[0.5023242]]
+
+ [[0.39148718]]
+
+ [[0.03021634]]
+
+Основной депозит исчерпан! Не возможно купить базовую валюту.
+deposit1 = 12
+deposit2 = 16,197
+committee response:  [1];  [1];  [1];  [0];  [1];  [1];  [0];  [0]; 
+date: 19.03.2010 0:00:00
+deposit1: 12
+deposit2: 16,197
+action: buy
+closeValue: 39,696
+presentLine: 0.335000;0.292999;0.576999;0.5
+дата 20/03/10 не найдена в файле C:\Users\anton\Рабочий стол\MAIN\Временные ряды\EURRUB.txt
+committee response:  [1];  [1];  [1];  [0];  [1];  [1];  [0];  [0]; 
+date: 20.03.2010 0:00:00
+deposit1: 12
+deposit2: 16,197
+action: dateDoesn'tExist
+closeValue: 39,696
+presentLine: 0.335000;0.292999;0.576999;0.5
+дата 21/03/10 не найдена в файле C:\Users\anton\Рабочий стол\MAIN\Временные ряды\EURRUB.txt
+committee response:  [1];  [1];  [1];  [0];  [1];  [1];  [0];  [0]; 
+date: 21.03.2010 0:00:00
+deposit1: 12
+deposit2: 16,197
+action: dateDoesn'tExist
+closeValue: 39,696
+presentLine: 0.335000;0.292999;0.576999;0.5
+ [[0.55824816]]
+
+ [[0.74177694]]
+
+ [[0.670011]]
+
+ [[0.37215602]]
+
+ [[0.6831093]]
+
+ [[0.49562016]]
+
+ [[0.39082408]]
+
+ [[0.0310111]]
+
+committee response:  [1];  [1];  [1];  [0];  [1];  [0];  [0];  [0]; 
+date: 22.03.2010 0:00:00
+deposit1: 12
+deposit2: 16,197
+action: nothing
+closeValue: 39,617
+presentLine: 0.499000;0.925000;0.420999;0.824000
+ [[0.5627892]]
+
+ [[0.7413565]]
+
+ [[0.67282516]]
+
+ [[0.37193045]]
+
+ [[0.6812313]]
+
+ [[0.5019756]]
+
+ [[0.3923669]]
+
+ [[0.02856952]]
+
+Основной депозит исчерпан! Не возможно купить базовую валюту.
+deposit1 = 12
+deposit2 = 16,197
+committee response:  [1];  [1];  [1];  [0];  [1];  [1];  [0];  [0]; 
+date: 23.03.2010 0:00:00
+deposit1: 12
+deposit2: 16,197
+action: buy
+closeValue: 39,763
+presentLine: 0.826999;0.414999;0.646000;0.337999
+ [[0.5581216]]
+
+ [[0.7385534]]
+
+ [[0.6729153]]
+
+ [[0.37025478]]
+
+ [[0.68542343]]
+
+ [[0.5118998]]
+
+ [[0.39478636]]
+
+ [[0.02758342]]
+
+Основной депозит исчерпан! Не возможно купить базовую валюту.
+deposit1 = 12
+deposit2 = 16,197
+committee response:  [1];  [1];  [1];  [0];  [1];  [1];  [0];  [0]; 
+date: 24.03.2010 0:00:00
+deposit1: 12
+deposit2: 16,197
+action: buy
+closeValue: 39,537
+presentLine: 0.332999;0.338999;0.274000;0.161000
+ [[0.55734575]]
+
+ [[0.7368833]]
+
+ [[0.6745303]]
+
+ [[0.3720706]]
+
+ [[0.69355327]]
+
+ [[0.5105046]]
+
+ [[0.3906623]]
+
+ [[0.02771229]]
+
+Основной депозит исчерпан! Не возможно купить базовую валюту.
+deposit1 = 12
+deposit2 = 16,197
+committee response:  [1];  [1];  [1];  [0];  [1];  [1];  [0];  [0]; 
+date: 25.03.2010 0:00:00
+deposit1: 12
+deposit2: 16,197
+action: buy
+closeValue: 39,295
+presentLine: 0.171000;0.210000;0.258000;0.271000
+ [[0.55772936]]
+
+ [[0.73696613]]
+
+ [[0.67358696]]
+
+ [[0.37185827]]
+
+ [[0.6908688]]
+
+ [[0.5010811]]
+
+ [[0.39121795]]
+
+ [[0.02807522]]
+
+Основной депозит исчерпан! Не возможно купить базовую валюту.
+deposit1 = 12
+deposit2 = 16,197
+committee response:  [1];  [1];  [1];  [0];  [1];  [1];  [0];  [0]; 
+date: 26.03.2010 0:00:00
+deposit1: 12
+deposit2: 16,197
+action: buy
+closeValue: 39,3
+presentLine: 0.273999;0.670000;0.504999;0.890000
+дата 27/03/10 не найдена в файле C:\Users\anton\Рабочий стол\MAIN\Временные ряды\EURRUB.txt
+committee response:  [1];  [1];  [1];  [0];  [1];  [1];  [0];  [0]; 
+date: 27.03.2010 0:00:00
+deposit1: 12
+deposit2: 16,197
+action: dateDoesn'tExist
+closeValue: 39,3
+presentLine: 0.273999;0.670000;0.504999;0.890000
+дата 28/03/10 не найдена в файле C:\Users\anton\Рабочий стол\MAIN\Временные ряды\EURRUB.txt
+committee response:  [1];  [1];  [1];  [0];  [1];  [1];  [0];  [0]; 
+date: 28.03.2010 0:00:00
+deposit1: 12
+deposit2: 16,197
+action: dateDoesn'tExist
+closeValue: 39,3
+presentLine: 0.273999;0.670000;0.504999;0.890000
+ [[0.55879045]]
+
+ [[0.7418544]]
+
+ [[0.67342675]]
+
+ [[0.3708896]]
+
+ [[0.6851618]]
+
+ [[0.5003253]]
+
+ [[0.39232528]]
+
+ [[0.03386086]]
+
+Основной депозит исчерпан! Не возможно купить базовую валюту.
+deposit1 = 12
+deposit2 = 16,197
+committee response:  [1];  [1];  [1];  [0];  [1];  [1];  [0];  [0]; 
+date: 29.03.2010 0:00:00
+deposit1: 12
+deposit2: 16,197
+action: buy
+closeValue: 39,701
+presentLine: 1;0.710000;0.901000;0.542000
+ [[0.56038845]]
+
+ [[0.74297035]]
+
+ [[0.67133605]]
+
+ [[0.3710025]]
+
+ [[0.681678]]
+
+ [[0.5114261]]
+
+ [[0.39526594]]
+
+ [[0.02845564]]
+
+Основной депозит исчерпан! Не возможно купить базовую валюту.
+deposit1 = 12
+deposit2 = 16,197
+committee response:  [1];  [1];  [1];  [0];  [1];  [1];  [0];  [0]; 
+date: 30.03.2010 0:00:00
+deposit1: 12
+deposit2: 16,197
+action: buy
+closeValue: 39,571
+presentLine: 0.345999;0.331999;0.369999;0.353999
+ [[0.5604558]]
+
+ [[0.73791444]]
+
+ [[0.673182]]
+
+ [[0.3711645]]
+
+ [[0.692062]]
+
+ [[0.5140724]]
+
+ [[0.39192384]]
+
+ [[0.02688071]]
+
+Основной депозит исчерпан! Не возможно купить базовую валюту.
+deposit1 = 12
+deposit2 = 16,197
+committee response:  [1];  [1];  [1];  [0];  [1];  [1];  [0];  [0]; 
+date: 31.03.2010 0:00:00
+deposit1: 12
+deposit2: 16,197
+action: buy
+closeValue: 39,503
+presentLine: 0.343000;0.537000;0.432000;0.689

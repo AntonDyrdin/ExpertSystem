@@ -70,7 +70,6 @@ for i in range(0,dataset.shape[0] - window_size):
     for j in range(0,window_size):
         for k in range(0,dataset.shape[1]):
             Dataset_X[i,j,k] = dataset[i + j][k]
-            #вектор Y представляет собой прогнозируемое значение
     Dataset_Y[i] = dataset[i + window_size,predicted_column_index]
 train_start_point = 0
 split_point = (float)(h("split_point"))

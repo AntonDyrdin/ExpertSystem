@@ -1,0 +1,64 @@
+
+
+
+
+СКРИПТ ОБУЧЕНИЯ ANN_1 ЗАПУЩЕН...
+> время загрузки библиотек : 3.071 сек.
+(5570, 4)
+> время чтения данных  :  3.249 сек.
+компиляция НС...
+> время компиляции НС  : 4.245 сек.
+обучение НС...
+Train on 4988 samples, validate on 554 samples
+Epoch 1/1
+ - 0s - loss: 0.0716 - acc: 0.0533 - val_loss: 0.1107 - val_acc: 0.1372
+> время обучения НС  : 4.500 сек.
+сохранение модели: C:\Users\anton\Рабочий стол\MAIN\Эксперт 1\ANN_1_[0]\weights.h5
+> время сохранения НС  : 4.536 сек.
+создание тестового прогноза
+(554, 1)
+test_X.shape:  (554, 28)
+> время создания и записи тестового прогноза  : 4.605 сек.
+______________END________________
+{RESPONSE:{AVG:{value:0.5342673100934562}}}
+
+Selected GPU[0] GeForce MX150 as the process wide default device.
+Using CNTK backend
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input4") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input90") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+
+accuracy = 49,9065420560748 %
+stdDev = 0,751509005307682
+обучение алгоритма ANN_1заверешно.
+СКРИПТ ОБУЧЕНИЯ ANN_1 ЗАПУЩЕН...
+> время загрузки библиотек : 2.479 сек.
+(5570, 4)
+> время чтения данных  :  2.606 сек.
+компиляция НС...
+> время компиляции НС  : 3.341 сек.
+обучение НС...
+Train on 1001 samples, validate on 4561 samples
+Epoch 1/1
+ - 1s - loss: 0.0477 - acc: 0.0260 - val_loss: 0.0629 - val_acc: 0.0660
+> время обучения НС  : 4.008 сек.
+сохранение модели: C:\Users\anton\Рабочий стол\MAIN\Эксперт 1\ANN_1_[1]\weights.h5
+> время сохранения НС  : 4.040 сек.
+создание тестового прогноза
+(4561, 1)
+test_X.shape:  (4561, 8)
+> время создания и записи тестового прогноза  : 4.505 сек.
+______________END________________
+{RESPONSE:{AVG:{value:0.4723825211967718}}}
+
+Selected GPU[0] GeForce MX150 as the process wide default device.
+Using CNTK backend
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input4") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input90") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+
+accuracy = 49,7975708502024 %
+stdDev = 0,244111811090062
+обучение алгоритма ANN_1заверешно.

@@ -13,8 +13,8 @@ namespace Экспертная_система
             //СТРУКТУРА НЕЙРОСЕТИ//
             ///////////////////////
             int NNscructNodeId = h.add("name:NN_sctruct");
-            h.addByParentId(NNscructNodeId, "name:layer1,value:LSTM,neurons_count:3");
-            h.addByParentId(NNscructNodeId, "name:layer2,value:Dense,neurons_count:1,activation:sigmoid");
+            h.addByParentId(NNscructNodeId, "name:layer1,value:LSTM,neurons_count:"+ new System.Random().Next(1, 10).ToString());
+            h.addByParentId(NNscructNodeId, "name:layer2,value:Dense,neurons_count:"+ new System.Random().Next(1, 10).ToString()+",activation:sigmoid");
             h.addByParentId(NNscructNodeId, "name:layer3,value:Dense,neurons_count:1,activation:sigmoid");
             //////////////////////
             //ПАРАМЕТРЫ ОБУЧЕНИЯ//

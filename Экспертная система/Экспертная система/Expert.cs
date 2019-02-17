@@ -227,7 +227,7 @@ namespace Экспертная_система
                         {
                             if (closeValue != 0)
                             {
-                                if (deposit1 > 1)
+                                if (deposit1 >= 1)
                                 {
                                     deposit1 = deposit1 - 1;
                                     deposit2 = deposit2 + closeValue;
