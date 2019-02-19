@@ -1,0 +1,132 @@
+
+
+
+
+СКРИПТ ОБУЧЕНИЯ ANN_1 ЗАПУЩЕН...
+> время загрузки библиотек : 2.759 сек.
+(5570, 4)
+> время чтения данных  :  2.914 сек.
+компиляция НС...
+> время компиляции НС  : 3.811 сек.
+обучение НС...
+Train on 5485 samples, validate on 55 samples
+Epoch 1/20
+ - 0s - loss: 0.0640 - acc: 0.0587 - val_loss: 0.0811 - val_acc: 0.0909
+Epoch 2/20
+ - 0s - loss: 0.0614 - acc: 0.0618 - val_loss: 0.0813 - val_acc: 0.0909
+Epoch 3/20
+ - 0s - loss: 0.0614 - acc: 0.0622 - val_loss: 0.0814 - val_acc: 0.0727
+Epoch 4/20
+ - 0s - loss: 0.0614 - acc: 0.0613 - val_loss: 0.0814 - val_acc: 0.0727
+Epoch 5/20
+ - 0s - loss: 0.0614 - acc: 0.0614 - val_loss: 0.0814 - val_acc: 0.0727
+Epoch 6/20
+ - 0s - loss: 0.0614 - acc: 0.0614 - val_loss: 0.0814 - val_acc: 0.0727
+Epoch 7/20
+ - 0s - loss: 0.0614 - acc: 0.0616 - val_loss: 0.0815 - val_acc: 0.0727
+Epoch 8/20
+ - 0s - loss: 0.0614 - acc: 0.0614 - val_loss: 0.0815 - val_acc: 0.0727
+Epoch 9/20
+ - 0s - loss: 0.0614 - acc: 0.0627 - val_loss: 0.0815 - val_acc: 0.0727
+Epoch 10/20
+ - 0s - loss: 0.0614 - acc: 0.0640 - val_loss: 0.0816 - val_acc: 0.0727
+Epoch 11/20
+ - 0s - loss: 0.0613 - acc: 0.0655 - val_loss: 0.0816 - val_acc: 0.0727
+Epoch 12/20
+ - 0s - loss: 0.0613 - acc: 0.0653 - val_loss: 0.0816 - val_acc: 0.0727
+Epoch 13/20
+ - 0s - loss: 0.0613 - acc: 0.0653 - val_loss: 0.0816 - val_acc: 0.0727
+Epoch 14/20
+ - 0s - loss: 0.0613 - acc: 0.0653 - val_loss: 0.0817 - val_acc: 0.0727
+Epoch 15/20
+ - 0s - loss: 0.0613 - acc: 0.0662 - val_loss: 0.0817 - val_acc: 0.0727
+Epoch 16/20
+ - 0s - loss: 0.0613 - acc: 0.0662 - val_loss: 0.0817 - val_acc: 0.0727
+Epoch 17/20
+ - 0s - loss: 0.0613 - acc: 0.0665 - val_loss: 0.0817 - val_acc: 0.0727
+Epoch 18/20
+ - 0s - loss: 0.0612 - acc: 0.0676 - val_loss: 0.0817 - val_acc: 0.0727
+Epoch 19/20
+ - 0s - loss: 0.0612 - acc: 0.0673 - val_loss: 0.0817 - val_acc: 0.0727
+Epoch 20/20
+ - 0s - loss: 0.0612 - acc: 0.0673 - val_loss: 0.0818 - val_acc: 0.0727
+> время обучения НС  : 6.800 сек.
+сохранение модели: C:\Users\anton\Рабочий стол\MAIN\Эксперт 1\ANN_1[1]\weights.h5
+> время сохранения НС  : 6.835 сек.
+создание тестового прогноза
+(55, 1)
+test_X.shape:  (55, 30)
+> время создания и записи тестового прогноза  : 6.848 сек.
+______________END________________
+{RESPONSE:{AVG:{value:0.5158281776038083}}}
+
+Selected GPU[0] GeForce MX150 as the process wide default device.
+Using CNTK backend
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input4") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input76") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+
+accuracy = 46,1538461538462 %
+stdDev = 0,988399032777218
+обучение алгоритма ANN_1заверешно.
+СКРИПТ ОБУЧЕНИЯ ANN_1 ЗАПУЩЕН...
+> время загрузки библиотек : 2.574 сек.
+(5570, 4)
+> время чтения данных  :  2.665 сек.
+компиляция НС...
+> время компиляции НС  : 3.706 сек.
+обучение НС...
+Train on 1723 samples, validate on 3835 samples
+Epoch 1/1
+ - 0s - loss: 0.1065 - acc: 0.0250 - val_loss: 0.1173 - val_acc: 0.0801
+> время обучения НС  : 4.005 сек.
+сохранение модели: C:\Users\anton\Рабочий стол\MAIN\Эксперт 1\ANN_1[2]\weights.h5
+> время сохранения НС  : 4.047 сек.
+создание тестового прогноза
+(3835, 1)
+test_X.shape:  (3835, 12)
+> время создания и записи тестового прогноза  : 4.296 сек.
+______________END________________
+{RESPONSE:{AVG:{value:0.7280437310640318}}}
+
+Selected GPU[0] GeForce MX150 as the process wide default device.
+Using CNTK backend
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input4") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input76") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+
+accuracy = 50,4352413611184 %
+stdDev = 0,559084020116861
+обучение алгоритма ANN_1заверешно.
+СКРИПТ ОБУЧЕНИЯ LSTM_1 ЗАПУЩЕН...
+> время загрузки библиотек : 2.253 сек.
+(5570, 4)
+> время чтения данных  :  2.591 сек.
+компиляция НС...
+> время компиляции НС  : 3.602 сек.
+обучение НС...
+Train on 2666 samples, validate on 2889 samples
+Epoch 1/1
+ - 1s - loss: 0.1286 - acc: 0.0184 - val_loss: 0.1714 - val_acc: 0.0962
+> время обучения  НС  : 4.393 сек.
+сохранение модели: C:\Users\anton\Рабочий стол\MAIN\Эксперт 1\LSTM_1\weights.h5
+> время сохранения НС  : 4.453 сек.
+создание тестового прогноза
+(2889, 1)
+test_X.shape (2889, 15, 4)
+> время создания и записи тестового прогноза  : 5.278 сек.
+______________END________________
+{RESPONSE:{AVG:{value:0.2132485232558701}}}
+
+Selected GPU[0] GeForce MX150 as the process wide default device.
+Using CNTK backend
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input4") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\lib\site-packages\cntk\core.py:361: UserWarning: your data is of type "float64", but your input variable (uid "Input554") expects "<class 'numpy.float32'>". Please convert your data beforehand to speed up training.
+  (sample.dtype, var.uid, str(var.dtype)))
+
+accuracy = 50,7286606523248 %
+stdDev = 0,457946813141077
+обучение алгоритма LSTM_1заверешно.

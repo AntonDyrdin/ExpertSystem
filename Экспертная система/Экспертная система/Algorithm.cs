@@ -136,9 +136,9 @@ namespace Экспертная_система
                     if (script_conclusion.IndexOf("prediction:") != -1)
                     {
                         Continue = true;
-                      // log(script_conclusion);
+                     log(script_conclusion);
                         script_conclusion = script_conclusion.Substring(script_conclusion.IndexOf("prediction:") + 11);
-                        log(script_conclusion);
+                       // log(script_conclusion);
                     }
 
                 }
@@ -227,6 +227,7 @@ namespace Экспертная_система
 
         public void getAccAndStdDev(string[] predictionsCSV)
         {
+            predictionsCSV = Expert.skipEmptyLines(predictionsCSV);
             double sqrtSum = 0;
             int rightCount = 0;
             int leftCount = 0;
@@ -269,28 +270,25 @@ namespace Экспертная_система
             start.UseShellExecute = false;
             start.CreateNoWindow = true;
             start.RedirectStandardOutput = true;
-            // log("runPythonScript:" + start.FileName + " "+start.Arguments);
             Process process = Process.Start(start);
             process.ProcessorAffinity = new IntPtr(0x000F);
-
-            int blockSize = 1;
-            //Буфер для считываемых данных
-            char[] buffer = new char[blockSize];
             StreamReader standardOutputReader = process.StandardOutput;
-          /*  int size = 0;
-            string line = "";
-            size = standardOutputReader.Read(buffer, 0, blockSize);
-            line += new string(buffer);
-            while (size > 0)
-            {
-                size = standardOutputReader.Read(buffer, 0, blockSize);
-                line += new string(buffer);
-                if (line.Contains("\n"))
-                {
-                    log(line);
-                    line = "";
-                }
-            }  */
+            /*  int blockSize = 1;
+             * char[] buffer = new char[blockSize];
+             * int size = 0;
+              string line = "";
+              size = standardOutputReader.Read(buffer, 0, blockSize);
+              line += new string(buffer);
+              while (size > 0)
+              {
+                  size = standardOutputReader.Read(buffer, 0, blockSize);
+                  line += new string(buffer);
+                  if (line.Contains("\n"))
+                  {
+                      log(line);
+                      line = "";
+                  }
+              }  */
             StreamReader errorReader = process.StandardError;
             string response = standardOutputReader.ReadToEnd();
             log(response);

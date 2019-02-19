@@ -29,8 +29,8 @@ namespace Экспертная_система
 
             expert = new Expert("Эксперт 1", this);
 
-             //  mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { buildAndTrain(); });
-           mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { TEST(); });
+          //       mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { buildAndTrain(); });
+         mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { TEST(); });
 
 
         }
@@ -41,32 +41,39 @@ namespace Экспертная_система
             sourceDataFile = pathPrefix + @"Временные ряды\EURRUB.txt";
             expert.H.replaceStringInAllValues(expert.H.getValueByName("path_prefix"), pathPrefix);
             expert.synchronizeHyperparameters();
-            expert.trainAllAlgorithms();
-            expert.synchronizeHyperparameters();
-            expert.test(new DateTime(2010, 3, 1), new DateTime(2010, 4, 1), sourceDataFile);
+            expert.test(new DateTime(2010, 3, 1), new DateTime(2010, 3, 4), sourceDataFile);
             expert.H.draw(0, picBox, this, 15, 150);
             expert.Save();
         }
         public void buildAndTrain()
         {
             mainThread = System.Threading.Thread.CurrentThread;
-            for(int i=0;i<20;i++)
-            expert.Add(new ANN_1(this, "ANN_1_["+i.ToString()+"]"));
+            expert.Add(new ANN_1(this, "ANN_1[1]"));
+            expert.Add(new ANN_1(this, "ANN_1[2]"));
+            expert.Add(new LSTM_1(this, "LSTM_1"));
+            expert.algorithms[0].setAttributeByName("number_of_epochs", 20);
+            expert.algorithms[0].setAttributeByName("window_size", 30); 
+            expert.algorithms[0].setAttributeByName("batch_size", 200);
+            expert.algorithms[0].setAttributeByName("split_point", "0.99");
+            /* for(int i=0;i<20;i++)
+             expert.Add(new ANN_1(this, "ANN_1_["+i.ToString()+"]"));
 
-            for (int i = 0; i < 20; i++)
-                expert.Add(new LSTM_1(this, "LSTM_1_[" + i.ToString() + "]"));
+             for (int i = 0; i < 20; i++)
+                 expert.Add(new LSTM_1(this, "LSTM_1_[" + i.ToString() + "]"));*/
 
 
             sourceDataFile = pathPrefix + @"Временные ряды\EURRUB.txt";
             expert.H.add("input_file", expert.savePreparedDataset(sourceDataFile, "<TIME>;<TICKER>;<PER>;<DATE>;<VOL>"));
             expert.H.add("path_prefix", pathPrefix);
             expert.H.add("drop_columns:<TIME>;<TICKER>;<PER>;<DATE>;<VOL>");
-            expert.H.add("predicted_column_index:2");
+            expert.H.add("predicted_column_index:3");
             expert.synchronizeHyperparameters();
             expert.trainAllAlgorithms();
             expert.synchronizeHyperparameters();
             expert.H.draw(0, picBox, this, 15, 150);
             expert.Save();
+
+            Charts_Click(null, null);
         }
         private void Hyperparameters_Click(object sender, EventArgs e)
         {

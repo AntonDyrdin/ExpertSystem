@@ -307,37 +307,80 @@ namespace Экспертная_система
             drawLine(Color.FromArgb(250, 0, 0, 255), 1, 0, Ymin + Ymax, Xmax, Ymin + Ymax);
             //   drawLine(Color.FromArgb(155, 55, 55, 55), 3, 0, Ymin + Ymax, Xmax, Ymin + Ymax);
         }
+
+        public delegate void DrawStringDelegate(string s, double depth, double x, double y);
         public void drawString(string s, double depth, double x, double y)
         {
-            
-            if (y > picBox.Width)
-                picBox.Height = Convert.ToInt16(y);
+            if (picBox.InvokeRequired)
+            {
+                picBox.Invoke(new DrawStringDelegate(drawString), new Object[] { s, depth, x, y }); // вызываем эту же функцию обновления состояния, но уже в UI-потоке
+            }
             else
-                try
-                {
-                    if (lightsOn)
-                    g.DrawString(s, new Font(form1.logBox.Font.Name, Convert.ToInt16(depth)), Brushes.Black, new Point(Convert.ToInt16(Math.Round(x)), Convert.ToInt16(Math.Round(y))));
-                    else
-                        g.DrawString(s, new Font(form1.logBox.Font.Name, Convert.ToInt16(depth)), Brushes.White, new Point(Convert.ToInt16(Math.Round(x)), Convert.ToInt16(Math.Round(y))));
-                }
-                catch { }
+            {
+                if (y > picBox.Height)
+                    picBox.Height = Convert.ToInt16(y);
+                else
+                    try
+                    {
+                        if (lightsOn)
+                        {
+                            g.DrawString(s, new Font(form1.logBox.Font.Name, Convert.ToInt16(depth)), Brushes.White, new Point(Convert.ToInt16(Math.Round(x)), Convert.ToInt16(Math.Round(y))));
+                        }
+                        else
+                            g.DrawString(s, new Font(form1.logBox.Font.Name, Convert.ToInt16(depth)), Brushes.White, new Point(Convert.ToInt16(Math.Round(x)), Convert.ToInt16(Math.Round(y))));
+                    }
+                    catch { }
+            }
         }
 
+        public delegate void DrawStringDelegate2(string s, Brush brush, double depth, double x, double y);
+        /////////////////////////////////Brushes.[Color]
+        public void drawString(string s, Brush brush, double depth, double x, double y)
+        {
+            if (picBox.InvokeRequired)
+            {
+                picBox.Invoke(new DrawStringDelegate2(drawString), new Object[] { s, brush, depth, x, y }); // вызываем эту же функцию обновления состояния, но уже в UI-потоке
+            }
+            else
+            {
 
+                if (y > picBox.Height)
+                    picBox.Height = Convert.ToInt16(y);
+                else
+                    try
+                    {
+                        if (lightsOn)
+                        {
+                            if (brush == Brushes.White)
+                                g.DrawString(s, new Font(form1.logBox.Font.Name, Convert.ToInt16(depth)), Brushes.Black, new Point(Convert.ToInt16(Math.Round(x)), Convert.ToInt16(Math.Round(y))));
+                            else
+                                g.DrawString(s, new Font(form1.logBox.Font.Name, Convert.ToInt16(depth)), brush, new Point(Convert.ToInt16(Math.Round(x)), Convert.ToInt16(Math.Round(y))));
+                        }
+                        else
+                            g.DrawString(s, new Font(form1.logBox.Font.Name, Convert.ToInt16(depth)), brush, new Point(Convert.ToInt16(Math.Round(x)), Convert.ToInt16(Math.Round(y))));
+                    }
+                    catch { }
+            }
+        }
+
+        public delegate void DrawLineDelegate(Color col, double depth, double x1, double y1, double x2, double y2);
         public void drawLine(Color col, double depth, double x1, double y1, double x2, double y2)
         {
-            
-            if (y1 > picBox.Height)
-                picBox.Height = Convert.ToInt16(y1);
+            if (picBox.InvokeRequired)
+            {
+                picBox.Invoke(new DrawLineDelegate(drawLine), new Object[] { col, depth, x1, y1, x2, y2 }); // вызываем эту же функцию обновления состояния, но уже в UI-потоке
+            }
             else
-            if (y2 > picBox.Height)
-                picBox.Height = Convert.ToInt16(y2);
-            else
-                 if (lightsOn)
-                g.DrawLine(new Pen(Color.Black, Convert.ToInt16(depth)), Convert.ToInt16(Math.Round(x1)), Convert.ToInt16(Math.Round(y1)), Convert.ToInt16(Math.Round(x2)), Convert.ToInt16(Math.Round(y2)));
-            else
-                g.DrawLine(new Pen(col, Convert.ToInt16(depth)), Convert.ToInt16(Math.Round(x1)), Convert.ToInt16(Math.Round(y1)), Convert.ToInt16(Math.Round(x2)), Convert.ToInt16(Math.Round(y2)));
+            {
 
+                if (y1 > picBox.Height)
+                    picBox.Height = Convert.ToInt16(y1);
+                else
+                if (y2 > picBox.Height)
+                    picBox.Height = Convert.ToInt16(y2);
+                else
+                    g.DrawLine(new Pen(col, Convert.ToInt16(depth)), Convert.ToInt16(Math.Round(x1)), Convert.ToInt16(Math.Round(y1)), Convert.ToInt16(Math.Round(x2)), Convert.ToInt16(Math.Round(y2)));
+            }
         }
 
         private int lastCount;

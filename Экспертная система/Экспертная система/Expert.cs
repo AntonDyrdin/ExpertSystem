@@ -59,7 +59,7 @@ namespace Экспертная_система
         {
             for (int i = 0; i < algorithms.Count; i++)
                 log(algorithms[i].train());
-            deleteAlgorithmsWithLowAccuracy(50);
+         //   deleteAlgorithmsWithLowAccuracy(50);
         }
 
         public void deleteAlgorithmsWithLowAccuracy(double acceptableLevel)
@@ -682,7 +682,7 @@ namespace Экспертная_система
             return scaleedDataset;
         }
 
-        private string[] skipEmptyLines(string[] allLines)
+        public static string[] skipEmptyLines(string[] allLines)
         {
 
             //пропуск пустых строк
@@ -695,7 +695,7 @@ namespace Экспертная_система
                 }
             }
             var res = new string[filledLines.Count];
-            for (int i = 0; i < allLines.Length; i++)
+            for (int i = 0; i < filledLines.Count; i++)
             {
                 res[i] = filledLines[i];
             }

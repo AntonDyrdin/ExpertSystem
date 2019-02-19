@@ -1,5 +1,11 @@
 prediction_algorithm_name = 'LSTM_1'
-print("СКРИПТ ПОТОЧНОГО ПРОГНОЗИРОВАНИЯ " + prediction_algorithm_name + " ЗАПУЩЕН...") 
+print("СКРИПТ ПОТОЧНОГО ПРОГНОЗИРОВАНИЯ " + prediction_algorithm_name + " ЗАПУЩЕН...")
+
+import random
+random.seed()
+session=random.getrandbits(16)
+print("session = "+(str)(session))
+
 import time
 import sys
 import argparse
@@ -99,5 +105,6 @@ while enough==False:
         print(predicted)
         predicted=predicted-AVG+0.5
         print("AVG: "+(str)(AVG))
+        print("session = "+(str)(session))
         print(predicted)
         print("prediction:",predicted)

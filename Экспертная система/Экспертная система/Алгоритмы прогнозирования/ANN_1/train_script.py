@@ -25,7 +25,7 @@ log("> время загрузки библиотек : "+ getTime(tempTime))
 def createParser():
     parser = argparse.ArgumentParser()
     parser.add_argument('--json_file_path',type=str,default='json.txt')
-    # parser.add_argument('--json_file_path',type=str,default='C:\\Users\\anton\\Рабочий стол\\MAIN\\Экспертная система\\Экспертная система\\Алгоритмы прогнозирования\\ANN 1\\json.txt')
+    #parser.add_argument('--json_file_path',type=str,default='C:\\Users\\anton\\Рабочий стол\\MAIN\\Экспертная система\\Экспертная система\\Алгоритмы прогнозирования\\ANN 1\\json.txt')
     return parser
 def h(nodeName):
     return  jsonObj[baseNodeName][nodeName]["value"]
@@ -87,9 +87,9 @@ print("> время чтения данных  : ", getTime(tempTime))
 model = Sequential()         
 
 model.add(Dense(getAttr2int("NN_sctruct","layer1","neurons_count"),input_dim=window_size,activation=getAttr2("NN_sctruct","layer2","activation")))
-model.add(Dropout(0.2))
+#model.add(Dropout(0.5))
 model.add(Dense(getAttr2int("NN_sctruct","layer2","neurons_count"),activation=getAttr2("NN_sctruct","layer2","activation")))
-model.add(Dropout(0.2))
+#model.add(Dropout(0.5))
 model.add(Dense(getAttr2int("NN_sctruct","layer3","neurons_count"),activation=getAttr2("NN_sctruct","layer3","activation")))
                                                                   
 log("компиляция НС...")
@@ -154,6 +154,17 @@ RESPONSE="{RESPONSE:{"
 RESPONSE=RESPONSE+ "AVG:{value:"+(str)(avg)
 RESPONSE=RESPONSE+ "}}}"
 print(RESPONSE)
+
+import matplotlib.pyplot as pyplot
+pyplot.plot(history.history['loss'], label='train')
+pyplot.plot(history.history['val_loss'], label='test')
+pyplot.legend()
+pyplot.show()
+  
+pyplot.plot(history.history['acc'], label='acc')
+pyplot.plot(history.history['val_acc'], label='val_acc')
+pyplot.legend()
+pyplot.show()
     #SyntaxError: (unicode error) 'unicodeescape' codec can't decode bytes in position 2-3: truncated \UXXXXXXXX escape
 
     #import os

@@ -1,0 +1,23 @@
+
+
+
+
+Этап загрузки модели в скрипте поточного прогнозирования пройден успешно
+ [[0.5040894]]
+
+committee response:  [1]; 
+date: 01.03.2010 0:00:00
+deposit1: 1
+deposit2: 459,442
+action: buy
+closeValue: 40,558
+presentLine: 0.660000;0.619;0.303999;0.259999
+ [[0.49362493]]
+
+committee response:  [0]; 
+date: 02.03.2010 0:00:00
+deposit1: 0
+deposit2: 500,033
+action: sell
+closeValue: 40,591
+presentLine: 0.251999;0.146000;0.416000;0.533000

@@ -133,6 +133,7 @@ namespace Экспертная_система
         {
 
             var allLines = File.ReadAllLines(file);
+            allLines = Expert.skipEmptyLines(allLines);
             int indCol = 0;
             if (columnName == "LAST_COLUMN")
             {
@@ -214,6 +215,7 @@ namespace Экспертная_система
         {
 
             var allLines = File.ReadAllLines(file);
+            allLines = Expert.skipEmptyLines(allLines);
             int indCol = 0;
             if (columnName == "LAST_COLUMN")
             { indCol = allLines[0].Split(';').Length - 1; }
