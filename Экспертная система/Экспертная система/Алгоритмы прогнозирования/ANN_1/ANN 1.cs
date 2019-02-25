@@ -23,12 +23,14 @@ namespace Экспертная_система
             //////////////////////
             //ПАРАМЕТРЫ ОБУЧЕНИЯ//
             //////////////////////
-            h.add("number_of_epochs:1" );
+            h.add("number_of_epochs:10" );
             h.add("split_point:0." + new System.Random().Next(6, 95).ToString());
             h.add("batch_size:" + new System.Random().Next(3, 300).ToString());
             h.add("name:loss,value:mean_squared_error");
             h.add("name:optimizer,value:adam");
             h.add("window_size:" + window_size.ToString());
+
+            h.add("name:show_train_charts,value:True");
         }
         public override void Open(Hyperparameters h)
         {

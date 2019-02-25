@@ -25,6 +25,8 @@ namespace Экспертная_система
             h.add("name:loss,value:mean_squared_error");
             h.add("name:optimizer,value:adam");
             h.add("window_size:"+ new System.Random().Next(2, 30).ToString());
+
+            h.add("name:show_train_charts,value:True");
         }
         public override void Open(Hyperparameters h)
         {

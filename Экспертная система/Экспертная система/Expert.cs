@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading.Tasks;
 namespace Экспертная_система
 {
     [Serializable]
@@ -55,17 +56,29 @@ namespace Экспертная_система
 
         }
 
-        public void trainAllAlgorithms()
+        public void trainAllAlgorithms(bool deleteLowAccModels)
         {
-            for (int i = 0; i < algorithms.Count; i++)
-                log(algorithms[i].train());
-         //   deleteAlgorithmsWithLowAccuracy(50);
+            var trainAllAlgorithmsTask = Task.Factory.StartNew(() =>
+            {
+
+                foreach (Algorithm algorithm in algorithms)
+                {
+                    var trainTask = algorithm.train();
+                }
+            });
+
+            trainAllAlgorithmsTask.Wait();
+            if (deleteLowAccModels)
+            {
+                //УДАЛЕНИЕ АЛГОРИТМОВ С НИЗКИМИ ПОКАЗАТЕЛЯМИ ТОЧНОСТИ
+                deleteAlgorithmsWithLowAccuracy(50);
+            }
         }
 
         public void deleteAlgorithmsWithLowAccuracy(double acceptableLevel)
         {
             log("Удаление моделей с низкими показателями точности прогноза.");
-            log("Допустимый уровень точности: "+ acceptableLevel+" %");
+            log("Допустимый уровень точности: " + acceptableLevel + " %");
             for (int i = 0; i < algorithms.Count; i++)
                 if (algorithms[i].accuracy < acceptableLevel)
                 {
@@ -74,12 +87,12 @@ namespace Экспертная_система
                     H.deleteBranch(algorithmBranches[i].ID);
                     log("     Удалена модель " + algorithms[i].modelName + "accuracy = " + algorithms[i].accuracy.ToString());
                     algorithms.RemoveAt(i);
-                   
+
                     i--;
                 }
                 else
                 {
-                    algorithms[i].h.setValueByName("accuracy", algorithms[i].accuracy.ToString().Replace(',','.'));
+                    algorithms[i].h.setValueByName("accuracy", algorithms[i].accuracy.ToString().Replace(',', '.'));
                 }
             log("Состав комитета после удаления:");
             for (int i = 0; i < algorithms.Count; i++)
@@ -88,16 +101,23 @@ namespace Экспертная_система
 
         public double[] getPrediction(string[] input)
         {
-            committeeResponse = new double[algorithms.Count];
-            for (int i = 0; i < algorithms.Count; i++)
+            var getPredictionParentTask = Task.Factory.StartNew(() =>
             {
-                committeeResponse[i] = algorithms[i].getPrediction(input);
+                committeeResponse = new double[algorithms.Count];
+                for (int i = 0; i < algorithms.Count; i++)
+                {
+                    var getPredictionTask = Task.Factory.StartNew(() =>
+                    {
+                        committeeResponse[i] = algorithms[i].getPrediction(input);
 
-                if (committeeResponse[i] > 0.5)
-                    committeeResponse[i] = 1;
-                if (committeeResponse[i] < 0.5)
-                    committeeResponse[i] = 0;
-            }
+                        if (committeeResponse[i] > 0.5)
+                            committeeResponse[i] = 1;
+                        if (committeeResponse[i] < 0.5)
+                            committeeResponse[i] = 0;
+                    }, TaskCreationOptions.AttachedToParent);
+                }
+            });
+            getPredictionParentTask.Wait();
             return committeeResponse;
         }
         //возвращает  действие, о котором было принято решение

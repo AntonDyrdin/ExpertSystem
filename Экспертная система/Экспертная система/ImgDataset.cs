@@ -56,6 +56,9 @@ namespace Экспертная_система
             this.form1 = form1;
 
             csvLines = System.IO.File.ReadAllLines(pathToDatasetFile);
+
+            csvLines = Expert.skipEmptyLines(csvLines);
+
             bmp = new Bitmap(csvLines.Length, csvLines[0].Split(';').Length + 1);
             for (int i = 1; i < csvLines.Length; i++)
             {
@@ -83,6 +86,8 @@ namespace Экспертная_система
             int predColIndINT = Convert.ToInt16(predColInd);
 
             var allLines = File.ReadAllLines(outputCSVFile);
+
+            allLines = Expert.skipEmptyLines(allLines);
             int indCol = 0;
             if (predictionsColumnName == "LAST_COLUMN")
                 indCol = allLines[0].Split(';').Length - 1;

@@ -151,3 +151,15 @@ RESPONSE="{RESPONSE:{"
 RESPONSE=RESPONSE+ "AVG:{value:"+(str)(avg)
 RESPONSE=RESPONSE+ "}}}"
 print(RESPONSE)
+
+if h("show_train_charts")=="True":
+    import matplotlib.pyplot as pyplot
+    pyplot.plot(history.history['loss'], label='train')
+    pyplot.plot(history.history['val_loss'], label='test')
+    pyplot.legend()
+    pyplot.show()
+  
+    pyplot.plot(history.history['acc'], label='acc')
+    pyplot.plot(history.history['val_acc'], label='val_acc')
+    pyplot.legend()
+    pyplot.show()

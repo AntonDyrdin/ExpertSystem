@@ -58,6 +58,7 @@
     <Compile Include="Infrastructure.cs" />
     <Compile Include="Алгоритмы прогнозирования\ANN_1\ANN 1.cs" />
     <Compile Include="Алгоритмы прогнозирования\LSTM_1\LSTM 1.cs" />
+    <Compile Include="Алгоритмы прогнозирования\LSTM_2\LSTM 2.cs" />
     <Compile Include="Графическое отображение\PopulationVisualizer.cs" />
     <Compile Include="Графическое отображение\MultiParameterVisualizer.cs" />
     <Compile Include="Графическое отображение\ParameterVisualizer.cs" />
@@ -94,6 +95,8 @@
     <Content Include="Алгоритмы прогнозирования\ANN_1\train_script.py" />
     <Content Include="Алгоритмы прогнозирования\LSTM_1\get_prediction.py" />
     <Content Include="Алгоритмы прогнозирования\LSTM_1\train_script.py" />
+    <Content Include="Алгоритмы прогнозирования\LSTM_2\get_prediction.py" />
+    <Content Include="Алгоритмы прогнозирования\LSTM_2\train_script.py" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

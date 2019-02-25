@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Threading.Tasks;
 namespace Экспертная_система
 {
     public abstract class Algorithm
@@ -136,9 +137,9 @@ namespace Экспертная_система
                     if (script_conclusion.IndexOf("prediction:") != -1)
                     {
                         Continue = true;
-                     log(script_conclusion);
+                        log(script_conclusion);
                         script_conclusion = script_conclusion.Substring(script_conclusion.IndexOf("prediction:") + 11);
-                       // log(script_conclusion);
+                        // log(script_conclusion);
                     }
 
                 }
@@ -194,7 +195,8 @@ namespace Экспертная_система
                 log(script_conclusion + predict_process_error_stream.ReadToEnd());
         }
 
-        public string train()
+
+        public async Task train()
         {
             if (h.getValueByName("input_file") == null)
             {
@@ -203,11 +205,22 @@ namespace Экспертная_система
             File.WriteAllText(h.getValueByName("json_file_path"), h.toJSON(0), System.Text.Encoding.Default);
             args = "--json_file_path " + '"' + h.getValueByName("json_file_path") + '"';
 
-            string response=  runPythonScript(getValueByName("train_script_path"), args);
-            response = response.Substring(response.IndexOf('{'));
-            Hyperparameters responseH = new Hyperparameters(response, form1);
-            var avg = responseH.getValueByName("AVG");
-            h.setValueByName("AVG", avg);
+            string response = await Task.Run(() => runPythonScript(getValueByName("train_script_path"), args)) ;
+
+            try
+            {
+                response = response.Substring(response.IndexOf('{'));
+                Hyperparameters responseH = new Hyperparameters(response, form1);
+                var avg = responseH.getValueByName("AVG");
+                h.setValueByName("AVG", avg);
+            }
+            catch
+            {
+                log("Не удалось спарсить \"RESPONSE\"");
+            }
+
+
+
             string[] predictionsCSV = null;
             //попытка прочитать данные из файла, полученного из скрипта 
             try
@@ -220,8 +233,8 @@ namespace Экспертная_система
             {
                 getAccAndStdDev(predictionsCSV);
             }
-          
-            return "обучение алгоритма " + name + "заверешно.";
+
+           // return "обучение алгоритма " + name + "заверешно.";
         }
 
 
@@ -254,9 +267,9 @@ namespace Экспертная_система
                 inc++;
 
             }
-            accuracy = Convert.ToDouble(rightCount) / Convert.ToDouble(rightCount+leftCount) * 100;
+            accuracy = Convert.ToDouble(rightCount) / Convert.ToDouble(rightCount + leftCount) * 100;
             stdDev = sqrtSum / inc;
-            log("accuracy = " + accuracy.ToString()+" %");
+            log("accuracy = " + accuracy.ToString() + " %");
             log("stdDev = " + Math.Sqrt(stdDev).ToString());
         }
         public string runPythonScript(string scriptFile, string args)
@@ -292,10 +305,49 @@ namespace Экспертная_система
             StreamReader errorReader = process.StandardError;
             string response = standardOutputReader.ReadToEnd();
             log(response);
-            log(errorReader.ReadToEnd());
-            
+            var error = "";
+            error = errorReader.ReadToEnd();
+            log(error);
             return response;
         }
+        /* public async Task runPythonScript(string scriptFile, string args)
+         {
+             ProcessStartInfo start = new ProcessStartInfo();
+
+             start.FileName = form1.I.h.getValueByName("python_path");
+             start.Arguments = '"' + scriptFile + '"' + " " + args;
+             start.ErrorDialog = true;
+             start.RedirectStandardError = true;
+             start.UseShellExecute = false;
+             start.CreateNoWindow = true;
+             start.RedirectStandardOutput = true;
+             Process process = Process.Start(start);
+             process.ProcessorAffinity = new IntPtr(0x000F);
+             StreamReader standardOutputReader = process.StandardOutput;
+             /*  int blockSize = 1;
+              * char[] buffer = new char[blockSize];
+              * int size = 0;
+               string line = "";
+               size = standardOutputReader.Read(buffer, 0, blockSize);
+               line += new string(buffer);
+               while (size > 0)
+               {
+                   size = standardOutputReader.Read(buffer, 0, blockSize);
+                   line += new string(buffer);
+                   if (line.Contains("\n"))
+                   {
+                       log(line);
+                       line = "";
+                   }
+               }  */
+        /*       StreamReader errorReader = process.StandardError;
+               string response = await standardOutputReader.ReadToEndAsync();
+               log(response);
+               var error = "";
+               error = await errorReader.ReadToEndAsync();
+               log(error);
+
+           }      */
 
         private Process runProcess(string scriptFile, string args)
         {
@@ -314,7 +366,7 @@ namespace Экспертная_система
         }
         public abstract void Save();
         public abstract void Open(Hyperparameters h);
-        
+
         public string getValueByName(string name)
         { return h.getValueByName(name); }
         public void setAttributeByName(string name, int value)

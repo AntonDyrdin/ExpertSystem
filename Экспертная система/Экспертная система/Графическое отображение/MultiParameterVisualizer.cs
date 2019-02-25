@@ -279,7 +279,9 @@ namespace Экспертная_система
                 else
                 {
                     for (int i = start + (-shift); i < allLines.Length; i++)
-                        parameters[parameterInd].addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol].Replace('.', ',')), name);
+                    {
+                        var what = allLines[i].Split(';')[indCol].Replace('.', ',');
+                        parameters[parameterInd].addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol].Replace('.', ',')), name); }
                 }
             }
         }
