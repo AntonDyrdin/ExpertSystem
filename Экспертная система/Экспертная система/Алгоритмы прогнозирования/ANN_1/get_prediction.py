@@ -93,18 +93,18 @@ while enough==False:
                 if featureStringValue != '\n':     
                     dataset[i ,j] = (float)(lines[i].split(';')[j])
 
-        print("dataset = ",dataset)
+       # print("dataset = ",dataset)
         X = numpy.zeros((1,window_size), dtype=float)
         predicted_column_index = (int)(h("predicted_column_index"))
         for j in range(0,window_size):
               X[0,j] = dataset[j+(len(lines)-window_size)][predicted_column_index]
-        print("X = ",X)
-        print("X shape: ",X.shape)
+       # print("X = ",X)
+       # print("X shape: ",X.shape)
 
         predicted = model.predict(X)
         print(predicted)
         predicted=predicted-AVG+0.5
-        print("AVG: "+(str)(AVG))
+        #print("AVG: "+(str)(AVG))
         print("session = "+(str)(session))
         print(predicted)
         print("prediction:",predicted)

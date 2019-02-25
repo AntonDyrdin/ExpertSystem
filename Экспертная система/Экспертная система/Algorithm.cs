@@ -53,12 +53,11 @@ namespace Экспертная_система
         public void runGetPredictionScript()
         {
             args = "--json_file_path " + '"' + getValueByName("json_file_path") + '"';
-            predict_process = runProcess(getValueByName("get_prediction_script_path"), args);
-            predict_process_error_stream = predict_process.StandardError;
+            var get_prediction_script_path = getValueByName("get_prediction_script_path");
+            predict_process = runProcess(get_prediction_script_path, args);
+           predict_process_error_stream = predict_process.StandardError;
             predict_process_write_stream = predict_process.StandardInput;
-            predict_process_read_stream = predict_process.StandardOutput;
-
-
+            predict_process_read_stream = predict_process.StandardOutput;   
         }
 
         //возвращает прогноз для одного окна
@@ -77,7 +76,7 @@ namespace Экспертная_система
                 {
                     if (script_conclusion.IndexOf("model loaded") != -1)
                     {
-                        log("Этап загрузки модели в скрипте поточного прогнозирования пройден успешно");
+                      //  log("Этап загрузки модели в скрипте поточного прогнозирования пройден успешно");
                         Continue = true;
                     }
                 }
@@ -137,9 +136,13 @@ namespace Экспертная_система
                     if (script_conclusion.IndexOf("prediction:") != -1)
                     {
                         Continue = true;
-                        log(script_conclusion);
+
+                        //ПОЛНЫЙ ЛОГ ВЫПОЛНЕНИЯ СКРИПТА
+                          log(script_conclusion);
                         script_conclusion = script_conclusion.Substring(script_conclusion.IndexOf("prediction:") + 11);
-                        // log(script_conclusion);
+
+                        //ТОЛЬКО ПРОГНОЗ
+                       // log(script_conclusion);
                     }
 
                 }
@@ -205,7 +208,7 @@ namespace Экспертная_система
             File.WriteAllText(h.getValueByName("json_file_path"), h.toJSON(0), System.Text.Encoding.Default);
             args = "--json_file_path " + '"' + h.getValueByName("json_file_path") + '"';
 
-            string response = await Task.Run(() => runPythonScript(getValueByName("train_script_path"), args)) ;
+            string response = await Task.Run(() => runPythonScript(getValueByName("train_script_path"), args));
 
             try
             {
@@ -234,7 +237,7 @@ namespace Экспертная_система
                 getAccAndStdDev(predictionsCSV);
             }
 
-           // return "обучение алгоритма " + name + "заверешно.";
+            // return "обучение алгоритма " + name + "заверешно.";
         }
 
 
@@ -284,7 +287,7 @@ namespace Экспертная_система
             start.CreateNoWindow = true;
             start.RedirectStandardOutput = true;
             Process process = Process.Start(start);
-            process.ProcessorAffinity = new IntPtr(0x000F);
+
             StreamReader standardOutputReader = process.StandardOutput;
             /*  int blockSize = 1;
              * char[] buffer = new char[blockSize];
@@ -310,57 +313,19 @@ namespace Экспертная_система
             log(error);
             return response;
         }
-        /* public async Task runPythonScript(string scriptFile, string args)
-         {
-             ProcessStartInfo start = new ProcessStartInfo();
-
-             start.FileName = form1.I.h.getValueByName("python_path");
-             start.Arguments = '"' + scriptFile + '"' + " " + args;
-             start.ErrorDialog = true;
-             start.RedirectStandardError = true;
-             start.UseShellExecute = false;
-             start.CreateNoWindow = true;
-             start.RedirectStandardOutput = true;
-             Process process = Process.Start(start);
-             process.ProcessorAffinity = new IntPtr(0x000F);
-             StreamReader standardOutputReader = process.StandardOutput;
-             /*  int blockSize = 1;
-              * char[] buffer = new char[blockSize];
-              * int size = 0;
-               string line = "";
-               size = standardOutputReader.Read(buffer, 0, blockSize);
-               line += new string(buffer);
-               while (size > 0)
-               {
-                   size = standardOutputReader.Read(buffer, 0, blockSize);
-                   line += new string(buffer);
-                   if (line.Contains("\n"))
-                   {
-                       log(line);
-                       line = "";
-                   }
-               }  */
-        /*       StreamReader errorReader = process.StandardError;
-               string response = await standardOutputReader.ReadToEndAsync();
-               log(response);
-               var error = "";
-               error = await errorReader.ReadToEndAsync();
-               log(error);
-
-           }      */
-
+      
         private Process runProcess(string scriptFile, string args)
         {
             ProcessStartInfo start = new ProcessStartInfo();
 
             start.FileName = form1.I.h.getValueByName("python_path");
             start.Arguments = '"' + scriptFile + '"' + " " + args;
-            start.ErrorDialog = true;
-            start.CreateNoWindow = true;
-            start.UseShellExecute = false;
-            start.RedirectStandardInput = true;
-            start.RedirectStandardOutput = true;
-            start.RedirectStandardError = true;
+               start.ErrorDialog = true;
+               start.CreateNoWindow = true;
+               start.UseShellExecute = false;
+               start.RedirectStandardInput = true;
+               start.RedirectStandardOutput = true;
+               start.RedirectStandardError = true;  
             Process process = Process.Start(start);
             return process;
         }

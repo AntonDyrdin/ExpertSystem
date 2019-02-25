@@ -6,6 +6,7 @@ namespace Экспертная_система
 {
     public partial class Form1 : Form
     {
+       // C:\Users\Антон\AppData\Local\Theano\compiledir_Windows-10-10.0.17134-SP0-Intel64_Family_6_Model_158_Stepping_9_GenuineIntel-3.6.1-64\lock_dir
         public Infrastructure I;
         public Form1()
         {
@@ -27,17 +28,17 @@ namespace Экспертная_система
             log("");
             log("");
 
-            expert = new Expert("Эксперт 1", this);
+           // expert = new Expert("Эксперт 1", this);
 
-               mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { buildAndTrain(); });
-        //   mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { TEST(); });
+          //    mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { buildAndTrain(); });
+             mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { TEST(); });
 
 
         }
         public void TEST()
         {
             mainThread = System.Threading.Thread.CurrentThread;
-            expert.Open();
+            expert =  Expert.Open("Эксперт 1", this);
             sourceDataFile = pathPrefix + @"Временные ряды\EURRUB.txt";
             expert.H.replaceStringInAllValues(expert.H.getValueByName("path_prefix"), pathPrefix);
             expert.synchronizeHyperparameters();
@@ -48,13 +49,18 @@ namespace Экспертная_система
         public void buildAndTrain()
         {
             mainThread = System.Threading.Thread.CurrentThread;
-           expert.Add(new ANN_1(this, "ANN_1[1]"));
+
+            expert = new Expert("Эксперт 1", this);
+
+            expert.Add(new ANN_1(this, "ANN_1[1]"));
             expert.Add(new ANN_1(this, "ANN_1[2]"));
-          //  expert.Add(new LSTM_2(this, "LSTM_2[1]"));
+            expert.Add(new ANN_1(this, "ANN_1[3]"));
+            expert.Add(new LSTM_1(this, "LSTM_1[1]"));
+            expert.Add(new LSTM_1(this, "LSTM_1[2]"));
             expert.algorithms[0].setAttributeByName("number_of_epochs", 8);
-          /*  expert.algorithms[0].setAttributeByName("window_size", 30); 
-            expert.algorithms[0].setAttributeByName("batch_size", 200);
-            expert.algorithms[0].setAttributeByName("split_point", "0.99");    */
+            /*  expert.algorithms[0].setAttributeByName("window_size", 30); 
+              expert.algorithms[0].setAttributeByName("batch_size", 200);
+              expert.algorithms[0].setAttributeByName("split_point", "0.99");    */
             /* for(int i=0;i<20;i++)
              expert.Add(new ANN_1(this, "ANN_1_["+i.ToString()+"]"));
 
@@ -67,16 +73,18 @@ namespace Экспертная_система
             expert.H.add("path_prefix", pathPrefix);
             expert.H.add("drop_columns:<TIME>;<TICKER>;<PER>;<DATE>;<VOL>");
             expert.H.add("predicted_column_index:3");
+            expert.H.add("name:show_train_charts,value:False");
+
             expert.synchronizeHyperparameters();
             expert.trainAllAlgorithms(false);
             expert.synchronizeHyperparameters();
             expert.H.draw(0, picBox, this, 15, 150);
             expert.Save();
-            try
+         /*   try
             {
                 Charts_Click(null, null);
             }
-            catch { }
+            catch { }   */
         }
         private void Hyperparameters_Click(object sender, EventArgs e)
         {
@@ -95,7 +103,7 @@ namespace Экспертная_система
             double split_point = Convert.ToDouble(expert.h().getValueByName("split_point").Replace('.', ','));
 
             vis.addCSV(sourceDataFile, "Real close value", "<CLOSE>", 500, split_point + (1 - split_point) * hidedPart, -2);
-           // vis.addCSV(sourceDataFile, "Real close value", expert.h().getValueByName("predicted_column_index"), 500, split_point + (1 - split_point) * hidedPart, -2);
+            // vis.addCSV(sourceDataFile, "Real close value", expert.h().getValueByName("predicted_column_index"), 500, split_point + (1 - split_point) * hidedPart, -2);
             vis.addCSV(expert.algorithms[0].getValueByName("predictions_file_path"), "realVSpredictions", expert.h().getValueByName("predicted_column_index"), "real", 500, hidedPart, -1);
             vis.addCSV(expert.algorithms[0].getValueByName("predictions_file_path"), "realVSpredictions", "LAST_COLUMN", "predictions", 500, hidedPart, 0);
 
@@ -177,6 +185,13 @@ namespace Экспертная_система
         private void RedClick(object sender, EventArgs e)
         {
             mainThread.Abort();
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {   try
+            {
+                mainThread.Abort();
+            } catch { }
         }
         /*  ТЕСТ РАБОТЫ КЛАССА Hyperparameters
 

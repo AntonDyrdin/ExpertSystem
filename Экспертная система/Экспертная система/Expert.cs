@@ -43,7 +43,7 @@ namespace Экспертная_система
         public double[] committeeResponse;
         public string presentLine;
         public List<string> report;
-        public Expert(string expertName, Form1 form1)
+        public void load(string expertName, Form1 form1)
         {
             this.form1 = form1;
             path_prefix = form1.pathPrefix;
@@ -53,21 +53,36 @@ namespace Экспертная_система
             committeeNodeID = H.add("name:committee");
             this.expertName = expertName;
             report = new List<string>();
+        }
+        public Expert(string expertName, Form1 form1)
+        {
+            load(expertName, form1);
 
+            foreach (string expertFolder in Directory.GetDirectories(path_prefix))
+            {
+                if (Path.GetFileName(expertFolder) == expertName)
+                {  //В ДАННОМ КОНСТРУКТОРЕ, ПРИ СОЗДАНИИ НОВОГО ЭКЗЕМПЛЯРА КЛАССА Expert, ПАПКА С ТАКИМ ЖЕ ИМЕНЕМ БУДЕТ УДАЛЕНА
+                    Directory.Delete(expertFolder, true);
+                }
+            }
+        }
+        public Expert(string expertName, Form1 form1, bool DoNotDeleteExpertFolder)
+        {
+            load(expertName, form1);
         }
 
         public void trainAllAlgorithms(bool deleteLowAccModels)
         {
-            var trainAllAlgorithmsTask = Task.Factory.StartNew(() =>
+            Task[] trainTasks = new Task[algorithms.Count];
+            foreach (Algorithm algorithm in algorithms)
             {
+                trainTasks[algorithms.IndexOf(algorithm)] = Task.Run(() => algorithm.train());
+            }
 
-                foreach (Algorithm algorithm in algorithms)
-                {
-                    var trainTask = algorithm.train();
-                }
-            });
+            foreach (var task in trainTasks)
+                task.Wait();
 
-            trainAllAlgorithmsTask.Wait();
+
             if (deleteLowAccModels)
             {
                 //УДАЛЕНИЕ АЛГОРИТМОВ С НИЗКИМИ ПОКАЗАТЕЛЯМИ ТОЧНОСТИ
@@ -101,23 +116,26 @@ namespace Экспертная_система
 
         public double[] getPrediction(string[] input)
         {
-            var getPredictionParentTask = Task.Factory.StartNew(() =>
+            committeeResponse = new double[algorithms.Count];
+            Task<double>[] getPredTasks = new Task<double>[algorithms.Count];
+            for (int i = 0; i < algorithms.Count; i++)
             {
-                committeeResponse = new double[algorithms.Count];
-                for (int i = 0; i < algorithms.Count; i++)
-                {
-                    var getPredictionTask = Task.Factory.StartNew(() =>
-                    {
-                        committeeResponse[i] = algorithms[i].getPrediction(input);
+                var algorithm = algorithms[i];
+                getPredTasks[i] = Task.Run(() => algorithm.getPrediction(input));
+            }
 
-                        if (committeeResponse[i] > 0.5)
-                            committeeResponse[i] = 1;
-                        if (committeeResponse[i] < 0.5)
-                            committeeResponse[i] = 0;
-                    }, TaskCreationOptions.AttachedToParent);
-                }
-            });
-            getPredictionParentTask.Wait();
+            foreach (var task in getPredTasks)
+                task.Wait();
+
+            for (int i = 0; i < algorithms.Count; i++)
+            {
+                committeeResponse[i] = getPredTasks[i].Result;
+
+                if (committeeResponse[i] > 0.5)
+                    committeeResponse[i] = 1;
+                if (committeeResponse[i] < 0.5)
+                    committeeResponse[i] = 0;
+            }
             return committeeResponse;
         }
         //возвращает  действие, о котором было принято решение
@@ -155,8 +173,15 @@ namespace Экспертная_система
             report.Add(reportHead);
             if (date1 < date2)
             {
+                //ЗАПУСК СКРИПТОВ ПОТОЧНОГО ПРОГНОЗИРОВНИЯ
+                Task[] RunTasks = new Task[algorithms.Count];
                 foreach (Algorithm algorithm in algorithms)
-                    algorithm.runGetPredictionScript();
+                    RunTasks[algorithms.IndexOf(algorithm)] = Task.Run(() => algorithm.runGetPredictionScript());
+
+                //ОЖИДАНИЕ ЗАВЕРШЕНИЯ ЗАПУСКА
+                foreach (var task in RunTasks)
+                    task.Wait();
+
                 while (date1 < date2)
                 {
                     string reportLine = "";
@@ -202,7 +227,9 @@ namespace Экспертная_система
 
                     if (dateExist)
                     {
+                        // ГЕНЕРАЦИЯ МАТРИЦЫ INPUT
                         input = prepareDataset(input, algorithms[0].getValueByName("drop_columns"));
+                        // ВЫЗОВ getPrediction(input)
                         var committeeResponse = getPrediction(input);
 
 
@@ -497,25 +524,28 @@ namespace Экспертная_система
                 H.addBranch(algorithms[i].h, algorithms[i].name, committeeNodeID);
             }
         }
-        public void Open()
+        public static Expert Open(string expertName, Form1 form1)
         {
-            foreach (string expertFolder in Directory.GetDirectories(path_prefix))
+            Expert expert = new Expert(expertName, form1, true);
+
+            foreach (string expertFolder in Directory.GetDirectories(expert.path_prefix))
             {
                 if (Path.GetFileName(expertFolder) == expertName)
                 {
-                    H = new Hyperparameters(File.ReadAllText(expertFolder + "\\json.txt", System.Text.Encoding.Default), form1);
-                    committeeNodeID = H.getNodeByName("committee")[0].ID;
-                    var algorithmBranches = H.getNodesByparentID(committeeNodeID);
+                    expert.H = new Hyperparameters(File.ReadAllText(expertFolder + "\\json.txt", System.Text.Encoding.Default), form1);
+                    expert.committeeNodeID = expert.H.getNodeByName("committee")[0].ID;
+                    var algorithmBranches = expert.H.getNodesByparentID(expert.committeeNodeID);
                     foreach (Node algorithmBranch in algorithmBranches)
                     {
                         if (algorithmBranch.name() == "LSTM_1")
-                            algorithms.Add(new LSTM_1(form1, "LSTM_1"));
+                            expert.algorithms.Add(new LSTM_1(form1, "LSTM_1"));
                         if (algorithmBranch.name() == "ANN_1")
-                            algorithms.Add(new ANN_1(form1, "ANN_1"));
-                        algorithms[algorithms.Count - 1].Open(new Hyperparameters(H.toJSON(algorithmBranch.ID), form1));
+                            expert.algorithms.Add(new ANN_1(form1, "ANN_1"));
+                        expert.algorithms[expert.algorithms.Count - 1].Open(new Hyperparameters(expert.H.toJSON(algorithmBranch.ID), form1));
                     }
                 }
             }
+            return expert;
         }
         public string Save()
         {
