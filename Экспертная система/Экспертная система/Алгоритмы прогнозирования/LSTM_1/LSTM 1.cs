@@ -13,18 +13,28 @@ namespace Экспертная_система
             //СТРУКТУРА НЕЙРОСЕТИ//
             ///////////////////////
             int NNscructNodeId = h.add("name:NN_sctruct");
-            h.addByParentId(NNscructNodeId, "name:layer1,value:LSTM,neurons_count:"+ new System.Random().Next(2, 10).ToString());
-            h.addByParentId(NNscructNodeId, "name:layer2,value:Dense,neurons_count:"+ new System.Random().Next(5, 10).ToString()+",activation:sigmoid");
-            h.addByParentId(NNscructNodeId, "name:layer3,value:Dense,neurons_count:1,activation:sigmoid");
+
+            int _1stLayer = h.addByParentId(NNscructNodeId, "name:layer1,value:LSTM");
+            h.addVariable(_1stLayer, "neurons_count", 2, 10, 1, new System.Random().Next(2, 10));
+            h.addVariable(_1stLayer, "activation", "sigmoid", "sigmoid");
+
+            int _2stLayer = h.addByParentId(NNscructNodeId, "name:layer2,value:Dense");
+            h.addVariable(_2stLayer, "neurons_count", 2, 10, 1, new System.Random().Next(2, 10));
+            h.addVariable(_2stLayer, "activation", "sigmoid", "sigmoid");
+
+            int _3stLayer = h.addByParentId(NNscructNodeId, "name:layer3,value:Dense");
+            h.addByParentId(_3stLayer, "neurons_count:1");
+            h.addVariable(_3stLayer, "activation", "sigmoid", "sigmoid");
             //////////////////////
             //ПАРАМЕТРЫ ОБУЧЕНИЯ//
             //////////////////////
             h.add("number_of_epochs:1");
-            h.add("split_point:0."+ new System.Random().Next(6, 95).ToString());
-            h.add("batch_size:"+new System.Random().Next(3, 300).ToString());
+            h.add("start_point:0.3");
+            h.add("split_point:0." + new System.Random().Next(6, 95).ToString());
+            h.add("batch_size:" + new System.Random().Next(3, 300).ToString());
             h.add("name:loss,value:mean_squared_error");
             h.add("name:optimizer,value:adam");
-            h.add("window_size:"+ new System.Random().Next(2, 30).ToString());
+            h.addVariable(0, "window_size", 2, 30, 1, new System.Random().Next(2, 30));
         }
         public override void Open(Hyperparameters h)
         {

@@ -228,7 +228,7 @@ namespace Экспертная_система
                     if (dateExist)
                     {
                         // ГЕНЕРАЦИЯ МАТРИЦЫ INPUT
-                        input = prepareDataset(input, algorithms[0].getValueByName("drop_columns"));
+                        input = prepareDataset(input, algorithms[0].getValueByName("drop_columns"), Convert.ToBoolean(H.getValueByName("normalize")));
                         // ВЫЗОВ getPrediction(input)
                         var committeeResponse = getPrediction(input);
 
@@ -348,18 +348,18 @@ namespace Экспертная_система
 
         //метод делающий из временного ряда (*.csv) датасет, пригодный для передачи в train.py скрипт
         //возвращает путь к файлу датасета
-        public string savePreparedDataset(string inputFile, string dropColumn)
+        public string savePreparedDataset(string inputFile, string dropColumn, bool normalize)
         {
-            File.WriteAllLines(inputFile.Replace(".txt", "-dataset.txt"), prepareDataset(inputFile, dropColumn));
+            File.WriteAllLines(inputFile.Replace(".txt", "-dataset.txt"), prepareDataset(inputFile, dropColumn, normalize));
             return inputFile.Replace(".txt", "-dataset.txt");
         }
-        public string[] prepareDataset(string inputFile, string dropColumn)
+        public string[] prepareDataset(string inputFile, string dropColumn, bool normalize)
         {
             var allLines = skipEmptyLines(File.ReadAllLines(inputFile));
-            return prepareDataset(allLines, dropColumn);
+            return prepareDataset(allLines, dropColumn, normalize);
         }
 
-        public string[] prepareDataset(string[] allLines, string dropColumn)
+        public string[] prepareDataset(string[] allLines, string dropColumn, bool normalize)
         {
             List<int> colDropInd;
 
@@ -446,21 +446,26 @@ namespace Экспертная_система
                         }
                 }
             }
+            if (normalize)
+            {
+
+                ////////////////////////////////////////////////
+                ///////////   НОРМАЛИЗАЦИЯ i/(i-1)   ///////////
+                ////////////////////////////////////////////////
+                dataset1 = normalize2(dataset);
 
 
-            ////////////////////////////////////////////////
-            ///////////   НОРМАЛИЗАЦИЯ i/(i-1)   ///////////
-            ////////////////////////////////////////////////
-            dataset1 = normalize2(dataset);
 
+                /////////////////////////////////
+                //////     СГЛАЖИВАНИЕ    ///////
+                /////////////////////////////////
+                dataset2 = levelOff2(dataset1);
 
-
-            /////////////////////////////////
-            //////     СГЛАЖИВАНИЕ    ///////
-            /////////////////////////////////
-            dataset2 = levelOff2(dataset1);
-
-
+            }
+            else
+            {
+                dataset2 = dataset;
+            }
             string[] toWrite = new string[dataset2.GetLength(0) + 1];
             for (int k = 0; k < featuresNames.Length; k++)
             {
@@ -512,13 +517,16 @@ namespace Экспертная_система
                     }
                 }
             }
+
             //приращение баз алгоритмов к общей базе эксперта
-            var toReWrite = H.getNodesByparentID(committeeNodeID);
+
+            //  СПИСОК ВЕТВЕЙ АЛГОРИТМОВ
+            List<Node> toReWrite = H.getNodesByparentID(committeeNodeID);
             //удаление старых записей
             for (int i = 0; i < toReWrite.Count; i++)
                 H.deleteBranch(toReWrite[i].ID);
 
-            //приращение новых к узлу  "committee"
+            //приращение новых записей к узлу  "committee"
             for (int i = 0; i < algorithms.Count; i++)
             {
                 H.addBranch(algorithms[i].h, algorithms[i].name, committeeNodeID);
@@ -537,8 +545,13 @@ namespace Экспертная_система
                     var algorithmBranches = expert.H.getNodesByparentID(expert.committeeNodeID);
                     foreach (Node algorithmBranch in algorithmBranches)
                     {
+                       // Type t = Type.GetType("Namespace." + algorithmBranch.name());
+                      //  object cc = Activator.CreateInstance(t);
+
                         if (algorithmBranch.name() == "LSTM_1")
                             expert.algorithms.Add(new LSTM_1(form1, "LSTM_1"));
+                        if (algorithmBranch.name() == "LSTM_2")
+                            expert.algorithms.Add(new LSTM_2(form1, "LSTM_2"));
                         if (algorithmBranch.name() == "ANN_1")
                             expert.algorithms.Add(new ANN_1(form1, "ANN_1"));
                         expert.algorithms[expert.algorithms.Count - 1].Open(new Hyperparameters(expert.H.toJSON(algorithmBranch.ID), form1));
@@ -555,6 +568,49 @@ namespace Экспертная_система
                 algorithm.Save();
             return path;
         }
+      /*  public double stdDev;
+        public double accuracy;
+
+        public void getAccAndStdDev()
+        {
+            var algorithmBranches = H.getNodesByparentID(committeeNodeID);
+            foreach (Node algorithmBranch in algorithmBranches)
+            {
+                predictionsCSV = Expert.skipEmptyLines(predictionsCSV);
+                double sqrtSum = 0;
+                int rightCount = 0;
+                int leftCount = 0;
+                int inc = 0;
+                for (int i = 1; i < predictionsCSV.Length - 1; i++)
+                {
+                    var features = predictionsCSV[i].Split(';');
+
+                    double predictedValue = Convert.ToDouble(predictionsCSV[i].Split(';')[features.Length - 1].Replace('.', ','));
+                    double realValue = Convert.ToDouble(predictionsCSV[i + 1].Split(';')[Convert.ToInt16(h.getValueByName("predicted_column_index"))].Replace('.', ','));
+
+                    if (realValue > 0.5 && predictedValue > 0.5)
+                    { rightCount++; }
+                    else
+                          if (realValue < 0.5 && predictedValue < 0.5)
+                    { rightCount++; }
+                    else
+                        if (realValue > 0.5 && predictedValue < 0.5)
+                    { leftCount++; }
+                    else
+                    if (realValue < 0.5 && predictedValue > 0.5)
+                    { leftCount++; }
+                    sqrtSum += (realValue - predictedValue) * (realValue - predictedValue);
+                    inc++;
+
+                }
+                accuracy = Convert.ToDouble(rightCount) / Convert.ToDouble(rightCount + leftCount) * 100;
+                stdDev = sqrtSum / inc;
+                log("accuracy = " + accuracy.ToString() + " %");
+                log("stdDev = " + Math.Sqrt(stdDev).ToString());
+                h.setValueByName("accuracy", accuracy.ToString());
+            }
+        }  */
+
         public Hyperparameters h()
         { return algorithms[0].h; }
 

@@ -36,6 +36,47 @@ namespace Экспертная_система
                 mainFontDepth = 14;
             hmin = Convert.ToInt16(mainFontDepth * 3);
         }
+
+        public void addPoint(string value, string name)
+        {
+            try
+            {
+                var doubleValue = Convert.ToDouble(value);
+                addPoint(doubleValue, name);
+            }
+            catch
+            {
+
+                bool is_new = true;
+                foreach (ParameterVisualizer visualizer in parameters)
+                {
+                    foreach (Function function in visualizer.functions)
+                    {
+                        if (function.label == name)
+                        {
+                            is_new = false;
+                            visualizer.addPoint(0, name,value);
+                            goto endOfAddPoint;
+                        }
+                    }
+                    if (visualizer.label == name)
+                    {
+                        is_new = false;
+                        visualizer.addPoint(0, name, value);
+                        goto endOfAddPoint;
+                    }
+                }
+                if (is_new)
+                {
+                    Random r = new Random();
+                    //  addParameter(name, Color.FromArgb(255, r.Next(0, 255), r.Next(0, 255), r.Next(0, 255)));
+                    addParameter(name, Color.FromArgb(255, 161, 14, 233), 300);
+                    addPoint(value, name);
+                }
+                endOfAddPoint:
+                is_new = false;
+            }
+        }
         public void addPoint(double value, string name)
         {
             bool is_new = true;
@@ -185,7 +226,7 @@ namespace Экспертная_система
                 }
                 else
                 {
-                    for (int i = start+(-shift); i < allLines.Length; i++)
+                    for (int i = start + (-shift); i < allLines.Length; i++)
                         addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol].Replace('.', ',')), chartName);
                 }
             }
@@ -281,7 +322,8 @@ namespace Экспертная_система
                     for (int i = start + (-shift); i < allLines.Length; i++)
                     {
                         var what = allLines[i].Split(';')[indCol].Replace('.', ',');
-                        parameters[parameterInd].addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol].Replace('.', ',')), name); }
+                        parameters[parameterInd].addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol].Replace('.', ',')), name);
+                    }
                 }
             }
         }

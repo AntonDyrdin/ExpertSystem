@@ -55,9 +55,9 @@ namespace Экспертная_система
             args = "--json_file_path " + '"' + getValueByName("json_file_path") + '"';
             var get_prediction_script_path = getValueByName("get_prediction_script_path");
             predict_process = runProcess(get_prediction_script_path, args);
-           predict_process_error_stream = predict_process.StandardError;
+            predict_process_error_stream = predict_process.StandardError;
             predict_process_write_stream = predict_process.StandardInput;
-            predict_process_read_stream = predict_process.StandardOutput;   
+            predict_process_read_stream = predict_process.StandardOutput;
         }
 
         //возвращает прогноз для одного окна
@@ -76,7 +76,7 @@ namespace Экспертная_система
                 {
                     if (script_conclusion.IndexOf("model loaded") != -1)
                     {
-                      //  log("Этап загрузки модели в скрипте поточного прогнозирования пройден успешно");
+                        //  log("Этап загрузки модели в скрипте поточного прогнозирования пройден успешно");
                         Continue = true;
                     }
                 }
@@ -138,11 +138,11 @@ namespace Экспертная_система
                         Continue = true;
 
                         //ПОЛНЫЙ ЛОГ ВЫПОЛНЕНИЯ СКРИПТА
-                          log(script_conclusion);
+                        log(script_conclusion);
                         script_conclusion = script_conclusion.Substring(script_conclusion.IndexOf("prediction:") + 11);
 
                         //ТОЛЬКО ПРОГНОЗ
-                       // log(script_conclusion);
+                        // log(script_conclusion);
                     }
 
                 }
@@ -274,6 +274,7 @@ namespace Экспертная_система
             stdDev = sqrtSum / inc;
             log("accuracy = " + accuracy.ToString() + " %");
             log("stdDev = " + Math.Sqrt(stdDev).ToString());
+            h.setValueByName("accuracy", accuracy.ToString());
         }
         public string runPythonScript(string scriptFile, string args)
         {
@@ -313,19 +314,19 @@ namespace Экспертная_система
             log(error);
             return response;
         }
-      
+
         private Process runProcess(string scriptFile, string args)
         {
             ProcessStartInfo start = new ProcessStartInfo();
 
             start.FileName = form1.I.h.getValueByName("python_path");
             start.Arguments = '"' + scriptFile + '"' + " " + args;
-               start.ErrorDialog = true;
-               start.CreateNoWindow = true;
-               start.UseShellExecute = false;
-               start.RedirectStandardInput = true;
-               start.RedirectStandardOutput = true;
-               start.RedirectStandardError = true;  
+            start.ErrorDialog = true;
+            start.CreateNoWindow = true;
+            start.UseShellExecute = false;
+            start.RedirectStandardInput = true;
+            start.RedirectStandardOutput = true;
+            start.RedirectStandardError = true;
             Process process = Process.Start(start);
             return process;
         }
@@ -338,8 +339,7 @@ namespace Экспертная_система
         { h.setValueByName(name, value); }
         public void setAttributeByName(string name, string value)
         { h.setValueByName(name, value); }
-        public void variate(string name)
-        { h.variate(name); }
+
         public void log(String s, System.Drawing.Color col)
         {
             form1.logDelegate = new Form1.LogDelegate(form1.delegatelog);

@@ -6,7 +6,7 @@ namespace Экспертная_система
 {
     public partial class Form1 : Form
     {
-       // C:\Users\Антон\AppData\Local\Theano\compiledir_Windows-10-10.0.17134-SP0-Intel64_Family_6_Model_158_Stepping_9_GenuineIntel-3.6.1-64\lock_dir
+        // C:\Users\Антон\AppData\Local\Theano\compiledir_Windows-10-10.0.17134-SP0-Intel64_Family_6_Model_158_Stepping_9_GenuineIntel-3.6.1-64\lock_dir
         public Infrastructure I;
         public Form1()
         {
@@ -20,6 +20,8 @@ namespace Экспертная_система
         public string sourceDataFile;
         public System.Threading.Tasks.Task mainTask;
         public System.Threading.Thread mainThread;
+        AlgorithmOptimization AO;
+        Algorithm algorithm;
         public void Form1_Load(object sender, EventArgs e)
         {
             I = new Infrastructure(this);
@@ -28,17 +30,36 @@ namespace Экспертная_система
             log("");
             log("");
 
-           // expert = new Expert("Эксперт 1", this);
+            // expert = new Expert("Эксперт 1", this);
 
-          //    mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { buildAndTrain(); });
-             mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { TEST(); });
+            mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { algorithmOptimization(); });
+            //   mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { buildAndTrain(); });
+            //   mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { TEST(); });
 
 
+        }
+        public void algorithmOptimization()
+        {
+            mainThread = System.Threading.Thread.CurrentThread;
+            algorithm = new LSTM_1(this, "LSTM_1");
+
+            sourceDataFile = pathPrefix + @"Временные ряды\SIN.txt";
+            algorithm.h.add("normalize:true");
+            algorithm.h.add("input_file", pathPrefix + @"Временные ряды\SIN-dataset.txt");
+            algorithm.h.add("path_prefix", pathPrefix);
+            algorithm.h.add("drop_columns:none");
+            algorithm.h.add("predicted_column_index:1");
+            algorithm.h.add("name:show_train_charts,value:False");
+
+            AO = new AlgorithmOptimization(algorithm, this, 8, 2, 0.5);
+            AO.run();
+            algorithm.h.draw(0, picBox, this, 15, 150);
+            algorithm.Save();
         }
         public void TEST()
         {
             mainThread = System.Threading.Thread.CurrentThread;
-            expert =  Expert.Open("Эксперт 1", this);
+            expert = Expert.Open("Эксперт 1", this);
             sourceDataFile = pathPrefix + @"Временные ряды\EURRUB.txt";
             expert.H.replaceStringInAllValues(expert.H.getValueByName("path_prefix"), pathPrefix);
             expert.synchronizeHyperparameters();
@@ -52,12 +73,14 @@ namespace Экспертная_система
 
             expert = new Expert("Эксперт 1", this);
 
-            expert.Add(new ANN_1(this, "ANN_1[1]"));
-            expert.Add(new ANN_1(this, "ANN_1[2]"));
-            expert.Add(new ANN_1(this, "ANN_1[3]"));
+            /*  expert.Add(new ANN_1(this, "ANN_1[1]"));
+              expert.Add(new ANN_1(this, "ANN_1[2]"));
+              expert.Add(new ANN_1(this, "ANN_1[3]")); */
             expert.Add(new LSTM_1(this, "LSTM_1[1]"));
-            expert.Add(new LSTM_1(this, "LSTM_1[2]"));
-            expert.algorithms[0].setAttributeByName("number_of_epochs", 8);
+            /* expert.Add(new LSTM_1(this, "LSTM_1[2]"));
+             expert.Add(new LSTM_2(this, "LSTM_2[1]"));  */
+
+            expert.algorithms[0].setAttributeByName("number_of_epochs", 50);
             /*  expert.algorithms[0].setAttributeByName("window_size", 30); 
               expert.algorithms[0].setAttributeByName("batch_size", 200);
               expert.algorithms[0].setAttributeByName("split_point", "0.99");    */
@@ -67,11 +90,20 @@ namespace Экспертная_система
              for (int i = 0; i < 20; i++)
                  expert.Add(new LSTM_1(this, "LSTM_1_[" + i.ToString() + "]"));*/
 
+            //EURRUB
+            /* sourceDataFile = pathPrefix + @"Временные ряды\EURRUB.txt";
+             expert.H.add("normalize:true");
+             expert.H.add("input_file", expert.savePreparedDataset(sourceDataFile, "<TIME>;<TICKER>;<PER>;<DATE>;<VOL>"));
+             expert.H.add("path_prefix", pathPrefix);
+             expert.H.add("drop_columns:<TIME>;<TICKER>;<PER>;<DATE>;<VOL>");  
+             expert.H.add("predicted_column_index:3");
+             expert.H.add("name:show_train_charts,value:False");      */
 
             sourceDataFile = pathPrefix + @"Временные ряды\EURRUB.txt";
-            expert.H.add("input_file", expert.savePreparedDataset(sourceDataFile, "<TIME>;<TICKER>;<PER>;<DATE>;<VOL>"));
+            expert.H.add("normalize:true");
+            expert.H.add("input_file", expert.savePreparedDataset(sourceDataFile, "none", Convert.ToBoolean(expert.H.getValueByName("normalize"))));
             expert.H.add("path_prefix", pathPrefix);
-            expert.H.add("drop_columns:<TIME>;<TICKER>;<PER>;<DATE>;<VOL>");
+            expert.H.add("drop_columns:none");
             expert.H.add("predicted_column_index:3");
             expert.H.add("name:show_train_charts,value:False");
 
@@ -80,19 +112,19 @@ namespace Экспертная_система
             expert.synchronizeHyperparameters();
             expert.H.draw(0, picBox, this, 15, 150);
             expert.Save();
-         /*   try
-            {
-                Charts_Click(null, null);
-            }
-            catch { }   */
+            /*   try
+               {
+                   Charts_Click(null, null);
+               }
+               catch { }   */
         }
         private void Hyperparameters_Click(object sender, EventArgs e)
         {
-            expert.H.draw(0, picBox, this, 15, 150);
+            expert.algorithms[0].h.draw(0, picBox, this, 15, 150);
         }
         private void Charts_Click(object sender, EventArgs e)
         {
-            double hidedPart = 0.99;
+            double hidedPart = 0.8;
 
             vis.enableGrid = true;
 
@@ -188,10 +220,12 @@ namespace Экспертная_система
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
-        {   try
+        {
+            try
             {
                 mainThread.Abort();
-            } catch { }
+            }
+            catch { }
         }
         /*  ТЕСТ РАБОТЫ КЛАССА Hyperparameters
 

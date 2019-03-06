@@ -23,6 +23,7 @@ namespace Экспертная_система
             //ПАРАМЕТРЫ ОБУЧЕНИЯ//
             //////////////////////
             h.add("number_of_epochs:10");
+            h.add("start_point:0.3");
             h.add("split_point:0.8");
             h.add("batch_size:" + new System.Random().Next(300, 512).ToString());
             h.add("name:loss,value:mse");

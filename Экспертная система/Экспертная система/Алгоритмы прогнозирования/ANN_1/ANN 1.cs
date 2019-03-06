@@ -18,12 +18,13 @@ namespace Экспертная_система
             ///////////////////////
             int NNscructNodeId = h.add("name:NN_sctruct");
             h.addByParentId(NNscructNodeId, "name:layer1,value:Dense,neurons_count:" + window_size.ToString());
-            h.addByParentId(NNscructNodeId, "name:layer2,value:Dense,neurons_count:"+ new System.Random().Next(1, window_size).ToString()+",activation:sigmoid");
+            h.addByParentId(NNscructNodeId, "name:layer2,value:Dense,neurons_count:" + new System.Random().Next(1, window_size).ToString() + ",activation:sigmoid");
             h.addByParentId(NNscructNodeId, "name:layer3,value:Dense,neurons_count:1,activation:sigmoid");
             //////////////////////
             //ПАРАМЕТРЫ ОБУЧЕНИЯ//
             //////////////////////
-            h.add("number_of_epochs:10" );
+            h.add("number_of_epochs:10");
+            h.add("start_point:0.3");
             h.add("split_point:0." + new System.Random().Next(6, 95).ToString());
             h.add("batch_size:" + new System.Random().Next(3, 300).ToString());
             h.add("name:loss,value:mean_squared_error");

@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Algorithm.cs" />
+    <Compile Include="AlgorithmOptimization.cs" />
     <Compile Include="Expert.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
@@ -56,10 +57,10 @@
     <Compile Include="Hyperparameters.cs" />
     <Compile Include="ImgDataset.cs" />
     <Compile Include="Infrastructure.cs" />
+    <Compile Include="Optimization.cs" />
     <Compile Include="Алгоритмы прогнозирования\ANN_1\ANN 1.cs" />
     <Compile Include="Алгоритмы прогнозирования\LSTM_1\LSTM 1.cs" />
     <Compile Include="Алгоритмы прогнозирования\LSTM_2\LSTM 2.cs" />
-    <Compile Include="Графическое отображение\PopulationVisualizer.cs" />
     <Compile Include="Графическое отображение\MultiParameterVisualizer.cs" />
     <Compile Include="Графическое отображение\ParameterVisualizer.cs" />
     <Compile Include="Графическое отображение\ParameterVisualizerFastest.cs" />

@@ -69,10 +69,10 @@ namespace Экспертная_система
             point.y = y;
             functions[0].points.Add(point);
         }
-        public void addPoint(double y, string name)
+        public void addPoint(double y, string name, string mark)
         {
-           // if (functions.Count == 1 && name != functions[0].label && functions[0].label == label)
-           //     functions[0].label = name;
+            // if (functions.Count == 1 && name != functions[0].label && functions[0].label == label)
+            //     functions[0].label = name;
             for (int i = 0; i < functions.Count; i++)
             {
                 if (functions[i].label == name)
@@ -80,6 +80,7 @@ namespace Экспертная_система
                     point point = new point();
                     point.x = functions[i].points.Count + 1;
                     point.y = y;
+                    point.mark = mark;
                     functions[i].points.Add(point);
                     goto addPointOver;
                 }
@@ -93,10 +94,15 @@ namespace Экспертная_система
                 point point = new point();
                 point.x = functions[functions.Count - 1].points.Count + 1;
                 point.y = y;
+                point.mark = mark;
                 functions[functions.Count - 1].points.Add(point);
             }
             catch { goto addFunction; }
             addPointOver:;
+        }
+        public void addPoint(double y, string name)
+        {
+            addPoint(y, name, "");
         }
         public void addPoint(double inc, double y)
         {
@@ -149,14 +155,20 @@ namespace Экспертная_система
                                 drawLine(function.color, functionDepth,
                                 xZeroGap + dx * (i - 1), Ymin + (Ymax / 2),
                                 xZeroGap + dx * i, Ymin + (Ymax / 2));
-
+                                if (function.points[i].mark != function.points[i - 1].mark || i == 2)
+                                    drawStringVertical(function.points[i].mark, mainFontDepth, xZeroGap + dx * i, Ymin + (Ymax / 2));
                             }
                             else
                             {
                                 drawLine(function.color, functionDepth,
                                   xZeroGap + dx * (i - 1), Ymin + Ymax - (((Ymax - yUpGap) * (function.points[i - 1].y - minY)) / (maxY - minY) + yDownGap),
                                   xZeroGap + dx * i, Ymin + Ymax - (((Ymax - yUpGap) * (function.points[i].y - minY)) / (maxY - minY) + yDownGap));
+
+                                if (function.points[i].mark != function.points[i - 1].mark || i == 2)
+                                    drawStringVertical(function.points[i].mark, mainFontDepth,
+                                    xZeroGap + dx * i, Ymin + Ymax - (((Ymax - yUpGap) * (function.points[i].y - minY)) / (maxY - minY) + yDownGap));
                             }
+
                         }
                     }
                 }
@@ -233,14 +245,14 @@ namespace Экспертная_система
             if (functions.Count > 1)
                 for (int i = 0; i < functions.Count; i++)
                 {
-                    drawLine(functions[i].color, mainFontDepth, Xmax - Xmax / 20, Ymin + Ymax / 30 + i *( mainFontDepth * 1.2), Xmax, Ymin + Ymax / 30 + i * (mainFontDepth * 1.2));
-                    drawString(functions[i].label, mainFontDepth, Xmax - Xmax / 20 - functions[i].label.Length *( mainFontDepth * 1.2), Ymin + Ymax / 30 + i *( mainFontDepth * 1.2) - mainFontDepth);
+                    drawLine(functions[i].color, mainFontDepth, Xmax - Xmax / 20, Ymin + Ymax / 30 + i * (mainFontDepth * 1.2), Xmax, Ymin + Ymax / 30 + i * (mainFontDepth * 1.2));
+                    drawString(functions[i].label, mainFontDepth, Xmax - Xmax / 20 - functions[i].label.Length * (mainFontDepth * 1.2), Ymin + Ymax / 30 + i * (mainFontDepth * 1.2) - mainFontDepth);
                 }
 
 
             drawString(label, mainFontDepth, Xmax / 2 - (label.Length * mainFontDepth / 2), Ymin);
 
-               
+
             //   drawLine(Color.White, 2, xZeroGap, 0, xZeroGap, Ymax);
 
 
@@ -332,7 +344,29 @@ namespace Экспертная_система
                     catch { }
             }
         }
-
+        public void drawStringVertical(string s, double depth, double x, double y)
+        {
+            if (picBox.InvokeRequired)
+            {
+                picBox.Invoke(new DrawStringDelegate(drawString), new Object[] { s, depth, x, y }); // вызываем эту же функцию обновления состояния, но уже в UI-потоке
+            }
+            else
+            {
+                if (y > picBox.Height)
+                    picBox.Height = Convert.ToInt16(y);
+                else
+                    try
+                    {
+                        if (lightsOn)
+                        {
+                            g.DrawString(s, new Font(form1.logBox.Font.Name, Convert.ToInt16(depth)), Brushes.Black, new Point(Convert.ToInt16(Math.Round(x)), Convert.ToInt16(Math.Round(y))), new StringFormat(StringFormatFlags.DirectionVertical));
+                        }
+                        else
+                            g.DrawString(s, new Font(form1.logBox.Font.Name, Convert.ToInt16(depth)), Brushes.White, new Point(Convert.ToInt16(Math.Round(x)), Convert.ToInt16(Math.Round(y))), new StringFormat(StringFormatFlags.DirectionVertical));
+                    }
+                    catch { }
+            }
+        }
         public delegate void DrawStringDelegate2(string s, Brush brush, double depth, double x, double y);
         /////////////////////////////////Brushes.[Color]
         public void drawString(string s, Brush brush, double depth, double x, double y)
@@ -355,6 +389,8 @@ namespace Экспертная_система
                                 g.DrawString(s, new Font(form1.logBox.Font.Name, Convert.ToInt16(depth)), Brushes.Black, new Point(Convert.ToInt16(Math.Round(x)), Convert.ToInt16(Math.Round(y))));
                             else
                                 g.DrawString(s, new Font(form1.logBox.Font.Name, Convert.ToInt16(depth)), brush, new Point(Convert.ToInt16(Math.Round(x)), Convert.ToInt16(Math.Round(y))));
+
+
                         }
                         else
                             g.DrawString(s, new Font(form1.logBox.Font.Name, Convert.ToInt16(depth)), brush, new Point(Convert.ToInt16(Math.Round(x)), Convert.ToInt16(Math.Round(y))));
@@ -417,6 +453,8 @@ namespace Экспертная_система
     }
     public class point
     {
+        public string mark;
+
         public double x;
         public double y;
     }

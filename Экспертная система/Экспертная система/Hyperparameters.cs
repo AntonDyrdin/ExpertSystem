@@ -106,15 +106,32 @@ namespace Экспертная_система
             newNodeIdWillBe++;
         }
         ////////////////// ADD //////////////////////////////
-        public void add(int parentID, string name, string category, string categories)
+        public void addVariable(int parentID, string name, double min, double max, double step, double value)
         {
-            addByParentId(parentID, "name:" + name + ",category:" + category + ",categories:" + categories
-                + ",is_categorical:true,is_change:false,is_change_up_or_down:false,is_const:false");
+            Node newNode = new Node(newNodeIdWillBe, parentID);
+            newNode.addAttribute("name", name);
+            newNode.addAttribute("value", value.ToString());
+            newNode.addAttribute("min", min.ToString());
+            newNode.addAttribute("max", max.ToString());
+            newNode.addAttribute("max", max.ToString());
+            newNode.addAttribute("step", step.ToString());
+            newNode.addAttribute("variable", "numerical");
+
+            nodes.Add(newNode);
+
+            newNodeIdWillBe++;
         }
-        public void add(string name, string category, string categories)
+        public void addVariable(int parentID, string name, string category, string categories)
         {
-            add("name:" + name + ",value:" + category + ",categories:" + categories
-                + ",is_categorical:true,is_change:false,is_change_up_or_down:false,is_const:false");
+            Node newNode = new Node(newNodeIdWillBe, parentID);
+            newNode.addAttribute("name", name);
+            newNode.addAttribute("value", category);
+            newNode.addAttribute("categories", categories);
+            newNode.addAttribute("variable", "categorical");
+
+            nodes.Add(newNode);
+
+            newNodeIdWillBe++;
         }
 
         public int add(string attributes)
@@ -281,58 +298,8 @@ namespace Экспертная_система
                 node.setAttribute("value", value);
                 setted = true;
             }
-            if(setted==false)
+            if (setted == false)
                 add(name, value);
-        }
-
-        ////////////////// VARIATE //////////////////////////////
-        public void variate(string name)
-        {
-            Node node = getNodeByName(name)[0];
-            Random r = new Random();
-            if (!Convert.ToBoolean(node.getAttributeValue("is_const")))
-                if (Convert.ToBoolean(node.getAttributeValue("is_categorical")))
-                {
-                    if (Convert.ToBoolean(node.getAttributeValue("categories") != null))
-                    {
-                        string lastValue = node.getValue();
-                        node.setAttribute("value", node.getAttributeValue("categories").Split('|')[r.Next(node.getAttributeValue("categories").Split('|').Length)]);
-                        if (lastValue == node.getValue())
-                        {
-                            node.setAttribute("is_change", "true");
-                        }
-                        else
-                        {
-                            node.setAttribute("is_change", "false");
-                        }
-                    }
-                    else
-                    {
-                        log("не удалось варьировать категориальный параметр: множество категорий пустое", System.Drawing.Color.Red);
-                    }
-                }
-                else
-                {
-                    int last_value = Convert.ToInt32(node.getValue());
-                    int new_value = 0;
-
-                    new_value = r.Next(Convert.ToInt32(node.getAttributeValue("min")), Convert.ToInt32(node.getAttributeValue("max")));
-
-                    if (new_value > last_value)
-                        node.setAttribute("is_change_up_or_down", "true");
-
-                    if (new_value < last_value)
-                        node.setAttribute("is_change_up_or_down", "false");
-
-                    if (last_value != new_value)
-                    {
-                        node.setAttribute("is_change", "true");
-                    }
-                    else
-                    {
-                        node.setAttribute("is_change", "false");
-                    }
-                }
         }
 
 
@@ -561,6 +528,11 @@ namespace Экспертная_система
                 //горизонтальные линии листочков
                 drawLine(Color.WhiteSmoke, 1, (columnWidth) * deepnessRate, currentH * h, (columnWidth) * (deepnessRate + 1), currentH * h);
                 Node node = getNodeById(ID);
+                bool isVariable = false;
+                if (node.getAttributeValue("variable") != null)
+                {
+                    isVariable = true;
+                }
                 foreach (Attribute attr in node.attributes)
                 {
                     if (attr.name == "name")
@@ -568,7 +540,11 @@ namespace Экспертная_система
                         drawString(node.ID.ToString(), Brushes.Yellow, mainDepth - 1, (columnWidth) * (deepnessRate - 1) + (columnWidth), currentH * h);
                         drawString(attr.value, Brushes.Cyan, mainDepth, (columnWidth) * deepnessRate + mainDepth * 2, currentH * h + (mainDepth / 10));
                     }
-                    else
+                    else  if(isVariable && attr.name == "value")
+                    {  
+                        drawString(attr.name + ":" + attr.value, Brushes.Lime, mainDepth, (columnWidth) * deepnessRate, currentH * h + (mainDepth / 10));
+                    }
+                    else 
                     {
                         drawString(attr.name + ":" + attr.value, mainDepth, (columnWidth) * deepnessRate, currentH * h + (mainDepth / 10));
                     }
@@ -740,7 +716,7 @@ namespace Экспертная_система
         {
             if (picBox.InvokeRequired)
             {
-                picBox.Invoke(new DrawLineDelegate(drawLine), new Object[] {  col,  depth,  x1,  y1,  x2,  y2 }); // вызываем эту же функцию обновления состояния, но уже в UI-потоке
+                picBox.Invoke(new DrawLineDelegate(drawLine), new Object[] { col, depth, x1, y1, x2, y2 }); // вызываем эту же функцию обновления состояния, но уже в UI-потоке
             }
             else
             {
