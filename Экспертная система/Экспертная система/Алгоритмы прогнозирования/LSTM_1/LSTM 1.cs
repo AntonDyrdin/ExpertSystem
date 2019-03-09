@@ -24,13 +24,13 @@ namespace Экспертная_система
 
             int _3stLayer = h.addByParentId(NNscructNodeId, "name:layer3,value:Dense");
             h.addByParentId(_3stLayer, "neurons_count:1");
-            h.addVariable(_3stLayer, "activation", "sigmoid", "sigmoid");
+            h.addVariable(_3stLayer, "activation", "sigmoid", "sigmoid,linear");
             //////////////////////
             //ПАРАМЕТРЫ ОБУЧЕНИЯ//
             //////////////////////
             h.add("number_of_epochs:1");
             h.add("start_point:0.3");
-            h.add("split_point:0." + new System.Random().Next(6, 95).ToString());
+            h.add("split_point:0.8");
             h.add("batch_size:" + new System.Random().Next(3, 300).ToString());
             h.add("name:loss,value:mean_squared_error");
             h.add("name:optimizer,value:adam");

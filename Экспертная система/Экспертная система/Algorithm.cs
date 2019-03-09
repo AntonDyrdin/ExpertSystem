@@ -219,7 +219,7 @@ namespace Экспертная_система
             }
             catch
             {
-                log("Не удалось спарсить \"RESPONSE\"");
+                log("Не удалось спарсить RESPONSE");
             }
 
 
@@ -271,10 +271,11 @@ namespace Экспертная_система
 
             }
             accuracy = Convert.ToDouble(rightCount) / Convert.ToDouble(rightCount + leftCount) * 100;
-            stdDev = sqrtSum / inc;
+            stdDev = Math.Sqrt(sqrtSum / inc);
             log("accuracy = " + accuracy.ToString() + " %");
-            log("stdDev = " + Math.Sqrt(stdDev).ToString());
-            h.setValueByName("accuracy", accuracy.ToString());
+            log("stdDev = " + stdDev.ToString());
+            log("_____________________________________________");
+            h.setValueByName("accuracy", accuracy.ToString().Replace(',', '.'));
         }
         public string runPythonScript(string scriptFile, string args)
         {
@@ -332,6 +333,74 @@ namespace Экспертная_система
         }
         public abstract void Save();
         public abstract void Open(Hyperparameters h);
+
+        public static void CopyFiles(Hyperparameters h, string source, string destination)
+        {
+            if (destination[destination.Length - 1] != '\\')
+                destination += destination + '\\';
+            Directory.CreateDirectory(destination);
+            if (source != destination)
+            {
+                foreach (string file in Directory.GetFiles(source))
+                {
+                    repeat1:
+                    try
+                    {
+                        if (Path.GetFileName(file) != "json.txt")
+                            File.Copy(file, destination + Path.GetFileName(file));
+                    }
+                    catch
+                    { goto repeat1; }
+                }
+            }
+            else
+            {
+            }
+            //указание пути сохранения в параметрах
+            h.setValueByName("save_folder", destination);
+            string jsonFilePath = destination + "json.txt";
+            h.setValueByName("json_file_path", jsonFilePath);
+            string predictionsFilePath = destination + "predictions.txt";
+            h.setValueByName("predictions_file_path", predictionsFilePath);
+            File.WriteAllText(jsonFilePath, h.toJSON(0), System.Text.Encoding.Default);
+        }
+
+        public static void MoveFiles(Hyperparameters h, string source, string destination)
+        {
+            if (destination[destination.Length - 1] != '\\')
+                destination += '\\';
+            Directory.CreateDirectory(destination);
+            if (source != destination)
+            {
+                foreach (string file in Directory.GetFiles(destination))
+                {
+                    File.Delete(file);
+                }
+                foreach (string file in Directory.GetFiles(source))
+                {
+                    repeat1:
+                    try
+                    {
+                        if (Path.GetFileName(file) != "json.txt")
+                            File.Copy(file, destination + Path.GetFileName(file));
+                        else
+                            File.Delete(file);
+                    }
+                    catch
+                    { goto repeat1; }
+                }
+            }
+            else
+            {
+            }
+            //указание пути сохранения в параметрах
+            h.setValueByName("save_folder", destination);
+            string jsonFilePath = destination + "json.txt";
+            h.setValueByName("json_file_path", jsonFilePath);
+            string predictionsFilePath = destination + "predictions.txt";
+            h.setValueByName("predictions_file_path", predictionsFilePath);
+            File.WriteAllText(jsonFilePath, h.toJSON(0), System.Text.Encoding.Default);
+        }
 
         public string getValueByName(string name)
         { return h.getValueByName(name); }

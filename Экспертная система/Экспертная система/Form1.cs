@@ -30,11 +30,21 @@ namespace Экспертная_система
             log("");
             log("");
 
+
+       Algorithm a = new LSTM_1(this, "asdasd");
+            a.h.add("predicted_column_index:1");
+            a.getAccAndStdDev(File.ReadAllLines(@"D:\Anton\Desktop\MAIN\Optimization\LSTM_1\LSTM_1[0]\predictions.txt"));
+            vis.addCSV(@"D:\Anton\Desktop\MAIN\Optimization\LSTM_1\LSTM_1[0]\predictions.txt", "Real close value", "<CLOSE>", 500, 0, -1);
+            // vis.addCSV(sourceDataFile, "Real close value", expert.h().getValueByName("predicted_column_index"), 500, split_point + (1 - split_point) * hidedPart, -2);
+            vis.addCSV(@"D:\Anton\Desktop\MAIN\Optimization\LSTM_1\LSTM_1[0]\predictions.txt", "realVSpredictions", "LAST_COLUMN", "predictions", 500, 0, 0);
+
+            vis.refresh();    
+
             // expert = new Expert("Эксперт 1", this);
 
-            mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { algorithmOptimization(); });
+            //  mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { algorithmOptimization(); });
             //   mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { buildAndTrain(); });
-            //   mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { TEST(); });
+            // mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { TEST(); });
 
 
         }
@@ -50,8 +60,7 @@ namespace Экспертная_система
             algorithm.h.add("drop_columns:none");
             algorithm.h.add("predicted_column_index:1");
             algorithm.h.add("name:show_train_charts,value:False");
-
-            AO = new AlgorithmOptimization(algorithm, this, 8, 2, 0.5);
+            AO = new AlgorithmOptimization(algorithm, this, 8, 5, 0.5);
             AO.run();
             algorithm.h.draw(0, picBox, this, 15, 150);
             algorithm.Save();
@@ -132,6 +141,7 @@ namespace Экспертная_система
             /*  vis.addParameter(expert.dataset1, 2, "dataset1", Color.White, 300);
               vis.addParameter(expert.dataset2, 2, "dataset2", Color.White, 300);
               vis.addParameter(expert.dataset3, 2, "dataset3", Color.White, 300); */
+
             double split_point = Convert.ToDouble(expert.h().getValueByName("split_point").Replace('.', ','));
 
             vis.addCSV(sourceDataFile, "Real close value", "<CLOSE>", 500, split_point + (1 - split_point) * hidedPart, -2);

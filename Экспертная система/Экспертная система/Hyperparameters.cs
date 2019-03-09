@@ -113,7 +113,6 @@ namespace Экспертная_система
             newNode.addAttribute("value", value.ToString());
             newNode.addAttribute("min", min.ToString());
             newNode.addAttribute("max", max.ToString());
-            newNode.addAttribute("max", max.ToString());
             newNode.addAttribute("step", step.ToString());
             newNode.addAttribute("variable", "numerical");
 
@@ -184,12 +183,6 @@ namespace Экспертная_система
             newNode.addAttribute("value", value);
             nodes.Add(newNode);
             newNodeIdWillBe++;
-        }
-        public void add(string name, int value, int min, int max)
-        {
-            add("name:" + name + ",value:" + value
-           + "min:" + min + "max:" + max + ", is_categorical:false,is_change:false,is_change_up_or_down:false,is_const:false");
-
         }
         ////////////////// GET //////////////////////////////
         public Node getNodeById(int ID)
@@ -461,15 +454,22 @@ namespace Экспертная_система
             string[] RAWattr = JSON.Substring(0, endOfAttr).Split(',');
             for (int i = 0; i < RAWattr.Length; i++)
             {
-                if (RAWattr[i].Split(':')[1] != "")
+                if (RAWattr[i].Split(':').Length == 1)
                 {
-                    if (RAWattr[i][RAWattr[i].Length - 1] == '}')
+                    newNode.attributes[i].value +=','+ RAWattr[i];
+                }
+                else
+                {
+                    if (RAWattr[i].Split(':')[1] != "")
                     {
-                        newNode.addAttribute(RAWattr[i].Substring(0, RAWattr[i].Length - 1));
-                    }
-                    else
-                    {
-                        newNode.addAttribute(RAWattr[i]);
+                        if (RAWattr[i][RAWattr[i].Length - 1] == '}')
+                        {
+                            newNode.addAttribute(RAWattr[i].Substring(0, RAWattr[i].Length - 1));
+                        }
+                        else
+                        {
+                            newNode.addAttribute(RAWattr[i]);
+                        }
                     }
                 }
             }
@@ -540,11 +540,11 @@ namespace Экспертная_система
                         drawString(node.ID.ToString(), Brushes.Yellow, mainDepth - 1, (columnWidth) * (deepnessRate - 1) + (columnWidth), currentH * h);
                         drawString(attr.value, Brushes.Cyan, mainDepth, (columnWidth) * deepnessRate + mainDepth * 2, currentH * h + (mainDepth / 10));
                     }
-                    else  if(isVariable && attr.name == "value")
-                    {  
+                    else if (isVariable && attr.name == "value")
+                    {
                         drawString(attr.name + ":" + attr.value, Brushes.Lime, mainDepth, (columnWidth) * deepnessRate, currentH * h + (mainDepth / 10));
                     }
-                    else 
+                    else
                     {
                         drawString(attr.name + ":" + attr.value, mainDepth, (columnWidth) * deepnessRate, currentH * h + (mainDepth / 10));
                     }
@@ -761,8 +761,14 @@ public class Node
         string[] rawAttributes = almostJson.Split(',');
         for (int i = 0; i < rawAttributes.Length; i++)
         {
-
-            addAttribute(rawAttributes[i]);
+            if (rawAttributes[i].Split(':').Length == 1)
+            {
+                attributes[i-1].value += rawAttributes[i];
+            }
+            else
+            {
+                addAttribute(rawAttributes[i]);
+            }
         }
     }
     public Node(int ID, int parentID)
