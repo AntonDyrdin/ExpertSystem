@@ -41,7 +41,7 @@ namespace Экспертная_система
         {
             try
             {
-                var doubleValue = Convert.ToDouble(value);
+                var doubleValue = Convert.ToDouble(value.Replace('.',','));
                 addPoint(doubleValue, name);
             }
             catch
@@ -160,14 +160,14 @@ namespace Экспертная_система
                     parameters[i].Ymin = 0;
                 else
                 {
-                    parameters[i].Ymin = parameters[i - 1].Ymin + parameters[i].H;
+                    parameters[i].Ymin = parameters[i - 1].Ymin + parameters[i - 1].H;
                 }
                 if (i == parameters.Count - 1)
                     parameters[i].Ymax = H;
                 parameters[i].multy = true;
 
             }
-            parameters[parameters.Count - 1].multy = false;
+           // parameters[parameters.Count - 1].multy = false;
         }
 
         public void addCSV(string file, string name, string columnName, string chartName, int H, double splitPoint, int shift)

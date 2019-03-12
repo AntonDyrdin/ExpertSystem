@@ -3,9 +3,10 @@ def log(s):
     print(s)
 log("СКРИПТ ОБУЧЕНИЯ " + prediction_algorithm_name + " ЗАПУЩЕН...") 
 import time
-tempTime = time.time()
 
-def getTime(tempTime):
+tempTime = time.time()
+def getTime():
+    global tempTime 
     offset = time.time() - tempTime
     tempTime = time.time()
     return str( offset )[0:5]+" сек."
@@ -20,7 +21,7 @@ from keras.layers import Dense
 from keras.layers import LSTM
 from keras.layers import Dropout
 
-log("> время загрузки библиотек : "+ getTime(tempTime))  
+log("> время загрузки библиотек : "+ getTime())  
 
 
 def createParser():
@@ -82,7 +83,7 @@ test_X = Dataset_X[round(Dataset_X.shape[0] * (split_point)):, :,:]
 train_y = Dataset_Y[train_start_point:round(Dataset_Y.shape[0] * (split_point)):]
 test_y = Dataset_Y[round(Dataset_Y.shape[0] * (split_point)):]
 
-print("> время чтения данных  : ", getTime(tempTime))  
+print("> время чтения данных  : ", getTime())  
 
 model = Sequential()         
 
@@ -95,14 +96,14 @@ model.add(Dense(h3INT("NN_sctruct","layer3","neurons_count"),activation=h3("NN_s
 log("компиляция НС...")
         
 model.compile(loss=h("loss"), optimizer=h("optimizer"),metrics=['accuracy'])
-log("> время компиляции НС  : "+ getTime(tempTime))    
+log("> время компиляции НС  : "+ getTime())    
 
 
     
 log("обучение НС...")
         
 history = model.fit(train_X, train_y, epochs=(int)(h("number_of_epochs")), batch_size=(int)(h("batch_size")), validation_data=(test_X, test_y), verbose=2, shuffle=False) 
-log("> время обучения  НС  : "+ getTime(tempTime)) 
+log("> время обучения  НС  : "+ getTime()) 
     
 if h("save_folder") != "none":
     save_path = h("save_folder")+ 'weights.h5' 
@@ -112,7 +113,7 @@ if h("save_folder") != "none":
     except:
         save_path=save_path.encode('ansi')
         model.save(save_path)
-    log("> время сохранения НС  : "+ getTime(tempTime)) 
+    log("> время сохранения НС  : "+ getTime()) 
     
 sum = 0    
     
@@ -127,7 +128,7 @@ avg = sum / predicted.shape[0]
 
 for i in range(0,test_X.shape[0]):
     predicted[i,0] = predicted[i,0] - avg
-    predicted[i,0] = predicted[i,0] * 100
+    predicted[i,0] = predicted[i,0] * 10000
     predicted[i,0] = predicted[i,0] + 0.5
 print("predictions_file_path: "+ h("predictions_file_path"))
 predictionsFile = open(h("predictions_file_path"), 'w')
@@ -150,8 +151,8 @@ for i in range(0,test_X.shape[0]):
     line = line + (str)(predicted[i,0])
     predictionsFile.write(line + '\n')
 predictionsFile.close()
-log("> время создания и записи тестового прогноза  : "+ getTime(tempTime)) 
-log("______________END________________")    
+log("> время создания и записи тестового прогноза  : "+ getTime()) 
+#log("______________END________________")    
 RESPONSE="{RESPONSE:{"
 RESPONSE=RESPONSE+ "AVG:{value:"+(str)(avg)
 RESPONSE=RESPONSE+ "}}}"

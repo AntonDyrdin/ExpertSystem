@@ -1,0 +1,10 @@
+D:\Anton\Desktop\MAIN\Agent\Экспертная система\obj\Debug\Экспертная_система.Form1.resources
+D:\Anton\Desktop\MAIN\Agent\Экспертная система\obj\Debug\Экспертная_система.Properties.Resources.resources
+D:\Anton\Desktop\MAIN\Agent\Экспертная система\obj\Debug\Agent.csproj.GenerateResource.Cache
+D:\Anton\Desktop\MAIN\Agent\Экспертная система\obj\Debug\Agent.csproj.CoreCompileInputs.cache
+D:\Anton\Desktop\MAIN\Agent\Экспертная система\bin\Debug\Agent.exe.config
+D:\Anton\Desktop\MAIN\Agent\Экспертная система\bin\Debug\Agent.exe
+D:\Anton\Desktop\MAIN\Agent\Экспертная система\bin\Debug\Agent.pdb
+D:\Anton\Desktop\MAIN\Agent\Экспертная система\bin\Debug\Fleck.dll
+D:\Anton\Desktop\MAIN\Agent\Экспертная система\obj\Debug\Agent.exe
+D:\Anton\Desktop\MAIN\Agent\Экспертная система\obj\Debug\Agent.pdb

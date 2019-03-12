@@ -19,12 +19,15 @@ namespace Экспертная_система
         public int mutation_rate;
         public int population_value;
         public double elite_ratio;
-        Random r = new Random();
         MultiParameterVisualizer variablesVisualizer;
         List<string> variablesNames;
         List<int> variablesIDs;
-        public AlgorithmOptimization(Algorithm algorithm, Form1 form1, int population_value, int mutation_rate, double elite_ratio)
+        int Iterarions = 0;
+        Random r;
+        public AlgorithmOptimization(Algorithm algorithm, Form1 form1, int population_value, int mutation_rate, double elite_ratio, int Iterarions)
         {
+            r = new Random();
+            this.Iterarions = Iterarions;
             this.form1 = form1;
             this.algorithm = algorithm;
             this.elite_ratio = elite_ratio;
@@ -41,52 +44,37 @@ namespace Экспертная_система
 
             try { Directory.Delete(form1.pathPrefix + "Optimization\\" + name, true); } catch { }
 
-            //добавление переменных в  MultiParameterVisualizer
-            recurciveVariableAdding(0);
-            variablesVisualizer.addParameter("target_function", Color.LightCyan, 300);
-            //добавление первых точек в  MultiParameterVisualizer
-            variableChangeMonitoring();
-            variablesVisualizer.addPoint(0, "target_function");
-            variablesVisualizer.refresh();
             refreshAOTree();
-        }
-        void refreshAOTree()
-        {
-            A = new Hyperparameters(form1, "Algorithm_Population");
-            for (int i = 0; i < population_value; i++) { A.addBranch(population[i], population[i].getValueByName("model_name"), 0); }
+            variablesVisualizer.enableGrid = false;
+            variablesVisualizer.addParameter("target_function", Color.LightCyan, 300);
+
+            //добавление переменных в  MultiParameterVisualizer
+            for (int i = 0; i < population_value; i++)
+                variablesVisualizer.parameters[0].functions.Add(new Function(" [" + i.ToString() + "]", valueToColor(0,population_value,population_value-i-1)));
+            recurciveVariableAdding(algorithm.h, 0, name + "[0]");
+            //добавление первых точек в  MultiParameterVisualizer
+            // variableChangeMonitoring();
+            //   variablesVisualizer.addPoint(0, "target_function");
+            variablesVisualizer.refresh();
+
 
         }
-        void recurciveVariableAdding(int parentID)
+        Color valueToColor(double min, double max, double val)
         {
-            List<Node> branches = algorithm.h.getNodesByparentID(parentID);
-            var asdad = branches;
-            if (branches.Count == 0)
-            {
-                if (algorithm.h.getNodeById(parentID).getAttributeValue("variable") != null)
-                {
-                    // добавить в список переменных
-                    if (algorithm.h.getNodeById(parentID).getAttributeValue("variable") == "numerical")
-                        variablesVisualizer.addParameter(algorithm.h.getNodeById(parentID).name(), Color.White, 200);
+            double R = 0;
+            double G = 0;
+            double B = 0;
 
-                    if (algorithm.h.getNodeById(parentID).getAttributeValue("variable") == "categorical")
-                        variablesVisualizer.addParameter(algorithm.h.getNodeById(parentID).name(), Color.White, 100);
+            R = (max-val) / (max - min) * 255; 
+            G = (Math.Abs(((max + min) / 2) - val)) / ((max + min) / 2) * 255;
+            B =   (val - min) / (max - min) * 255;
 
-                    variablesNames.Add(algorithm.h.getNodeById(parentID).name());
-                    variablesIDs.Add(algorithm.h.getNodeById(parentID).ID);
-                }
-            }
-            else
-            {
-                for (int i = 0; i < branches.Count; i++)
-                {
-                    recurciveVariableAdding(branches[i].ID);
-                }
-            }
+            return Color.FromArgb(255, Convert.ToInt32(R), Convert.ToInt32(G), Convert.ToInt32(B));
         }
         int opt_inc;
         void optimization()
         {
-            while (opt_inc < 20)
+            while (opt_inc < Iterarions)
             {
                 var now = new DateTimeOffset(DateTime.Now);
 
@@ -118,6 +106,11 @@ namespace Экспертная_система
                     new_save_folder = form1.pathPrefix + "Optimization\\" + name + "\\" + name + "[" + i.ToString() + "]" + "\\";
                     Algorithm.CopyFiles(population[i], algorithm.h.getValueByName("save_folder"), new_save_folder);
                 }
+                for (int i = 1; i < population_value; i++)
+                {
+                    variablesIDs.Clear();
+                    recurciveVariableAdding(population[i], 0, population[i].getValueByName("model_name"));
+                }
             }
             else
             {
@@ -128,7 +121,7 @@ namespace Экспертная_система
                 for (int i = 0; i < mutation_rate; i++)
                 { mutation(); }
 
-                A.draw(0, form1.picBox, form1, 15, 150);
+
                 for (int i = Convert.ToInt16(Math.Round(population_value * elite_ratio)); i < population_value; i++)
                 {
                     //проблема асинхронности
@@ -144,11 +137,11 @@ namespace Экспертная_система
                 {
                     for (int j = i + 1; j < population_value; j++)
                     {
-                        double i_value = Convert.ToDouble(population[i].getValueByName("accuracy").Replace('.', ','));
-                        double j_value = Convert.ToDouble(population[j].getValueByName("accuracy").Replace('.', ','));
+                        double i_value = Convert.ToDouble(population[i].getValueByName("target_function").Replace('.', ','));
+                        double j_value = Convert.ToDouble(population[j].getValueByName("target_function").Replace('.', ','));
                         if (i_value < j_value || (double.IsNaN(i_value) && (!double.IsNaN(j_value))))
                         {
-                            log("индивид [" + i.ToString() + "] 🢀 [" + j.ToString() + "]: " + i_value + "<" + j_value, Color.Orchid);
+                            log(" [" + i.ToString() + "] <- [" + j.ToString() + "]: " + i_value + "<" + j_value, Color.Orchid);
 
                             string tempFolder = form1.pathPrefix + "Optimization\\" + algorithm.name + "\\temp";
                             string path_to_i = form1.pathPrefix + "Optimization\\" + algorithm.name + "\\" + algorithm.name + "[" + i.ToString() + "]";
@@ -160,7 +153,7 @@ namespace Экспертная_система
 
                             Algorithm.MoveFiles(population[j], path_to_i, tempFolder);
                             Algorithm.MoveFiles(population[i], path_to_j, path_to_i);
-                            Algorithm.MoveFiles(population[j], tempFolder, path_to_j);  
+                            Algorithm.MoveFiles(population[j], tempFolder, path_to_j);
                         }
                     }
                 }
@@ -172,40 +165,44 @@ namespace Экспертная_система
             log("Обновление отображаемых параметров", Color.Lime);
 
             refreshAOTree();
-            A.draw(0, form1.picBox, form1, 15, 150);
+            // A.draw(0, form1.picBox, form1, 15, 150);
 
+            variableChangeMonitoring();
 
+            for (int i = 0; i < population_value; i++) variablesVisualizer.addPoint(Convert.ToDouble(population[i].getValueByName("target_function").Replace('.', ',')), " [" + i.ToString() + "]");
 
+            variablesVisualizer.refresh();
         }
+
         void mutation()
         {
-            foreach (int variableID in variablesIDs)
-            {
-                Random r = new Random();
-                int individIndex = r.Next(Convert.ToInt16(Math.Round(population_value * elite_ratio)), population_value);
-                if (population[individIndex].nodes[variableID].getAttributeValue("variable") == "categorical")
-                {
-                    int categoryIndex = r.Next(0, population[individIndex].nodes[variableID].getAttributeValue("categories").Split(',').Length);
-                    string newValue = population[individIndex].nodes[variableID].getAttributeValue("categories").Split(',')[categoryIndex];
-                    population[individIndex].nodes[variableID].setAttribute("value", newValue);
-                }
-                if (population[individIndex].nodes[variableID].getAttributeValue("variable") == "numerical")
-                {
-                    if (population[individIndex].nodes[variableID].getValue()[0] != '0')
-                    {
-                        int newValue = r.Next(Convert.ToInt16(population[individIndex].nodes[variableID].getAttributeValue("min")), Convert.ToInt16(population[individIndex].nodes[variableID].getAttributeValue("max")));
-                        population[individIndex].nodes[variableID].setAttribute("value", newValue.ToString());
-                    }
-                    else
-                    {
-                        double newValue = r.NextDouble();
 
-                        while (newValue > Convert.ToDouble(population[individIndex].nodes[variableID].getAttributeValue("min").Replace('.', ',')) && newValue < Convert.ToDouble(population[individIndex].nodes[variableID].getAttributeValue("max").Replace('.', ',')))
-                        {
-                            newValue = r.NextDouble();
-                        }
-                        population[individIndex].nodes[variableID].setAttribute("value", newValue.ToString().Replace(',', '.'));
+            int variableIndex = variablesIDs[r.Next(0, variablesIDs.Count)];
+            int individIndex = r.Next(Convert.ToInt16(Math.Round(population_value * elite_ratio)), population_value);
+            if (population[individIndex].nodes[variableIndex].getAttributeValue("variable") == "categorical")
+            {
+                int categoryIndex = r.Next(0, population[individIndex].nodes[variableIndex].getAttributeValue("categories").Split(',').Length);
+                string newValue = population[individIndex].nodes[variableIndex].getAttributeValue("categories").Split(',')[categoryIndex];
+                population[individIndex].nodes[variableIndex].setAttribute("value", newValue);
+            }
+            if (population[individIndex].nodes[variableIndex].getAttributeValue("variable") == "numerical")
+            {
+                if (population[individIndex].nodes[variableIndex].getValue()[0] != '0')
+                {
+                    int newValue = r.Next(Convert.ToInt32(population[individIndex].nodes[variableIndex].getAttributeValue("min")), Convert.ToInt32(population[individIndex].nodes[variableIndex].getAttributeValue("max")) + 1);
+                    population[individIndex].nodes[variableIndex].setAttribute("value", newValue.ToString());
+                    log("individIndex = " + individIndex.ToString() + "; variableIndex = " + variableIndex.ToString() + "; newValue = " + newValue.ToString(), Color.White);
+
+                }
+                else
+                {
+                    double newValue = r.NextDouble();
+
+                    while (newValue > Convert.ToDouble(population[individIndex].nodes[variableIndex].getAttributeValue("min").Replace('.', ',')) && newValue < Convert.ToDouble(population[individIndex].nodes[variableIndex].getAttributeValue("max").Replace('.', ',')))
+                    {
+                        newValue = r.NextDouble();
                     }
+                    population[individIndex].nodes[variableIndex].setAttribute("value", newValue.ToString().Replace(',', '.'));
                 }
             }
         }
@@ -214,10 +211,8 @@ namespace Экспертная_система
             int inc = Convert.ToInt16((Math.Round(population_value * elite_ratio)));
             if (inc > 0)
             {
-
                 while (inc < population_value)
                 {
-
                     for (int j = 0; j < Convert.ToInt16((Math.Round(population_value * elite_ratio))) - 1; j++)
                     {
                         population[inc] = get_child(population[j], population[j + 1], population[inc]);
@@ -239,7 +234,7 @@ namespace Экспертная_система
 
             foreach (int variableID in variablesIDs)
             {
-                Random r = new Random();
+
                 //родитель гена выбирается случайно
                 int parent_of_gene = r.Next(0, 2);
                 if (parent_of_gene == 0)
@@ -258,12 +253,53 @@ namespace Экспертная_система
             newthread.Start();
             log("OPTIMIZATION STARTED", Color.Cyan);
         }
+        void recurciveVariableAdding(Hyperparameters h, int ID, string modelName)
+        {
+
+
+            List<Node> branches = h.getNodesByparentID(ID);
+            var asdad = branches;
+            if (branches.Count == 0)
+            {
+                if (h.getNodeById(ID).getAttributeValue("variable") != null)
+                {
+                    // добавить в список переменных
+                    if (h.getNodeById(ID).getAttributeValue("variable") == "numerical")
+                        variablesVisualizer.addParameter(modelName + " " + h.getNodeById(ID).name() + " id=" + ID.ToString(), Color.Cyan, 200);
+
+                    if (h.getNodeById(ID).getAttributeValue("variable") == "categorical")
+                    {
+                        variablesVisualizer.addParameter(modelName + " " + h.getNodeById(ID).name() + " id=" + ID.ToString(), Color.Black, 40);
+                        variablesVisualizer.parameters[variablesVisualizer.parameters.Count - 1].mainFontDepth = 12;
+                    }
+
+                    variablesNames.Add(modelName + " " + h.getNodeById(ID).name() + " id=" + ID.ToString());
+                    variablesIDs.Add(ID);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < branches.Count; i++)
+                {
+                    recurciveVariableAdding(h, branches[i].ID, modelName);
+                }
+            }
+        }
         void variableChangeMonitoring()
         {
-            foreach (string variable in variablesNames)
-            { variablesVisualizer.addPoint(population[0].getValueByName(variable), variable); }
+            foreach (Hyperparameters individ in population)
+                foreach (int variableID in variablesIDs)
+                {
+                    string variableName = individ.getValueByName("model_name") + " " + individ.getNodeById(variableID).name() + " id=" + variableID.ToString();
+                    string value = individ.nodes[variableID].getValue();
+                    variablesVisualizer.addPoint(value, variableName);
+                }
         }
-
+        void refreshAOTree()
+        {
+            A = new Hyperparameters(form1, "Algorithm_Population");
+            for (int i = 0; i < population_value; i++) { A.addBranch(population[i], population[i].getValueByName("model_name"), 0); }
+        }
         void log(String s, Color col)
         {
             form1.logDelegate = new Form1.LogDelegate(form1.delegatelog);

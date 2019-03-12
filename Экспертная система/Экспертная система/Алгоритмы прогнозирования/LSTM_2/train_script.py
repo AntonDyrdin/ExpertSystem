@@ -4,8 +4,8 @@ def log(s):
 log("СКРИПТ ОБУЧЕНИЯ " + prediction_algorithm_name + " ЗАПУЩЕН...") 
 import time
 tempTime = time.time()
-
-def getTime(tempTime):
+def getTime():
+    global tempTime 
     offset = time.time() - tempTime
     tempTime = time.time()
     return str( offset )[0:5]+" сек."
@@ -20,7 +20,7 @@ from keras.layers import Dense
 from keras.layers import LSTM
 from keras.layers import Dropout
 
-log("> время загрузки библиотек : "+ getTime(tempTime))  
+log("> время загрузки библиотек : "+ getTime())  
 
 
 def createParser():
@@ -78,7 +78,7 @@ test_X = Dataset_X[round(Dataset_X.shape[0] * (split_point)):, :,:]
 train_y = Dataset_Y[train_start_point:round(Dataset_Y.shape[0] * (split_point)):]
 test_y = Dataset_Y[round(Dataset_Y.shape[0] * (split_point)):]
 
-print("> время чтения данных  : ", getTime(tempTime))  
+print("> время чтения данных  : ", getTime())  
 
 model = Sequential()         
 
@@ -93,14 +93,14 @@ model.add(Dense(getAttr2int("NN_sctruct","layer6","neurons_count"),activation=ge
 log("компиляция НС...")
         
 model.compile(loss=h("loss"), optimizer=h("optimizer"),metrics=['accuracy'])
-log("> время компиляции НС  : "+ getTime(tempTime))    
+log("> время компиляции НС  : "+ getTime())    
 
 
     
 log("обучение НС...")
         
 history = model.fit(train_X, train_y, epochs=(int)(h("number_of_epochs")), batch_size=(int)(h("batch_size")), validation_data=(test_X, test_y), shuffle=True) 
-log("> время обучения  НС  : "+ getTime(tempTime)) 
+log("> время обучения  НС  : "+ getTime()) 
     
 if h("save_folder") != "none":
     save_path = h("save_folder")+ 'weights.h5' 
@@ -110,7 +110,7 @@ if h("save_folder") != "none":
     except:
         save_path=save_path.encode('ansi')
         model.save(save_path)
-    log("> время сохранения НС  : "+ getTime(tempTime)) 
+    log("> время сохранения НС  : "+ getTime()) 
     
 sum = 0    
     
@@ -147,7 +147,7 @@ for i in range(0,test_X.shape[0]):
     line = line + (str)(predicted[i,0])
     predictionsFile.write(line + '\n')
 predictionsFile.close()
-log("> время создания и записи тестового прогноза  : "+ getTime(tempTime)) 
+log("> время создания и записи тестового прогноза  : "+ getTime()) 
 log("______________END________________")    
 RESPONSE="{RESPONSE:{"
 RESPONSE=RESPONSE+ "AVG:{value:"+(str)(avg)

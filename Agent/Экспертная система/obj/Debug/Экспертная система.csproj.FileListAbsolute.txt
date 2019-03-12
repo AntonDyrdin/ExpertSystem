@@ -1,0 +1,48 @@
+D:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\bin\Debug\Экспертная система.exe.config
+D:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\bin\Debug\Экспертная система.exe
+D:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\bin\Debug\Экспертная система.pdb
+D:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\obj\Debug\Экспертная система.csprojResolveAssemblyReference.cache
+D:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\obj\Debug\Экспертная_система.Form1.resources
+D:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\obj\Debug\Экспертная_система.Properties.Resources.resources
+D:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\obj\Debug\Экспертная система.csproj.GenerateResource.Cache
+D:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\obj\Debug\Экспертная система.csproj.CoreCompileInputs.cache
+D:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\obj\Debug\Экспертная система.exe
+D:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\obj\Debug\Экспертная система.pdb
+C:\Users\anton\Рабочий стол\MAIN\Экспертная система\Экспертная система\bin\Debug\Экспертная система.exe.config
+C:\Users\anton\Рабочий стол\MAIN\Экспертная система\Экспертная система\bin\Debug\Экспертная система.exe
+C:\Users\anton\Рабочий стол\MAIN\Экспертная система\Экспертная система\bin\Debug\Экспертная система.pdb
+C:\Users\anton\Рабочий стол\MAIN\Экспертная система\Экспертная система\obj\Debug\Экспертная система.csprojAssemblyReference.cache
+C:\Users\anton\Рабочий стол\MAIN\Экспертная система\Экспертная система\obj\Debug\Экспертная_система.Form1.resources
+C:\Users\anton\Рабочий стол\MAIN\Экспертная система\Экспертная система\obj\Debug\Экспертная_система.Properties.Resources.resources
+C:\Users\anton\Рабочий стол\MAIN\Экспертная система\Экспертная система\obj\Debug\Экспертная система.csproj.GenerateResource.cache
+C:\Users\anton\Рабочий стол\MAIN\Экспертная система\Экспертная система\obj\Debug\Экспертная система.csproj.CoreCompileInputs.cache
+C:\Users\anton\Рабочий стол\MAIN\Экспертная система\Экспертная система\obj\Debug\Экспертная система.exe
+C:\Users\anton\Рабочий стол\MAIN\Экспертная система\Экспертная система\obj\Debug\Экспертная система.pdb
+C:\Users\anton\Рабочий стол\ExpertSystem\Экспертная система\Экспертная система\bin\Debug\Экспертная система.exe.config
+C:\Users\anton\Рабочий стол\ExpertSystem\Экспертная система\Экспертная система\bin\Debug\Экспертная система.exe
+C:\Users\anton\Рабочий стол\ExpertSystem\Экспертная система\Экспертная система\bin\Debug\Экспертная система.pdb
+C:\Users\anton\Рабочий стол\ExpertSystem\Экспертная система\Экспертная система\bin\Debug\Newtonsoft.Json.dll
+C:\Users\anton\Рабочий стол\ExpertSystem\Экспертная система\Экспертная система\bin\Debug\Newtonsoft.Json.pdb
+C:\Users\anton\Рабочий стол\ExpertSystem\Экспертная система\Экспертная система\bin\Debug\Newtonsoft.Json.xml
+C:\Users\anton\Рабочий стол\ExpertSystem\Экспертная система\Экспертная система\obj\Debug\Экспертная система.csprojAssemblyReference.cache
+C:\Users\anton\Рабочий стол\ExpertSystem\Экспертная система\Экспертная система\obj\Debug\Экспертная_система.Form1.resources
+C:\Users\anton\Рабочий стол\ExpertSystem\Экспертная система\Экспертная система\obj\Debug\Экспертная_система.Properties.Resources.resources
+C:\Users\anton\Рабочий стол\ExpertSystem\Экспертная система\Экспертная система\obj\Debug\Экспертная система.csproj.GenerateResource.cache
+C:\Users\anton\Рабочий стол\ExpertSystem\Экспертная система\Экспертная система\obj\Debug\Экспертная система.csproj.CoreCompileInputs.cache
+C:\Users\anton\Рабочий стол\ExpertSystem\Экспертная система\Экспертная система\obj\Debug\Экспертная система.csproj.CopyComplete
+C:\Users\anton\Рабочий стол\ExpertSystem\Экспертная система\Экспертная система\obj\Debug\Экспертная система.exe
+C:\Users\anton\Рабочий стол\ExpertSystem\Экспертная система\Экспертная система\obj\Debug\Экспертная система.pdb
+\\storage\UserProfiles\Desktop\Dyrdin\Рабочий стол\ExpertSystem-master\Экспертная система\Экспертная система\bin\Debug\Экспертная система.exe.config
+\\storage\UserProfiles\Desktop\Dyrdin\Рабочий стол\ExpertSystem-master\Экспертная система\Экспертная система\bin\Debug\Экспертная система.exe
+\\storage\UserProfiles\Desktop\Dyrdin\Рабочий стол\ExpertSystem-master\Экспертная система\Экспертная система\bin\Debug\Экспертная система.pdb
+\\storage\UserProfiles\Desktop\Dyrdin\Рабочий стол\ExpertSystem-master\Экспертная система\Экспертная система\bin\Debug\Newtonsoft.Json.dll
+\\storage\UserProfiles\Desktop\Dyrdin\Рабочий стол\ExpertSystem-master\Экспертная система\Экспертная система\bin\Debug\Newtonsoft.Json.pdb
+\\storage\UserProfiles\Desktop\Dyrdin\Рабочий стол\ExpertSystem-master\Экспертная система\Экспертная система\bin\Debug\Newtonsoft.Json.xml
+\\storage\UserProfiles\Desktop\Dyrdin\Рабочий стол\ExpertSystem-master\Экспертная система\Экспертная система\obj\Debug\Экспертная система.csprojAssemblyReference.cache
+\\storage\UserProfiles\Desktop\Dyrdin\Рабочий стол\ExpertSystem-master\Экспертная система\Экспертная система\obj\Debug\Экспертная_система.Form1.resources
+\\storage\UserProfiles\Desktop\Dyrdin\Рабочий стол\ExpertSystem-master\Экспертная система\Экспертная система\obj\Debug\Экспертная_система.Properties.Resources.resources
+\\storage\UserProfiles\Desktop\Dyrdin\Рабочий стол\ExpertSystem-master\Экспертная система\Экспертная система\obj\Debug\Экспертная система.csproj.GenerateResource.cache
+\\storage\UserProfiles\Desktop\Dyrdin\Рабочий стол\ExpertSystem-master\Экспертная система\Экспертная система\obj\Debug\Экспертная система.csproj.CoreCompileInputs.cache
+\\storage\UserProfiles\Desktop\Dyrdin\Рабочий стол\ExpertSystem-master\Экспертная система\Экспертная система\obj\Debug\Экспертная система.csproj.CopyComplete
+\\storage\UserProfiles\Desktop\Dyrdin\Рабочий стол\ExpertSystem-master\Экспертная система\Экспертная система\obj\Debug\Экспертная система.exe
+\\storage\UserProfiles\Desktop\Dyrdin\Рабочий стол\ExpertSystem-master\Экспертная система\Экспертная система\obj\Debug\Экспертная система.pdb

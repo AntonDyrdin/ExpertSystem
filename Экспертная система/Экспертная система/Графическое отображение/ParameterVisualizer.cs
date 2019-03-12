@@ -52,6 +52,11 @@ namespace Экспертная_система
             Ymax = picBox.Height;
             functions[0].label = label;
 
+            if ((Ymax / 10) < 14)
+                mainFontDepth = Ymax / 10;
+            else
+                mainFontDepth = 14;
+
             yUpGap = (Ymax - Ymin) / 10;
             yDownGap = (Ymax - Ymin) / 20;
             zeroY = (Ymax - Ymin) / 2;
@@ -112,7 +117,68 @@ namespace Экспертная_система
             functions[0].points.Add(point);
         }
 
+        public Bitmap multyRefresh(Bitmap bitmap)
+        {
+            this.bitmap = bitmap;
+            g = Graphics.FromImage(bitmap);
 
+            if (functions[0].points != null)
+            {
+                int maxPointsCount = 0;
+                int maxPointsCountI = 0;
+                for (int i = 0; i < functions.Count; i++)
+                {
+                    if (functions[i].points.Count > maxPointsCount)
+                    {
+                        maxPointsCount = functions[i].points.Count;
+                        maxPointsCountI = i;
+                    }
+                }
+                foreach (Function function in functions)
+                {
+                    for (int i = 0; i < function.points.Count; i++)
+                    {
+                        if (function.points[i].y > maxY)
+                            maxY = function.points[i].y;
+                        if (function.points[i].y < minY)
+                            minY = function.points[i].y;
+                    }
+                }
+                dx = Convert.ToDouble(Xmax - (Xmax / 10)) / Convert.ToDouble(functions[maxPointsCountI].points.Count + 1);
+                drawStatic(dx);
+
+
+                foreach (Function function in functions)
+                {
+                    if (function.points.Count > 1)
+                    {
+
+                        for (int i = 1; i < function.points.Count; i++)
+                        {
+                            if (minY == maxY)
+                            {
+                                drawLine(function.color, functionDepth,
+                                xZeroGap + dx * (i - 1), Ymin + (Ymax / 2),
+                                xZeroGap + dx * i, Ymin + (Ymax / 2));
+                                if (function.points[i].mark != function.points[i - 1].mark || i == 2)
+                                    drawStringVertical(function.points[i].mark, mainFontDepth, xZeroGap + dx * i, Ymin + (Ymax / 2));
+                            }
+                            else
+                            {
+                                drawLine(function.color, functionDepth,
+                                  xZeroGap + dx * (i - 1), Ymin + Ymax - (((Ymax - yUpGap) * (function.points[i - 1].y - minY)) / (maxY - minY) + yDownGap),
+                                  xZeroGap + dx * i, Ymin + Ymax - (((Ymax - yUpGap) * (function.points[i].y - minY)) / (maxY - minY) + yDownGap));
+
+                                if (function.points[i].mark != function.points[i - 1].mark || i == 2)
+                                    drawStringVertical(function.points[i].mark, mainFontDepth,
+                                    xZeroGap + dx * i, Ymin + Ymax - (((Ymax - yUpGap) * (function.points[i].y - minY)) / (maxY - minY) + yDownGap));
+                            }
+                        }
+                    }
+                }
+            }
+            return bitmap;
+        }
         public void refresh()
         {
 
@@ -164,7 +230,7 @@ namespace Экспертная_система
                                   xZeroGap + dx * (i - 1), Ymin + Ymax - (((Ymax - yUpGap) * (function.points[i - 1].y - minY)) / (maxY - minY) + yDownGap),
                                   xZeroGap + dx * i, Ymin + Ymax - (((Ymax - yUpGap) * (function.points[i].y - minY)) / (maxY - minY) + yDownGap));
 
-                                if (function.points[i].mark != function.points[i - 1].mark || i == 2)
+                               if (function.points[i].mark != function.points[i - 1].mark || i == 2)
                                     drawStringVertical(function.points[i].mark, mainFontDepth,
                                     xZeroGap + dx * i, Ymin + Ymax - (((Ymax - yUpGap) * (function.points[i].y - minY)) / (maxY - minY) + yDownGap));
                             }
@@ -179,69 +245,11 @@ namespace Экспертная_система
             picBox.Image = bitmap;
 
         }
-        public Bitmap multyRefresh(Bitmap bitmap)
-        {
-            this.bitmap = bitmap;
-            g = Graphics.FromImage(bitmap);
-
-            if (functions[0].points != null)
-            {
-                int maxPointsCount = 0;
-                int maxPointsCountI = 0;
-                for (int i = 0; i < functions.Count; i++)
-                {
-                    if (functions[i].points.Count > maxPointsCount)
-                    {
-                        maxPointsCount = functions[i].points.Count;
-                        maxPointsCountI = i;
-                    }
-                }
-                foreach (Function function in functions)
-                {
-                    for (int i = 0; i < function.points.Count; i++)
-                    {
-                        if (function.points[i].y > maxY)
-                            maxY = function.points[i].y;
-                        if (function.points[i].y < minY)
-                            minY = function.points[i].y;
-                    }
-                }
-                dx = Convert.ToDouble(Xmax - (Xmax / 10)) / Convert.ToDouble(functions[maxPointsCountI].points.Count + 1);
-                drawStatic(dx);
-
-
-                foreach (Function function in functions)
-                {
-                    if (function.points.Count > 1)
-                    {
-
-                        for (int i = 1; i < function.points.Count; i++)
-                        {
-                            if (minY == maxY)
-                            {
-                                drawLine(function.color, functionDepth,
-                              xZeroGap + dx * (i - 1), Ymin + (Ymax / 2),
-                              xZeroGap + dx * i, Ymin + (Ymax / 2));
-                            }
-                            else
-                            {
-                                drawLine(function.color, functionDepth,
-                                  xZeroGap + dx * (i - 1), Ymin + Ymax - (((Ymax - yUpGap) * (function.points[i - 1].y - minY)) / (maxY - minY) + yDownGap),
-                                  xZeroGap + dx * i, Ymin + Ymax - (((Ymax - yUpGap) * (function.points[i].y - minY)) / (maxY - minY) + yDownGap));
-                            }
-                        }
-                    }
-                }
-            }
-            return bitmap;
-        }
+       
 
         private void drawStatic(double dx)
         {
-            if ((Ymax / 10) < 14)
-                mainFontDepth = Ymax / 10;
-            else
-                mainFontDepth = 14;
+
             if (functions.Count > 1)
                 for (int i = 0; i < functions.Count; i++)
                 {

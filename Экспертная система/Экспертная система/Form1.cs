@@ -31,14 +31,6 @@ namespace Экспертная_система
             log("");
 
 
-       Algorithm a = new LSTM_1(this, "asdasd");
-            a.h.add("predicted_column_index:1");
-            a.getAccAndStdDev(File.ReadAllLines(@"D:\Anton\Desktop\MAIN\Optimization\LSTM_1\LSTM_1[0]\predictions.txt"));
-            vis.addCSV(@"D:\Anton\Desktop\MAIN\Optimization\LSTM_1\LSTM_1[0]\predictions.txt", "Real close value", "<CLOSE>", 500, 0, -1);
-            // vis.addCSV(sourceDataFile, "Real close value", expert.h().getValueByName("predicted_column_index"), 500, split_point + (1 - split_point) * hidedPart, -2);
-            vis.addCSV(@"D:\Anton\Desktop\MAIN\Optimization\LSTM_1\LSTM_1[0]\predictions.txt", "realVSpredictions", "LAST_COLUMN", "predictions", 500, 0, 0);
-
-            vis.refresh();    
 
             // expert = new Expert("Эксперт 1", this);
 
@@ -50,20 +42,23 @@ namespace Экспертная_система
         }
         public void algorithmOptimization()
         {
+            expert = new Expert("Эксперт 1", this);
             mainThread = System.Threading.Thread.CurrentThread;
             algorithm = new LSTM_1(this, "LSTM_1");
 
-            sourceDataFile = pathPrefix + @"Временные ряды\SIN.txt";
+            //  sourceDataFile = pathPrefix + @"Временные ряды\EURRUB_long_min.txt";
+            //  expert.H.add("input_file", expert.savePreparedDataset(sourceDataFile, "<TIME>;<TICKER>;<PER>;<DATE>;<VOL>", true));
+
             algorithm.h.add("normalize:true");
-            algorithm.h.add("input_file", pathPrefix + @"Временные ряды\SIN-dataset.txt");
+            algorithm.h.add("input_file", pathPrefix + @"Временные ряды\EURRUB_long_min-dataset-cut.txt");
             algorithm.h.add("path_prefix", pathPrefix);
             algorithm.h.add("drop_columns:none");
-            algorithm.h.add("predicted_column_index:1");
+            algorithm.h.add("predicted_column_index:4");
             algorithm.h.add("name:show_train_charts,value:False");
-            AO = new AlgorithmOptimization(algorithm, this, 8, 5, 0.5);
+            AO = new AlgorithmOptimization(algorithm, this, 8, 10, 0.5, 500);
             AO.run();
-            algorithm.h.draw(0, picBox, this, 15, 150);
-            algorithm.Save();
+            // algorithm.h.draw(0, picBox, this, 15, 150);
+            // algorithm.Save();
         }
         public void TEST()
         {
@@ -129,34 +124,51 @@ namespace Экспертная_система
         }
         private void Hyperparameters_Click(object sender, EventArgs e)
         {
-            expert.algorithms[0].h.draw(0, picBox, this, 15, 150);
+            AO.A.draw(0, picBox, this, 15, 150);
         }
         private void Charts_Click(object sender, EventArgs e)
         {
             double hidedPart = 0.8;
-
             vis.enableGrid = true;
-
-            vis.clear();
-            /*  vis.addParameter(expert.dataset1, 2, "dataset1", Color.White, 300);
-              vis.addParameter(expert.dataset2, 2, "dataset2", Color.White, 300);
-              vis.addParameter(expert.dataset3, 2, "dataset3", Color.White, 300); */
-
-            double split_point = Convert.ToDouble(expert.h().getValueByName("split_point").Replace('.', ','));
-
-            vis.addCSV(sourceDataFile, "Real close value", "<CLOSE>", 500, split_point + (1 - split_point) * hidedPart, -2);
+            Algorithm a = new LSTM_1(this, "asdasd");
+            a.h.add("predicted_column_index:4");
+            a.getAccAndStdDev(File.ReadAllLines(@"D:\Anton\Desktop\MAIN\Optimization\LSTM_1\LSTM_1[0]\predictions.txt"));
+            vis.addCSV(@"D:\Anton\Desktop\MAIN\Optimization\LSTM_1\LSTM_1[0]\predictions.txt", "realVSpredictions", "<CLOSE>", 1000, hidedPart, -1);
+            vis.addCSV(@"D:\Anton\Desktop\MAIN\Optimization\LSTM_1\LSTM_1[0]\predictions.txt", "realVSpredictions", "<DATEandTIME>", "0.5", 1000, hidedPart, -1);
             // vis.addCSV(sourceDataFile, "Real close value", expert.h().getValueByName("predicted_column_index"), 500, split_point + (1 - split_point) * hidedPart, -2);
-            vis.addCSV(expert.algorithms[0].getValueByName("predictions_file_path"), "realVSpredictions", expert.h().getValueByName("predicted_column_index"), "real", 500, hidedPart, -1);
-            vis.addCSV(expert.algorithms[0].getValueByName("predictions_file_path"), "realVSpredictions", "LAST_COLUMN", "predictions", 500, hidedPart, 0);
+            vis.addCSV(@"D:\Anton\Desktop\MAIN\Optimization\LSTM_1\LSTM_1[0]\predictions.txt", "realVSpredictions", "LAST_COLUMN", "predictions", 1000, hidedPart, 0);
 
             vis.refresh();
+
+            /*
+
+
+
+
+   vis.clear();
+   /*  vis.addParameter(expert.dataset1, 2, "dataset1", Color.White, 300);
+     vis.addParameter(expert.dataset2, 2, "dataset2", Color.White, 300);
+     vis.addParameter(expert.dataset3, 2, "dataset3", Color.White, 300); */
+
+            /*    double split_point = Convert.ToDouble(expert.h().getValueByName("split_point").Replace('.', ','));
+
+                vis.addCSV(sourceDataFile, "Real close value", "<CLOSE>", 500, split_point + (1 - split_point) * hidedPart, -2);
+                // vis.addCSV(sourceDataFile, "Real close value", expert.h().getValueByName("predicted_column_index"), 500, split_point + (1 - split_point) * hidedPart, -2);
+                vis.addCSV(expert.algorithms[0].getValueByName("predictions_file_path"), "realVSpredictions", expert.h().getValueByName("predicted_column_index"), "real", 500, hidedPart, -1);
+                vis.addCSV(expert.algorithms[0].getValueByName("predictions_file_path"), "realVSpredictions", "LAST_COLUMN", "predictions", 500, hidedPart, 0);
+
+                vis.refresh(); */
         }
 
 
         private void ImgDataset_Click(object sender, EventArgs e)
         {
-            visPredictions = new ImgDataset(expert.algorithms[0].getValueByName("predictions_file_path"), this);
-            visPredictions.drawImgWhithPredictions(expert.algorithms[0].getValueByName("predictions_file_path"), "LAST_COLUMN", expert.h().getValueByName("split_point"), expert.h().getValueByName("predicted_column_index"));
+            visPredictions = new ImgDataset(@"D:\Anton\Desktop\MAIN\Optimization\LSTM_1\LSTM_1[0]\predictions.txt", this);
+            visPredictions.drawImgWhithPredictions(@"D:\Anton\Desktop\MAIN\Optimization\LSTM_1\LSTM_1[0]\predictions.txt", "LAST_COLUMN", "0", "1");
+
+            /* visPredictions = new ImgDataset(expert.algorithms[0].getValueByName("predictions_file_path"), this);
+             visPredictions.drawImgWhithPredictions(expert.algorithms[0].getValueByName("predictions_file_path"), "LAST_COLUMN", expert.h().getValueByName("split_point"), expert.h().getValueByName("predicted_column_index"));
+       */
         }
 
 

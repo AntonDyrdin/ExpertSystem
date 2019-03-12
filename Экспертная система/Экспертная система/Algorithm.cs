@@ -272,10 +272,17 @@ namespace Экспертная_система
             }
             accuracy = Convert.ToDouble(rightCount) / Convert.ToDouble(rightCount + leftCount) * 100;
             stdDev = Math.Sqrt(sqrtSum / inc);
+
+            if (double.IsNaN(accuracy))
+                accuracy = 0;
+
             log("accuracy = " + accuracy.ToString() + " %");
-            log("stdDev = " + stdDev.ToString());
+          //  log("stdDev = " + stdDev.ToString());
+           // log("accuracy/stdDev = " + (accuracy / stdDev).ToString());
             log("_____________________________________________");
             h.setValueByName("accuracy", accuracy.ToString().Replace(',', '.'));
+            h.setValueByName("stdDev", stdDev.ToString().Replace(',', '.'));
+            h.setValueByName("target_function", (accuracy).ToString().Replace(',', '.'));
         }
         public string runPythonScript(string scriptFile, string args)
         {
