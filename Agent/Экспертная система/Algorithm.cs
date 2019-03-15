@@ -29,17 +29,16 @@ namespace Экспертная_система
         }
         public void fillFilePaths()
         {
-            mainFolder = form1.pathPrefix + "Экспертная система\\Экспертная система\\Алгоритмы прогнозирования\\" + name + "\\";
             Directory.CreateDirectory(mainFolder);
             string getPredictionFilePath = mainFolder + "get_prediction.py";
-            h.add("get_prediction_script_path:" + getPredictionFilePath);
+            h.setValueByName("get_prediction_script_path", getPredictionFilePath);
             string trainScriptPath = mainFolder + "train_script.py";
-            h.add("train_script_path:" + trainScriptPath);
+            h.setValueByName("train_script_path" , trainScriptPath);
             string jsonFilePath = mainFolder + "json.txt";
             string predictionsFilePath = mainFolder + "predictions.txt";
-            h.add("predictions_file_path", predictionsFilePath);
-            h.add("json_file_path:" + jsonFilePath);
-            h.add("save_folder:" + mainFolder);
+            h.setValueByName("predictions_file_path", predictionsFilePath);
+            h.setValueByName("json_file_path",  jsonFilePath);
+            h.setValueByName("save_folder" , mainFolder);
         }
         private Process predict_process;
         [NonSerializedAttribute]
@@ -198,9 +197,11 @@ namespace Экспертная_система
                 log(script_conclusion + predict_process_error_stream.ReadToEnd());
         }
 
-
+        public string trainingReport="";
         public async Task train()
         {
+            trainingReport = "";
+
             if (h.getValueByName("input_file") == null)
             {
                 log("файл датасета не задан");
@@ -209,7 +210,7 @@ namespace Экспертная_система
             args = "--json_file_path " + '"' + h.getValueByName("json_file_path") + '"';
 
             string response = await Task.Run(() => runPythonScript(getValueByName("train_script_path"), args));
-
+            trainingReport += response+'\n';
             try
             {
                 response = response.Substring(response.IndexOf('{'));
@@ -236,7 +237,7 @@ namespace Экспертная_система
             {
                 getAccAndStdDev(predictionsCSV);
             }
-
+            trainingReport += "accuracy = " + accuracy + " %";
             // return "обучение алгоритма " + name + "заверешно.";
         }
 
@@ -282,7 +283,7 @@ namespace Экспертная_система
             log("_____________________________________________");
             h.setValueByName("accuracy", accuracy.ToString().Replace(',', '.'));
             h.setValueByName("stdDev", stdDev.ToString().Replace(',', '.'));
-            h.setValueByName("target_function", (accuracy/stdDev).ToString().Replace(',', '.'));
+            h.setValueByName("target_function", (accuracy).ToString().Replace(',', '.'));
         }
         public string runPythonScript(string scriptFile, string args)
         {

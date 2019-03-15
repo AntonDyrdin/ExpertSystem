@@ -2,44 +2,65 @@
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Net.Sockets;
+
 namespace Экспертная_система
 {
     public partial class Form1 : Form
     {
         // C:\Users\Антон\AppData\Local\Theano\compiledir_Windows-10-10.0.17134-SP0-Intel64_Family_6_Model_158_Stepping_9_GenuineIntel-3.6.1-64\lock_dir
-        public Infrastructure I;
+
+
         public Form1()
         {
             InitializeComponent();
 
         }
         public string pathPrefix;
+        public Infrastructure I;
         public Expert expert;
-        private MultiParameterVisualizer vis;
+        public MultiParameterVisualizer vis;
+        public AgentManager agentManager;
         private ImgDataset visPredictions;
         public string sourceDataFile;
         public System.Threading.Tasks.Task mainTask;
         public System.Threading.Thread mainThread;
-        AlgorithmOptimization AO;
-        Algorithm algorithm;
+        private AlgorithmOptimization AO;
+        private Algorithm algorithm;
+
         public void Form1_Load(object sender, EventArgs e)
         {
             I = new Infrastructure(this);
             vis = new MultiParameterVisualizer(picBox, this);
+            agentManager = I.agentManager;
             pathPrefix = I.h.getValueByName("path_prefix");
             log("");
             log("");
 
 
+            algorithm = new LSTM_1(this, "LSTM_1");
 
-            // expert = new Expert("Эксперт 1", this);
+            //  sourceDataFile = pathPrefix + @"Временные ряды\EURRUB_long_min.txt";
+            //  expert.H.add("input_file", expert.savePreparedDataset(sourceDataFile, "<TIME>;<TICKER>;<PER>;<DATE>;<VOL>", true));
 
-            //  mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { algorithmOptimization(); });
-            //   mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { buildAndTrain(); });
-            // mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { TEST(); });
+            algorithm.h.add("normalize:true");
+            //    algorithm.h.add("input_file", pathPrefix + @"Временные ряды\EURRUB_long_min-dataset-cut.txt");
+            algorithm.h.add("input_file", pathPrefix + @"Временные ряды\EURRUB-dataset.txt");
+            algorithm.h.add("path_prefix", pathPrefix);
+            algorithm.h.add("drop_columns:none");
+            algorithm.h.add("predicted_column_index:4");
+            algorithm.h.add("name:show_train_charts,value:False");
 
+            File.WriteAllText(algorithm.h.getValueByName("json_file_path"), algorithm.h.toJSON(0));
+            agentManager.tasks.Add(new AgentTask("train", algorithm.h));
+            agentManager.doWork();
 
         }
+
         public void algorithmOptimization()
         {
             expert = new Expert("Эксперт 1", this);
@@ -249,26 +270,6 @@ namespace Экспертная_система
             }
             catch { }
         }
-        /*  ТЕСТ РАБОТЫ КЛАССА Hyperparameters
-
-Hyperparameters h = new Hyperparameters(this);
-h.addByParentId(0, "name:person,firstName:Антон,age:21");
-var friendsId = h.addByParentId(1, "name:friends");
-h.addByParentId(friendsId, "name:person,firstName:Сергей,age:26");
-var friendsId1 = h.addByParentId(h.addByParentId(friendsId, "name:person,firstName:Ксения,age:18"), "name:friends");
-h.addByParentId(friendsId1, "name:person,firstName:Павел,age:24");
-h.addByParentId(friendsId1, "name:person,firstName:Карина,age:21");
-h.addByParentId(friendsId, "name:person,firstName:Анна,age:24");
-h.addByParentId(friendsId, "name:person,firstName:Александр,age:21");
-var friendsList = h.getNodesByparentID(friendsId);
-foreach (Node friend in friendsList)
-{ log(friend.getAttributeValue("firstName"), Color.White); }
-var dateId = h.addByParentId(1, "name:date,day:24,month:november,year:2018");
-h.addByParentId(1, "day:24");
-
-h.draw(1, picBox, this);
-
-log(h.toJSON(1), Color.White);*/
 
         //System.Diagnostics.Debug.WriteLine(new System.Diagnostics.StackTrace().ToString());
 

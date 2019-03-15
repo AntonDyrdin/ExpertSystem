@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AgentManager.cs" />
     <Compile Include="Algorithm.cs" />
     <Compile Include="AlgorithmOptimization.cs" />
     <Compile Include="Expert.cs" />
@@ -63,7 +64,6 @@
     <Compile Include="Алгоритмы прогнозирования\LSTM_2\LSTM 2.cs" />
     <Compile Include="Графическое отображение\MultiParameterVisualizer.cs" />
     <Compile Include="Графическое отображение\ParameterVisualizer.cs" />
-    <Compile Include="Графическое отображение\ParameterVisualizerFastest.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">

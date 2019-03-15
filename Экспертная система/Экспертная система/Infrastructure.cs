@@ -10,6 +10,7 @@ namespace Экспертная_система
     {
         public string logPath;
         public Hyperparameters h;
+        public AgentManager agentManager;
         public int maxlogFilesCount = 10;
         public Infrastructure(Form1 form1)
         {
@@ -38,8 +39,8 @@ namespace Экспертная_система
                         {
                             try
                             {
-                             //   if (h.getValueByName(configLines[j].Split(':')[0]) == null)
-                                    h.add(configLines[j]);
+                                //   if (h.getValueByName(configLines[j].Split(':')[0]) == null)
+                                h.add(configLines[j]);
                             }
                             catch { }
                         }
@@ -53,6 +54,8 @@ namespace Экспертная_система
 
 
             newLog();
+
+            agentManager = new AgentManager(form1);
         }
         public Infrastructure(Hyperparameters h, Form1 form1)
         {
@@ -79,7 +82,7 @@ namespace Экспертная_система
             }
             ////////////////////////////////////////////////////////
             newLog();
-            
+
         }
         void newLog()
         {

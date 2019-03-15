@@ -24,6 +24,8 @@ namespace Экспертная_система
         List<int> variablesIDs;
         int Iterarions = 0;
         Random r;
+        AgentManager agentManager;
+
         public AlgorithmOptimization(Algorithm algorithm, Form1 form1, int population_value, int mutation_rate, double elite_ratio, int Iterarions)
         {
             r = new Random();
@@ -37,6 +39,8 @@ namespace Экспертная_система
             population = new Hyperparameters[population_value];
             variablesNames = new List<string>();
             variablesIDs = new List<int>();
+
+            this.agentManager = form1.agentManager;
 
             for (int i = 0; i < population_value; i++) { population[i] = new Hyperparameters(algorithm.h.toJSON(0), form1); }
 
@@ -121,14 +125,33 @@ namespace Экспертная_система
                 for (int i = 0; i < mutation_rate; i++)
                 { mutation(); }
 
-
-                for (int i = Convert.ToInt16(Math.Round(population_value * elite_ratio)); i < population_value; i++)
+                if (agentManager.agents.Count == 0)
                 {
-                    //проблема асинхронности
-                    algorithm.h = new Hyperparameters(population[i].toJSON(0), form1);
-                    algorithm.train().Wait();
-                    population[i] = new Hyperparameters(algorithm.h.toJSON(0), form1);
-                    File.WriteAllText(population[i].getValueByName("json_file_path"), population[i].toJSON(0), System.Text.Encoding.Default);
+                    for (int i = Convert.ToInt16(Math.Round(population_value * elite_ratio)); i < population_value; i++)
+                    {
+                        algorithm.h = new Hyperparameters(population[i].toJSON(0), form1);
+                        algorithm.train().Wait();
+                        population[i] = new Hyperparameters(algorithm.h.toJSON(0), form1);
+                        File.WriteAllText(population[i].getValueByName("json_file_path"), population[i].toJSON(0), System.Text.Encoding.Default);
+                    }
+                }
+                else
+                {
+                    for (int i = Convert.ToInt16(Math.Round(population_value * elite_ratio)); i < population_value; i++)
+                    {
+                        agentManager.tasks.Add(new AgentTask("train", population[i]));  
+                    }
+
+                    while (agentManager.status != "done")
+                    {
+                       System.Threading.Thread.Sleep(100);
+                    }
+
+                    for (int i = Convert.ToInt16(Math.Round(population_value * elite_ratio)); i < population_value; i++)
+                    {
+                        population[i] = agentManager.tasks[i - Convert.ToInt16(Math.Round(population_value * elite_ratio))].h ;
+                        File.WriteAllText(population[i].getValueByName("json_file_path"), population[i].toJSON(0), System.Text.Encoding.Default);
+                    }
                 }
 
                 // сортировка по точности
