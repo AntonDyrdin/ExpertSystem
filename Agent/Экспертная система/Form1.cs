@@ -22,7 +22,7 @@ namespace Экспертная_система
         public System.Threading.Tasks.Task mainTask;
         public System.Threading.Thread mainThread;
 
-
+        Algorithm algorithm;
         public string workFolder;
         public void Form1_Load(object sender, EventArgs e)
         {
@@ -39,37 +39,33 @@ namespace Экспертная_система
         }
 
         private const int port = 8888;
-        private const string address = "127.0.0.1";
-
+        private const string address = "192.168.1.7";
+        TcpClient client = null;
         public void startSocket()
         {
-            TcpClient client = null;
+
             /* try
              {   */
             client = new TcpClient(address, port);
             NetworkStream stream = client.GetStream();
-
+            BinaryReader reader = new BinaryReader(stream);
+            BinaryWriter writer = new BinaryWriter(stream);
             while (true)
             {
                 System.Threading.Thread.Sleep(1000);
-                var messageFromServer = recieve(stream);
-                if (messageFromServer == "send_files")
-                {
-                    send(stream, "wait for files");
-                    var json_file = recieveBytes(stream);
-                    File.WriteAllBytes(workFolder + "json.txt", json_file);
-                    send(stream, "file recieved");
-                    var train_script_file = recieveBytes(stream);
-                    File.WriteAllBytes(workFolder + "train_script.py", train_script_file);
-                    send(stream, "file recieved");
-                    var input_file = recieveBytes(stream);
-                    File.WriteAllBytes(workFolder + "input_file.txt", input_file);
-                    send(stream, "file recieved");
-                }
 
-                if (recieve(stream) == "train")
+                var command = recieveCommand(reader);
+
+                if (command == "train")
                 {
-                    Algorithm algorithm = new DefaultAlgorithmImpl(this, "Default");
+                    recieveFile(reader, workFolder + "json.txt");
+                    System.Threading.Thread.Sleep(1000);
+                    recieveFile(reader, workFolder + "train_script.py");
+                    System.Threading.Thread.Sleep(1000);
+                    recieveFile(reader, workFolder + "input_file.txt");
+                    System.Threading.Thread.Sleep(1000);
+
+                    algorithm = new DefaultAlgorithmImpl(this, "Default");
                     algorithm.Open(new Hyperparameters(File.ReadAllText(workFolder + "json.txt"), this));
                     algorithm.mainFolder = workFolder;
                     algorithm.h.setValueByName("json_file_path", workFolder + "json.txt");
@@ -78,28 +74,23 @@ namespace Экспертная_система
                     algorithm.h.setValueByName("train_script_path", workFolder + "train_script.py");
                     algorithm.h.setValueByName("input_file", workFolder + "input_file.txt");
                     algorithm.h.setValueByName("path_prefix", pathPrefix);
+
                     log("START TRAINING");
                     algorithm.train().Wait();
+
                     if (algorithm.trainingReport.LastIndexOf("СКРИПТ ОБУЧЕНИЯ ") != -1)
                     {
-                        send(stream, "success");
-                        recieve(stream);
-                        send(stream, algorithm.trainingReport);
-                        recieve(stream);
-                        client.Client.SendFile(algorithm.h.getValueByName("json_file_path")); 
-                        recieve(stream);
+                        sendCommand(writer, algorithm.trainingReport);
+
+                        sendFile(writer, algorithm.h.getValueByName("json_file_path"));
                         System.Threading.Thread.Sleep(1000);
-                         client.Client.SendFile(algorithm.h.getValueByName("predictions_file_path"));
-                        recieve(stream);
+                        sendFile(writer, algorithm.h.getValueByName("predictions_file_path"));
                         System.Threading.Thread.Sleep(1000);
-                        client.Client.SendFile(algorithm.h.getValueByName("save_folder") + "weights.h5");
-                        recieve(stream);
+                        sendFile(writer, algorithm.h.getValueByName("save_folder") + "weights.h5");
+                        System.Threading.Thread.Sleep(1000);
                     }
                     else
-                        send(stream, "Произошла ошибка при запуске скрипта обучения, подробности в консоли агента.");
-
-
-
+                        sendCommand(writer, "Произошла ошибка при запуске скрипта обучения, подробности в консоли агента.");
                 }
             }
             /*  }
@@ -112,57 +103,34 @@ namespace Экспертная_система
                   client.Close();
               }  */
         }
-        public void send(NetworkStream stream, string message)
+        public void sendCommand(BinaryWriter writer, string Command)
         {
-            var data = Encoding.Default.GetBytes(message);
-            stream.Write(data, 0, data.Length);
-            log("SEND: " + message);
-        }
-        public byte[] recieveBytes(NetworkStream stream)
-        {
-            byte[] data = new byte[64];
-            StringBuilder builder = new StringBuilder();
-            int bytesCount = 0;
-            do
-            {
-                bytesCount = stream.Read(data, 0, data.Length);
-                builder.Append(Encoding.Default.GetString(data, 0, bytesCount));
-            }
-            while (stream.DataAvailable);
+            log("SEND: " + Command);
+            writer.Write(Command);
 
-            string message = builder.ToString();
-            byte[] bytes = Encoding.Default.GetBytes(message);
-            return bytes;
         }
-        public string recieve(NetworkStream stream)
+        public string recieveCommand(BinaryReader reader)
         {
-            byte[] data = new byte[64];
-            StringBuilder builder = new StringBuilder();
-            int bytes = 0;
-            do
-            {
-                bytes = stream.Read(data, 0, data.Length);
-                builder.Append(Encoding.Default.GetString(data, 0, bytes));
-            }
-            while (stream.DataAvailable);
-
-            string message = builder.ToString();
-            log("RECIEVE: " + message);
-            return message;
+            var Command = reader.ReadString();
+            log("RECIEVE: " + Command);
+            return Command;
+        }
+        void sendFile(BinaryWriter writer, string path)
+        {
+            log("SEND: " + path);
+            writer.Write(Encoding.Default.GetString(File.ReadAllBytes(path)));
+        }
+        void recieveFile(BinaryReader reader, string savePath)
+        {
+            string message = reader.ReadString(); ;
+            var file = Encoding.Default.GetBytes(message);
+            File.WriteAllBytes(savePath, file);
+            log("RECIEVE: " + savePath);
         }
 
-        public void algorithmOptimization()
-        {
-        }
-        public void TEST()
-        {
-        }
-        public void buildAndTrain()
-        {
-        }
         private void Hyperparameters_Click(object sender, EventArgs e)
         {
-            expert.algorithms[0].h.draw(0, picBox, this, 15, 150);
+            algorithm.h.draw(0, picBox, this, 15, 150);
         }
         private void Charts_Click(object sender, EventArgs e)
         {

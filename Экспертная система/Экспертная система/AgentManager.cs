@@ -61,7 +61,9 @@ namespace Экспертная_система
         {
             try
             {
-                TCPListener = new TcpListener(IPAddress.Parse("127.0.0.1"), port);
+                // TCPListener = new TcpListener(IPAddress.Parse("127.0.0.1"), port);
+                log(Dns.GetHostByName(Dns.GetHostName()).AddressList[0].ToString());
+                TCPListener = new TcpListener(Dns.GetHostByName(Dns.GetHostName()).AddressList[0], port);
                 TCPListener.Start();
                 log("Ожидание подключений...");
 
@@ -118,60 +120,54 @@ namespace Экспертная_система
             /* try
              {   */
             stream = client.GetStream();
+            BinaryReader reader = new BinaryReader(stream);
+            BinaryWriter writer = new BinaryWriter(stream);
             while (true)
             {
                 if (task != null)
                 {
-                    if (task.type == "train")
+                    if (task.status == "undone")
                     {
-                        status = "busy";
-
-                        send(stream, "send_files");
-                        if (recieve(stream) == "wait for files")
-                            client.Client.SendFile(task.h.getValueByName("json_file_path"));
-                        if (recieve(stream) == "file recieved")
-                            client.Client.SendFile(task.h.getValueByName("train_script_path"));
-                        if (recieve(stream) == "file recieved")
-                            client.Client.SendFile(task.h.getValueByName("input_file"));
-                        if (recieve(stream) == "file recieved")
-                            send(stream, "train");
-
-                        var response = recieve(stream);
-                        send(stream, "OK");
-                        if (response == "success")
+                        if (task.type == "train")
                         {
-                            log(recieve(stream));
-                            send(stream, "OK");
-                            var json_file = recieveBytes(stream);
-                            File.WriteAllBytes(task.h.getValueByName("json_file_path"), json_file);
-                            send(stream, "file recieved");
-                            var predictions_file = recieveBytes(stream);
-                            File.WriteAllBytes(task.h.getValueByName("predictions_file_path"), predictions_file);
-                            send(stream, "file recieved");
-                            var h5_file = recieveBytes(stream);
-                            File.WriteAllBytes(task.h.getValueByName("save_folder") + "weights.h5", h5_file);
-                            send(stream, "file recieved");
+                            status = "busy";
+                            //объявление агенту типа задачи
+                            sendCommand(writer, "train");
 
-                            Hyperparameters hTemp = new Hyperparameters(File.ReadAllText(task.h.getValueByName("json_file_path"), Encoding.Default), form1);
-                            hTemp.setValueByName("json_file_path", task.h.getValueByName("json_file_path"));
-                            hTemp.setValueByName("predictions_file_path", task.h.getValueByName("predictions_file_path"));
-                            hTemp.setValueByName("save_folder", task.h.getValueByName("save_folder"));
-                            hTemp.setValueByName("train_script_path", task.h.getValueByName("train_script_path"));
-                            hTemp.setValueByName("input_file", task.h.getValueByName("input_file"));
-                            File.WriteAllText(hTemp.getValueByName("json_file_path"), hTemp.toJSON(0), Encoding.Default);
-                            task.h.fromJSON(hTemp.toJSON(0),0);
-                        }
-                        else
-                        {
-                            log(recieve(stream));
-                        }
-                        //копирование файлов json.txt и predictions.txt
-                        //{восстановить пути под исходное окружение}
-                        //выставить статус "free"
+                            sendFile(writer, task.h.getValueByName("json_file_path"));
+                            System.Threading.Thread.Sleep(1000);
+                            sendFile(writer, task.h.getValueByName("train_script_path"));
+                            System.Threading.Thread.Sleep(1000);
+                            sendFile(writer, task.h.getValueByName("input_file"));
+                            System.Threading.Thread.Sleep(1000);
+                            var trainingReport = recieveCommand(reader);
+                            // log(trainingReport);
+                            if (!trainingReport.Contains("Произошла ошибка"))
+                            {
+                                recieveFile(reader, task.h.getValueByName("json_file_path"));
+                                System.Threading.Thread.Sleep(1000);
+                                recieveFile(reader, task.h.getValueByName("predictions_file_path"));
+                                System.Threading.Thread.Sleep(1000);
+                                recieveFile(reader, task.h.getValueByName("save_folder") + "weights.h5");
+                                System.Threading.Thread.Sleep(1000);
+                                Hyperparameters hTemp = new Hyperparameters(File.ReadAllText(task.h.getValueByName("json_file_path"), Encoding.Default), form1);
+                                hTemp.setValueByName("json_file_path", task.h.getValueByName("json_file_path"));
+                                hTemp.setValueByName("predictions_file_path", task.h.getValueByName("predictions_file_path"));
+                                hTemp.setValueByName("save_folder", task.h.getValueByName("save_folder"));
+                                hTemp.setValueByName("train_script_path", task.h.getValueByName("train_script_path"));
+                                hTemp.setValueByName("input_file", task.h.getValueByName("input_file"));
+                                File.WriteAllText(hTemp.getValueByName("json_file_path"), hTemp.toJSON(0), Encoding.Default);
+                                task.h.fromJSON(hTemp.toJSON(0), 0);
 
-                        task = null;
+                                task.status = "done";
+                            }
+                            else
+                            {
+                                status = "free";
+                                task.status = "error";
+                            }
+                        }
                     }
-
                 }
                 System.Threading.Thread.Sleep(1000);
             }
@@ -188,45 +184,89 @@ namespace Экспертная_система
                        client.Close();
                } */
         }
+        public void sendCommand(BinaryWriter writer, string Command)
+        {
+            log("SEND: " + Command);
+            writer.Write(Command);
+
+        }
+        public string recieveCommand(BinaryReader reader)
+        {
+            var Command = reader.ReadString();
+            log("RECIEVE: " + Command);
+            return Command;
+        }
+        void sendFile(BinaryWriter writer, string path)
+        {
+            log("SEND: "+ path);
+            writer.Write(Encoding.Default.GetString(File.ReadAllBytes(path)));
+        }
+        void recieveFile(BinaryReader reader, string savePath)
+        {
+            string message = reader.ReadString(); ;
+            var file = Encoding.Default.GetBytes(message);
+            File.WriteAllBytes(savePath, file);
+            log("RECIEVE: " + savePath);
+        }
         private void send(NetworkStream stream, string message)
         {
             var data = Encoding.Default.GetBytes(message);
             stream.Write(data, 0, data.Length);
-            log("SEND: " + message);
+            //  log("send: " + message);
         }
         private byte[] recieveBytes(NetworkStream stream)
         {
-            byte[] data = new byte[64];
-            StringBuilder builder = new StringBuilder();
-            int bytesCount = 0;
-            do
+            byte[] bytes;
+            waitForBytes:
+            if (stream.DataAvailable)
             {
-                bytesCount = stream.Read(data, 0, data.Length);
-                builder.Append(Encoding.Default.GetString(data, 0, bytesCount));
-            }
-            while (stream.DataAvailable);
+                byte[] data = new byte[64];
+                StringBuilder builder = new StringBuilder();
+                int bytesCount = 0;
+                do
+                {
+                    bytesCount = stream.Read(data, 0, data.Length);
+                    builder.Append(Encoding.Default.GetString(data, 0, bytesCount));
+                    System.Threading.Thread.Sleep(50);
+                }
+                while (stream.DataAvailable);
 
-            string message = builder.ToString();
-            byte[] bytes = Encoding.Default.GetBytes(message);
+                string message = builder.ToString();
+                bytes = Encoding.Default.GetBytes(message);
+                //     log("recieve: bytes");          
+            }
+            else
+            {
+                goto waitForBytes;
+            }
             return bytes;
         }
         private string recieve(NetworkStream stream)
         {
-            byte[] data = new byte[64];
-            StringBuilder builder = new StringBuilder();
-            int bytes = 0;
-            do
+            string message;
+
+            waitForMessage:
+            if (stream.DataAvailable)
             {
-                bytes = stream.Read(data, 0, data.Length);
-                builder.Append(Encoding.Default.GetString(data, 0, bytes));
+                byte[] data = new byte[64];
+                StringBuilder builder = new StringBuilder();
+                int bytes = 0;
+                do
+                {
+                    bytes = stream.Read(data, 0, data.Length);
+                    builder.Append(Encoding.Default.GetString(data, 0, bytes));
+                }
+                while (stream.DataAvailable);
+
+                message = builder.ToString();
+                //log("RECIEVE: " + message);
+                //   log("recieve: " + message);  
             }
-            while (stream.DataAvailable);
-
-            string message = builder.ToString();
-            log("RECIEVE: " + message);
+            else
+            {
+                goto waitForMessage;
+            }
             return message;
-
-
         }
 
         public void log(String s)
