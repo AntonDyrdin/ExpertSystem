@@ -283,6 +283,8 @@ namespace Экспертная_система
             h.setValueByName("accuracy", accuracy.ToString().Replace(',', '.'));
             h.setValueByName("stdDev", stdDev.ToString().Replace(',', '.'));
             h.setValueByName("target_function", (accuracy).ToString().Replace(',', '.'));
+
+            h.setValueByName("processed_by", System.Net.Dns.GetHostName());
         }
         public string runPythonScript(string scriptFile, string args)
         {

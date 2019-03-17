@@ -128,7 +128,7 @@ avg = sum / predicted.shape[0]
 
 for i in range(0,test_X.shape[0]):
     predicted[i,0] = predicted[i,0] - avg
-    predicted[i,0] = predicted[i,0] * 10000
+    predicted[i,0] = predicted[i,0] * 100
     predicted[i,0] = predicted[i,0] + 0.5
 print("predictions_file_path: "+ h("predictions_file_path"))
 predictionsFile = open(h("predictions_file_path"), 'w')

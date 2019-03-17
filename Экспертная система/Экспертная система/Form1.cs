@@ -41,24 +41,7 @@ namespace Экспертная_система
             log("");
             log("");
 
-
-            algorithm = new LSTM_1(this, "LSTM_1");
-
-            //  sourceDataFile = pathPrefix + @"Временные ряды\EURRUB_long_min.txt";
-            //  expert.H.add("input_file", expert.savePreparedDataset(sourceDataFile, "<TIME>;<TICKER>;<PER>;<DATE>;<VOL>", true));
-
-            algorithm.h.add("normalize:true");
-            //    algorithm.h.add("input_file", pathPrefix + @"Временные ряды\EURRUB_long_min-dataset-cut.txt");
-            algorithm.h.add("input_file", pathPrefix + @"Временные ряды\EURRUB-dataset.txt");
-            algorithm.h.add("path_prefix", pathPrefix);
-            algorithm.h.add("drop_columns:none");
-            algorithm.h.add("predicted_column_index:4");
-            algorithm.h.add("name:show_train_charts,value:False");
-
-            File.WriteAllText(algorithm.h.getValueByName("json_file_path"), algorithm.h.toJSON(0));
-            agentManager.tasks.Add(new AgentTask("train", algorithm.h));
-            agentManager.doWork();
-
+            mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { algorithmOptimization(); });
         }
 
         public void algorithmOptimization()
@@ -71,10 +54,10 @@ namespace Экспертная_система
             //  expert.H.add("input_file", expert.savePreparedDataset(sourceDataFile, "<TIME>;<TICKER>;<PER>;<DATE>;<VOL>", true));
 
             algorithm.h.add("normalize:true");
-            algorithm.h.add("input_file", pathPrefix + @"Временные ряды\EURRUB_long_min-dataset-cut.txt");
+            algorithm.h.add("input_file", pathPrefix + @"Временные ряды\EURRUB-dataset.txt");
             algorithm.h.add("path_prefix", pathPrefix);
             algorithm.h.add("drop_columns:none");
-            algorithm.h.add("predicted_column_index:4");
+            algorithm.h.add("predicted_column_index:3");
             algorithm.h.add("name:show_train_charts,value:False");
             AO = new AlgorithmOptimization(algorithm, this, 8, 10, 0.5, 500);
             AO.run();
@@ -145,17 +128,20 @@ namespace Экспертная_система
         }
         private void Hyperparameters_Click(object sender, EventArgs e)
         {
+           // algorithm.h = agentManager.tasks[0].h;
             AO.A.draw(0, picBox, this, 15, 150);
+            //algorithm.h.draw(0, picBox, this, 15, 150);
         }
         private void Charts_Click(object sender, EventArgs e)
         {
-            double hidedPart = 0.8;
+            double hidedPart = 0.9;
             vis.enableGrid = true;
+            vis.clear();
             Algorithm a = new LSTM_1(this, "asdasd");
             a.h.add("predicted_column_index:4");
             a.getAccAndStdDev(File.ReadAllLines(@"D:\Anton\Desktop\MAIN\Optimization\LSTM_1\LSTM_1[0]\predictions.txt"));
             vis.addCSV(@"D:\Anton\Desktop\MAIN\Optimization\LSTM_1\LSTM_1[0]\predictions.txt", "realVSpredictions", "<CLOSE>", 1000, hidedPart, -1);
-            vis.addCSV(@"D:\Anton\Desktop\MAIN\Optimization\LSTM_1\LSTM_1[0]\predictions.txt", "realVSpredictions", "<DATEandTIME>", "0.5", 1000, hidedPart, -1);
+           // vis.addCSV(@"D:\Anton\Desktop\MAIN\Optimization\LSTM_1\LSTM_1[0]\predictions.txt", "realVSpredictions", "<DATEandTIME>", "0.5", 1000, hidedPart, -1);
             // vis.addCSV(sourceDataFile, "Real close value", expert.h().getValueByName("predicted_column_index"), 500, split_point + (1 - split_point) * hidedPart, -2);
             vis.addCSV(@"D:\Anton\Desktop\MAIN\Optimization\LSTM_1\LSTM_1[0]\predictions.txt", "realVSpredictions", "LAST_COLUMN", "predictions", 1000, hidedPart, 0);
 

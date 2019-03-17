@@ -17,3 +17,4 @@ C:\Users\anton\Рабочий стол\MAIN\Agent\Экспертная сист�
 C:\Users\anton\Рабочий стол\MAIN\Agent\Экспертная система\obj\Debug\Agent.csproj.CoreCompileInputs.cache
 C:\Users\anton\Рабочий стол\MAIN\Agent\Экспертная система\obj\Debug\Agent.exe
 C:\Users\anton\Рабочий стол\MAIN\Agent\Экспертная система\obj\Debug\Agent.pdb
+D:\Anton\Desktop\MAIN\Agent\Экспертная система\obj\Debug\Agent.csprojResolveAssemblyReference.cache

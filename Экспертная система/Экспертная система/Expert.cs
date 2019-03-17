@@ -810,47 +810,4 @@ namespace Экспертная_система
         }
     }
 }
-/* double[,] csvToDoubleArray(string[] csv)
-         { }
-         string[] doubleArrayToCSV(double[,] doubleArray)
-         { }*/
 
-/*
-         inputVector = new double[allLines.Length - windowSie, windowSie, allLines[1].Split(',').Length];
-         //формирование входного вектора начинается с позиции последней строки первого окна
-         //c учётом того, что первая строка - шапка таблицы!!!!!!!!!!!!!!!!!!!!!
-
-         //запись в БД
-         // int inputVectorID = Algorithms[a].h.add("name:inputVector,count:" + (allLines.Length - windowSie).ToString());
-
-         for (int i = windowSie; i < allLines.Length; i++)
-         {   //запись в БД
-             //  int windowID = Algorithms[a].h.addByParentId(inputVectorID, "name:" + (i - windowSie + 1).ToString() + "stWindow,count:"+ windowSie);
-
-             //затем от этой позиции заполняется первое окно
-             for (int j = 0; j < windowSie; j++)
-             {     //запись в БД
-                   // int lineID = Algorithms[a].h.addByParentId(windowID, "name:" + (j + 1).ToString() + "stLine,count:" + allLines[1].Split(',').Length );
-                 string[] features = allLines[i - windowSie + 1 + j].Split(';');
-                 for (int k = 0; k < features.Length; k++)
-                 {   //запись в БД
-                     // Algorithms[a].h.addLeafByParentId(lineID, featuresNames[k] + ":" + features[k]);
-                     try
-                     {
-                         inputVector[i - windowSie, j, k] = Convert.ToDouble(features[k]);
-                     }
-                     catch
-                     {
-                         try
-                         {
-                             inputVector[i - windowSie, j, k] = Convert.ToDouble(features[k].Replace('.', ','));
-                         }
-                         catch
-                         {
-
-                             inputVector[i - windowSie, j, k] = 0;
-                         }
-                     }
-                 }
-             }
-         }   */

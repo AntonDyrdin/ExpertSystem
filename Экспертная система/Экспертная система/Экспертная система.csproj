@@ -48,6 +48,7 @@
     <Compile Include="AgentManager.cs" />
     <Compile Include="Algorithm.cs" />
     <Compile Include="AlgorithmOptimization.cs" />
+    <Compile Include="DecisionMakingSystem.cs" />
     <Compile Include="Expert.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>

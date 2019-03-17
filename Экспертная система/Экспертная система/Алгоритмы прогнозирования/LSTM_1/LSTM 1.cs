@@ -15,11 +15,11 @@ namespace Экспертная_система
             int NNscructNodeId = h.add("name:NN_sctruct");
 
             int _1stLayer = h.addByParentId(NNscructNodeId, "name:layer1,value:LSTM");
-            h.addVariable(_1stLayer, "neurons_count", 2, 10, 1, new System.Random().Next(2, 10));
+            h.addVariable(_1stLayer, "neurons_count", 2, 10, 1, 9);
             h.addVariable(_1stLayer, "activation", "sigmoid", "sigmoid,linear");
 
             int _2stLayer = h.addByParentId(NNscructNodeId, "name:layer2,value:Dense");
-            h.addVariable(_2stLayer, "neurons_count", 2, 10, 1, new System.Random().Next(2, 10));
+            h.addVariable(_2stLayer, "neurons_count", 2, 10, 1, 10);
             h.addVariable(_2stLayer, "activation", "sigmoid", "sigmoid,linear");
 
             int _3stLayer = h.addByParentId(NNscructNodeId, "name:layer3,value:Dense");
@@ -31,10 +31,10 @@ namespace Экспертная_система
             h.addVariable(0, "number_of_epochs", 1, 10, 1, 1);
             h.add("start_point:0");
             h.add("split_point:0.9");
-            h.addVariable(0,"batch_size", 10, 300, 1, 100);
+            h.addVariable(0,"batch_size", 10, 300, 1, 43);
             h.add("name:loss,value:mean_squared_error");
             h.add("name:optimizer,value:adam");
-            h.addVariable(0, "window_size", 2, 120, 1, new System.Random().Next(2, 120));
+            h.addVariable(0, "window_size", 2, 120, 1,102);
         }
         public override void Open(Hyperparameters h)
         {

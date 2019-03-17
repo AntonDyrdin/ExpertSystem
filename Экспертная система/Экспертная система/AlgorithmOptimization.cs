@@ -54,7 +54,7 @@ namespace Экспертная_система
 
             //добавление переменных в  MultiParameterVisualizer
             for (int i = 0; i < population_value; i++)
-                variablesVisualizer.parameters[0].functions.Add(new Function(" [" + i.ToString() + "]", valueToColor(0,population_value,population_value-i-1)));
+                variablesVisualizer.parameters[0].functions.Add(new Function(" [" + i.ToString() + "]", valueToColor(0, population_value, population_value - i - 1)));
             recurciveVariableAdding(algorithm.h, 0, name + "[0]");
             //добавление первых точек в  MultiParameterVisualizer
             // variableChangeMonitoring();
@@ -69,9 +69,9 @@ namespace Экспертная_система
             double G = 0;
             double B = 0;
 
-            R = (max-val) / (max - min) * 255; 
+            R = (max - val) / (max - min) * 255;
             G = (Math.Abs(((max + min) / 2) - val)) / ((max + min) / 2) * 255;
-            B =   (val - min) / (max - min) * 255;
+            B = (val - min) / (max - min) * 255;
 
             return Color.FromArgb(255, Convert.ToInt32(R), Convert.ToInt32(G), Convert.ToInt32(B));
         }
@@ -125,34 +125,32 @@ namespace Экспертная_система
                 for (int i = 0; i < mutation_rate; i++)
                 { mutation(); }
 
-                if (agentManager.agents.Count == 0)
+                /*    if (agentManager.agents.Count == 0)
+                    {
+                        for (int i = Convert.ToInt16(Math.Round(population_value * elite_ratio)); i < population_value; i++)
+                        {
+                            algorithm.h = new Hyperparameters(population[i].toJSON(0), form1);
+                            algorithm.train().Wait();
+                            population[i] = new Hyperparameters(algorithm.h.toJSON(0), form1);
+                            File.WriteAllText(population[i].getValueByName("json_file_path"), population[i].toJSON(0), System.Text.Encoding.Default);
+                        }
+                    }
+                    else
+                    {  */
+                for (int i = Convert.ToInt16(Math.Round(population_value * elite_ratio)); i < population_value; i++)
                 {
-                    for (int i = Convert.ToInt16(Math.Round(population_value * elite_ratio)); i < population_value; i++)
-                    {
-                        algorithm.h = new Hyperparameters(population[i].toJSON(0), form1);
-                        algorithm.train().Wait();
-                        population[i] = new Hyperparameters(algorithm.h.toJSON(0), form1);
-                        File.WriteAllText(population[i].getValueByName("json_file_path"), population[i].toJSON(0), System.Text.Encoding.Default);
-                    }
+                    agentManager.tasks.Add(new AgentTask("train", population[i]));
                 }
-                else
+
+                Task.Factory.StartNew(() => { agentManager.work(); }).Wait();
+
+                for (int i = Convert.ToInt16(Math.Round(population_value * elite_ratio)); i < population_value; i++)
                 {
-                    for (int i = Convert.ToInt16(Math.Round(population_value * elite_ratio)); i < population_value; i++)
-                    {
-                        agentManager.tasks.Add(new AgentTask("train", population[i]));  
-                    }
-
-                    while (agentManager.status != "done")
-                    {
-                       System.Threading.Thread.Sleep(100);
-                    }
-
-                    for (int i = Convert.ToInt16(Math.Round(population_value * elite_ratio)); i < population_value; i++)
-                    {
-                        population[i] = agentManager.tasks[i - Convert.ToInt16(Math.Round(population_value * elite_ratio))].h ;
-                        File.WriteAllText(population[i].getValueByName("json_file_path"), population[i].toJSON(0), System.Text.Encoding.Default);
-                    }
+                    population[i] = agentManager.tasks[i - Convert.ToInt16(Math.Round(population_value * elite_ratio))].h;
+                    File.WriteAllText(population[i].getValueByName("json_file_path"), population[i].toJSON(0), System.Text.Encoding.Default);
                 }
+                agentManager.tasks.Clear();
+                // }
 
                 // сортировка по точности
                 string temp;

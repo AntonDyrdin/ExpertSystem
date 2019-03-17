@@ -26,35 +26,46 @@ namespace Экспертная_система
             tasks = new List<AgentTask>();
             agents = new List<Agent>();
         }
+
         public void doWork()
         {
-            searchForAgentsTask = Task.Factory.StartNew(() => { work(); });
+            Task working = Task.Factory.StartNew(() => { work(); });
         }
+
         public void work()
         {
             bool isWorkDone = false;
+            bool anyTasks = false;
             while (!isWorkDone)
             {
+                anyTasks = false;
                 foreach (AgentTask task in tasks)
                 {
                     if (task.status == "undone")
-                        isWorkDone = false;
+                        anyTasks = true;
                 }
-                foreach (AgentTask task in tasks)
-                {
-                    if (task.status == "undone")
+                if (anyTasks)
+                    foreach (AgentTask task in tasks)
                     {
-                        foreach (Agent agent in agents)
+                        if (task.status == "undone")
                         {
-                            if (agent.status == "free")
+                            foreach (Agent agent in agents)
                             {
-                                agent.task = task;
+                                if (agent.status == "free")
+                                {
+                                    agent.task = task;
+                                    agent.status = "busy";
+                                    task.status = "working";
+                                    break;
+                                }
                             }
                         }
                     }
-                }
+                else
+                    isWorkDone = true;
                 System.Threading.Thread.Sleep(1000);
             }
+            status = "done";
         }
 
         public void searchForAgents()
@@ -72,7 +83,7 @@ namespace Экспертная_система
                     TcpClient client = TCPListener.AcceptTcpClient();
                     Agent clientObject = new Agent(client, form1);
                     agents.Add(clientObject);
-                    log("Найден новый агент:" + client.Client.LocalEndPoint.ToString());
+                    log("Найден новый агент:" + clientObject.client.Client.LocalEndPoint.ToString());
                     // создаем новый поток для обслуживания нового клиента
                     Thread clientThread = new Thread(new ThreadStart(clientObject.Process));
                     clientThread.Start();
@@ -126,7 +137,7 @@ namespace Экспертная_система
             {
                 if (task != null)
                 {
-                    if (task.status == "undone")
+                    if (task.status != "done")
                     {
                         if (task.type == "train")
                         {
@@ -135,31 +146,33 @@ namespace Экспертная_система
                             sendCommand(writer, "train");
 
                             sendFile(writer, task.h.getValueByName("json_file_path"));
-                            System.Threading.Thread.Sleep(1000);
+                            System.Threading.Thread.Sleep(100);
                             sendFile(writer, task.h.getValueByName("train_script_path"));
-                            System.Threading.Thread.Sleep(1000);
+                            System.Threading.Thread.Sleep(100);
                             sendFile(writer, task.h.getValueByName("input_file"));
-                            System.Threading.Thread.Sleep(1000);
+                            System.Threading.Thread.Sleep(100);
                             var trainingReport = recieveCommand(reader);
                             // log(trainingReport);
                             if (!trainingReport.Contains("Произошла ошибка"))
                             {
                                 recieveFile(reader, task.h.getValueByName("json_file_path"));
-                                System.Threading.Thread.Sleep(1000);
+                                System.Threading.Thread.Sleep(100);
                                 recieveFile(reader, task.h.getValueByName("predictions_file_path"));
-                                System.Threading.Thread.Sleep(1000);
+                                System.Threading.Thread.Sleep(100);
                                 recieveFile(reader, task.h.getValueByName("save_folder") + "weights.h5");
-                                System.Threading.Thread.Sleep(1000);
+                                System.Threading.Thread.Sleep(100);
                                 Hyperparameters hTemp = new Hyperparameters(File.ReadAllText(task.h.getValueByName("json_file_path"), Encoding.Default), form1);
                                 hTemp.setValueByName("json_file_path", task.h.getValueByName("json_file_path"));
                                 hTemp.setValueByName("predictions_file_path", task.h.getValueByName("predictions_file_path"));
                                 hTemp.setValueByName("save_folder", task.h.getValueByName("save_folder"));
                                 hTemp.setValueByName("train_script_path", task.h.getValueByName("train_script_path"));
+                                hTemp.setValueByName("get_prediction_script_path", task.h.getValueByName("get_prediction_script_path"));
                                 hTemp.setValueByName("input_file", task.h.getValueByName("input_file"));
                                 File.WriteAllText(hTemp.getValueByName("json_file_path"), hTemp.toJSON(0), Encoding.Default);
-                                task.h.fromJSON(hTemp.toJSON(0), 0);
+                                task.h = new Hyperparameters(hTemp.toJSON(0), form1);
 
                                 task.status = "done";
+                                status = "free";
                             }
                             else
                             {
@@ -198,7 +211,7 @@ namespace Экспертная_система
         }
         void sendFile(BinaryWriter writer, string path)
         {
-            log("SEND: "+ path);
+            log("SEND: " + path);
             writer.Write(Encoding.Default.GetString(File.ReadAllBytes(path)));
         }
         void recieveFile(BinaryReader reader, string savePath)
@@ -208,66 +221,7 @@ namespace Экспертная_система
             File.WriteAllBytes(savePath, file);
             log("RECIEVE: " + savePath);
         }
-        private void send(NetworkStream stream, string message)
-        {
-            var data = Encoding.Default.GetBytes(message);
-            stream.Write(data, 0, data.Length);
-            //  log("send: " + message);
-        }
-        private byte[] recieveBytes(NetworkStream stream)
-        {
-            byte[] bytes;
-            waitForBytes:
-            if (stream.DataAvailable)
-            {
-                byte[] data = new byte[64];
-                StringBuilder builder = new StringBuilder();
-                int bytesCount = 0;
-                do
-                {
-                    bytesCount = stream.Read(data, 0, data.Length);
-                    builder.Append(Encoding.Default.GetString(data, 0, bytesCount));
-                    System.Threading.Thread.Sleep(50);
-                }
-                while (stream.DataAvailable);
 
-                string message = builder.ToString();
-                bytes = Encoding.Default.GetBytes(message);
-                //     log("recieve: bytes");          
-            }
-            else
-            {
-                goto waitForBytes;
-            }
-            return bytes;
-        }
-        private string recieve(NetworkStream stream)
-        {
-            string message;
-
-            waitForMessage:
-            if (stream.DataAvailable)
-            {
-                byte[] data = new byte[64];
-                StringBuilder builder = new StringBuilder();
-                int bytes = 0;
-                do
-                {
-                    bytes = stream.Read(data, 0, data.Length);
-                    builder.Append(Encoding.Default.GetString(data, 0, bytes));
-                }
-                while (stream.DataAvailable);
-
-                message = builder.ToString();
-                //log("RECIEVE: " + message);
-                //   log("recieve: " + message);  
-            }
-            else
-            {
-                goto waitForMessage;
-            }
-            return message;
-        }
 
         public void log(String s)
         {
