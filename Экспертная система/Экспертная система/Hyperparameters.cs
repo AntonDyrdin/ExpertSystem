@@ -110,10 +110,10 @@ namespace Экспертная_система
         {
             Node newNode = new Node(newNodeIdWillBe, parentID);
             newNode.addAttribute("name", name);
-            newNode.addAttribute("value", value.ToString());
-            newNode.addAttribute("min", min.ToString());
-            newNode.addAttribute("max", max.ToString());
-            newNode.addAttribute("step", step.ToString());
+            newNode.addAttribute("value", value.ToString().Replace(',', '.'));
+            newNode.addAttribute("min", min.ToString().Replace(',','.'));
+            newNode.addAttribute("max", max.ToString().Replace(',', '.'));
+            newNode.addAttribute("step", step.ToString().Replace(',', '.'));
             newNode.addAttribute("variable", "numerical");
 
             nodes.Add(newNode);

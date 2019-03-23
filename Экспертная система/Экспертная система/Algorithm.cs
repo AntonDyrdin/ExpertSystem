@@ -138,11 +138,11 @@ namespace Экспертная_система
                         Continue = true;
 
                         //ПОЛНЫЙ ЛОГ ВЫПОЛНЕНИЯ СКРИПТА
-                        log(script_conclusion);
+                     //   log(script_conclusion);
                         script_conclusion = script_conclusion.Substring(script_conclusion.IndexOf("prediction:") + 11);
 
                         //ТОЛЬКО ПРОГНОЗ
-                        // log(script_conclusion);
+                         log(script_conclusion);
                     }
 
                 }
@@ -341,7 +341,7 @@ namespace Экспертная_система
             return process;
         }
         public abstract void Save();
-        public abstract void Open(Hyperparameters h);
+        public abstract void Open(string jsonPath);
 
         public static void CopyFiles(Hyperparameters h, string source, string destination)
         {

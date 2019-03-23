@@ -39,9 +39,10 @@ def getAttr2(nodeName1,nodeName2,attrName):
 def getAttr2int(nodeName1,nodeName2,attrName):
     return  (int)(jsonObj[baseNodeName][nodeName1][nodeName2][attrName])
 def h3(nodeName1,nodeName2,nodeName3):
-    return  jsonObj[baseNodeName][nodeName1][nodeName2][nodeName3]
+    return  jsonObj[baseNodeName][nodeName1][nodeName2][nodeName3]["value"]
 def h3INT(nodeName1,nodeName2,nodeName3):
-    return  (int)(jsonObj[baseNodeName][nodeName1][nodeName2][nodeName3])
+    return  (int)(jsonObj[baseNodeName][nodeName1][nodeName2][nodeName3]["value"])
+
 #парсинг json файла
 parser = createParser()
 args = parser.parse_args()
@@ -88,12 +89,11 @@ test_y = Dataset_Y[round(Dataset_Y.shape[0] * (split_point)):]
 print("> время чтения данных  : ", getTime())  
 
 model = Sequential()         
-
-model.add(Dense(h3("NN_sctruct","layer1","neurons_count"),input_dim=window_size,activation=h3("NN_sctruct","layer2","activation")))
+model.add(Dense(h3INT("NN_sctruct","layer1","neurons_count"),input_dim=window_size,activation=h3("NN_sctruct","layer1","activation")))
 #model.add(Dropout(0.5))
-model.add(Dense(h3("NN_sctruct","layer2","neurons_count"),activation=h3("NN_sctruct","layer2","activation")))
+model.add(Dense(h3INT("NN_sctruct","layer2","neurons_count"),activation=h3("NN_sctruct","layer2","activation")))
 #model.add(Dropout(0.5))
-model.add(Dense(h3("NN_sctruct","layer3","neurons_count"),activation=h3("NN_sctruct","layer3","activation")))
+model.add(Dense(h3INT("NN_sctruct","layer3","neurons_count"),activation=h3("NN_sctruct","layer3","activation")))
                                                                   
 log("компиляция НС...")
         

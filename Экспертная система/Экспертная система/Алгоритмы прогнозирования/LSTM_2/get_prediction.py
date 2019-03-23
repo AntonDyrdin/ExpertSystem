@@ -77,7 +77,7 @@ while enough==False:
                 i=i+1
             else:
                 is_end=True
-        print(" конец чтения потока")    
+       # print(" конец чтения потока")    
 
 
 
@@ -92,8 +92,8 @@ while enough==False:
 
 
 
-        print(dataset)
-        print(dataset.shape)
+       # print(dataset)
+       # print(dataset.shape)
         X = numpy.zeros((1, window_size,dataset.shape[1]), dtype=float)
         predicted_column_index = (int)(h("predicted_column_index"))
         for j in range(0,window_size):
@@ -102,9 +102,9 @@ while enough==False:
 
 
         predicted = model.predict(X)
-        print(predicted)
+        #print(predicted)
         predicted=predicted-AVG+0.5
         print("AVG: "+(str)(AVG))
         print("session = "+(str)(session))
-        print(predicted)
+       # print(predicted)
         print("prediction:",predicted)

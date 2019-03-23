@@ -12,9 +12,10 @@ namespace Экспертная_система
         public Hyperparameters h;
         public AgentManager agentManager;
         public int maxlogFilesCount = 10;
+        Form1 form1;
         public Infrastructure(Form1 form1)
-        {
-            h = new Hyperparameters(form1, "Infrastructure");
+        {    this.form1= form1;
+             h = new Hyperparameters(form1, "Infrastructure");
 
             form1.logBox.Text += (Environment.MachineName);
             if (Environment.MachineName == "DESKTOP-B3G20T0")
@@ -55,7 +56,11 @@ namespace Экспертная_система
 
             newLog();
 
-            agentManager = new AgentManager(form1);
+          
+        }
+        public void startAgentManager()
+        {   
+            agentManager = new AgentManager(this.form1);
         }
         public Infrastructure(Hyperparameters h, Form1 form1)
         {

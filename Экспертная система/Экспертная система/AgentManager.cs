@@ -25,6 +25,7 @@ namespace Экспертная_система
             searchForAgentsTask = Task.Factory.StartNew(() => { searchForAgents(); });
             tasks = new List<AgentTask>();
             agents = new List<Agent>();
+         
         }
 
         public void doWork()
@@ -73,17 +74,18 @@ namespace Экспертная_система
             try
             {
                 // TCPListener = new TcpListener(IPAddress.Parse("127.0.0.1"), port);
-                log(Dns.GetHostByName(Dns.GetHostName()).AddressList[0].ToString());
+                log("IP: "+Dns.GetHostByName(Dns.GetHostName()).AddressList[0].ToString());
                 TCPListener = new TcpListener(Dns.GetHostByName(Dns.GetHostName()).AddressList[0], port);
                 TCPListener.Start();
-                log("Ожидание подключений...");
+                log("Менеджер агентов запущен");
+               // log("Ожидание подключений...");
 
                 while (true)
                 {
                     TcpClient client = TCPListener.AcceptTcpClient();
                     Agent clientObject = new Agent(client, form1);
                     agents.Add(clientObject);
-                    log("Найден новый агент:" + clientObject.client.Client.LocalEndPoint.ToString());
+                    log("Подключён агент");
                     // создаем новый поток для обслуживания нового клиента
                     Thread clientThread = new Thread(new ThreadStart(clientObject.Process));
                     clientThread.Start();

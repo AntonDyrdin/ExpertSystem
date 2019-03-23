@@ -40,6 +40,12 @@ def getAttr2(nodeName1,nodeName2,attrName):
 
 def getAttr2int(nodeName1,nodeName2,attrName):
     return  (int)(jsonObj[baseNodeName][nodeName1][nodeName2][attrName])
+def h3(nodeName1,nodeName2,nodeName3):
+    return  jsonObj[baseNodeName][nodeName1][nodeName2][nodeName3]["value"]
+def h3INT(nodeName1,nodeName2,nodeName3):
+    return  (int)(jsonObj[baseNodeName][nodeName1][nodeName2][nodeName3]["value"])
+def h3FLOAT(nodeName1,nodeName2,nodeName3):
+    return  (float)(jsonObj[baseNodeName][nodeName1][nodeName2][nodeName3]["value"])
 
 parser = createParser()
 args = parser.parse_args()
@@ -82,13 +88,13 @@ print("> время чтения данных  : ", getTime())
 
 model = Sequential()         
 
-
-model.add(LSTM(getAttr2int("NN_sctruct","layer1","neurons_count"),return_sequences=True, input_shape=(train_X.shape[1], train_X.shape[2])))
-model.add(Dropout((float)(getAttr2("NN_sctruct","layer2","Dropout"))))
-model.add(LSTM(getAttr2int("NN_sctruct","layer3","neurons_count"),return_sequences=False,activation=getAttr2("NN_sctruct","layer3","activation")))
-model.add(Dropout((float)(getAttr2("NN_sctruct","layer4","Dropout"))))
-model.add(Dense(getAttr2int("NN_sctruct","layer5","neurons_count")))
-model.add(Dense(getAttr2int("NN_sctruct","layer6","neurons_count"),activation=getAttr2("NN_sctruct","layer5","activation")))
+model.add(LSTM(h3INT("NN_sctruct","layer1","neurons_count"),return_sequences=True, input_shape=(train_X.shape[1], train_X.shape[2])))
+model.add(Dropout(h3FLOAT("NN_sctruct","layer2","dropout")))
+model.add(LSTM(h3INT("NN_sctruct","layer3","neurons_count"),return_sequences=False,activation=h3("NN_sctruct","layer3","activation")))
+model.add(Dropout(h3FLOAT("NN_sctruct","layer4","dropout")))
+model.add(Dense(h3INT("NN_sctruct","layer5","neurons_count")))
+model.add(Dropout(h3FLOAT("NN_sctruct","layer6","dropout")))
+model.add(Dense(1,activation=h3("NN_sctruct","layer7","activation")))
                                                                   
 log("компиляция НС...")
         
@@ -125,7 +131,7 @@ avg = sum / predicted.shape[0]
 
 for i in range(0,test_X.shape[0]):
     predicted[i,0] = predicted[i,0] - avg
-    predicted[i,0] = predicted[i,0] * 100
+    predicted[i,0] = predicted[i,0] * 1000
     predicted[i,0] = predicted[i,0] + 0.5
 predictionsFile = open(h("predictions_file_path"), 'w')
 head = ''

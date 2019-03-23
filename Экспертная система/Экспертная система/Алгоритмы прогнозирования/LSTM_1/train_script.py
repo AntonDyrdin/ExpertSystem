@@ -45,6 +45,8 @@ def h3(nodeName1,nodeName2,nodeName3):
     return  jsonObj[baseNodeName][nodeName1][nodeName2][nodeName3]["value"]
 def h3INT(nodeName1,nodeName2,nodeName3):
     return  (int)(jsonObj[baseNodeName][nodeName1][nodeName2][nodeName3]["value"])
+def h3FLOAT(nodeName1,nodeName2,nodeName3):
+    return  (float)(jsonObj[baseNodeName][nodeName1][nodeName2][nodeName3]["value"])
 
 parser = createParser()
 args = parser.parse_args()
@@ -88,10 +90,10 @@ print("> время чтения данных  : ", getTime())
 model = Sequential()         
 
 model.add(LSTM(h3INT("NN_sctruct","layer1","neurons_count"), input_shape=(train_X.shape[1], train_X.shape[2])))
-model.add(Dropout(0.2))
-model.add(Dense(h3INT("NN_sctruct","layer2","neurons_count"),activation=h3("NN_sctruct","layer2","activation")))
-model.add(Dropout(0.2))
+model.add(Dropout(h3FLOAT("NN_sctruct","layer2","dropout")))
 model.add(Dense(h3INT("NN_sctruct","layer3","neurons_count"),activation=h3("NN_sctruct","layer3","activation")))
+model.add(Dropout(h3FLOAT("NN_sctruct","layer4","dropout")))
+model.add(Dense(1,activation=h3("NN_sctruct","layer5","activation")))
                                                                   
 log("компиляция НС...")
         

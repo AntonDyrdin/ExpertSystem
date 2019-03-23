@@ -151,8 +151,8 @@ namespace Экспертная_система
                         expert.algorithms.Add(new LSTM_2(form1, "LSTM_2"));
                     if (algorithmBranches[i].name() == "ANN_1")
                         expert.algorithms.Add(new ANN_1(form1, "ANN_1"));
-                    expert.algorithms[expert.algorithms.Count - 1].Open(new Hyperparameters(expert.H.toJSON(algorithmBranches[i].ID), form1));
-
+                    expert.algorithms[expert.algorithms.Count - 1].h = new Hyperparameters(expert.H.toJSON(algorithmBranches[i].ID), form1);
+                    expert.algorithms[expert.algorithms.Count - 1].modelName = expert.algorithms[expert.algorithms.Count - 1].h.getValueByName("model_name");
                     //определение пути сохранения
                     //   population[i].prediction_Algorithms[j].get_Hyperparameters().set_parameter_by_name("save_folder",
                     //      @"D:\main\experts\" + name + "\\temp" + name + " [" + i.ToString() + ']' + "\\" + population[i].prediction_Algorithms[j].get_name() + " [" + j.ToString() + ']');

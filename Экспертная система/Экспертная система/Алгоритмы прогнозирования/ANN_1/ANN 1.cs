@@ -17,25 +17,33 @@ namespace Экспертная_система
             //СТРУКТУРА НЕЙРОСЕТИ//
             ///////////////////////
             int NNscructNodeId = h.add("name:NN_sctruct");
-            h.addByParentId(NNscructNodeId, "name:layer1,value:Dense,neurons_count:" + window_size.ToString());
-            h.addByParentId(NNscructNodeId, "name:layer2,value:Dense,neurons_count:" + new System.Random().Next(1, window_size).ToString() + ",activation:sigmoid");
-            h.addByParentId(NNscructNodeId, "name:layer3,value:Dense,neurons_count:1,activation:sigmoid");
+            int _1stLayer = h.addByParentId(NNscructNodeId, "name:layer1,value:Dense");
+            h.addByParentId(_1stLayer, "neurons_count:"+ window_size.ToString());
+            h.addVariable(_1stLayer, "activation", "sigmoid", "sigmoid,linear");
+
+            int _2stLayer = h.addByParentId(NNscructNodeId, "name:layer2,value:Dense");
+            h.addVariable(_2stLayer, "neurons_count", 2, 100, 1, 10);
+            h.addVariable(_2stLayer, "activation", "sigmoid", "sigmoid,linear");
+
+            int _3stLayer = h.addByParentId(NNscructNodeId, "name:layer3,value:Dense");
+            h.addByParentId(_3stLayer, "neurons_count:1");
+            h.addVariable(_3stLayer, "activation", "sigmoid", "sigmoid,linear");
+
             //////////////////////
             //ПАРАМЕТРЫ ОБУЧЕНИЯ//
             //////////////////////
-            h.add("number_of_epochs:10");
-            h.add("start_point:0.3");
-            h.add("split_point:0." + new System.Random().Next(6, 95).ToString());
-            h.add("batch_size:" + new System.Random().Next(3, 300).ToString());
+              h.addVariable(0, "number_of_epochs", 1, 10, 1, 1);
+            h.add("start_point:0");
+            h.add("split_point:0.9");
+            h.addVariable(0,"batch_size", 10, 300, 1, 43);
             h.add("name:loss,value:mean_squared_error");
             h.add("name:optimizer,value:adam");
-            h.add("window_size:" + window_size.ToString());
+            h.addVariable(0, "window_size", 2, 120, 1,102);
         }
-        public override void Open(Hyperparameters h)
+        public override void Open(string jsonPath)
         {
-            this.h = h;
+            this.h = new Hyperparameters(File.ReadAllText(jsonPath, System.Text.Encoding.Default), form1);
             modelName = getValueByName("model_name");
-            window_size = System.Convert.ToInt32(getValueByName("window_size"));
         }
         public override void Save()
         {

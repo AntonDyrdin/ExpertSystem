@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
+using System.Drawing;
 namespace Экспертная_система
 {
     [Serializable]
@@ -34,7 +35,7 @@ namespace Экспертная_система
         //стоит на ВТОРОМ месте в валютной паре
         //по команде BUY значение этого депозита должно уменьшаться  пропорционально цене базовой вылюты
         //по команде SELL значение этого депозита должно расти   пропорционально цене базовой вылюты
-        public double deposit2 = 500;
+        public double deposit2 = 5000;
 
         public List<double> deposit1History;
         public List<double> deposit2History;
@@ -43,6 +44,7 @@ namespace Экспертная_система
         public double[] committeeResponse;
         public string presentLine;
         public List<string> report;
+        public DecisionMakingSystem DMS;
         public void load(string expertName, Form1 form1)
         {
             this.form1 = form1;
@@ -53,6 +55,16 @@ namespace Экспертная_система
             committeeNodeID = H.add("name:committee");
             this.expertName = expertName;
             report = new List<string>();
+
+            DMS = new DecisionMakingSystem(form1);
+            DMS.addParameter("A[0]", " ,|||||");
+            DMS.addParameter("A[1]", " ,|||||");
+            DMS.addParameter("A[2]", " ,|||||");
+            DMS.defaultActions.Add(new DMSAction("buy"));
+            DMS.defaultActions.Add(new DMSAction("sell"));
+            DMS.defaultActions.Add(new DMSAction("nothing"));
+            DMS.generateStates();
+
         }
         public Expert(string expertName, Form1 form1)
         {
@@ -71,6 +83,36 @@ namespace Экспертная_система
             load(expertName, form1);
         }
 
+        public string getStateStr()
+        {
+            string stateInString = "A[0]:" + committeeResponse[0].ToString();
+            for (int i = 1; i < committeeResponse.Length; i++)
+            {
+                stateInString += ",A[" + i.ToString() + "]:" + committeeResponse[i].ToString();
+            }
+            return stateInString;
+        }
+
+        //возвращает  действие, о котором было принято решение
+        public string getDecision(double[] committeeResponse)
+        {
+
+
+            return DMS.getAction(getStateStr()).type;
+            /* 
+             double decision = 0;
+             double sum = 0;
+             for (int i = 0; i < algorithms.Count; i++)
+             {
+                 sum += committeeResponse[i];
+             }
+             decision = sum / algorithms.Count;
+             if (decision > 0.5)
+                 return "buy";
+             if (decision < 0.5)
+                 return "sell";
+             return "nothing";  */
+        }
         public void trainAllAlgorithms(bool deleteLowAccModels)
         {
             Task[] trainTasks = new Task[algorithms.Count];
@@ -138,24 +180,7 @@ namespace Экспертная_система
             }
             return committeeResponse;
         }
-        //возвращает  действие, о котором было принято решение
-        public string getDecision(double[] committeeResponse)
-        {
-            //Среднее арифметическое прогнозов алгоритмов
-            double decision = 0;
-            double sum = 0;
 
-            for (int i = 0; i < algorithms.Count; i++)
-            {
-                sum += committeeResponse[i];
-            }
-            decision = sum / algorithms.Count;
-            if (decision > 0.5)
-                return "buy";
-            if (decision < 0.5)
-                return "sell";
-            return "nothing";
-        }
         public string test(DateTime date1, DateTime date2, string rawDatasetFilePath)
         {
             closeValueHistory = new List<double>();
@@ -167,7 +192,7 @@ namespace Экспертная_система
             presentLine = "";
             double closeValue = 0;
             string action = "";
-            string reportHead = "<presentDate>;<deposit1>;<deposit2>;<action>;<closeValue>;";
+            string reportHead = "<presentDate>;<deposit1>;<deposit2>;<action>;<reward>;<closeValue>;";
             foreach (Algorithm algorithm in algorithms)
                 reportHead += "<" + algorithm.modelName + ">;";
             report.Add(reportHead);
@@ -225,6 +250,8 @@ namespace Экспертная_система
                     }
                     string rawInputLine = input[input.Length - 1];
 
+
+                    string stateInString = "";
                     if (dateExist)
                     {
                         // ГЕНЕРАЦИЯ МАТРИЦЫ INPUT
@@ -246,7 +273,9 @@ namespace Экспертная_система
                             report[0] += input[0];
                         presentLine = input[input.Length - 1];
 
-
+                        //обновление состояния
+                        DMS.setActualState(getStateStr());
+                        //Отправка запроса к системе принятия решений
                         action = getDecision(committeeResponse);
 
                         if (action == "buy")
@@ -261,8 +290,6 @@ namespace Экспертная_система
                                 else
                                 {
                                     log("Основной депозит исчерпан! Не возможно купить базовую валюту.");
-                                    log("deposit1 = " + deposit1.ToString());
-                                    log("deposit2 = " + deposit2.ToString());
                                 }
                             }
                             else
@@ -282,13 +309,11 @@ namespace Экспертная_система
                                 else
                                 {
                                     log("Депозит базовой валюты исчерпан (состояние выхода с рынка). Не возможно продать базовую валюту.");
-                                    log("deposit1 = " + deposit1.ToString());
-                                    log("deposit2 = " + deposit2.ToString());
                                 }
                             }
                             else
                             {
-                                log("closeValue почему-то равно нулю!");
+                                log("closeValue почему-то равно нулю!",Color.Red);
                             }
                         }
 
@@ -296,8 +321,24 @@ namespace Экспертная_система
                     else
                     {
                         action = "dateDoesn'tExist";
-                        log("дата " + dateStr + " не найдена в файле " + rawDatasetFilePath);
+                     //   log("дата " + dateStr + " не найдена в файле " + rawDatasetFilePath);
                     }
+                    deposit1History.Add(deposit1);
+                    deposit2History.Add(deposit2);
+
+                    //обновление состояния
+                    DMS.setActualState(getStateStr());
+                    //вознаграждение системы принятия решений
+                    double reward = 0;
+                    if (deposit1History.Count > 1)
+                    {
+                        reward = (closeValue * (deposit1History[deposit1History.Count - 1] - deposit1History[deposit1History.Count - 2])) + (deposit2History[deposit2History.Count - 1] - deposit2History[deposit2History.Count - 2]);
+                       // reward =  (deposit2History[deposit2History.Count - 1] - deposit2History[deposit2History.Count - 2]);
+
+                    }
+                    DMS.setR(reward);
+                    ////////////////////////////////////////
+
                     actionHistory.Add(action);
                     //print committee response
                     string comRespStr = "committee response: ";
@@ -307,14 +348,15 @@ namespace Экспертная_система
                     for (int i = 0; i < committeeResponse.Length; i++)
                         committeeResponseReportLine += committeeResponse[i] + ";";
                     log(comRespStr);
-                    log("date: " + date1.ToString());
+                //  log("date: " + date1.ToString());
                     log("deposit1: " + deposit1.ToString());
                     log("deposit2: " + deposit2.ToString());
-                    log("action: " + action);
-                    log("closeValue: " + closeValue.ToString());
-                    log("presentLine: " + presentLine);
-
-                    reportLine += date1.ToString() + ';' + deposit1.ToString() + ';' + deposit2.ToString() + ';' + action + ';' + closeValue.ToString() + ';' + committeeResponseReportLine + presentLine;
+                  //  log("action: " + action);
+                    log("reward: " + reward.ToString());
+                  //  log("closeValue: " + closeValue.ToString());
+                 //   log("presentLine: " + presentLine);
+                       
+                    reportLine += date1.ToString() + ';' + deposit1.ToString() + ';' + deposit2.ToString() + ';' + action + ';' + reward.ToString() + ';' + closeValue.ToString() + ';' + committeeResponseReportLine + presentLine;
                     report.Add(reportLine);
 
                     if (period == "day")
@@ -545,8 +587,8 @@ namespace Экспертная_система
                     var algorithmBranches = expert.H.getNodesByparentID(expert.committeeNodeID);
                     foreach (Node algorithmBranch in algorithmBranches)
                     {
-                       // Type t = Type.GetType("Namespace." + algorithmBranch.name());
-                      //  object cc = Activator.CreateInstance(t);
+                        // Type t = Type.GetType("Namespace." + algorithmBranch.name());
+                        //  object cc = Activator.CreateInstance(t);
 
                         if (algorithmBranch.name() == "LSTM_1")
                             expert.algorithms.Add(new LSTM_1(form1, "LSTM_1"));
@@ -554,7 +596,9 @@ namespace Экспертная_система
                             expert.algorithms.Add(new LSTM_2(form1, "LSTM_2"));
                         if (algorithmBranch.name() == "ANN_1")
                             expert.algorithms.Add(new ANN_1(form1, "ANN_1"));
-                        expert.algorithms[expert.algorithms.Count - 1].Open(new Hyperparameters(expert.H.toJSON(algorithmBranch.ID), form1));
+
+                        expert.algorithms[expert.algorithms.Count - 1].h = new Hyperparameters(expert.H.toJSON(algorithmBranch.ID), form1);
+                        expert.algorithms[expert.algorithms.Count - 1].modelName = expert.algorithms[expert.algorithms.Count - 1].h.getValueByName("model_name");
                     }
                 }
             }
@@ -568,48 +612,48 @@ namespace Экспертная_система
                 algorithm.Save();
             return path;
         }
-      /*  public double stdDev;
-        public double accuracy;
+        /*  public double stdDev;
+          public double accuracy;
 
-        public void getAccAndStdDev()
-        {
-            var algorithmBranches = H.getNodesByparentID(committeeNodeID);
-            foreach (Node algorithmBranch in algorithmBranches)
-            {
-                predictionsCSV = Expert.skipEmptyLines(predictionsCSV);
-                double sqrtSum = 0;
-                int rightCount = 0;
-                int leftCount = 0;
-                int inc = 0;
-                for (int i = 1; i < predictionsCSV.Length - 1; i++)
-                {
-                    var features = predictionsCSV[i].Split(';');
+          public void getAccAndStdDev()
+          {
+              var algorithmBranches = H.getNodesByparentID(committeeNodeID);
+              foreach (Node algorithmBranch in algorithmBranches)
+              {
+                  predictionsCSV = Expert.skipEmptyLines(predictionsCSV);
+                  double sqrtSum = 0;
+                  int rightCount = 0;
+                  int leftCount = 0;
+                  int inc = 0;
+                  for (int i = 1; i < predictionsCSV.Length - 1; i++)
+                  {
+                      var features = predictionsCSV[i].Split(';');
 
-                    double predictedValue = Convert.ToDouble(predictionsCSV[i].Split(';')[features.Length - 1].Replace('.', ','));
-                    double realValue = Convert.ToDouble(predictionsCSV[i + 1].Split(';')[Convert.ToInt16(h.getValueByName("predicted_column_index"))].Replace('.', ','));
+                      double predictedValue = Convert.ToDouble(predictionsCSV[i].Split(';')[features.Length - 1].Replace('.', ','));
+                      double realValue = Convert.ToDouble(predictionsCSV[i + 1].Split(';')[Convert.ToInt16(h.getValueByName("predicted_column_index"))].Replace('.', ','));
 
-                    if (realValue > 0.5 && predictedValue > 0.5)
-                    { rightCount++; }
-                    else
-                          if (realValue < 0.5 && predictedValue < 0.5)
-                    { rightCount++; }
-                    else
-                        if (realValue > 0.5 && predictedValue < 0.5)
-                    { leftCount++; }
-                    else
-                    if (realValue < 0.5 && predictedValue > 0.5)
-                    { leftCount++; }
-                    sqrtSum += (realValue - predictedValue) * (realValue - predictedValue);
-                    inc++;
+                      if (realValue > 0.5 && predictedValue > 0.5)
+                      { rightCount++; }
+                      else
+                            if (realValue < 0.5 && predictedValue < 0.5)
+                      { rightCount++; }
+                      else
+                          if (realValue > 0.5 && predictedValue < 0.5)
+                      { leftCount++; }
+                      else
+                      if (realValue < 0.5 && predictedValue > 0.5)
+                      { leftCount++; }
+                      sqrtSum += (realValue - predictedValue) * (realValue - predictedValue);
+                      inc++;
 
-                }
-                accuracy = Convert.ToDouble(rightCount) / Convert.ToDouble(rightCount + leftCount) * 100;
-                stdDev = sqrtSum / inc;
-                log("accuracy = " + accuracy.ToString() + " %");
-                log("stdDev = " + Math.Sqrt(stdDev).ToString());
-                h.setValueByName("accuracy", accuracy.ToString());
-            }
-        }  */
+                  }
+                  accuracy = Convert.ToDouble(rightCount) / Convert.ToDouble(rightCount + leftCount) * 100;
+                  stdDev = sqrtSum / inc;
+                  log("accuracy = " + accuracy.ToString() + " %");
+                  log("stdDev = " + Math.Sqrt(stdDev).ToString());
+                  h.setValueByName("accuracy", accuracy.ToString());
+              }
+          }  */
 
         public Hyperparameters h()
         { return algorithms[0].h; }

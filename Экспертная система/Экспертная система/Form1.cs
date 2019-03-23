@@ -36,19 +36,48 @@ namespace Экспертная_система
         {
             I = new Infrastructure(this);
             vis = new MultiParameterVisualizer(picBox, this);
-            agentManager = I.agentManager;
+            I.startAgentManager();
             pathPrefix = I.h.getValueByName("path_prefix");
             log("");
             log("");
 
-            mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { algorithmOptimization(); });
+           mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { buildAndTest(); });
+       //     mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { algorithmOptimization(); });
         }
+        public void buildAndTest()
+        {
+            mainThread = System.Threading.Thread.CurrentThread;
 
+            expert = new Expert("Эксперт 1", this);
+
+            expert.Add(new LSTM_1(this, "LSTM_1[0]"));
+            expert.Add(new LSTM_2(this, "LSTM_2[0]"));
+            expert.Add(new ANN_1(this, "ANN_1[0]"));
+
+            expert.algorithms[0].Open(pathPrefix + @"Optimization\LSTM_1\LSTM_1[0]\json.txt");
+            expert.algorithms[1].Open(pathPrefix + @"Optimization\LSTM_2\LSTM_2[0]\json.txt");
+            expert.algorithms[2].Open(pathPrefix + @"Optimization\ANN_1\ANN_1[0]\json.txt");
+
+            expert.H.add("input_file", pathPrefix + @"Временные ряды\EURRUB-dataset.txt");
+            expert.H.add("path_prefix", pathPrefix);
+            expert.H.add("drop_columns:none");
+            expert.H.add("predicted_column_index:3");
+            expert.H.add("name:show_train_charts,value:False");
+            expert.synchronizeHyperparameters();
+          //  expert.H.draw(0, picBox, this, 15, 150);
+            expert.Save();
+
+            expert.DMS.drawQ();
+            sourceDataFile = pathPrefix + @"Временные ряды\EURRUB.txt";
+       //   expert.test(new DateTime(2010, 3, 1), new DateTime(2010, 5, 30), sourceDataFile);
+
+
+        }
         public void algorithmOptimization()
         {
             expert = new Expert("Эксперт 1", this);
             mainThread = System.Threading.Thread.CurrentThread;
-            algorithm = new LSTM_1(this, "LSTM_1");
+            algorithm = new LSTM_2(this, "LSTM_2");
 
             //  sourceDataFile = pathPrefix + @"Временные ряды\EURRUB_long_min.txt";
             //  expert.H.add("input_file", expert.savePreparedDataset(sourceDataFile, "<TIME>;<TICKER>;<PER>;<DATE>;<VOL>", true));
@@ -59,7 +88,7 @@ namespace Экспертная_система
             algorithm.h.add("drop_columns:none");
             algorithm.h.add("predicted_column_index:3");
             algorithm.h.add("name:show_train_charts,value:False");
-            AO = new AlgorithmOptimization(algorithm, this, 8, 10, 0.5, 500);
+            AO = new AlgorithmOptimization(algorithm, this, 8, 20, 0.25, 500);
             AO.run();
             // algorithm.h.draw(0, picBox, this, 15, 150);
             // algorithm.Save();
@@ -71,7 +100,7 @@ namespace Экспертная_система
             sourceDataFile = pathPrefix + @"Временные ряды\EURRUB.txt";
             expert.H.replaceStringInAllValues(expert.H.getValueByName("path_prefix"), pathPrefix);
             expert.synchronizeHyperparameters();
-            expert.test(new DateTime(2010, 3, 1), new DateTime(2010, 3, 30), sourceDataFile);
+            expert.test(new DateTime(2017, 8, 1), new DateTime(2017, 9, 30), sourceDataFile);
             expert.H.draw(0, picBox, this, 15, 150);
             expert.Save();
         }
@@ -120,51 +149,39 @@ namespace Экспертная_система
             expert.synchronizeHyperparameters();
             expert.H.draw(0, picBox, this, 15, 150);
             expert.Save();
-            /*   try
-               {
-                   Charts_Click(null, null);
-               }
-               catch { }   */
         }
         private void Hyperparameters_Click(object sender, EventArgs e)
         {
-           // algorithm.h = agentManager.tasks[0].h;
-            AO.A.draw(0, picBox, this, 15, 150);
+           // expert.H.draw(0, picBox, this, 15, 150);
+            // algorithm.h = agentManager.tasks[0].h;
+             AO.A.draw(0, picBox, this, 15, 150);
             //algorithm.h.draw(0, picBox, this, 15, 150);
         }
         private void Charts_Click(object sender, EventArgs e)
         {
+
             double hidedPart = 0.9;
             vis.enableGrid = true;
             vis.clear();
             Algorithm a = new LSTM_1(this, "asdasd");
             a.h.add("predicted_column_index:4");
-            a.getAccAndStdDev(File.ReadAllLines(@"D:\Anton\Desktop\MAIN\Optimization\LSTM_1\LSTM_1[0]\predictions.txt"));
-            vis.addCSV(@"D:\Anton\Desktop\MAIN\Optimization\LSTM_1\LSTM_1[0]\predictions.txt", "realVSpredictions", "<CLOSE>", 1000, hidedPart, -1);
-           // vis.addCSV(@"D:\Anton\Desktop\MAIN\Optimization\LSTM_1\LSTM_1[0]\predictions.txt", "realVSpredictions", "<DATEandTIME>", "0.5", 1000, hidedPart, -1);
+            a.getAccAndStdDev(File.ReadAllLines(@"D:\Anton\Desktop\MAIN\Optimization\LSTM_2\LSTM_2[0]\predictions.txt"));
+            vis.addCSV(@"D:\Anton\Desktop\MAIN\Optimization\LSTM_2\LSTM_2[0]\predictions.txt", "realVSpredictions", "<CLOSE>", 1000, hidedPart, -1);
+            // vis.addCSV(@"D:\Anton\Desktop\MAIN\Optimization\LSTM_1\LSTM_1[0]\predictions.txt", "realVSpredictions", "<DATEandTIME>", "0.5", 1000, hidedPart, -1);
             // vis.addCSV(sourceDataFile, "Real close value", expert.h().getValueByName("predicted_column_index"), 500, split_point + (1 - split_point) * hidedPart, -2);
-            vis.addCSV(@"D:\Anton\Desktop\MAIN\Optimization\LSTM_1\LSTM_1[0]\predictions.txt", "realVSpredictions", "LAST_COLUMN", "predictions", 1000, hidedPart, 0);
+            vis.addCSV(@"D:\Anton\Desktop\MAIN\Optimization\LSTM_2\LSTM_2[0]\predictions.txt", "realVSpredictions", "LAST_COLUMN", "predictions", 1000, hidedPart, 0);
 
             vis.refresh();
 
-            /*
-
-
-
-
-   vis.clear();
-   /*  vis.addParameter(expert.dataset1, 2, "dataset1", Color.White, 300);
-     vis.addParameter(expert.dataset2, 2, "dataset2", Color.White, 300);
-     vis.addParameter(expert.dataset3, 2, "dataset3", Color.White, 300); */
-
-            /*    double split_point = Convert.ToDouble(expert.h().getValueByName("split_point").Replace('.', ','));
-
-                vis.addCSV(sourceDataFile, "Real close value", "<CLOSE>", 500, split_point + (1 - split_point) * hidedPart, -2);
-                // vis.addCSV(sourceDataFile, "Real close value", expert.h().getValueByName("predicted_column_index"), 500, split_point + (1 - split_point) * hidedPart, -2);
-                vis.addCSV(expert.algorithms[0].getValueByName("predictions_file_path"), "realVSpredictions", expert.h().getValueByName("predicted_column_index"), "real", 500, hidedPart, -1);
-                vis.addCSV(expert.algorithms[0].getValueByName("predictions_file_path"), "realVSpredictions", "LAST_COLUMN", "predictions", 500, hidedPart, 0);
-
-                vis.refresh(); */
+            /*vis.addParameter(expert.dataset1, 2, "dataset1", Color.White, 300);
+              vis.addParameter(expert.dataset2, 2, "dataset2", Color.White, 300);
+              vis.addParameter(expert.dataset3, 2, "dataset3", Color.White, 300); */
+            /*double split_point = Convert.ToDouble(expert.h().getValueByName("split_point").Replace('.', ','));
+             vis.addCSV(sourceDataFile, "Real close value", "<CLOSE>", 500, split_point + (1 - split_point) * hidedPart, -2);
+             // vis.addCSV(sourceDataFile, "Real close value", expert.h().getValueByName("predicted_column_index"), 500, split_point + (1 - split_point) * hidedPart, -2);
+             vis.addCSV(expert.algorithms[0].getValueByName("predictions_file_path"), "realVSpredictions", expert.h().getValueByName("predicted_column_index"), "real", 500, hidedPart, -1);
+             vis.addCSV(expert.algorithms[0].getValueByName("predictions_file_path"), "realVSpredictions", "LAST_COLUMN", "predictions", 500, hidedPart, 0);
+             vis.refresh(); */
         }
 
 
@@ -172,10 +189,9 @@ namespace Экспертная_система
         {
             visPredictions = new ImgDataset(@"D:\Anton\Desktop\MAIN\Optimization\LSTM_1\LSTM_1[0]\predictions.txt", this);
             visPredictions.drawImgWhithPredictions(@"D:\Anton\Desktop\MAIN\Optimization\LSTM_1\LSTM_1[0]\predictions.txt", "LAST_COLUMN", "0", "1");
-
             /* visPredictions = new ImgDataset(expert.algorithms[0].getValueByName("predictions_file_path"), this);
              visPredictions.drawImgWhithPredictions(expert.algorithms[0].getValueByName("predictions_file_path"), "LAST_COLUMN", expert.h().getValueByName("split_point"), expert.h().getValueByName("predicted_column_index"));
-       */
+             */
         }
 
 
@@ -213,7 +229,7 @@ namespace Экспертная_система
             strings[0] = s;
             File.AppendAllLines(I.logPath, strings);
         }
-        public void log(String s)
+        public void log(string s)
         {
             this.logDelegate = new Form1.LogDelegate(this.delegatelog);
             this.logBox.Invoke(this.logDelegate, this.logBox, s, Color.White);

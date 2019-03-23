@@ -18,13 +18,18 @@ namespace Экспертная_система
             h.addVariable(_1stLayer, "neurons_count", 2, 10, 1, 9);
             h.addVariable(_1stLayer, "activation", "sigmoid", "sigmoid,linear");
 
-            int _2stLayer = h.addByParentId(NNscructNodeId, "name:layer2,value:Dense");
-            h.addVariable(_2stLayer, "neurons_count", 2, 10, 1, 10);
-            h.addVariable(_2stLayer, "activation", "sigmoid", "sigmoid,linear");
+            int _2stLayer = h.addByParentId(NNscructNodeId, "name:layer2,value:Dropout");
+            h.addVariable(_2stLayer, "dropout", 0.01, 0.8, 0.01, 0.1);
 
             int _3stLayer = h.addByParentId(NNscructNodeId, "name:layer3,value:Dense");
-            h.addByParentId(_3stLayer, "neurons_count:1");
+            h.addVariable(_3stLayer, "neurons_count", 2, 10, 1, 10);
             h.addVariable(_3stLayer, "activation", "sigmoid", "sigmoid,linear");
+
+            int _4stLayer = h.addByParentId(NNscructNodeId, "name:layer4,value:Dropout");
+            h.addVariable(_4stLayer, "dropout", 0.01, 0.8, 0.01, 0.1);
+
+            int _5stLayer = h.addByParentId(NNscructNodeId, "name:layer5,value:Dense");
+            h.addVariable(_5stLayer, "activation", "sigmoid", "sigmoid,linear");
             //////////////////////
             //ПАРАМЕТРЫ ОБУЧЕНИЯ//
             //////////////////////
@@ -36,9 +41,9 @@ namespace Экспертная_система
             h.add("name:optimizer,value:adam");
             h.addVariable(0, "window_size", 2, 120, 1,102);
         }
-        public override void Open(Hyperparameters h)
+        public override void Open(string jsonPath)
         {
-            this.h = h;
+            this.h = new Hyperparameters(File.ReadAllText(jsonPath, System.Text.Encoding.Default), form1);
             modelName = getValueByName("model_name");
         }
         public override void Save()

@@ -13,26 +13,47 @@ namespace Экспертная_система
             //СТРУКТУРА НЕЙРОСЕТИ (https://www.youtube.com/watch?v=ftMq5ps503w)
             ///////////////////////
             int NNscructNodeId = h.add("name:NN_sctruct");
-            h.addByParentId(NNscructNodeId, "name:layer1,value:LSTM,neurons_count:10");
-            h.addByParentId(NNscructNodeId, "name:layer2,value:Dropout,Dropout:0.01");
-            h.addByParentId(NNscructNodeId, "name:layer3,value:LSTM,neurons_count:" + new System.Random().Next(50, 100).ToString() + ",activation:sigmoid");
-            h.addByParentId(NNscructNodeId, "name:layer4,value:Dropout,Dropout:0.2");
-            h.addByParentId(NNscructNodeId, "name:layer5,value:Dense,neurons_count:25,activation:sigmoid");
-            h.addByParentId(NNscructNodeId, "name:layer6,value:Dense,neurons_count:1,activation:linear");
+
+            int _1stLayer = h.addByParentId(NNscructNodeId, "name:layer1,value:LSTM");
+            h.addVariable(_1stLayer, "neurons_count", 2, 10, 1, 9);
+            h.addVariable(_1stLayer, "activation", "sigmoid", "sigmoid,linear");
+
+            int _2stLayer = h.addByParentId(NNscructNodeId, "name:layer2,value:Dropout");
+            h.addVariable(_2stLayer, "dropout", 0.01, 0.8, 0.01, 0.1);
+
+            int _3stLayer = h.addByParentId(NNscructNodeId, "name:layer3,value:LSTM");
+            h.addVariable(_3stLayer, "neurons_count", 2, 10, 1, 9);
+            h.addVariable(_3stLayer, "activation", "sigmoid", "sigmoid,linear");
+
+            int _4stLayer = h.addByParentId(NNscructNodeId, "name:layer4,value:Dropout");
+            h.addVariable(_4stLayer, "dropout", 0.01, 0.8, 0.01, 0.1);
+
+            int _5stLayer = h.addByParentId(NNscructNodeId, "name:layer5,value:Dense");
+            h.addVariable(_5stLayer, "neurons_count", 2, 10, 1, 10);
+            h.addVariable(_5stLayer, "activation", "sigmoid", "sigmoid,linear");
+
+            int _6stLayer = h.addByParentId(NNscructNodeId, "name:layer6,value:Dropout");
+            h.addVariable(_6stLayer, "neurons_count", 2, 10, 1, 10);
+            h.addVariable(_6stLayer, "dropout", 0.01, 0.8, 0.01, 0.1);
+
+            int _7stLayer = h.addByParentId(NNscructNodeId, "name:layer7,value:Dense");
+            h.addVariable(_7stLayer, "activation", "sigmoid", "sigmoid,linear");
+
             //////////////////////
             //ПАРАМЕТРЫ ОБУЧЕНИЯ//
             //////////////////////
-            h.add("number_of_epochs:10");
-            h.add("start_point:0.3");
-            h.add("split_point:0.8");
-            h.add("batch_size:" + new System.Random().Next(300, 512).ToString());
-            h.add("name:loss,value:mse");
-            h.add("name:optimizer,value:rmsprop");
-            h.add("window_size:" + new System.Random().Next(2, 30).ToString());
+            h.addVariable(0, "number_of_epochs", 1, 10, 1, 1);
+            h.add("start_point:0");
+            h.add("split_point:0.9");
+            h.addVariable(0, "batch_size", 10, 300, 1, 43);
+            h.add("name:loss,value:mean_squared_error");
+            h.add("name:optimizer,value:adam");
+            h.addVariable(0, "optimizer", "rmsprop", "adam,rmsprop");
+            h.addVariable(0, "window_size", 2, 120, 1, 102);
         }
-        public override void Open(Hyperparameters h)
+        public override void Open(string jsonPath)
         {
-            this.h = h;
+            this.h = new Hyperparameters(File.ReadAllText(jsonPath, System.Text.Encoding.Default), form1);
             modelName = getValueByName("model_name");
         }
         public override void Save()

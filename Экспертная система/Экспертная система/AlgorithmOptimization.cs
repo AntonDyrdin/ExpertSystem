@@ -40,7 +40,7 @@ namespace Экспертная_система
             variablesNames = new List<string>();
             variablesIDs = new List<int>();
 
-            this.agentManager = form1.agentManager;
+            this.agentManager = form1.I.agentManager;
 
             for (int i = 0; i < population_value; i++) { population[i] = new Hyperparameters(algorithm.h.toJSON(0), form1); }
 
@@ -123,34 +123,36 @@ namespace Экспертная_система
 
                 //mutation
                 for (int i = 0; i < mutation_rate; i++)
-                { mutation(); }
+                {
+                    mutation();
+                }
 
-                /*    if (agentManager.agents.Count == 0)
+                if (agentManager.agents.Count == 0)
+                {
+                    for (int i = Convert.ToInt16(Math.Round(population_value * elite_ratio)); i < population_value; i++)
                     {
-                        for (int i = Convert.ToInt16(Math.Round(population_value * elite_ratio)); i < population_value; i++)
-                        {
-                            algorithm.h = new Hyperparameters(population[i].toJSON(0), form1);
-                            algorithm.train().Wait();
-                            population[i] = new Hyperparameters(algorithm.h.toJSON(0), form1);
-                            File.WriteAllText(population[i].getValueByName("json_file_path"), population[i].toJSON(0), System.Text.Encoding.Default);
-                        }
+                        algorithm.h = new Hyperparameters(population[i].toJSON(0), form1);
+                        algorithm.train().Wait();
+                        population[i] = new Hyperparameters(algorithm.h.toJSON(0), form1);
+                        File.WriteAllText(population[i].getValueByName("json_file_path"), population[i].toJSON(0), System.Text.Encoding.Default);
                     }
-                    else
-                    {  */
-                for (int i = Convert.ToInt16(Math.Round(population_value * elite_ratio)); i < population_value; i++)
-                {
-                    agentManager.tasks.Add(new AgentTask("train", population[i]));
                 }
-
-                Task.Factory.StartNew(() => { agentManager.work(); }).Wait();
-
-                for (int i = Convert.ToInt16(Math.Round(population_value * elite_ratio)); i < population_value; i++)
+                else
                 {
-                    population[i] = agentManager.tasks[i - Convert.ToInt16(Math.Round(population_value * elite_ratio))].h;
-                    File.WriteAllText(population[i].getValueByName("json_file_path"), population[i].toJSON(0), System.Text.Encoding.Default);
+                    for (int i = Convert.ToInt16(Math.Round(population_value * elite_ratio)); i < population_value; i++)
+                    {
+                        agentManager.tasks.Add(new AgentTask("train", population[i]));
+                    }
+
+                    Task.Factory.StartNew(() => { agentManager.work(); }).Wait();
+
+                    for (int i = Convert.ToInt16(Math.Round(population_value * elite_ratio)); i < population_value; i++)
+                    {
+                        population[i] = agentManager.tasks[i - Convert.ToInt16(Math.Round(population_value * elite_ratio))].h;
+                        File.WriteAllText(population[i].getValueByName("json_file_path"), population[i].toJSON(0), System.Text.Encoding.Default);
+                    }
+                    agentManager.tasks.Clear();
                 }
-                agentManager.tasks.Clear();
-                // }
 
                 // сортировка по точности
                 string temp;
@@ -204,6 +206,7 @@ namespace Экспертная_система
             {
                 int categoryIndex = r.Next(0, population[individIndex].nodes[variableIndex].getAttributeValue("categories").Split(',').Length);
                 string newValue = population[individIndex].nodes[variableIndex].getAttributeValue("categories").Split(',')[categoryIndex];
+                log("individIndex = " + individIndex.ToString() + "; variableIndex = " + variableIndex.ToString() + " (" + population[individIndex].nodes[variableIndex].name() + ")" + "; newValue = " + newValue.ToString(), Color.White);
                 population[individIndex].nodes[variableIndex].setAttribute("value", newValue);
             }
             if (population[individIndex].nodes[variableIndex].getAttributeValue("variable") == "numerical")
@@ -212,7 +215,7 @@ namespace Экспертная_система
                 {
                     int newValue = r.Next(Convert.ToInt32(population[individIndex].nodes[variableIndex].getAttributeValue("min")), Convert.ToInt32(population[individIndex].nodes[variableIndex].getAttributeValue("max")) + 1);
                     population[individIndex].nodes[variableIndex].setAttribute("value", newValue.ToString());
-                    log("individIndex = " + individIndex.ToString() + "; variableIndex = " + variableIndex.ToString() + "; newValue = " + newValue.ToString(), Color.White);
+                    log("individIndex = " + individIndex.ToString() + "; variableIndex = " + variableIndex.ToString()+" ("+population[individIndex].nodes[variableIndex].name()+")" + "; newValue = " + newValue.ToString(), Color.White);
 
                 }
                 else
@@ -223,6 +226,7 @@ namespace Экспертная_система
                     {
                         newValue = r.NextDouble();
                     }
+                    log("individIndex = " + individIndex.ToString() + "; variableIndex = " + variableIndex.ToString() + " (" + population[individIndex].nodes[variableIndex].name() + ")" + "; newValue = " + newValue.ToString(), Color.White);
                     population[individIndex].nodes[variableIndex].setAttribute("value", newValue.ToString().Replace(',', '.'));
                 }
             }

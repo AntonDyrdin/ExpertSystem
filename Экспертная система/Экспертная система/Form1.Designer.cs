@@ -50,7 +50,7 @@
             this.logBox.ForeColor = System.Drawing.Color.White;
             this.logBox.Location = new System.Drawing.Point(1407, 60);
             this.logBox.Name = "logBox";
-            this.logBox.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
+            this.logBox.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
             this.logBox.Size = new System.Drawing.Size(498, 950);
             this.logBox.TabIndex = 35;
             this.logBox.Text = "";
