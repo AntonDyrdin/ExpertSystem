@@ -251,7 +251,7 @@ namespace Экспертная_система
         {
 
             if (functions.Count > 1)
-                for (int i = 0; i < functions.Count; i++)
+                for (int i = 1; i < functions.Count; i++)
                 {
                     drawLine(functions[i].color, mainFontDepth, Xmax - Xmax / 20, Ymin + Ymax / 30 + i * (mainFontDepth * 1.2), Xmax, Ymin + Ymax / 30 + i * (mainFontDepth * 1.2));
                     drawString(functions[i].label, mainFontDepth, Xmax - Xmax / 20 - functions[i].label.Length * (mainFontDepth * 1.2), Ymin + Ymax / 30 + i * (mainFontDepth * 1.2) - mainFontDepth);

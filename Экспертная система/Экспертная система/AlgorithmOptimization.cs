@@ -90,7 +90,6 @@ namespace Экспертная_система
         }
         public void iteration_of_optimization()
         {
-            //асинхронное обучение индивидов
             if (opt_inc == 1)
             {
                 string new_save_folder = form1.pathPrefix + "Optimization\\" + name + "\\" + name + "[0]" + "\\";

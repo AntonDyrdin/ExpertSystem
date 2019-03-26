@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Threading.Tasks;
 using System.Drawing;
+using System.IO;
+using System.Threading.Tasks;
 namespace Экспертная_система
 {
     [Serializable]
@@ -57,13 +56,7 @@ namespace Экспертная_система
             report = new List<string>();
 
             DMS = new DecisionMakingSystem(form1);
-            DMS.addParameter("A[0]", " ,|||||");
-            DMS.addParameter("A[1]", " ,|||||");
-            DMS.addParameter("A[2]", " ,|||||");
-            DMS.defaultActions.Add(new DMSAction("buy"));
-            DMS.defaultActions.Add(new DMSAction("sell"));
-            DMS.defaultActions.Add(new DMSAction("nothing"));
-            DMS.generateStates();
+
 
         }
         public Expert(string expertName, Form1 form1)
@@ -115,15 +108,10 @@ namespace Экспертная_система
         }
         public void trainAllAlgorithms(bool deleteLowAccModels)
         {
-            Task[] trainTasks = new Task[algorithms.Count];
             foreach (Algorithm algorithm in algorithms)
             {
-                trainTasks[algorithms.IndexOf(algorithm)] = Task.Run(() => algorithm.train());
+                algorithm.train().Wait();
             }
-
-            foreach (var task in trainTasks)
-                task.Wait();
-
 
             if (deleteLowAccModels)
             {
@@ -183,6 +171,16 @@ namespace Экспертная_система
 
         public string test(DateTime date1, DateTime date2, string rawDatasetFilePath)
         {
+            for (int i = 0; i < algorithms.Count; i++)
+                DMS.addParameter("A[" + i.ToString() + "]", "0,1");
+
+            DMS.defaultActions.Add(new DMSAction("buy"));
+            DMS.defaultActions.Add(new DMSAction("sell"));
+            DMS.defaultActions.Add(new DMSAction("nothing"));
+            DMS.generateStates();
+
+
+
             closeValueHistory = new List<double>();
             deposit1History = new List<double>();
             deposit2History = new List<double>();
@@ -313,7 +311,7 @@ namespace Экспертная_система
                             }
                             else
                             {
-                                log("closeValue почему-то равно нулю!",Color.Red);
+                                log("closeValue почему-то равно нулю!", Color.Red);
                             }
                         }
 
@@ -321,7 +319,7 @@ namespace Экспертная_система
                     else
                     {
                         action = "dateDoesn'tExist";
-                     //   log("дата " + dateStr + " не найдена в файле " + rawDatasetFilePath);
+                        //   log("дата " + dateStr + " не найдена в файле " + rawDatasetFilePath);
                     }
                     deposit1History.Add(deposit1);
                     deposit2History.Add(deposit2);
@@ -333,7 +331,7 @@ namespace Экспертная_система
                     if (deposit1History.Count > 1)
                     {
                         reward = (closeValue * (deposit1History[deposit1History.Count - 1] - deposit1History[deposit1History.Count - 2])) + (deposit2History[deposit2History.Count - 1] - deposit2History[deposit2History.Count - 2]);
-                       // reward =  (deposit2History[deposit2History.Count - 1] - deposit2History[deposit2History.Count - 2]);
+                        // reward =  (deposit2History[deposit2History.Count - 1] - deposit2History[deposit2History.Count - 2]);
 
                     }
                     DMS.setR(reward);
@@ -348,14 +346,14 @@ namespace Экспертная_система
                     for (int i = 0; i < committeeResponse.Length; i++)
                         committeeResponseReportLine += committeeResponse[i] + ";";
                     log(comRespStr);
-                //  log("date: " + date1.ToString());
+                    //  log("date: " + date1.ToString());
                     log("deposit1: " + deposit1.ToString());
                     log("deposit2: " + deposit2.ToString());
-                  //  log("action: " + action);
+                    //  log("action: " + action);
                     log("reward: " + reward.ToString());
-                  //  log("closeValue: " + closeValue.ToString());
-                 //   log("presentLine: " + presentLine);
-                       
+                    //  log("closeValue: " + closeValue.ToString());
+                    //   log("presentLine: " + presentLine);
+
                     reportLine += date1.ToString() + ';' + deposit1.ToString() + ';' + deposit2.ToString() + ';' + action + ';' + reward.ToString() + ';' + closeValue.ToString() + ';' + committeeResponseReportLine + presentLine;
                     report.Add(reportLine);
 
@@ -376,6 +374,8 @@ namespace Экспертная_система
 
             //завершение всех операций и запись отчёта
             File.WriteAllLines(path_prefix + expertName + "\\report.csv", report);
+
+            H.setValueByName("expert_target_function", deposit2.ToString().Replace(',', '.'));
             return "expert has been tested";
         }
         public void Add(Algorithm algorithm)
@@ -443,7 +443,7 @@ namespace Экспертная_система
                     //в случае ошибки - весь столбец дропается
                     catch
                     {
-                        log("столбец " + featuresNames[c] + " удалён");
+                        //  log("столбец " + featuresNames[c] + " удалён");
                         colDropInd.Add(c);
                     }
                 }
@@ -606,7 +606,17 @@ namespace Экспертная_система
         }
         public string Save()
         {
-            string path = path_prefix + expertName + "\\json.txt";
+            string path = path_prefix + expertName;
+            return Save(path);
+        }
+        /// <summary>
+        ///  path = path_prefix + expertName
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public string Save(string path)
+        {
+            path += "\\json.txt";
             File.WriteAllText(path, H.toJSON(0), System.Text.Encoding.Default);
             foreach (Algorithm algorithm in algorithms)
                 algorithm.Save();

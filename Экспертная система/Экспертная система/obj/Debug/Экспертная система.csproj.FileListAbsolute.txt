@@ -46,3 +46,10 @@ C:\Users\anton\Рабочий стол\ExpertSystem\Экспертная сис�
 \\storage\UserProfiles\Desktop\Dyrdin\Рабочий стол\ExpertSystem-master\Экспертная система\Экспертная система\obj\Debug\Экспертная система.csproj.CopyComplete
 \\storage\UserProfiles\Desktop\Dyrdin\Рабочий стол\ExpertSystem-master\Экспертная система\Экспертная система\obj\Debug\Экспертная система.exe
 \\storage\UserProfiles\Desktop\Dyrdin\Рабочий стол\ExpertSystem-master\Экспертная система\Экспертная система\obj\Debug\Экспертная система.pdb
+\\DESKTOP-V4VJU9V\Station Desktop\MAIN\Экспертная система\Экспертная система\obj\Debug\Экспертная система.csprojAssemblyReference.cache
+\\DESKTOP-V4VJU9V\Station Desktop\MAIN\Экспертная система\Экспертная система\obj\Debug\Экспертная_система.Form1.resources
+\\DESKTOP-V4VJU9V\Station Desktop\MAIN\Экспертная система\Экспертная система\obj\Debug\Экспертная_система.Properties.Resources.resources
+\\DESKTOP-V4VJU9V\Station Desktop\MAIN\Экспертная система\Экспертная система\obj\Debug\Экспертная система.csproj.GenerateResource.cache
+\\DESKTOP-V4VJU9V\Station Desktop\MAIN\Экспертная система\Экспертная система\obj\Debug\Экспертная система.csproj.CoreCompileInputs.cache
+\\DESKTOP-V4VJU9V\Station Desktop\MAIN\Экспертная система\Экспертная система\obj\Debug\Экспертная система.exe
+\\DESKTOP-V4VJU9V\Station Desktop\MAIN\Экспертная система\Экспертная система\obj\Debug\Экспертная система.pdb

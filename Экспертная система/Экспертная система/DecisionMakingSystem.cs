@@ -109,7 +109,9 @@ namespace Экспертная_система
 
             lastAction.Q = lastAction.Q + alpha * (r + gamma * Qmax - lastAction.Q);
 
-            drawQ();
+          //  drawQ();
+
+
             //  log(lastAction.Q.ToString());
         }
 
@@ -237,12 +239,12 @@ namespace Экспертная_система
                 {
                     S.Add(tempState);
 
-                    string s = "S" + S.Count() + " = ";
+                   /* string s = "S" + S.Count() + " = ";
                     for (int k = 0; k < tempState.p.Length; k++)
                     {
                         s += tempState.p[k].value + ',';
                     }
-                    log(s);
+                    log(s);*/
 
                     if (S.Count == 0)
                     {

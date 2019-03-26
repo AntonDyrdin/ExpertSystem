@@ -17,7 +17,7 @@ namespace Экспертная_система
         public Task listener;
         public string status;
         private const int port = 8888;
-        private static TcpListener TCPListener;
+        public TcpListener TCPListener;
         public AgentManager(Form1 form1)
         {
             this.form1 = form1;
