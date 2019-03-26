@@ -171,6 +171,10 @@ namespace Экспертная_система
 
         public string test(DateTime date1, DateTime date2, string rawDatasetFilePath)
         {
+            DMS.defaultActions.Clear();
+            DMS.parameters.Clear();
+            DMS.S.Clear();
+
             for (int i = 0; i < algorithms.Count; i++)
                 DMS.addParameter("A[" + i.ToString() + "]", "0,1");
 

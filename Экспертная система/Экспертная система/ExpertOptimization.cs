@@ -61,9 +61,9 @@ namespace Экспертная_система
             for (int i = 0; i < population_value; i++)
             {
                 variablesVisualizer.addParameter("deposit history [" + i.ToString() + "]", Color.LightCyan, 300);
-                variablesVisualizer.parameters.Last().functions.Add(new Function("deposit1 [" + i.ToString() + "]", Color.Pink));
-                variablesVisualizer.parameters.Last().functions.Add(new Function("deposit2 [" + i.ToString() + "]", Color.Green));
-                variablesVisualizer.parameters.Last().functions.Add(new Function("exit [" + i.ToString() + "]", Color.LightSeaGreen));
+                variablesVisualizer.parameters[1+i].functions.Add(new Function("deposit1 [" + i.ToString() + "]", Color.Pink));
+                variablesVisualizer.parameters[1 + i].functions.Add(new Function("deposit2 [" + i.ToString() + "]", Color.Green));
+                variablesVisualizer.parameters[1 + i].functions.Add(new Function("exit [" + i.ToString() + "]", Color.LightSeaGreen));
             }
 
             recurciveVariableAdding(expert.H, 0, name + "[0]");
@@ -107,12 +107,12 @@ namespace Экспертная_система
                 expert.test(date1, date2, rawDatasetFilePath);
 
                 //отрисовка истрии баланса
-                for (int i = 0; i < expert.deposit1History.Count; i++)
+               for (int i = 0; i < expert.deposit1History.Count; i++)
                 {
-                    variablesVisualizer.addPoint(expert.deposit2History[i] + expert.deposit1History[i] * expert.closeValueHistory[i], "exit [0]");
+                    variablesVisualizer.addPoint(expert.deposit2History[i] + (expert.deposit1History[i] * expert.closeValueHistory[i]), "exit [0]");
                     variablesVisualizer.addPoint(expert.deposit2History[i], "deposit2 [0]");
-                  //  variablesVisualizer.addPoint(expert.deposit1History[i], "deposit1 [0]");
-                }
+                    //  variablesVisualizer.addPoint(expert.deposit1History[i], "deposit1 [0]");
+                }    
                 for (int i = 0; i < population_value; i++)
                 {
                     population[i] = new Hyperparameters(expert.H.toJSON(0), form1);
@@ -124,12 +124,13 @@ namespace Экспертная_система
                         Algorithm.CopyFiles(expert.algorithms[j].h, expert.algorithms[j].h.getValueByName("save_folder"), new_save_folder);
                     }
                 }
-                for (int i = 1; i < population_value; i++)
-                {
-                    variablesIDs.Clear();
-                  //  !!!!!!!!!!!!!!
-                 //   recurciveVariableAdding(population[i], 0, population[i].getValueByName("model_name"));
-                }
+                variablesIDs.Clear();
+                recurciveVariableAdding(population[0], 0, name + "[0]");
+                /*   for (int i = 1; i < population_value; i++)
+                   {
+                       variablesIDs.Clear();
+                       recurciveVariableAdding(population[i], 0, name + "[" + i.ToString() + "]");
+                   }     */
 
                 variablesVisualizer.refresh();
             }
@@ -149,41 +150,57 @@ namespace Экспертная_система
                     log("Ожидание агентов...", Color.Yellow);
                     while (agentManager.agents.Count == 0) { Thread.Sleep(1000); }
                 }
-                else
-                {
-                    for (int i = Convert.ToInt16(Math.Round(population_value * elite_ratio)); i < population_value; i++)
-                    {
-                        var algorithmBranches = population[i].getNodesByparentID(expert.committeeNodeID);
-                        foreach (Node algorithmBranch in algorithmBranches)
-                        {
-                            agentManager.tasks.Add(new AgentTask("train", new Hyperparameters(population[i].toJSON(algorithmBranch.ID), form1)));
-                        }
-                        Task.Factory.StartNew(() => { agentManager.work(); }).Wait();
-                        //  СПИСОК ВЕТВЕЙ АЛГОРИТМОВ
-                        List<Node> toDelete = population[i].getNodesByparentID(expert.committeeNodeID);
-                        //удаление старых конфигураций алгоритмов
-                        for (int j = 0; j < toDelete.Count; i++)
-                            population[i].deleteBranch(toDelete[i].ID);
 
-                        //приращение новых конфигураций к узлу "committee"
-                        for (int j = 0; j < agentManager.tasks.Count; j++)
-                        {
-                            population[i].addBranch(agentManager.tasks[j].h, agentManager.tasks[j].h.nodes[0].name(), expert.committeeNodeID);
-                        }
-                        agentManager.tasks.Clear();
-                    }
-                }
-                /////TEST
-              //  TEST
-              //  TEST
-                /*    //отрисовка истрии баланса
-                    foreach (double value in expert.deposit1History)
+                for (int i = Convert.ToInt16(Math.Round(population_value * elite_ratio)); i < population_value; i++)
+                {
+                    var algorithmBranches = population[i].getNodesByparentID(expert.committeeNodeID);
+                    foreach (Node algorithmBranch in algorithmBranches)
                     {
-                        variablesVisualizer.addPoint(Convert.ToDouble(population[i].getValueByName("expert_target_function").Replace('.', ',')), "deposit1 [" + i.ToString() + "]");
+                        agentManager.tasks.Add(new AgentTask("train", new Hyperparameters(population[i].toJSON(algorithmBranch.ID), form1)));
                     }
-                    variablesVisualizer.addPoint(Convert.ToDouble(population[i].getValueByName("expert_target_function").Replace('.', ',')), "deposit2 [" + i.ToString() + "]");
-                    variablesVisualizer.addPoint(Convert.ToDouble(population[i].getValueByName("expert_target_function").Replace('.', ',')), "exit [" + i.ToString() + "]");
-                    */
+                    Task.Factory.StartNew(() => { agentManager.work(); }).Wait();
+                    //  СПИСОК ВЕТВЕЙ АЛГОРИТМОВ
+                    List<Node> toDelete = population[i].getNodesByparentID(expert.committeeNodeID);
+                    //удаление старых конфигураций алгоритмов
+                    for (int j = 0; j < toDelete.Count; j++)
+                        population[i].deleteBranch(toDelete[j].ID);
+
+                    //приращение новых конфигураций к узлу "committee"
+                    for (int j = 0; j < agentManager.tasks.Count; j++)
+                    {
+                        population[i].addBranch(agentManager.tasks[j].h, agentManager.tasks[j].h.nodes[0].name(), expert.committeeNodeID);
+                    }
+                    agentManager.tasks.Clear();
+
+                    expert.H = population[i];
+                    expert.synchronizeHyperparameters();
+                    expert.Save(form1.pathPrefix + "Optimization\\" + name + "\\" + expert.expertName + "[" + i.ToString() + "]");
+                }
+
+
+                //Тестирование (вычисление целевой функции)
+                for (int i = Convert.ToInt16(Math.Round(population_value * elite_ratio)); i < population_value; i++)
+                {
+                    expert.H = population[i];
+                    expert.test(date1, date2, rawDatasetFilePath);
+                    //отрисовка истрии баланса
+
+                    foreach (Function func in variablesVisualizer.parameters[1 + i].functions)
+                        func.points.Clear();
+
+
+                    for (int j = 0; j < expert.deposit1History.Count; j++)
+                    {
+                        variablesVisualizer.addPoint(expert.deposit2History[j] + (expert.deposit1History[j] * expert.closeValueHistory[j]), "exit [" + i.ToString() + "]");
+                        variablesVisualizer.addPoint(expert.deposit2History[j], "deposit2 [" + i.ToString() + "]");
+                        //  variablesVisualizer.addPoint(expert.deposit1History[j], "deposit1 ["+i.ToString()+"]");
+                    }
+                    variablesVisualizer.refresh();
+                }
+
+
+
+
                 // сортировка
                 string temp;
                 for (int i = 0; i < population_value - 1; i++)
@@ -210,7 +227,7 @@ namespace Экспертная_система
                             foreach (Node algorithmBranch in toTempFolder)
                             {
                                 var h = new Hyperparameters(population[j].toJSON(algorithmBranch.ID), form1);
-                                Algorithm.MoveFiles(h, path_to_i + "\\" + h.nodes[0].name(), tempFolder + "\\" + h.nodes[0].name());
+                                Algorithm.MoveFiles(h, path_to_i + "\\"+ h.getValueByName("model_name"), tempFolder + "\\" + h.getValueByName("model_name"));
                             }
                             foreach (string file in Directory.GetFiles(path_to_i))
                             {
@@ -222,7 +239,7 @@ namespace Экспертная_система
                             foreach (Node algorithmBranch in toI)
                             {
                                 var h = new Hyperparameters(population[i].toJSON(algorithmBranch.ID), form1);
-                                Algorithm.MoveFiles(h, path_to_j + "\\" + h.nodes[0].name(), path_to_i + "\\" + h.nodes[0].name());
+                                Algorithm.MoveFiles(h, path_to_j + "\\" + h.getValueByName("model_name"), path_to_i + "\\" + h.getValueByName("model_name"));
                             }
                             foreach (string file in Directory.GetFiles(path_to_j))
                             {
@@ -234,7 +251,7 @@ namespace Экспертная_система
                             foreach (Node algorithmBranch in toI)
                             {
                                 var h = new Hyperparameters(population[j].toJSON(algorithmBranch.ID), form1);
-                                Algorithm.MoveFiles(h, tempFolder + "\\" + h.nodes[0].name(), path_to_j + "\\" + h.nodes[0].name());
+                                Algorithm.MoveFiles(h, tempFolder + "\\" + h.getValueByName("model_name"), path_to_j + "\\" + h.getValueByName("model_name"));
                             }
                             foreach (string file in Directory.GetFiles(tempFolder))
                             {
@@ -254,13 +271,6 @@ namespace Экспертная_система
 
             variableChangeMonitoring();
 
-            for (int i = 0; i < population_value; i++)
-            {
-                variablesVisualizer.addParameter("deposit history [" + i.ToString() + "]", Color.LightCyan, 300);
-                variablesVisualizer.parameters.Last().functions.Add(new Function("deposit1 [" + i.ToString() + "]", Color.Pink));
-                variablesVisualizer.parameters.Last().functions.Add(new Function("deposit2 [" + i.ToString() + "]", Color.Green));
-                variablesVisualizer.parameters.Last().functions.Add(new Function("exit [" + i.ToString() + "]", Color.LightSeaGreen));
-            }
             for (int i = 0; i < population_value; i++)
             {
                 variablesVisualizer.addPoint(Convert.ToDouble(population[i].getValueByName("expert_target_function").Replace('.', ',')), " [" + i.ToString() + "]");
@@ -353,7 +363,7 @@ namespace Экспертная_система
             log("OPTIMIZATION STARTED", Color.Cyan);
         }
 
-        private void recurciveVariableAdding(Hyperparameters h, int ID, string modelName)
+        private void recurciveVariableAdding(Hyperparameters h, int ID, string expertName)
         {
 
             List<Node> branches = h.getNodesByparentID(ID);
@@ -364,15 +374,15 @@ namespace Экспертная_система
                 {
                     // добавить в список переменных
                     if (h.getNodeById(ID).getAttributeValue("variable") == "numerical")
-                        variablesVisualizer.addParameter(modelName + " " + h.getNodeById(ID).name() + " id=" + ID.ToString(), Color.Cyan, 200);
+                        variablesVisualizer.addParameter(expertName + " " + h.getNodeById(ID).name() + " id=" + ID.ToString(), Color.Cyan, 200);
 
                     if (h.getNodeById(ID).getAttributeValue("variable") == "categorical")
                     {
-                        variablesVisualizer.addParameter(modelName + " " + h.getNodeById(ID).name() + " id=" + ID.ToString(), Color.Black, 40);
+                        variablesVisualizer.addParameter(expertName + " " + h.getNodeById(ID).name() + " id=" + ID.ToString(), Color.Black, 40);
                         variablesVisualizer.parameters[variablesVisualizer.parameters.Count - 1].mainFontDepth = 12;
                     }
 
-                    variablesNames.Add(modelName + " " + h.getNodeById(ID).name() + " id=" + ID.ToString());
+                    variablesNames.Add(expertName + " " + h.getNodeById(ID).name() + " id=" + ID.ToString());
                     variablesIDs.Add(ID);
                 }
             }
@@ -380,20 +390,26 @@ namespace Экспертная_система
             {
                 for (int i = 0; i < branches.Count; i++)
                 {
-                    recurciveVariableAdding(h, branches[i].ID, modelName);
+                    recurciveVariableAdding(h, branches[i].ID, expertName);
                 }
             }
         }
 
         private void variableChangeMonitoring()
         {
-            foreach (Hyperparameters individ in population)
-                foreach (int variableID in variablesIDs)
-                {
-                    string variableName = individ.getValueByName("model_name") + " " + individ.getNodeById(variableID).name() + " id=" + variableID.ToString();
-                    string value = individ.nodes[variableID].getValue();
-                    variablesVisualizer.addPoint(value, variableName);
-                }
+            foreach (int variableID in variablesIDs)
+            {
+                string variableName = name + "[0]" + " " + population[0].getNodeById(variableID).name() + " id=" + variableID.ToString();
+                string value = population[0].nodes[variableID].getValue();
+                variablesVisualizer.addPoint(value, variableName);
+            }
+            /*  for (int i = 0; i < population.Length; i++)
+                  foreach (int variableID in variablesIDs)
+                  {
+                      string variableName = name + "[" + i.ToString() + "]" + " " + population[i].getNodeById(variableID).name() + " id=" + variableID.ToString();
+                      string value = population[i].nodes[variableID].getValue();
+                      variablesVisualizer.addPoint(value, variableName);
+                  } */
         }
 
         private void refreshAOTree()

@@ -65,7 +65,7 @@ namespace Экспертная_система
 
             sourceDataFile = pathPrefix + @"Временные ряды\EURRUB.txt";
 
-            optimization = new ExpertOptimization(expert, this, 4, 10, 0.5, 10, new DateTime(2017, 6, 1), new DateTime(2017, 9, 30), sourceDataFile);
+            optimization = new ExpertOptimization(expert, this, 4, 10, 0.5, 10, new DateTime(2017, 8, 1), new DateTime(2017, 8, 10), sourceDataFile);
             optimization.run();
         }
         public void buildAndTest()

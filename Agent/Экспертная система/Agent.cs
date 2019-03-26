@@ -29,10 +29,16 @@ namespace Экспертная_система
 
         public void startSocket()
         {
-
-            /* try
-             {   */
-            client = new TcpClient(address, port);
+            tryToConnect:
+            try
+            {
+                client = new TcpClient(address, port);
+            }
+            catch
+            {
+                System.Threading.Thread.Sleep(5000);
+                goto tryToConnect;
+            }
             NetworkStream stream = client.GetStream();
             BinaryReader reader = new BinaryReader(stream);
             BinaryWriter writer = new BinaryWriter(stream);
@@ -42,6 +48,25 @@ namespace Экспертная_система
 
                 var command = recieveCommand(reader);
 
+                if (command == "error")
+                {
+                    //ПЕРЕПОДКЛЮЧЕНИЕ
+                    client.Close();
+                    log("СОЕДИНЕНИЕ ЗАКРЫТО " + DateTime.Now.TimeOfDay.ToString(), Color.Yellow);
+                    try
+                    {
+                        client = new TcpClient(address, port);
+                        stream = client.GetStream();
+                        reader = new BinaryReader(stream);
+                        writer = new BinaryWriter(stream);
+                        log("ПОДКЛЮЧЕНО " + DateTime.Now.TimeOfDay.ToString(), Color.Yellow);
+                    }
+                    catch (Exception ex)
+                    {
+                        log(ex.Message);
+                    }
+                    System.Threading.Thread.Sleep(5000);
+                }
                 if (command == "train")
                 {
                     recieveFile(reader, workFolder + "json.txt");
@@ -79,15 +104,7 @@ namespace Экспертная_система
                         sendCommand(writer, "Произошла ошибка при запуске скрипта обучения, подробности в консоли агента.");
                 }
             }
-            /*  }
-              catch (Exception ex)
-              {
-                  Console.WriteLine(ex.Message);
-              }
-              finally
-              {
-                  client.Close();
-              }  */
+
         }
         public void sendCommand(BinaryWriter writer, string Command)
         {
@@ -97,8 +114,17 @@ namespace Экспертная_система
         }
         public string recieveCommand(BinaryReader reader)
         {
-            var Command = reader.ReadString();
-            log("RECIEVE: " + Command);
+            var Command = "";
+            try
+            {
+                Command = reader.ReadString();
+                log("RECIEVE: " + Command);
+            }
+            catch (Exception ex)
+            {
+                log(ex.Message);
+                return "error";
+            }
             return Command;
         }
         void sendFile(BinaryWriter writer, string path)
@@ -112,6 +138,11 @@ namespace Экспертная_система
             var file = Encoding.Default.GetBytes(message);
             File.WriteAllBytes(savePath, file);
             log("RECIEVE: " + savePath);
+        }
+        void log(String s, Color c)
+        {
+            form1.logDelegate = new Form1.LogDelegate(form1.delegatelog);
+            form1.logBox.Invoke(form1.logDelegate, form1.logBox, s, c);
         }
         void log(String s)
         {
