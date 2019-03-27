@@ -13,7 +13,7 @@ namespace Экспертная_система
         public string name;
         public Expert expert;
         public Hyperparameters[] population;
-        public Hyperparameters A;
+        public Hyperparameters E;
         private Form1 form1;
         public int mutation_rate;
         public int population_value;
@@ -46,13 +46,13 @@ namespace Экспертная_система
 
             this.agentManager = form1.I.agentManager;
 
-            for (int i = 0; i < population_value; i++) { population[i] = new Hyperparameters(expert.H.toJSON(0), form1); }
+            //  for (int i = 0; i < population_value; i++) { population[i] = new Hyperparameters(expert.H.toJSON(0), form1); }
 
             name = expert.expertName;
 
             try { Directory.Delete(form1.pathPrefix + "Optimization\\" + name, true); } catch { }
 
-            refreshAOTree();
+            //  refreshAOTree();
             variablesVisualizer.enableGrid = false;
             variablesVisualizer.addParameter("target_function", Color.LightCyan, 300);
             //добавление переменных в  MultiParameterVisualizer
@@ -61,7 +61,7 @@ namespace Экспертная_система
             for (int i = 0; i < population_value; i++)
             {
                 variablesVisualizer.addParameter("deposit history [" + i.ToString() + "]", Color.LightCyan, 300);
-                variablesVisualizer.parameters[1+i].functions.Add(new Function("deposit1 [" + i.ToString() + "]", Color.Pink));
+                variablesVisualizer.parameters[1 + i].functions.Add(new Function("deposit1 [" + i.ToString() + "]", Color.Pink));
                 variablesVisualizer.parameters[1 + i].functions.Add(new Function("deposit2 [" + i.ToString() + "]", Color.Green));
                 variablesVisualizer.parameters[1 + i].functions.Add(new Function("exit [" + i.ToString() + "]", Color.LightSeaGreen));
             }
@@ -92,7 +92,7 @@ namespace Экспертная_система
                 expert.synchronizeHyperparameters();
                 for (int j = 0; j < expert.algorithms.Count; j++)
                 {
-                    new_save_folder = form1.pathPrefix + "Optimization\\" + name + "\\" + expert.expertName + "[0]" + "\\" + expert.algorithms[j].name + "[" + j.ToString() + "]\\";
+                    new_save_folder = form1.pathPrefix + "Optimization\\" + name + "\\" + expert.expertName + "[0]" + "\\" + expert.algorithms[j].getValueByName("model_name") + "\\";
                     Directory.CreateDirectory(new_save_folder);
                     expert.algorithms[j].h.setValueByName("save_folder", new_save_folder);
                     string predictionsFilePath = new_save_folder + "predictions.txt";
@@ -103,27 +103,59 @@ namespace Экспертная_система
                     expert.algorithms[j].train().Wait();
                 }
                 expert.synchronizeHyperparameters();
+                expert.H.setValueByName("report_path", form1.pathPrefix + "Optimization\\" + name + "\\" + expert.expertName + "[0]");
                 expert.Save(form1.pathPrefix + "Optimization\\" + name + "\\" + expert.expertName + "[0]");
+
+
                 expert.test(date1, date2, rawDatasetFilePath);
 
                 //отрисовка истрии баланса
-               for (int i = 0; i < expert.deposit1History.Count; i++)
+                for (int i = 0; i < expert.deposit1History.Count; i++)
                 {
                     variablesVisualizer.addPoint(expert.deposit2History[i] + (expert.deposit1History[i] * expert.closeValueHistory[i]), "exit [0]");
                     variablesVisualizer.addPoint(expert.deposit2History[i], "deposit2 [0]");
                     //  variablesVisualizer.addPoint(expert.deposit1History[i], "deposit1 [0]");
-                }    
+                }
+
+              //  population[0] = new Hyperparameters(expert.H.toJSON(0), form1);
                 for (int i = 0; i < population_value; i++)
                 {
-                    population[i] = new Hyperparameters(expert.H.toJSON(0), form1);
-                    population[i].setValueByName("name", population[i].nodes[0].name() + "[" + i.ToString() + "]");
-                    for (int j = 0; j < expert.algorithms.Count; j++)
-                    {
-                        new_save_folder = form1.pathPrefix + "Optimization\\" + name + "\\" + expert.expertName + "[" + i.ToString() + "]" + "\\" + expert.algorithms[j].name + "[" + j.ToString() + "]\\";
-                        //новые пути прописываются в json.txt автоматически
-                        Algorithm.CopyFiles(expert.algorithms[j].h, expert.algorithms[j].h.getValueByName("save_folder"), new_save_folder);
-                    }
+                  population[i]=  Copy(expert.H, form1.pathPrefix + "Optimization\\" + name + "\\" + expert.expertName + "[0]" + "\\", form1.pathPrefix + "Optimization\\" + name + "\\" + expert.expertName + "[" + i.ToString() + "]" + "\\");
                 }
+                //сохранение параметров нулевого индивида перед копированием, так как  Algorithm.CopyFiles() автоматически исправляет пути сохранения файлов после копирования
+                /*   
+
+                   for (int i = 1; i < population_value; i++)
+                   {
+                       //извлечение ранее сохранённых параметров
+                       expert.H = new Hyperparameters(population[0].toJSON(0), form1);
+                       var algorithmBranches = expert.H.getNodesByparentID(expert.committeeNodeID);
+                       for (int j = 0; j < algorithmBranches.Count; j++)
+                       {
+                           new_save_folder = form1.pathPrefix + "Optimization\\" + name + "\\" + expert.expertName + "[" + i.ToString() + "]" + "\\" + expert.algorithms[j].getValueByName("model_name") + "\\";
+                           //новые пути прописываются в json.txt автоматически, если передать объект Hyperparameters по ссылке, а не по значению
+                           expert.algorithms[j].h = new Hyperparameters(expert.H.toJSON(algorithmBranches[j].ID), form1);
+                           Algorithm.CopyFiles(expert.algorithms[j].h, expert.algorithms[j].h.getValueByName("save_folder"), new_save_folder);
+                       }
+                       expert.synchronizeHyperparameters();
+                       population[i] = new Hyperparameters(expert.H.toJSON(0), form1);
+                       population[i].setValueByName("name", population[i].nodes[0].name() + "[" + i.ToString() + "]");
+                   }
+
+                   for (int i = 0; i < population_value; i++)
+                   {
+                       population[i].setValueByName("report_path", form1.pathPrefix + "Optimization\\" + name + "\\" + expert.expertName + "[" + i.ToString() + "]");
+                       /*  expert.H = population[i];
+                         var algorithmBranches = population[i].getNodesByparentID(expert.committeeNodeID);
+                         for (int j = 0; j < algorithmBranches.Count; j++)
+                         {
+                              expert.algorithms[j].h = new Hyperparameters(population[i].toJSON(algorithmBranches[j].ID), form1);
+                         }
+                         expert.synchronizeHyperparameters();   */
+                /*     File.WriteAllText(form1.pathPrefix + "Optimization\\" + name + "\\" + expert.expertName + "[" + i.ToString() + "]" + "\\json.txt", population[i].toJSON(0), System.Text.Encoding.Default);
+                     // expert.Save();
+                 }
+                      */
                 variablesIDs.Clear();
                 recurciveVariableAdding(population[0], 0, name + "[0]");
                 /*   for (int i = 1; i < population_value; i++)
@@ -131,7 +163,7 @@ namespace Экспертная_система
                        variablesIDs.Clear();
                        recurciveVariableAdding(population[i], 0, name + "[" + i.ToString() + "]");
                    }     */
-
+                refreshEOTree();
                 variablesVisualizer.refresh();
             }
             else
@@ -193,7 +225,7 @@ namespace Экспертная_система
                     {
                         variablesVisualizer.addPoint(expert.deposit2History[j] + (expert.deposit1History[j] * expert.closeValueHistory[j]), "exit [" + i.ToString() + "]");
                         variablesVisualizer.addPoint(expert.deposit2History[j], "deposit2 [" + i.ToString() + "]");
-                        //  variablesVisualizer.addPoint(expert.deposit1History[j], "deposit1 ["+i.ToString()+"]");
+                        //variablesVisualizer.addPoint(expert.deposit1History[j], "deposit1 ["+i.ToString()+"]");
                     }
                     variablesVisualizer.refresh();
                 }
@@ -202,7 +234,7 @@ namespace Экспертная_система
 
 
                 // сортировка
-                string temp;
+                Hyperparameters temp;
                 for (int i = 0; i < population_value - 1; i++)
                 {
                     for (int j = i + 1; j < population_value; j++)
@@ -217,46 +249,12 @@ namespace Экспертная_система
                             string path_to_i = form1.pathPrefix + "Optimization\\" + name + "\\" + name + "[" + i.ToString() + "]";
                             string path_to_j = form1.pathPrefix + "Optimization\\" + name + "\\" + name + "[" + j.ToString() + "]";
 
-                            temp = population[i].toJSON(0);
-                            population[i] = new Hyperparameters(population[j].toJSON(0), form1);
-                            population[j] = new Hyperparameters(temp, form1);
+                            temp = Copy(population[i], path_to_i, tempFolder);
+                            population[i] = Copy(population[j], path_to_j, path_to_i);
+                            population[j] = Copy(temp, tempFolder, path_to_j);
 
-                            //пермещение файлов 
-                            //  Algorithm.MoveFiles(population[j], path_to_i, tempFolder);
-                            List<Node> toTempFolder = population[j].getNodesByparentID(expert.committeeNodeID);
-                            foreach (Node algorithmBranch in toTempFolder)
-                            {
-                                var h = new Hyperparameters(population[j].toJSON(algorithmBranch.ID), form1);
-                                Algorithm.MoveFiles(h, path_to_i + "\\"+ h.getValueByName("model_name"), tempFolder + "\\" + h.getValueByName("model_name"));
-                            }
-                            foreach (string file in Directory.GetFiles(path_to_i))
-                            {
-                                File.Move(file, tempFolder + Path.GetFileName(file));
-                            }
-
-                            //  Algorithm.MoveFiles(population[i], path_to_j, path_to_i);
-                            List<Node> toI = population[i].getNodesByparentID(expert.committeeNodeID);
-                            foreach (Node algorithmBranch in toI)
-                            {
-                                var h = new Hyperparameters(population[i].toJSON(algorithmBranch.ID), form1);
-                                Algorithm.MoveFiles(h, path_to_j + "\\" + h.getValueByName("model_name"), path_to_i + "\\" + h.getValueByName("model_name"));
-                            }
-                            foreach (string file in Directory.GetFiles(path_to_j))
-                            {
-                                File.Move(file, path_to_i + Path.GetFileName(file));
-                            }
-
-                            //Algorithm.MoveFiles(population[j], tempFolder, path_to_j);
-                            List<Node> toJ = population[j].getNodesByparentID(expert.committeeNodeID);
-                            foreach (Node algorithmBranch in toI)
-                            {
-                                var h = new Hyperparameters(population[j].toJSON(algorithmBranch.ID), form1);
-                                Algorithm.MoveFiles(h, tempFolder + "\\" + h.getValueByName("model_name"), path_to_j + "\\" + h.getValueByName("model_name"));
-                            }
-                            foreach (string file in Directory.GetFiles(tempFolder))
-                            {
-                                File.Move(file, path_to_j + Path.GetFileName(file));
-                            }
+                            population[i].setValueByName("report_path", form1.pathPrefix + "Optimization\\" + name + "\\" + expert.expertName + "[" + i.ToString() + "]");
+                            population[j].setValueByName("report_path", form1.pathPrefix + "Optimization\\" + name + "\\" + expert.expertName + "[" + j.ToString() + "]");
                         }
                     }
                 }
@@ -266,7 +264,7 @@ namespace Экспертная_система
 
             log("Обновление отображаемых параметров", Color.Lime);
 
-            refreshAOTree();
+            refreshEOTree();
             // A.draw(0, form1.picBox, form1, 15, 150);
 
             variableChangeMonitoring();
@@ -412,10 +410,42 @@ namespace Экспертная_система
                   } */
         }
 
-        private void refreshAOTree()
+        private void refreshEOTree()
         {
-            A = new Hyperparameters(form1, "Algorithm_Population");
-            for (int i = 0; i < population_value; i++) { A.addBranch(population[i], population[i].nodes[0].name(), 0); }
+            E = new Hyperparameters(form1, "Expert_Population");
+            for (int i = 0; i < population_value; i++) { E.addBranch(population[i], population[i].nodes[0].name(), 0); }
+        }
+
+        public Hyperparameters Copy(Hyperparameters individ, string source, string destination)
+        {
+            Hyperparameters H = new Hyperparameters(individ.toJSON(0), form1);
+
+            var algorithmBranches = H.getNodesByparentID(H.getNodeByName("committee")[0].ID);
+
+            List<Hyperparameters> hs = new List<Hyperparameters>();
+
+            for (int j = 0; j < algorithmBranches.Count; j++)
+            {
+                var h = new Hyperparameters(H.toJSON(algorithmBranches[j].ID), form1);
+                var new_save_folder = destination + "\\" + h.getValueByName("model_name") + "\\";
+                //новые пути прописываются в json.txt автоматически, если передать объект Hyperparameters по ссылке, а не по значению
+                Algorithm.CopyFiles(h, h.getValueByName("save_folder"), new_save_folder);
+                hs.Add(h);
+            }
+
+            //удаление старых записей
+            for (int i = 0; i < algorithmBranches.Count; i++)
+                H.deleteBranch(algorithmBranches[i].ID);
+
+            //приращение новых записей к узлу  "committee"
+            for (int i = 0; i < algorithmBranches.Count; i++)
+            {
+                H.addBranch(hs[i], hs[i].getValueByName("model_name"), H.getNodeByName("committee")[0].ID);
+            }
+
+            H.setValueByName("report_path", destination);
+            File.WriteAllText(destination + "\\json.txt", H.toJSON(0), System.Text.Encoding.Default);
+            return H;
         }
 
         private void log(String s, Color col)

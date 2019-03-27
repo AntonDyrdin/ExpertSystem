@@ -65,7 +65,7 @@ namespace Экспертная_система
 
             sourceDataFile = pathPrefix + @"Временные ряды\EURRUB.txt";
 
-            optimization = new ExpertOptimization(expert, this, 4, 10, 0.5, 10, new DateTime(2017, 8, 1), new DateTime(2017, 8, 10), sourceDataFile);
+            optimization = new ExpertOptimization(expert, this, 4, 10, 0.5, 200, new DateTime(2017, 8, 1), new DateTime(2017, 8, 30), sourceDataFile);
             optimization.run();
         }
         public void buildAndTest()
@@ -180,6 +180,8 @@ namespace Экспертная_система
         }
         private void Hyperparameters_Click(object sender, EventArgs e)
         {
+            if (optimization != null)
+                optimization.E.draw(0, picBox, this, 15, 150);
             if (expert != null)
                 expert.H.draw(0, picBox, this, 15, 150);
             if (AO != null)

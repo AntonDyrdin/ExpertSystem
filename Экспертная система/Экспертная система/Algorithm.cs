@@ -80,9 +80,9 @@ namespace Экспертная_система
                         Continue = true;
                     }
                 }
-                System.Threading.Thread.Sleep(100);
+                System.Threading.Thread.Sleep(1);
                 inc++;
-                if (inc > modelLoadingDelay / 100)
+                if (inc > modelLoadingDelay / 1)
                 {
                     string error = predict_process.StandardError.ReadToEnd();
                     log("Завис поток прогнозирования на этапе запуска скрипта и загрузки модели", Color.Red);
@@ -127,7 +127,7 @@ namespace Экспертная_система
             inc = 0;
 
 
-            while (Continue == false && inc * 100 < pred_script_timeout)
+            while (Continue == false && inc * 1 < pred_script_timeout)
             {
                 var buffer = predict_process_read_stream.ReadLine();
                 script_conclusion = script_conclusion + buffer + '\n';
@@ -138,11 +138,11 @@ namespace Экспертная_система
                         Continue = true;
 
                         //ПОЛНЫЙ ЛОГ ВЫПОЛНЕНИЯ СКРИПТА
-                     //   log(script_conclusion);
+                        //   log(script_conclusion);
                         script_conclusion = script_conclusion.Substring(script_conclusion.IndexOf("prediction:") + 11);
 
                         //ТОЛЬКО ПРОГНОЗ
-                         log(script_conclusion);
+                        //   log(script_conclusion);
                     }
 
                 }
@@ -156,10 +156,10 @@ namespace Экспертная_система
                         return -1000;
                     }
                 }
-                System.Threading.Thread.Sleep(100);
+                System.Threading.Thread.Sleep(1);
                 inc++;
             }
-            if (inc * 100 >= pred_script_timeout)
+            if (inc * 1 >= pred_script_timeout)
             {
                 log("Завис поток прогнозирования на этапе получения Y ", Color.Red);
                 log(script_conclusion);
@@ -277,8 +277,8 @@ namespace Экспертная_система
                 accuracy = 0;
 
             log("accuracy = " + accuracy.ToString() + " %");
-          //  log("stdDev = " + stdDev.ToString());
-           // log("accuracy/stdDev = " + (accuracy / stdDev).ToString());
+            //  log("stdDev = " + stdDev.ToString());
+            // log("accuracy/stdDev = " + (accuracy / stdDev).ToString());
             log("_____________________________________________");
             h.setValueByName("accuracy", accuracy.ToString().Replace(',', '.'));
             h.setValueByName("stdDev", stdDev.ToString().Replace(',', '.'));
@@ -348,23 +348,16 @@ namespace Экспертная_система
             if (destination[destination.Length - 1] != '\\')
                 destination += destination + '\\';
             Directory.CreateDirectory(destination);
-            if (source != destination)
+            if (source.Replace("\\\\", "\\") != destination.Replace("\\\\", "\\"))
             {
                 foreach (string file in Directory.GetFiles(source))
                 {
-                    repeat1:
-                    try
-                    {
-                        if (Path.GetFileName(file) != "json.txt")
-                            File.Copy(file, destination + Path.GetFileName(file));
-                    }
-                    catch
-                    { goto repeat1; }
+
+                    if (Path.GetFileName(file) != "json.txt")
+                        File.Copy(file, destination + Path.GetFileName(file), true);
                 }
             }
-            else
-            {
-            }
+
             //указание пути сохранения в параметрах
             h.setValueByName("save_folder", destination);
             string jsonFilePath = destination + "json.txt";
@@ -372,6 +365,7 @@ namespace Экспертная_система
             string predictionsFilePath = destination + "predictions.txt";
             h.setValueByName("predictions_file_path", predictionsFilePath);
             File.WriteAllText(jsonFilePath, h.toJSON(0), System.Text.Encoding.Default);
+
         }
 
         public static void MoveFiles(Hyperparameters h, string source, string destination)

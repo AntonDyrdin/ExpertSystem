@@ -21,20 +21,23 @@ namespace Экспертная_система
         public List<Algorithm> algorithms;
         public int committeeNodeID;
         public string path_prefix;
+        public string reportPath;
 
         // БАЗОВАЯ  валюта
         //(валюта, которая покупается и продаётся)
         //стоит на ПЕРВОМ месте в валютной паре
         //по команде BUY значение этого депозита должно расти  на количество покупаемых единиц
         //по команде SELL значение этого депозита должно уменьшаться на количество покупаемых единиц
-        public double deposit1 = 0;
+        public const double deposit1StartValue = 0;
+        public double deposit1 = deposit1StartValue;
 
         //КОТИРУЕМАЯ валюта 
         //валюта входа и выхода (основная)
         //стоит на ВТОРОМ месте в валютной паре
         //по команде BUY значение этого депозита должно уменьшаться  пропорционально цене базовой вылюты
         //по команде SELL значение этого депозита должно расти   пропорционально цене базовой вылюты
-        public double deposit2 = 5000;
+        public const double deposit2StartValue = 500;
+        public double deposit2 = deposit2StartValue;
 
         public List<double> deposit1History;
         public List<double> deposit2History;
@@ -171,6 +174,9 @@ namespace Экспертная_система
 
         public string test(DateTime date1, DateTime date2, string rawDatasetFilePath)
         {
+            deposit1 = deposit1StartValue;
+            deposit2 = deposit2StartValue;
+
             DMS.defaultActions.Clear();
             DMS.parameters.Clear();
             DMS.S.Clear();
@@ -291,7 +297,7 @@ namespace Экспертная_система
                                 }
                                 else
                                 {
-                                    log("Основной депозит исчерпан! Не возможно купить базовую валюту.");
+                                    //    log("Основной депозит исчерпан! Не возможно купить базовую валюту.");
                                 }
                             }
                             else
@@ -310,7 +316,7 @@ namespace Экспертная_система
                                 }
                                 else
                                 {
-                                    log("Депозит базовой валюты исчерпан (состояние выхода с рынка). Не возможно продать базовую валюту.");
+                                    //      log("Депозит базовой валюты исчерпан (состояние выхода с рынка). Не возможно продать базовую валюту.");
                                 }
                             }
                             else
@@ -349,12 +355,12 @@ namespace Экспертная_система
                     string committeeResponseReportLine = "";
                     for (int i = 0; i < committeeResponse.Length; i++)
                         committeeResponseReportLine += committeeResponse[i] + ";";
-                    log(comRespStr);
+                    //    log(comRespStr);
                     //  log("date: " + date1.ToString());
-                    log("deposit1: " + deposit1.ToString());
-                    log("deposit2: " + deposit2.ToString());
+                    //    log("deposit1: " + deposit1.ToString());
+                    //    log("deposit2: " + deposit2.ToString());
                     //  log("action: " + action);
-                    log("reward: " + reward.ToString());
+                    //    log("reward: " + reward.ToString());
                     //  log("closeValue: " + closeValue.ToString());
                     //   log("presentLine: " + presentLine);
 
@@ -376,8 +382,16 @@ namespace Экспертная_система
             string reportLineExit = date1.ToString() + ';' + deposit1.ToString() + ';' + deposit2.ToString() + ';' + action + ';' + closeValue.ToString() + ';';
             report.Add(reportLineExit);
 
-            //завершение всех операций и запись отчёта
-            File.WriteAllLines(path_prefix + expertName + "\\report.csv", report);
+            // запись отчёта
+            if (reportPath == "" || reportPath == null)
+            {
+                if (H.getValueByName("report_path") == null)
+                    reportPath = path_prefix + expertName;
+                else
+                    reportPath = H.getValueByName("report_path");
+            }
+            File.WriteAllLines(reportPath + "\\report.csv", report);
+
 
             H.setValueByName("expert_target_function", deposit2.ToString().Replace(',', '.'));
             return "expert has been tested";
