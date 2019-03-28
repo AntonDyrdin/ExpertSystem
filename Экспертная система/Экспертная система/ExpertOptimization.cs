@@ -46,8 +46,6 @@ namespace Экспертная_система
 
             this.agentManager = form1.I.agentManager;
 
-            //  for (int i = 0; i < population_value; i++) { population[i] = new Hyperparameters(expert.H.toJSON(0), form1); }
-
             name = expert.expertName;
 
             try { Directory.Delete(form1.pathPrefix + "Optimization\\" + name, true); } catch { }
@@ -117,45 +115,11 @@ namespace Экспертная_система
                     //  variablesVisualizer.addPoint(expert.deposit1History[i], "deposit1 [0]");
                 }
 
-              //  population[0] = new Hyperparameters(expert.H.toJSON(0), form1);
                 for (int i = 0; i < population_value; i++)
                 {
-                  population[i]=  Copy(expert.H, form1.pathPrefix + "Optimization\\" + name + "\\" + expert.expertName + "[0]" + "\\", form1.pathPrefix + "Optimization\\" + name + "\\" + expert.expertName + "[" + i.ToString() + "]" + "\\");
+                    population[i] = Copy(expert.H, form1.pathPrefix + "Optimization\\" + name + "\\" + expert.expertName + "[0]" + "\\", form1.pathPrefix + "Optimization\\" + name + "\\" + expert.expertName + "[" + i.ToString() + "]" + "\\");
                 }
-                //сохранение параметров нулевого индивида перед копированием, так как  Algorithm.CopyFiles() автоматически исправляет пути сохранения файлов после копирования
-                /*   
-
-                   for (int i = 1; i < population_value; i++)
-                   {
-                       //извлечение ранее сохранённых параметров
-                       expert.H = new Hyperparameters(population[0].toJSON(0), form1);
-                       var algorithmBranches = expert.H.getNodesByparentID(expert.committeeNodeID);
-                       for (int j = 0; j < algorithmBranches.Count; j++)
-                       {
-                           new_save_folder = form1.pathPrefix + "Optimization\\" + name + "\\" + expert.expertName + "[" + i.ToString() + "]" + "\\" + expert.algorithms[j].getValueByName("model_name") + "\\";
-                           //новые пути прописываются в json.txt автоматически, если передать объект Hyperparameters по ссылке, а не по значению
-                           expert.algorithms[j].h = new Hyperparameters(expert.H.toJSON(algorithmBranches[j].ID), form1);
-                           Algorithm.CopyFiles(expert.algorithms[j].h, expert.algorithms[j].h.getValueByName("save_folder"), new_save_folder);
-                       }
-                       expert.synchronizeHyperparameters();
-                       population[i] = new Hyperparameters(expert.H.toJSON(0), form1);
-                       population[i].setValueByName("name", population[i].nodes[0].name() + "[" + i.ToString() + "]");
-                   }
-
-                   for (int i = 0; i < population_value; i++)
-                   {
-                       population[i].setValueByName("report_path", form1.pathPrefix + "Optimization\\" + name + "\\" + expert.expertName + "[" + i.ToString() + "]");
-                       /*  expert.H = population[i];
-                         var algorithmBranches = population[i].getNodesByparentID(expert.committeeNodeID);
-                         for (int j = 0; j < algorithmBranches.Count; j++)
-                         {
-                              expert.algorithms[j].h = new Hyperparameters(population[i].toJSON(algorithmBranches[j].ID), form1);
-                         }
-                         expert.synchronizeHyperparameters();   */
-                /*     File.WriteAllText(form1.pathPrefix + "Optimization\\" + name + "\\" + expert.expertName + "[" + i.ToString() + "]" + "\\json.txt", population[i].toJSON(0), System.Text.Encoding.Default);
-                     // expert.Save();
-                 }
-                      */
+               
                 variablesIDs.Clear();
                 recurciveVariableAdding(population[0], 0, name + "[0]");
                 /*   for (int i = 1; i < population_value; i++)
@@ -204,19 +168,21 @@ namespace Экспертная_система
                     }
                     agentManager.tasks.Clear();
 
-                    expert.H = population[i];
-                    expert.synchronizeHyperparameters();
-                    expert.Save(form1.pathPrefix + "Optimization\\" + name + "\\" + expert.expertName + "[" + i.ToString() + "]");
+
+                    //   expert.synchronizeHyperparameters();
+                    File.WriteAllText(form1.pathPrefix + "Optimization\\" + name + "\\" + name + "[" + i.ToString() + "]" + "\\json.txt", population[i].toJSON(0), System.Text.Encoding.Default);
                 }
 
 
                 //Тестирование (вычисление целевой функции)
                 for (int i = Convert.ToInt16(Math.Round(population_value * elite_ratio)); i < population_value; i++)
                 {
-                    expert.H = population[i];
+                    
+                    expert = Expert.Open(form1.pathPrefix + "Optimization\\" + name + "\\" + name + "[" + i.ToString() + "]", name, form1);
                     expert.test(date1, date2, rawDatasetFilePath);
-                    //отрисовка истрии баланса
 
+                    population[i]= expert.H.Clone();
+                    //отрисовка истрии баланса
                     foreach (Function func in variablesVisualizer.parameters[1 + i].functions)
                         func.points.Clear();
 
@@ -337,7 +303,7 @@ namespace Экспертная_система
 
         private Hyperparameters get_child(Hyperparameters parent1, Hyperparameters parent2, Hyperparameters old)
         {
-            Hyperparameters child = new Hyperparameters(old.toJSON(0), form1);
+            Hyperparameters child = old.Clone();
 
             foreach (int variableID in variablesIDs)
             {
@@ -418,7 +384,7 @@ namespace Экспертная_система
 
         public Hyperparameters Copy(Hyperparameters individ, string source, string destination)
         {
-            Hyperparameters H = new Hyperparameters(individ.toJSON(0), form1);
+            Hyperparameters H = individ.Clone();
 
             var algorithmBranches = H.getNodesByparentID(H.getNodeByName("committee")[0].ID);
 
@@ -440,11 +406,13 @@ namespace Экспертная_система
             //приращение новых записей к узлу  "committee"
             for (int i = 0; i < algorithmBranches.Count; i++)
             {
-                H.addBranch(hs[i], hs[i].getValueByName("model_name"), H.getNodeByName("committee")[0].ID);
+                H.addBranch(hs[i], hs[i].nodes[0].name(), H.getNodeByName("committee")[0].ID);
             }
 
             H.setValueByName("report_path", destination);
+            H =H.Clone();
             File.WriteAllText(destination + "\\json.txt", H.toJSON(0), System.Text.Encoding.Default);
+
             return H;
         }
 

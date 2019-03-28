@@ -52,6 +52,7 @@ namespace Экспертная_система
                 {
                     //ПЕРЕПОДКЛЮЧЕНИЕ
                     client.Close();
+                    System.Threading.Thread.Sleep(100);
                     log("СОЕДИНЕНИЕ ЗАКРЫТО " + DateTime.Now.TimeOfDay.ToString(), Color.Yellow);
                     try
                     {
@@ -70,11 +71,11 @@ namespace Экспертная_система
                 if (command == "train")
                 {
                     recieveFile(reader, workFolder + "json.txt");
-                    System.Threading.Thread.Sleep(100);
+                    System.Threading.Thread.Sleep(10);
                     recieveFile(reader, workFolder + "train_script.py");
-                    System.Threading.Thread.Sleep(100);
+                    System.Threading.Thread.Sleep(10);
                     recieveFile(reader, workFolder + "input_file.txt");
-                    System.Threading.Thread.Sleep(100);
+                    System.Threading.Thread.Sleep(10);
 
                     algorithm = new DefaultAlgorithmImpl(form1, "Default");
                     algorithm.Open(new Hyperparameters(File.ReadAllText(workFolder + "json.txt"), form1));
@@ -94,11 +95,11 @@ namespace Экспертная_система
                         sendCommand(writer, algorithm.trainingReport);
                         File.WriteAllText(algorithm.h.getValueByName("json_file_path"), algorithm.h.toJSON(0), Encoding.Default);
                         sendFile(writer, algorithm.h.getValueByName("json_file_path"));
-                        System.Threading.Thread.Sleep(100);
+                        System.Threading.Thread.Sleep(10);
                         sendFile(writer, algorithm.h.getValueByName("predictions_file_path"));
-                        System.Threading.Thread.Sleep(100);
+                        System.Threading.Thread.Sleep(10);
                         sendFile(writer, algorithm.h.getValueByName("save_folder") + "weights.h5");
-                        System.Threading.Thread.Sleep(100);
+                        System.Threading.Thread.Sleep(10);
                     }
                     else
                         sendCommand(writer, "Произошла ошибка при запуске скрипта обучения, подробности в консоли агента.");

@@ -33,7 +33,10 @@ namespace Экспертная_система
         public List<Node> nodes = new List<Node>();
         public int Y = 0;
         public bool lightsOn = false;
-
+        public Hyperparameters Clone()
+        {
+            return new Hyperparameters(this.toJSON(0), form1);
+        }
         public void replaceStringInAllValues(string oldString, string newString)
         {
             for (int i = 0; i < nodes.Count; i++)

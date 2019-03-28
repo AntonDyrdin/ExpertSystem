@@ -383,12 +383,10 @@ namespace Экспертная_система
             report.Add(reportLineExit);
 
             // запись отчёта
+            reportPath = H.getValueByName("report_path");
             if (reportPath == "" || reportPath == null)
             {
-                if (H.getValueByName("report_path") == null)
-                    reportPath = path_prefix + expertName;
-                else
-                    reportPath = H.getValueByName("report_path");
+                reportPath = path_prefix + expertName;
             }
             File.WriteAllLines(reportPath + "\\report.csv", report);
 
@@ -594,32 +592,31 @@ namespace Экспертная_система
         }
         public static Expert Open(string expertName, Form1 form1)
         {
+           return Open(form1.pathPrefix + expertName, form1);
+        }
+        public static Expert Open(string path, string expertName, Form1 form1)
+        {
             Expert expert = new Expert(expertName, form1, true);
 
-            foreach (string expertFolder in Directory.GetDirectories(expert.path_prefix))
+            expert.H = new Hyperparameters(File.ReadAllText(path + "\\json.txt", System.Text.Encoding.Default), form1);
+            expert.committeeNodeID = expert.H.getNodeByName("committee")[0].ID;
+            var algorithmBranches = expert.H.getNodesByparentID(expert.committeeNodeID);
+            foreach (Node algorithmBranch in algorithmBranches)
             {
-                if (Path.GetFileName(expertFolder) == expertName)
-                {
-                    expert.H = new Hyperparameters(File.ReadAllText(expertFolder + "\\json.txt", System.Text.Encoding.Default), form1);
-                    expert.committeeNodeID = expert.H.getNodeByName("committee")[0].ID;
-                    var algorithmBranches = expert.H.getNodesByparentID(expert.committeeNodeID);
-                    foreach (Node algorithmBranch in algorithmBranches)
-                    {
-                        // Type t = Type.GetType("Namespace." + algorithmBranch.name());
-                        //  object cc = Activator.CreateInstance(t);
+                // Type t = Type.GetType("Namespace." + algorithmBranch.name());
+                //  object cc = Activator.CreateInstance(t);
 
-                        if (algorithmBranch.name() == "LSTM_1")
-                            expert.algorithms.Add(new LSTM_1(form1, "LSTM_1"));
-                        if (algorithmBranch.name() == "LSTM_2")
-                            expert.algorithms.Add(new LSTM_2(form1, "LSTM_2"));
-                        if (algorithmBranch.name() == "ANN_1")
-                            expert.algorithms.Add(new ANN_1(form1, "ANN_1"));
+                if (algorithmBranch.name() == "LSTM_1")
+                    expert.algorithms.Add(new LSTM_1(form1, "LSTM_1"));
+                if (algorithmBranch.name() == "LSTM_2")
+                    expert.algorithms.Add(new LSTM_2(form1, "LSTM_2"));
+                if (algorithmBranch.name() == "ANN_1")
+                    expert.algorithms.Add(new ANN_1(form1, "ANN_1"));
 
-                        expert.algorithms[expert.algorithms.Count - 1].h = new Hyperparameters(expert.H.toJSON(algorithmBranch.ID), form1);
-                        expert.algorithms[expert.algorithms.Count - 1].modelName = expert.algorithms[expert.algorithms.Count - 1].h.getValueByName("model_name");
-                    }
-                }
+                expert.algorithms[expert.algorithms.Count - 1].h = new Hyperparameters(expert.H.toJSON(algorithmBranch.ID), form1);
+                expert.algorithms[expert.algorithms.Count - 1].modelName = expert.algorithms[expert.algorithms.Count - 1].h.getValueByName("model_name");
             }
+
             return expert;
         }
         public string Save()
