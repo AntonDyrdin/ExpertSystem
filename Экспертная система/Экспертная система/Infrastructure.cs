@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Runtime.InteropServices;
+
 namespace Экспертная_система
 {
     public class Infrastructure
@@ -58,6 +60,24 @@ namespace Экспертная_система
 
           
         }
+        /// <summary>
+        /// Исправление блюра при включенном масштабировании в ОС windows 8 и выше
+        /// </summary>
+        public static void DpiFix()
+        {
+            if (Environment.OSVersion.Version.Major >= 6)
+            {
+                SetProcessDPIAware();
+            }
+        }
+
+        /// <summary>
+        /// WinAPI SetProcessDPIAware 
+        /// </summary>
+        /// <returns></returns>
+        [DllImport("user32.dll")]
+        private static extern bool SetProcessDPIAware();
+
         public void startAgentManager()
         {   
             agentManager = new AgentManager(this.form1);

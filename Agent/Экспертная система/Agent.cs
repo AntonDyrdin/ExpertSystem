@@ -33,6 +33,7 @@ namespace Экспертная_система
             try
             {
                 client = new TcpClient(address, port);
+                log("ПОДКЛЮЧЕНО " + DateTime.Now.TimeOfDay.ToString(), Color.Yellow);
             }
             catch
             {

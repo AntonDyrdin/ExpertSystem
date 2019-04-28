@@ -84,6 +84,11 @@ namespace Экспертная_система
             string stateInString = "A[0]:" + committeeResponse[0].ToString();
             for (int i = 1; i < committeeResponse.Length; i++)
             {
+                if (committeeResponse[i] == -1)
+                {
+                    stateInString = "error";
+                    break;
+                }
                 stateInString += ",A[" + i.ToString() + "]:" + committeeResponse[i].ToString();
             }
             return stateInString;
@@ -92,8 +97,6 @@ namespace Экспертная_система
         //возвращает  действие, о котором было принято решение
         public string getDecision(double[] committeeResponse)
         {
-
-
             return DMS.getAction(getStateStr()).type;
             /* 
              double decision = 0;
@@ -164,8 +167,12 @@ namespace Экспертная_система
             {
                 committeeResponse[i] = getPredTasks[i].Result;
 
+                if (committeeResponse[i] < 0)
+                    committeeResponse[i] = -1;
+                else
                 if (committeeResponse[i] > 0.5)
                     committeeResponse[i] = 1;
+                else
                 if (committeeResponse[i] < 0.5)
                     committeeResponse[i] = 0;
             }
@@ -259,7 +266,6 @@ namespace Экспертная_система
                     string rawInputLine = input[input.Length - 1];
 
 
-                    string stateInString = "";
                     if (dateExist)
                     {
                         // ГЕНЕРАЦИЯ МАТРИЦЫ INPUT
@@ -285,7 +291,12 @@ namespace Экспертная_система
                         DMS.setActualState(getStateStr());
                         //Отправка запроса к системе принятия решений
                         action = getDecision(committeeResponse);
-
+                        if (action == "error")
+                        {
+                            deposit1 = 0;
+                            deposit2 = 0;
+                            break;
+                        }
                         if (action == "buy")
                         {
                             if (closeValue != 0)
@@ -592,7 +603,7 @@ namespace Экспертная_система
         }
         public static Expert Open(string expertName, Form1 form1)
         {
-           return Open(form1.pathPrefix + expertName, form1);
+            return Open(form1.pathPrefix + expertName, form1);
         }
         public static Expert Open(string path, string expertName, Form1 form1)
         {

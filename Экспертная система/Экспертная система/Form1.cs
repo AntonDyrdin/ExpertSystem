@@ -34,16 +34,19 @@ namespace Экспертная_система
         ExpertOptimization optimization;
         public void Form1_Load(object sender, EventArgs e)
         {
+            Infrastructure.DpiFix();
+
             I = new Infrastructure(this);
             vis = new MultiParameterVisualizer(picBox, this);
             I.startAgentManager();
+            
             pathPrefix = I.h.getValueByName("path_prefix");
             log("");
             log("");
 
             //mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { buildAndTest(); });
-            //     mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { algorithmOptimization(); });
-            mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { expertOptimization(); });
+                 mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { algorithmOptimization(); });
+          //  mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { expertOptimization(); });
         }
         public void expertOptimization()
         {
@@ -51,7 +54,7 @@ namespace Экспертная_система
 
             expert = new Expert("Эксперт 1", this);
 
-            expert.Add(new LSTM_1(this, "LSTM_1[0]"));
+          //  expert.Add(new LSTM_1(this, "LSTM_1[0]"));
             expert.Add(new ANN_1(this, "ANN_1[0]"));
 
             expert.H.add("normalize:true");
@@ -116,7 +119,7 @@ namespace Экспертная_система
             algorithm.h.add("drop_columns:none");
             algorithm.h.add("predicted_column_index:3");
             algorithm.h.add("name:show_train_charts,value:False");
-            AO = new AlgorithmOptimization(algorithm, this, 8, 20, 0.25, 500);
+            AO = new AlgorithmOptimization(algorithm, this, 16, 4, 0.5, 500);
             AO.run();
             // algorithm.h.draw(0, picBox, this, 15, 150);
             // algorithm.Save();

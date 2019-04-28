@@ -271,7 +271,7 @@ namespace Экспертная_система
 
             }
             accuracy = Convert.ToDouble(rightCount) / Convert.ToDouble(rightCount + leftCount) * 100;
-            stdDev = Math.Sqrt(sqrtSum / inc);
+            stdDev = Math.Sqrt(sqrtSum / inc );
 
             if (double.IsNaN(accuracy))
                 accuracy = 0;

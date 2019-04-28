@@ -1,1 +1,0 @@
-{"Ёксперт 1":{"committee":},"normalize":{"value":"true"},"input_file":{"value":"D:\\Anton\\Desktop\\MAIN\\¬ременные р€ды\\EURRUB-dataset.txt"},"path_prefix":{"value":"D:\\Anton\\Desktop\\MAIN\\"},"drop_columns":{"value":"none"},"predicted_column_index":{"value":"3"},"show_train_charts":{"value":"False"}}}

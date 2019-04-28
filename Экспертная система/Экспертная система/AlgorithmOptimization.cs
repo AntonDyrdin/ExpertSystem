@@ -42,20 +42,17 @@ namespace Экспертная_система
 
             this.agentManager = form1.I.agentManager;
 
-            for (int i = 0; i < population_value; i++) { population[i] = new Hyperparameters(algorithm.h.toJSON(0), form1); }
-
             name = algorithm.name;
 
             try { Directory.Delete(form1.pathPrefix + "Optimization\\" + name, true); } catch { }
 
-            refreshAOTree();
             variablesVisualizer.enableGrid = false;
+            variablesVisualizer.addParameter("best individ", Color.LightCyan, 300);
             variablesVisualizer.addParameter("target_function", Color.LightCyan, 300);
-
             //добавление переменных в  MultiParameterVisualizer
             for (int i = 0; i < population_value; i++)
-                variablesVisualizer.parameters[0].functions.Add(new Function(" [" + i.ToString() + "]", valueToColor(0, population_value, population_value - i - 1)));
-            recurciveVariableAdding(algorithm.h, 0, name + "[0]");
+                variablesVisualizer.parameters[1].functions.Add(new Function(" [" + i.ToString() + "]", valueToColor(0, population_value, population_value - i - 1)));
+            recurciveVariableAdding(algorithm.h, 0, "0");
             //добавление первых точек в  MultiParameterVisualizer
             // variableChangeMonitoring();
             //   variablesVisualizer.addPoint(0, "target_function");
@@ -104,15 +101,15 @@ namespace Экспертная_система
                 for (int i = 0; i < population_value; i++)
                 {
                     population[i] = new Hyperparameters(algorithm.h.toJSON(0), form1);
+                    population[i].setValueByName("code", i.ToString());
                     population[i].setValueByName("model_name", population[i].nodes[0].name() + "[" + i.ToString() + "]");
-
                     new_save_folder = form1.pathPrefix + "Optimization\\" + name + "\\" + name + "[" + i.ToString() + "]" + "\\";
                     Algorithm.CopyFiles(population[i], algorithm.h.getValueByName("save_folder"), new_save_folder);
                 }
                 for (int i = 1; i < population_value; i++)
                 {
                     variablesIDs.Clear();
-                    recurciveVariableAdding(population[i], 0, population[i].getValueByName("model_name"));
+                    recurciveVariableAdding(population[i], 0, population[i].getValueByName("code"));
                 }
             }
             else
@@ -128,26 +125,60 @@ namespace Экспертная_система
 
                 if (agentManager.agents.Count == 0)
                 {
-                    for (int i = Convert.ToInt16(Math.Round(population_value * elite_ratio)); i < population_value; i++)
+                    //  for (int i = Convert.ToInt16(Math.Round(population_value * elite_ratio)); i < population_value; i++)
+
+                    //   ВВЕДЕНО МНОГОКРАТНОЕ ТЕСТИРОВНИЕ ИНДИВИДОВ ВСЕХ КАТЕГОРИЙ ДЛЯ ПОВЫШЕНИЯ ПОВТОРЯЕМОСТИ РЕЗУЛЬТАТОВ
+                    int test_count = 6;
+                    //   target_functions - матрица результатов тестирования,
+                    //   где номер строки (первый индекс (i)) - индекс индивида, а номер столбца (второй индекс (j)) - итерация тестирования
+                    double[,] target_functions = new double[population_value, test_count];
+                    for (int j = 0; j < test_count; j++)
+                        for (int i = 0; i < population_value; i++)
+                        {
+                            algorithm.h = new Hyperparameters(population[i].toJSON(0), form1);
+                            algorithm.train().Wait();
+                            population[i] = new Hyperparameters(algorithm.h.toJSON(0), form1);
+                            target_functions[i, j] = Convert.ToDouble(population[i].getValueByName("target_function").Replace('.', ','));
+                        }
+
+
+                    //вычисление итоговых значений критерия оптимальности
+                    for (int i = 0; i < population_value; i++)
                     {
-                        algorithm.h = new Hyperparameters(population[i].toJSON(0), form1);
-                        algorithm.train().Wait();
-                        population[i] = new Hyperparameters(algorithm.h.toJSON(0), form1);
+                        double sum = 0;
+
+                        // AVG
+                        for (int j = 0; j < test_count; j++)
+                            sum += target_functions[i, j];
+                        double AVG = sum / test_count;
+
+                        sum = 0;
+                        // StdDev
+                        for (int j = 0; j < test_count; j++)
+                            sum += (AVG - target_functions[i, j]) * (AVG - target_functions[i, j]);
+
+                        double StdDev = Math.Sqrt(sum / test_count );
+
+                        // если  target_function равна  (AVG - StdDev), то последующее вычисление критерия оптимальности будет давать результаты ВЫШЕ, чем  target_function
+                        population[i].setValueByName("target_function", (AVG - StdDev).ToString().Replace(',', '.'));
+                        population[i].setValueByName("target_function_AVG", (AVG).ToString().Replace(',', '.'));
+                        population[i].setValueByName("target_function_StdDev", (StdDev).ToString().Replace(',', '.'));
                         File.WriteAllText(population[i].getValueByName("json_file_path"), population[i].toJSON(0), System.Text.Encoding.Default);
                     }
                 }
                 else
                 {
-                    for (int i = Convert.ToInt16(Math.Round(population_value * elite_ratio)); i < population_value; i++)
+                    for (int i = 0; i < population_value; i++)
                     {
                         agentManager.tasks.Add(new AgentTask("train", population[i]));
                     }
 
                     Task.Factory.StartNew(() => { agentManager.work(); }).Wait();
 
-                    for (int i = Convert.ToInt16(Math.Round(population_value * elite_ratio)); i < population_value; i++)
+                    for (int i = 0; i < population_value; i++)
                     {
-                        population[i] = agentManager.tasks[i - Convert.ToInt16(Math.Round(population_value * elite_ratio))].h;
+                        // population[i] = agentManager.tasks[i - Convert.ToInt16(Math.Round(population_value * elite_ratio))].h;
+                        population[i] = agentManager.tasks[i].h;
                         File.WriteAllText(population[i].getValueByName("json_file_path"), population[i].toJSON(0), System.Text.Encoding.Default);
                     }
                     agentManager.tasks.Clear();
@@ -182,7 +213,8 @@ namespace Экспертная_система
 
             }
 
-            for (int i = 0; i < population_value; i++) population[i].setValueByName("model_name", population[i].nodes[0].name() + "[" + i.ToString() + "]");
+            for (int i = 0; i < population_value; i++)
+                population[i].setValueByName("model_name", population[i].nodes[0].name() + "[" + i.ToString() + "]");
 
             log("Обновление отображаемых параметров", Color.Lime);
 
@@ -191,7 +223,9 @@ namespace Экспертная_система
 
             variableChangeMonitoring();
 
-            for (int i = 0; i < population_value; i++) variablesVisualizer.addPoint(Convert.ToDouble(population[i].getValueByName("target_function").Replace('.', ',')), " [" + i.ToString() + "]");
+            for (int i = 0; i < population_value; i++)
+                variablesVisualizer.addPoint(Convert.ToDouble(population[i].getValueByName("target_function").Replace('.', ',')), " [" + population[i].getValueByName("code") + "]");
+            variablesVisualizer.addPoint(Convert.ToDouble(population[0].getValueByName("target_function").Replace('.', ',')), "best individ");
 
             variablesVisualizer.refresh();
         }
@@ -214,19 +248,19 @@ namespace Экспертная_система
                 {
                     int newValue = r.Next(Convert.ToInt32(population[individIndex].nodes[variableIndex].getAttributeValue("min")), Convert.ToInt32(population[individIndex].nodes[variableIndex].getAttributeValue("max")) + 1);
                     population[individIndex].nodes[variableIndex].setAttribute("value", newValue.ToString());
-                    log("individIndex = " + individIndex.ToString() + "; variableIndex = " + variableIndex.ToString()+" ("+population[individIndex].nodes[variableIndex].name()+")" + "; newValue = " + newValue.ToString(), Color.White);
+                    log("individIndex = " + individIndex.ToString() + "; variableIndex = " + variableIndex.ToString() + " (" + population[individIndex].nodes[variableIndex].name() + ")" + "; newValue = " + newValue.ToString(), Color.White);
 
                 }
                 else
                 {
                     double newValue = r.NextDouble();
-
-                    while (newValue > Convert.ToDouble(population[individIndex].nodes[variableIndex].getAttributeValue("min").Replace('.', ',')) && newValue < Convert.ToDouble(population[individIndex].nodes[variableIndex].getAttributeValue("max").Replace('.', ',')))
+                  
+                    while (newValue < Convert.ToDouble(population[individIndex].nodes[variableIndex].getAttributeValue("min").Replace('.', ',')) | newValue > Convert.ToDouble(population[individIndex].nodes[variableIndex].getAttributeValue("max").Replace('.', ',')))
                     {
                         newValue = r.NextDouble();
                     }
                     log("individIndex = " + individIndex.ToString() + "; variableIndex = " + variableIndex.ToString() + " (" + population[individIndex].nodes[variableIndex].name() + ")" + "; newValue = " + newValue.ToString(), Color.White);
-                    population[individIndex].nodes[variableIndex].setAttribute("value", newValue.ToString().Replace(',', '.'));
+                    population[individIndex].nodes[variableIndex].setAttribute("value", newValue.ToString().Replace(',', '.'));     
                 }
             }
         }
@@ -314,8 +348,8 @@ namespace Экспертная_система
             foreach (Hyperparameters individ in population)
                 foreach (int variableID in variablesIDs)
                 {
-                    string variableName = individ.getValueByName("model_name") + " " + individ.getNodeById(variableID).name() + " id=" + variableID.ToString();
-                    string value = individ.nodes[variableID].getValue();
+                    string variableName = individ.getValueByName("code") + " " + individ.getNodeById(variableID).name() + " id=" + variableID.ToString();
+                    string value = individ.nodes[variableID].getValue().Replace('.',',');
                     variablesVisualizer.addPoint(value, variableName);
                 }
         }

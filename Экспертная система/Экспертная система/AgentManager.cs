@@ -148,21 +148,21 @@ namespace Экспертная_система
                             sendCommand(writer, "train");
 
                             sendFile(writer, task.h.getValueByName("json_file_path"));
-                            System.Threading.Thread.Sleep(100);
+                            System.Threading.Thread.Sleep(10);
                             sendFile(writer, task.h.getValueByName("train_script_path"));
-                            System.Threading.Thread.Sleep(100);
+                            System.Threading.Thread.Sleep(10);
                             sendFile(writer, task.h.getValueByName("input_file"));
-                            System.Threading.Thread.Sleep(100);
+                            System.Threading.Thread.Sleep(10);
                             var trainingReport = recieveCommand(reader);
                             // log(trainingReport);
                             if (!trainingReport.Contains("Произошла ошибка"))
                             {
                                 recieveFile(reader, task.h.getValueByName("json_file_path"));
-                                System.Threading.Thread.Sleep(100);
+                                System.Threading.Thread.Sleep(10);
                                 recieveFile(reader, task.h.getValueByName("predictions_file_path"));
-                                System.Threading.Thread.Sleep(100);
+                                System.Threading.Thread.Sleep(10);
                                 recieveFile(reader, task.h.getValueByName("save_folder") + "weights.h5");
-                                System.Threading.Thread.Sleep(100);
+                                System.Threading.Thread.Sleep(10);
                                 Hyperparameters hTemp = new Hyperparameters(File.ReadAllText(task.h.getValueByName("json_file_path"), Encoding.Default), form1);
                                 hTemp.setValueByName("json_file_path", task.h.getValueByName("json_file_path"));
                                 hTemp.setValueByName("predictions_file_path", task.h.getValueByName("predictions_file_path"));
@@ -201,19 +201,19 @@ namespace Экспертная_система
         }
         public void sendCommand(BinaryWriter writer, string Command)
         {
-            log("SEND: " + Command);
+          //  log("SEND: " + Command);
             writer.Write(Command);
 
         }
         public string recieveCommand(BinaryReader reader)
         {
             var Command = reader.ReadString();
-            log("RECIEVE: " + Command);
+          //  log("RECIEVE: " + Command);
             return Command;
         }
         void sendFile(BinaryWriter writer, string path)
         {
-            log("SEND: " + path);
+         //   log("SEND: " + path);
             writer.Write(Encoding.Default.GetString(File.ReadAllBytes(path)));
         }
         void recieveFile(BinaryReader reader, string savePath)
@@ -221,7 +221,7 @@ namespace Экспертная_система
             string message = reader.ReadString(); ;
             var file = Encoding.Default.GetBytes(message);
             File.WriteAllBytes(savePath, file);
-            log("RECIEVE: " + savePath);
+           // log("RECIEVE: " + savePath);
         }
 
 

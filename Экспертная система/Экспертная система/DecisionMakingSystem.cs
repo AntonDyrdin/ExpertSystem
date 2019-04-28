@@ -128,6 +128,13 @@ namespace Экспертная_система
         }
         public DMSAction getAction(string str)
         {
+
+            if (str == "error")
+            {
+                var errrorA = new DMSAction("error");
+                return errrorA;
+            }
+
             return getAction(getStateByString(str));
         }
         public DMSAction getAction(State state)

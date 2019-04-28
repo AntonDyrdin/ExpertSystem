@@ -58,8 +58,8 @@
     </Compile>
     <Compile Include="Hyperparameters.cs" />
     <Compile Include="ImgDataset.cs" />
-    <Compile Include="Infrastructure.cs" />
     <Compile Include="ExpertOptimization.cs" />
+    <Compile Include="Infrastructure.cs" />
     <Compile Include="Алгоритмы прогнозирования\ANN_1\ANN 1.cs" />
     <Compile Include="Алгоритмы прогнозирования\LSTM_1\LSTM 1.cs" />
     <Compile Include="Алгоритмы прогнозирования\LSTM_2\LSTM 2.cs" />

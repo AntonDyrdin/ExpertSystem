@@ -33,7 +33,6 @@ namespace Экспертная_система
             h.addVariable(_5stLayer, "activation", "sigmoid", "sigmoid,linear");
 
             int _6stLayer = h.addByParentId(NNscructNodeId, "name:layer6,value:Dropout");
-            h.addVariable(_6stLayer, "neurons_count", 2, 10, 1, 10);
             h.addVariable(_6stLayer, "dropout", 0.01, 0.8, 0.01, 0.1);
 
             int _7stLayer = h.addByParentId(NNscructNodeId, "name:layer7,value:Dense");
@@ -42,12 +41,12 @@ namespace Экспертная_система
             //////////////////////
             //ПАРАМЕТРЫ ОБУЧЕНИЯ//
             //////////////////////
-            h.addVariable(0, "number_of_epochs", 1, 10, 1, 1);
+            h.addVariable(0, "number_of_epochs", 1, 20, 1, 1);
             h.add("start_point:0");
             h.add("split_point:0.9");
             h.addVariable(0, "batch_size", 10, 300, 1, 43);
             h.add("name:loss,value:mean_squared_error");
-            h.add("name:optimizer,value:adam");
+          //  h.add("name:optimizer,value:adam");
             h.addVariable(0, "optimizer", "rmsprop", "adam,rmsprop");
             h.addVariable(0, "window_size", 2, 120, 1, 102);
         }
