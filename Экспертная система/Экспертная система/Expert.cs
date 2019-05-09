@@ -43,11 +43,16 @@ namespace Экспертная_система
         public List<double> deposit2History;
         public List<double> closeValueHistory;
         public List<string> actionHistory;
+        public List<double[]> committeeResponseHistory;
         public double[] committeeResponse;
         public string presentLine;
         public List<string> report;
         public DecisionMakingSystem DMS;
-        public void load(string expertName, Form1 form1)
+
+        private bool multiThreadPrediction = false;
+
+        double Purchase = 0;
+        public void buildNew(string expertName, Form1 form1)
         {
             this.form1 = form1;
             path_prefix = form1.pathPrefix;
@@ -57,14 +62,15 @@ namespace Экспертная_система
             committeeNodeID = H.add("name:committee");
             this.expertName = expertName;
             report = new List<string>();
-
+            H.setValueByName("report_path", path_prefix + expertName + '\\');
             DMS = new DecisionMakingSystem(form1);
-
-
+            H.addVariable(0, "epsilon", 0.001, 0.99, 0.01, 0.05);
+            H.addVariable(0, "alpha", 0.001, 0.99, 0.01, 0.9);
+            H.addVariable(0, "gamma", 0.001, 0.99, 0.01, 0.5);
         }
         public Expert(string expertName, Form1 form1)
         {
-            load(expertName, form1);
+            buildNew(expertName, form1);
 
             foreach (string expertFolder in Directory.GetDirectories(path_prefix))
             {
@@ -76,21 +82,38 @@ namespace Экспертная_система
         }
         public Expert(string expertName, Form1 form1, bool DoNotDeleteExpertFolder)
         {
-            load(expertName, form1);
+            buildNew(expertName, form1);
         }
 
         public string getStateStr()
         {
-            string stateInString = "A[0]:" + committeeResponse[0].ToString();
-            for (int i = 1; i < committeeResponse.Length; i++)
+            string stateInString = "";
+            for (int i = 0; i < committeeResponse.Length; i++)
             {
                 if (committeeResponse[i] == -1)
                 {
                     stateInString = "error";
                     break;
                 }
-                stateInString += ",A[" + i.ToString() + "]:" + committeeResponse[i].ToString();
+                stateInString += "A[" + i.ToString() + "]:" + committeeResponse[i].ToString() + ',';
             }
+            stateInString = stateInString.Remove(stateInString.Length - 1, 1);
+
+            if (deposit1 == 0)
+                stateInString += ",DEP1:0";
+            else
+                stateInString += ",DEP1:1";
+
+            if (deposit2 < closeValueHistory[closeValueHistory.Count - 1])
+                stateInString += ",DEP2:0";
+            else
+                stateInString += ",DEP2:1";
+
+            if(closeValueHistory[closeValueHistory.Count-1] >Purchase)
+                stateInString += ",HigherThenPurchase:1";
+            else
+                stateInString += ",HigherThenPurchase:0";
+
             return stateInString;
         }
 
@@ -118,6 +141,7 @@ namespace Экспертная_система
             {
                 algorithm.train().Wait();
             }
+            copyHyperparametersFromAlgorithmsToExpert();
 
             if (deleteLowAccModels)
             {
@@ -150,32 +174,50 @@ namespace Экспертная_система
                 log("       " + algorithms[i].modelName + "accuracy = " + algorithms[i].accuracy.ToString());
         }
 
+
         public double[] getPrediction(string[] input)
         {
             committeeResponse = new double[algorithms.Count];
-            Task<double>[] getPredTasks = new Task<double>[algorithms.Count];
-            for (int i = 0; i < algorithms.Count; i++)
+            if (multiThreadPrediction)
             {
-                var algorithm = algorithms[i];
-                getPredTasks[i] = Task.Run(() => algorithm.getPrediction(input));
+                Task<double>[] getPredTasks = new Task<double>[algorithms.Count];
+                for (int i = 0; i < algorithms.Count; i++)
+                {
+                    var algorithm = algorithms[i];
+                    getPredTasks[i] = Task.Run(() => algorithm.getPrediction(input));
+                }
+
+                foreach (var task in getPredTasks)
+                    task.Wait();
+
+
+                for (int i = 0; i < algorithms.Count; i++)
+                {
+                    committeeResponse[i] = getPredTasks[i].Result;
+                }
+            }
+            else
+            {
+
+                for (int i = 0; i < algorithms.Count; i++)
+                {
+                    committeeResponse[i] = algorithms[i].getPrediction(input);
+                }
             }
 
-            foreach (var task in getPredTasks)
-                task.Wait();
-
             for (int i = 0; i < algorithms.Count; i++)
             {
-                committeeResponse[i] = getPredTasks[i].Result;
-
-                if (committeeResponse[i] < 0)
+                if (committeeResponse[i] == -1000)
                     committeeResponse[i] = -1;
                 else
-                if (committeeResponse[i] > 0.5)
+                    if (committeeResponse[i] > 0.5)
                     committeeResponse[i] = 1;
                 else
-                if (committeeResponse[i] < 0.5)
+                    if (committeeResponse[i] < 0.5)
                     committeeResponse[i] = 0;
             }
+
+            committeeResponseHistory.Add(committeeResponse);
             return committeeResponse;
         }
 
@@ -188,8 +230,19 @@ namespace Экспертная_система
             DMS.parameters.Clear();
             DMS.S.Clear();
 
+            DMS.epsilon = Convert.ToDouble(H.getValueByName("epsilon").Replace('.', ','));
+            DMS.alpha = Convert.ToDouble(H.getValueByName("alpha").Replace('.', ','));
+            DMS.gamma = Convert.ToDouble(H.getValueByName("gamma").Replace('.', ','));
+
+            ////////////////////////////////////////////////
+            /////// ПАРАМЕТРЫ СОСТОЯНИЯ СПР ////////////////
             for (int i = 0; i < algorithms.Count; i++)
                 DMS.addParameter("A[" + i.ToString() + "]", "0,1");
+            // состояние депозитов 1 - баланс положительный, 0 - баланс нулевой
+            DMS.addParameter("DEP1", "0,1");
+            DMS.addParameter("DEP2", "0,1");
+            //превышение цены покупки
+            DMS.addParameter("HigherThenPurchase", "0,1");
 
             DMS.defaultActions.Add(new DMSAction("buy"));
             DMS.defaultActions.Add(new DMSAction("sell"));
@@ -197,7 +250,7 @@ namespace Экспертная_система
             DMS.generateStates();
 
 
-
+            committeeResponseHistory = new List<double[]>();
             closeValueHistory = new List<double>();
             deposit1History = new List<double>();
             deposit2History = new List<double>();
@@ -305,6 +358,7 @@ namespace Экспертная_система
                                 {
                                     deposit1 = deposit1 + 1;
                                     deposit2 = deposit2 - closeValue;
+                                    Purchase = closeValue;
                                 }
                                 else
                                 {
@@ -568,25 +622,8 @@ namespace Экспертная_система
             return toWrite;
         }
 
-
-
-        public void synchronizeHyperparameters()
+        public void copyHyperparametersFromAlgorithmsToExpert()
         {
-            //передача параметров эксперта в базы алгоритмов
-            for (int i = 0; i < H.nodes.Count; i++)
-            {
-                if (H.nodes[i].parentID == 0 && H.nodes[i].name() != "committee")
-                {
-
-                    for (int j = 0; j < algorithms.Count; j++)
-                    {
-                        if (algorithms[j].h.getNodeByName(H.nodes[i].name()).Count != 0)
-                            algorithms[j].h.deleteBranch(algorithms[j].h.getNodeByName(H.nodes[i].name())[0].ID);
-                        algorithms[j].h.addNode(H.nodes[i], 0);
-                    }
-                }
-            }
-
             //приращение баз алгоритмов к общей базе эксперта
 
             //  СПИСОК ВЕТВЕЙ АЛГОРИТМОВ
@@ -601,6 +638,23 @@ namespace Экспертная_система
                 H.addBranch(algorithms[i].h, algorithms[i].name, committeeNodeID);
             }
         }
+
+        public void copyExpertParametersToAlgorithms()
+        {
+            //передача параметров эксперта в базы алгоритмов
+            for (int i = 0; i < H.nodes.Count; i++)
+            {
+                if (H.nodes[i].parentID == 0 && H.nodes[i].name() != "committee" & H.nodes[i].getAttributeValue("variable") == null)
+                {
+                    for (int j = 0; j < algorithms.Count; j++)
+                    {
+                        if (algorithms[j].h.getNodeByName(H.nodes[i].name()).Count != 0)
+                            algorithms[j].h.deleteBranch(algorithms[j].h.getNodeByName(H.nodes[i].name())[0].ID);
+                        algorithms[j].h.addNode(H.nodes[i], 0);
+                    }
+                }
+            }
+        }
         public static Expert Open(string expertName, Form1 form1)
         {
             return Open(form1.pathPrefix + expertName, form1);
@@ -609,7 +663,7 @@ namespace Экспертная_система
         {
             Expert expert = new Expert(expertName, form1, true);
 
-            expert.H = new Hyperparameters(File.ReadAllText(path + "\\json.txt", System.Text.Encoding.Default), form1);
+            expert.H = new Hyperparameters(path + "\\json.txt", form1, true);
             expert.committeeNodeID = expert.H.getNodeByName("committee")[0].ID;
             var algorithmBranches = expert.H.getNodesByparentID(expert.committeeNodeID);
             foreach (Node algorithmBranch in algorithmBranches)

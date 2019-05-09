@@ -20,7 +20,7 @@ namespace Экспертная_система
         Random r;
         public double epsilon = 0.05;
         public double alpha = 0.9;
-        public double gamma = 0.1;
+        public double gamma = 0.5;
 
         public PictureBox picBox;
         public Graphics g;
@@ -28,6 +28,9 @@ namespace Экспертная_система
         public bool lightsOn = false;
 
         public int mainDepth = 14;
+
+        int indexOfLastState = 0;
+        int indexOfLastAction = 0;
         public DecisionMakingSystem(Form1 form1)
         {
             r = new Random();
@@ -107,7 +110,7 @@ namespace Экспертная_система
                 }
             }
 
-            lastAction.Q = lastAction.Q + alpha * (r + gamma * Qmax - lastAction.Q);
+            S[indexOfLastState].A[indexOfLastAction].Q = S[indexOfLastState].A[indexOfLastAction].Q + alpha * (r + (gamma * Qmax) - S[indexOfLastState].A[indexOfLastAction].Q);
 
           //  drawQ();
 
@@ -137,6 +140,7 @@ namespace Экспертная_система
 
             return getAction(getStateByString(str));
         }
+
         public DMSAction getAction(State state)
         {
 
@@ -193,6 +197,8 @@ namespace Экспертная_система
             action.attemptsNumber++;
             lastAction = action;
 
+            indexOfLastState = indexOfActualState;
+            indexOfLastAction = S[indexOfActualState].A.IndexOf(action);
             //   log(action.type);
             return action;
         }
@@ -324,6 +330,8 @@ namespace Экспертная_система
                     return S[i];
                 }
             }
+            log("getStateByStr() вернул null str = " + str);
+
             return null;
 
         }

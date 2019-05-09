@@ -10,8 +10,11 @@ def getTime():
     tempTime = time.time()
     return str( offset )[0:5]+" сек."
     
-        
-
+from cntk.device import try_set_default_device, gpu
+import cntk.device as C
+print(C.all_devices())
+print(C.try_set_default_device(C.gpu(0)))
+print(C.use_default_device())        
 import argparse
 import numpy
 import json

@@ -6,6 +6,12 @@ random.seed()
 session=random.getrandbits(16)
 print("session = "+(str)(session))
 
+
+from cntk.device import try_set_default_device, gpu
+import cntk.device as C
+print(C.all_devices())
+print(C.try_set_default_device(C.gpu(0)))
+print(C.use_default_device())  
 import time
 import sys
 import argparse

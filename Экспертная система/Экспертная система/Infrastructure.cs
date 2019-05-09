@@ -20,12 +20,13 @@ namespace Экспертная_система
              h = new Hyperparameters(form1, "Infrastructure");
 
             form1.logBox.Text += (Environment.MachineName);
-            if (Environment.MachineName == "DESKTOP-B3G20T0")
+           if (Environment.MachineName == "DESKTOP-B3G20T0")
             {
-                form1.trackBar1.SetBounds(1000, 1000, 10, 10);
+                form1.logBox.Font = new System.Drawing.Font(form1.logBox.Font.FontFamily, 8);
+              /*  form1.trackBar1.SetBounds(1000, 1000, 10, 10);
                 form1.panel1.SetBounds(500, 0, 900, 650);
                 form1.logBox.SetBounds(0, 0, 500, 650);
-                form1.picBox.SetBounds(0, 0, 900, 100);
+                form1.picBox.SetBounds(0, 0, 900, 100);*/
             }
             /////////чтене файла конфигурации///////////////////////
             var configLines = File.ReadAllLines("CONFIG.txt");

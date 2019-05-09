@@ -47,7 +47,7 @@ namespace Экспертная_система
             h.addVariable(0, "batch_size", 10, 300, 1, 43);
             h.add("name:loss,value:mean_squared_error");
           //  h.add("name:optimizer,value:adam");
-            h.addVariable(0, "optimizer", "rmsprop", "adam,rmsprop");
+            h.addVariable(0, "optimizer", "adam", "adam,rmsprop");
             h.addVariable(0, "window_size", 2, 120, 1, 102);
         }
         public override void Open(string jsonPath)

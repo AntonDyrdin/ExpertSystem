@@ -36,12 +36,31 @@ namespace Экспертная_система
                 mainFontDepth = 14;
             hmin = Convert.ToInt16(mainFontDepth * 3);
         }
-
+        public void Clear(string name)
+        {
+            foreach (ParameterVisualizer visualizer in parameters)
+            {
+                if (visualizer.label == name)
+                {
+                    foreach (Function function in visualizer.functions)
+                    {
+                        function.points.Clear();
+                    }
+                }
+                foreach (Function function in visualizer.functions)
+                {
+                    if (function.label == name)
+                    {
+                        function.points.Clear();
+                    }
+                }
+            }
+        }
         public void addPoint(string value, string name)
         {
             try
             {
-                var doubleValue = Convert.ToDouble(value.Replace('.',','));
+                var doubleValue = Convert.ToDouble(value.Replace('.', ','));
                 addPoint(doubleValue, name);
             }
             catch
@@ -55,7 +74,7 @@ namespace Экспертная_система
                         if (function.label == name)
                         {
                             is_new = false;
-                            visualizer.addPoint(0, name,value);
+                            visualizer.addPoint(0, name, value);
                             goto endOfAddPoint;
                         }
                     }
@@ -167,7 +186,7 @@ namespace Экспертная_система
                 parameters[i].multy = true;
 
             }
-           // parameters[parameters.Count - 1].multy = false;
+            // parameters[parameters.Count - 1].multy = false;
         }
 
         public void addCSV(string file, string name, string columnName, string chartName, int H, double splitPoint, int shift)

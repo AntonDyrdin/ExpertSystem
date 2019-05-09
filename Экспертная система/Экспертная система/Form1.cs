@@ -2,11 +2,6 @@
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Net.Sockets;
 
 namespace Экспертная_система
 {
@@ -31,47 +26,23 @@ namespace Экспертная_система
         public System.Threading.Thread mainThread;
         private AlgorithmOptimization AO;
         private Algorithm algorithm;
-        ExpertOptimization optimization;
+        private ExpertOptimization optimization;
         public void Form1_Load(object sender, EventArgs e)
         {
             Infrastructure.DpiFix();
-
+            WindowState = FormWindowState.Maximized;
             I = new Infrastructure(this);
             vis = new MultiParameterVisualizer(picBox, this);
             I.startAgentManager();
-            
             pathPrefix = I.h.getValueByName("path_prefix");
             log("");
             log("");
 
-            //mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { buildAndTest(); });
-                 mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { algorithmOptimization(); });
-          //  mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { expertOptimization(); });
+            mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { buildAndTest(); });
+            //  mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { algorithmOptimization(); });
+            //   mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { expertOptimization(); });
         }
         public void expertOptimization()
-        {
-            mainThread = System.Threading.Thread.CurrentThread;
-
-            expert = new Expert("Эксперт 1", this);
-
-          //  expert.Add(new LSTM_1(this, "LSTM_1[0]"));
-            expert.Add(new ANN_1(this, "ANN_1[0]"));
-
-            expert.H.add("normalize:true");
-            expert.H.add("input_file", pathPrefix + @"Временные ряды\EURRUB-dataset.txt");
-            expert.H.add("path_prefix", pathPrefix);
-            expert.H.add("drop_columns:none");
-            expert.H.add("predicted_column_index:3");
-            expert.H.add("name:show_train_charts,value:False");
-
-            expert.Save();
-
-            sourceDataFile = pathPrefix + @"Временные ряды\EURRUB.txt";
-
-            optimization = new ExpertOptimization(expert, this, 4, 10, 0.5, 200, new DateTime(2017, 8, 1), new DateTime(2017, 8, 30), sourceDataFile);
-            optimization.run();
-        }
-        public void buildAndTest()
         {
             mainThread = System.Threading.Thread.CurrentThread;
 
@@ -81,11 +52,6 @@ namespace Экспертная_система
             expert.Add(new LSTM_2(this, "LSTM_2[0]"));
             expert.Add(new ANN_1(this, "ANN_1[0]"));
 
-
-            expert.algorithms[0].Open(pathPrefix + @"Optimization\LSTM_1\LSTM_1[0]\json.txt");
-            expert.algorithms[1].Open(pathPrefix + @"Optimization\LSTM_2\LSTM_2[0]\json.txt");
-            expert.algorithms[2].Open(pathPrefix + @"Optimization\ANN_1\ANN_1[0]\json.txt");
-
             expert.H.add("normalize:true");
             expert.H.add("input_file", pathPrefix + @"Временные ряды\EURRUB-dataset.txt");
             expert.H.add("path_prefix", pathPrefix);
@@ -93,14 +59,43 @@ namespace Экспертная_система
             expert.H.add("predicted_column_index:3");
             expert.H.add("name:show_train_charts,value:False");
 
-            //  expert.synchronizeHyperparameters();
-            //  expert.trainAllAlgorithms(true);
-            expert.synchronizeHyperparameters();
-            //  expert.H.draw(0, picBox, this, 15, 150);
             expert.Save();
 
             sourceDataFile = pathPrefix + @"Временные ряды\EURRUB.txt";
-            expert.test(new DateTime(2017, 6, 1), new DateTime(2017, 9, 30), sourceDataFile);
+
+            optimization = new ExpertOptimization(expert, this, 10, 3, 10, 0.5, 100, new DateTime(2015, 9, 1), new DateTime(2016, 9, 1), sourceDataFile);
+            optimization.run();
+        }
+        public void buildAndTest()
+        {
+            mainThread = System.Threading.Thread.CurrentThread;
+
+            expert = new Expert("Эксперт 1", this);
+
+            //  expert.Add(new LSTM_1(this, "LSTM_1[0]"));
+            // expert.Add(new LSTM_2(this, "LSTM_2[0]"));
+            //expert.Add(new ANN_1(this, "ANN_1[0]"));
+            expert.Add(new CNN_1(this, "CNN_1[0]"));
+
+            //    expert.algorithms[0].Open(pathPrefix + @"Optimization\LSTM_1\LSTM_1[0]\json.txt");
+            //    expert.algorithms[1].Open(pathPrefix + @"Optimization\LSTM_2\LSTM_2[0]\json.txt");
+            //   expert.algorithms[2].Open(pathPrefix + @"Optimization\ANN_1\ANN_1[0]\json.txt");
+
+            expert.H.add("normalize:true");
+            expert.H.add("input_file", pathPrefix + @"Временные ряды\EURRUB-dataset.txt");
+            expert.H.add("path_prefix", pathPrefix);
+            expert.H.add("drop_columns:none");
+            expert.H.add("predicted_column_index:3");
+            expert.H.add("name:show_train_charts,value:True");
+            expert.copyExpertParametersToAlgorithms();
+            expert.trainAllAlgorithms(false);
+
+            expert.copyHyperparametersFromAlgorithmsToExpert();
+             expert.H.draw(0, picBox, this, 20, 150);
+            expert.Save();
+
+            sourceDataFile = pathPrefix + @"Временные ряды\EURRUB.txt";
+            expert.test(new DateTime(2015, 9, 1), new DateTime(2016, 9, 1), sourceDataFile);
 
 
         }
@@ -119,7 +114,7 @@ namespace Экспертная_система
             algorithm.h.add("drop_columns:none");
             algorithm.h.add("predicted_column_index:3");
             algorithm.h.add("name:show_train_charts,value:False");
-            AO = new AlgorithmOptimization(algorithm, this, 16, 4, 0.5, 500);
+            AO = new AlgorithmOptimization(algorithm, this, 30, 5, 0.5, 50);
             AO.run();
             // algorithm.h.draw(0, picBox, this, 15, 150);
             // algorithm.Save();
@@ -130,7 +125,8 @@ namespace Экспертная_система
             expert = Expert.Open("Эксперт 1", this);
             sourceDataFile = pathPrefix + @"Временные ряды\EURRUB.txt";
             expert.H.replaceStringInAllValues(expert.H.getValueByName("path_prefix"), pathPrefix);
-            expert.synchronizeHyperparameters();
+            expert.copyExpertParametersToAlgorithms();
+            expert.copyHyperparametersFromAlgorithmsToExpert();
             expert.test(new DateTime(2017, 8, 1), new DateTime(2017, 9, 30), sourceDataFile);
             expert.H.draw(0, picBox, this, 15, 150);
             expert.Save();
@@ -175,22 +171,24 @@ namespace Экспертная_система
             expert.H.add("predicted_column_index:3");
             expert.H.add("name:show_train_charts,value:False");
 
-            expert.synchronizeHyperparameters();
+            expert.copyExpertParametersToAlgorithms();
+            expert.copyHyperparametersFromAlgorithmsToExpert();
             expert.trainAllAlgorithms(false);
-            expert.synchronizeHyperparameters();
+            expert.copyExpertParametersToAlgorithms();
+            expert.copyHyperparametersFromAlgorithmsToExpert();
             expert.H.draw(0, picBox, this, 15, 150);
             expert.Save();
         }
         private void Hyperparameters_Click(object sender, EventArgs e)
         {
             if (optimization != null)
-                optimization.E.draw(0, picBox, this, 15, 150);
+                optimization.E.draw(0, picBox, this, 25, 150);
             if (expert != null)
-                expert.H.draw(0, picBox, this, 15, 150);
+                expert.H.draw(0, picBox, this, 25, 150);
             if (AO != null)
-                AO.A.draw(0, picBox, this, 15, 150);
+                AO.A.draw(0, picBox, this, 25, 150);
             if (algorithm != null)
-                algorithm.h.draw(0, picBox, this, 15, 150);
+                algorithm.h.draw(0, picBox, this, 25, 150);
         }
         private void Charts_Click(object sender, EventArgs e)
         {
@@ -280,6 +278,8 @@ namespace Экспертная_система
                 richTextBox.AppendText(s + '\n');
                 richTextBox.SelectionColor = Color.White;
                 richTextBox.SelectionStart = richTextBox.Text.Length;
+                if (richTextBox.Text.Length > 20000)
+                    richTextBox.Text = richTextBox.Text.Substring(richTextBox.Text.Length - 10001, 10000);
                 var strings = new string[1];
                 strings[0] = s;
                 File.AppendAllLines(I.logPath, strings);
@@ -303,7 +303,7 @@ namespace Экспертная_система
         {
             try
             {
-               I.agentManager.TCPListener.Stop();
+                I.agentManager.TCPListener.Stop();
             }
             catch { }
             try

@@ -17,8 +17,8 @@ namespace Экспертная_система
         public double accuracy;
         public string name;
         public string modelName;
-        public int modelLoadingDelay = 10 * 1000;
-        public int pred_script_timeout = 5000;
+        public int modelLoadingDelay = 180 * 1000;
+        public int pred_script_timeout = 50000;
         public Algorithm(Form1 form1, string modelName)
         {
             this.modelName = modelName;
@@ -26,6 +26,16 @@ namespace Экспертная_система
             h.add("model_name", modelName);
 
             this.form1 = form1;
+        }
+        public static Algorithm newInstance(Algorithm algorithm)
+        {
+            if (algorithm.GetType().Name == "LSTM_1")
+              return new LSTM_1(algorithm.form1, "LSTM_1");
+            if (algorithm.GetType().Name == "LSTM_2")
+                return new LSTM_2(algorithm.form1, "LSTM_2");
+            if (algorithm.GetType().Name == "ANN_1")
+                return new ANN_1(algorithm.form1, "ANN_1");
+            return null;
         }
         public void fillFilePaths()
         {
@@ -282,7 +292,7 @@ namespace Экспертная_система
             log("_____________________________________________");
             h.setValueByName("accuracy", accuracy.ToString().Replace(',', '.'));
             h.setValueByName("stdDev", stdDev.ToString().Replace(',', '.'));
-            h.setValueByName("target_function", (accuracy).ToString().Replace(',', '.'));
+        //    h.setValueByName("target_function", (accuracy).ToString().Replace(',', '.'));
 
             h.setValueByName("processed_by", System.Net.Dns.GetHostName());
         }

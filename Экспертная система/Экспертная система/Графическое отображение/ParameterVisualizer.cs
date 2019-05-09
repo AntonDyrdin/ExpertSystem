@@ -230,7 +230,7 @@ namespace Экспертная_система
                                   xZeroGap + dx * (i - 1), Ymin + Ymax - (((Ymax - yUpGap) * (function.points[i - 1].y - minY)) / (maxY - minY) + yDownGap),
                                   xZeroGap + dx * i, Ymin + Ymax - (((Ymax - yUpGap) * (function.points[i].y - minY)) / (maxY - minY) + yDownGap));
 
-                               if (function.points[i].mark != function.points[i - 1].mark || i == 2)
+                                if (function.points[i].mark != function.points[i - 1].mark || i == 2)
                                     drawStringVertical(function.points[i].mark, mainFontDepth,
                                     xZeroGap + dx * i, Ymin + Ymax - (((Ymax - yUpGap) * (function.points[i].y - minY)) / (maxY - minY) + yDownGap));
                             }
@@ -245,7 +245,7 @@ namespace Экспертная_система
             picBox.Image = bitmap;
 
         }
-       
+
 
         private void drawStatic(double dx)
         {
@@ -253,10 +253,12 @@ namespace Экспертная_система
             if (functions.Count > 1)
                 for (int i = 1; i < functions.Count; i++)
                 {
-                    drawLine(functions[i].color, mainFontDepth, Xmax - Xmax / 20, Ymin + Ymax / 30 + i * (mainFontDepth * 1.2), Xmax, Ymin + Ymax / 30 + i * (mainFontDepth * 1.2));
-                    drawString(functions[i].label, mainFontDepth, Xmax - Xmax / 20 - functions[i].label.Length * mainFontDepth, Ymin + Ymax / 30 + i * (mainFontDepth * 1.2) - mainFontDepth);
+                    if (Ymin + i * (mainFontDepth * 0.8) + (i * mainFontDepth * 0.3) < Ymin+ Ymax)
+                    {
+                        drawLine(functions[i].color, mainFontDepth * 0.8, Xmax - Xmax / 30, Ymin + i * (mainFontDepth * 0.8) + (i * mainFontDepth * 0.3), Xmax, Ymin + i * (mainFontDepth * 0.8) + (i * mainFontDepth * 0.3));
+                        drawString(functions[i].label, (mainFontDepth * 0.8), Xmax - Xmax / 30 - functions[i].label.Length * (mainFontDepth * 0.8), Ymin + i * (mainFontDepth * 0.8) - (mainFontDepth * 0.8) + (i * mainFontDepth * 0.3));
+                    }
                 }
-
 
             drawString(label, mainFontDepth, Xmax / 2 - (label.Length * mainFontDepth / 2), Ymin);
 

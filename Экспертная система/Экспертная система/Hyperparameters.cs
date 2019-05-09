@@ -19,6 +19,12 @@ namespace Экспертная_система
               this.form1 = form1;
               addByParentId(-1, "name:baseNode");
           }     */
+
+        public Hyperparameters( string path, Form1 form1,bool asFile)
+        {
+            this.form1 = form1;
+            fromJSON(System.IO.File.ReadAllText(path, System.Text.Encoding.Default), -1);
+        }
         public Hyperparameters(string JSON, Form1 form1)
         {
             this.form1 = form1;
@@ -308,7 +314,7 @@ namespace Экспертная_система
             deepnessRate = 0;
             this.h = fontDepth;
             currentH = 0;
-            mainDepth = Convert.ToInt16(h * 0.65);
+            mainDepth = Convert.ToInt16(h * 0.4);
             this.columnWidth = columnWidth;
             this.form1 = form1;
             incGetNodeByID = 0;
@@ -766,7 +772,7 @@ public class Node
         {
             if (rawAttributes[i].Split(':').Length == 1)
             {
-                attributes[i-1].value += rawAttributes[i];
+                attributes[i-1].value +=','+ rawAttributes[i];
             }
             else
             {
@@ -783,11 +789,12 @@ public class Node
     }
     public Node Clone()
     {
-        string attributesString = "";
-        foreach (Attribute attr in attributes)
-            attributesString += attr.name + ':' + attr.value + ',';
-        attributesString = attributesString.Remove(attributesString.Length - 1, 1);
-        Node newNode = new Node(this.ID, this.parentID, attributesString);
+         string attributesString = "";
+         foreach (Attribute attr in attributes)
+             attributesString += attr.name + ':' + attr.value + ',';
+         attributesString = attributesString.Remove(attributesString.Length - 1, 1);
+         Node newNode = new Node(this.ID, this.parentID, attributesString);
+
         return newNode;
     }
     public void addAttribute(string nameANDvalue)
