@@ -67,8 +67,9 @@ baseNodeName = next((v for i, v in enumerate(jsonObj.items()) if i == 0))[0]
 #превращение входного файла в плоскую таблицу значений предикторов
 inputFile = open(h("input_file"))
 allLines = inputFile.readlines()
-dataset = numpy.zeros((len(allLines) - 1, len(allLines[0].split(';'))),dtype=float)
+dataset = numpy.zeros((len(allLines) - 1, len(allLines[0].split(';'))),dtype=numpy.float32)
 window_size = (int)(h("window_size"))
+print("window_size = "+(str)(window_size))
 for i in range(1,len(allLines)):
     for j in range(0,len(allLines[i].split(';'))):   
         featureStringValue = allLines[i].split(';')[j]
@@ -76,8 +77,8 @@ for i in range(1,len(allLines)):
             dataset[i - 1,j] = (float)(allLines[i].split(';')[j])
 
 print(dataset.shape)
-Dataset_X = numpy.zeros((dataset.shape[0] - window_size, window_size,dataset.shape[1]), dtype=float)
-Dataset_Y = numpy.zeros(dataset.shape[0] - window_size, dtype=float)
+Dataset_X = numpy.zeros((dataset.shape[0] - window_size, window_size,dataset.shape[1]), dtype=numpy.float32)
+Dataset_Y = numpy.zeros(dataset.shape[0] - window_size, dtype=numpy.float32)
 predicted_column_index = (int)(h("predicted_column_index"))
 for i in range(0,dataset.shape[0] - window_size):
     for j in range(0,window_size):
@@ -101,6 +102,7 @@ model.add(Conv1D(h3INT("NN_sctruct","layer4","neurons_count"),h3INT("NN_sctruct"
 model.add(Conv1D(h3INT("NN_sctruct","layer5","neurons_count"),h3INT("NN_sctruct","layer5","kernel_size"), activation='relu'))
 model.add(GlobalAveragePooling1D())
 model.add(Dropout(h3FLOAT("NN_sctruct","layer6","dropout")))
+model.add(Dense(3, activation='sigmoid'))
 model.add(Dense(1, activation='sigmoid'))
 
 log("компиляция НС...")
@@ -117,12 +119,15 @@ log("> время обучения НС  : " + getTime())
     
 if h("save_folder") != "none":
     save_path = h("save_folder") + 'weights.h5' 
-    log("сохранение модели: " + h("save_folder") + 'weights.h5')
+    
     try:
         model.save(save_path)
+        log("сохранение модели: " +save_path)
     except:
         save_path = save_path.encode('ansi')
         model.save(save_path)
+        log("сохранение модели: " +save_path)
+       
     log("> время сохранения НС  : " + getTime()) 
     
 sum = 0    

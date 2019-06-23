@@ -12,7 +12,7 @@ namespace Экспертная_система
 
         public List<State> S;
         public List<DMSParameter> parameters;
-        public Form1 form1;
+        public MainForm form1;
         public State ActualState;
         public DMSAction lastAction;
         public List<DMSAction> defaultActions;
@@ -31,7 +31,7 @@ namespace Экспертная_система
 
         int indexOfLastState = 0;
         int indexOfLastAction = 0;
-        public DecisionMakingSystem(Form1 form1)
+        public DecisionMakingSystem(MainForm form1)
         {
             r = new Random();
             this.form1 = form1;
@@ -401,10 +401,9 @@ namespace Экспертная_система
                     g.DrawLine(new Pen(col, Convert.ToInt16(depth)), Convert.ToInt16(Math.Round(x1)), Convert.ToInt16(Math.Round(y1)), Convert.ToInt16(Math.Round(x2)), Convert.ToInt16(Math.Round(y2)));
             }
         }
-        void log(string s)
+        public void log(string s)
         {
-            form1.logDelegate = new Form1.LogDelegate(form1.delegatelog);
-            form1.logBox.Invoke(form1.logDelegate, form1.logBox, s, System.Drawing.Color.White);
+            form1.log(s);
         }
     }
     public class DMSAction

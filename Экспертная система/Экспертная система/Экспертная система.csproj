@@ -34,6 +34,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -48,14 +49,22 @@
     <Compile Include="AgentManager.cs" />
     <Compile Include="Algorithm.cs" />
     <Compile Include="AlgorithmOptimization.cs" />
+    <Compile Include="ExmoApi.cs" />
+    <Compile Include="MetaTraderLink.cs" />
+    <Compile Include="ModeSelector.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ModeSelector.Designer.cs">
+      <DependentUpon>ModeSelector.cs</DependentUpon>
+    </Compile>
     <Compile Include="Алгоритмы прогнозирования\CNN_1\CNN_1.cs" />
     <Compile Include="DecisionMakingSystem.cs" />
     <Compile Include="Expert.cs" />
-    <Compile Include="Form1.cs">
+    <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Hyperparameters.cs" />
     <Compile Include="ImgDataset.cs" />
@@ -68,8 +77,11 @@
     <Compile Include="Графическое отображение\ParameterVisualizer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ModeSelector.resx">
+      <DependentUpon>ModeSelector.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

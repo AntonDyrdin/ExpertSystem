@@ -7,7 +7,7 @@ namespace Экспертная_система
 {
     public abstract class Algorithm
     {
-        public Form1 form1;
+        public MainForm form1;
         public string lastPrediction;
         public Hyperparameters h;
         public string mainFolder;
@@ -19,7 +19,7 @@ namespace Экспертная_система
         public string modelName;
         public int modelLoadingDelay = 180 * 1000;
         public int pred_script_timeout = 50000;
-        public Algorithm(Form1 form1, string modelName)
+        public Algorithm(MainForm form1, string modelName)
         {
             this.modelName = modelName;
             h = new Hyperparameters(form1, modelName);
@@ -35,6 +35,8 @@ namespace Экспертная_система
                 return new LSTM_2(algorithm.form1, "LSTM_2");
             if (algorithm.GetType().Name == "ANN_1")
                 return new ANN_1(algorithm.form1, "ANN_1");
+            if (algorithm.GetType().Name == "CNN_1")
+                return new CNN_1(algorithm.form1, "CNN_1");
             return null;
         }
         public void fillFilePaths()
@@ -148,7 +150,7 @@ namespace Экспертная_система
                         Continue = true;
 
                         //ПОЛНЫЙ ЛОГ ВЫПОЛНЕНИЯ СКРИПТА
-                        //   log(script_conclusion);
+                           log(script_conclusion);
                         script_conclusion = script_conclusion.Substring(script_conclusion.IndexOf("prediction:") + 11);
 
                         //ТОЛЬКО ПРОГНОЗ
@@ -226,11 +228,7 @@ namespace Экспертная_система
                 Hyperparameters responseH = new Hyperparameters(response, form1);
                 var avg = responseH.getValueByName("AVG");
                 h.setValueByName("AVG", avg);
-            }
-            catch
-            {
-                log("Не удалось спарсить RESPONSE");
-            }
+          
 
 
 
@@ -246,7 +244,16 @@ namespace Экспертная_система
             {
                 getAccAndStdDev(predictionsCSV);
             }
+            }
+            catch
+            {
 
+                log("Не удалось спарсить RESPONSE");
+
+                h.setValueByName("AVG", "10");
+                h.setValueByName("accuracy", "0");
+                h.setValueByName("stdDev", "0");
+            }
             // return "обучение алгоритма " + name + "заверешно.";
         }
 
@@ -328,10 +335,13 @@ namespace Экспертная_система
               }  */
             StreamReader errorReader = process.StandardError;
             string response = standardOutputReader.ReadToEnd();
-            log(response);
-            var error = "";
-            error = errorReader.ReadToEnd();
-            log(error);
+            ///////////////////////////////////////////////////////////////
+            ///////// ВЫВОД В КОНСОЛЬ РЕЗУЛЬТАТА ВЫПОЛНЕНИЯ СКРИПТА ///////
+           // log(response);                                            ///    
+            var error = "";                                             ///
+            error = errorReader.ReadToEnd();                            ///
+            log(error);                                                 ///
+            ///////////////////////////////////////////////////////////////
             return response;
         }
 
@@ -400,7 +410,9 @@ namespace Экспертная_система
                             File.Delete(file);
                     }
                     catch
-                    { goto repeat1; }
+                    {
+                        goto repeat1;
+                    }
                 }
             }
             else
@@ -422,15 +434,13 @@ namespace Экспертная_система
         public void setAttributeByName(string name, string value)
         { h.setValueByName(name, value); }
 
-        public void log(String s, System.Drawing.Color col)
+        private void log(String s, Color col)
         {
-            form1.logDelegate = new Form1.LogDelegate(form1.delegatelog);
-            form1.logBox.Invoke(form1.logDelegate, form1.logBox, s, col);
+            form1.log(s, col);
         }
-        public void log(String s)
+        public void log(string s)
         {
-            form1.logDelegate = new Form1.LogDelegate(form1.delegatelog);
-            form1.logBox.Invoke(form1.logDelegate, form1.logBox, s, System.Drawing.Color.White);
+            form1.log(s);
         }
     }
 }

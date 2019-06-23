@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
+using System.Drawing;
 
 namespace Экспертная_система
 {
@@ -14,28 +16,31 @@ namespace Экспертная_система
         public Hyperparameters h;
         public AgentManager agentManager;
         public int maxlogFilesCount = 10;
-        Form1 form1;
-        public Infrastructure(Form1 form1)
-        {    this.form1= form1;
-             h = new Hyperparameters(form1, "Infrastructure");
+        MainForm form1;
+
+        public ModeSelector modeSelector;
+        public Infrastructure(MainForm form1)
+        {
+            this.form1 = form1;
+            h = new Hyperparameters(form1, "Infrastructure");
 
             form1.logBox.Text += (Environment.MachineName);
-           if (Environment.MachineName == "DESKTOP-B3G20T0")
+            if (Environment.MachineName == "DESKTOP-B3G20T0")
             {
                 form1.logBox.Font = new System.Drawing.Font(form1.logBox.Font.FontFamily, 8);
-              /*  form1.trackBar1.SetBounds(1000, 1000, 10, 10);
-                form1.panel1.SetBounds(500, 0, 900, 650);
-                form1.logBox.SetBounds(0, 0, 500, 650);
-                form1.picBox.SetBounds(0, 0, 900, 100);*/
             }
-            /////////чтене файла конфигурации///////////////////////
+            form1.collectLogWhileItFreezed = new List<logItem>();
+
+            /////////    чтене файла конфигурации    ///////////////////////
             var configLines = File.ReadAllLines("CONFIG.txt");
 
+            bool is_newPC = true;
             for (int i = 0; i < configLines.Length; i++)
             {
                 //параметры конфигурации начинаются со строки содержащей имя компа
                 if (configLines[i].Contains(Environment.MachineName))
                 {
+                    is_newPC = false;
                     for (int j = i + 1; j < configLines.Length; j++)
                     {
                         //параметры конфигурации заканчиваются, когда встречается пустая строка
@@ -43,7 +48,6 @@ namespace Экспертная_система
                         {
                             try
                             {
-                                //   if (h.getValueByName(configLines[j].Split(':')[0]) == null)
                                 h.add(configLines[j]);
                             }
                             catch { }
@@ -56,10 +60,66 @@ namespace Экспертная_система
             }
             ////////////////////////////////////////////////////////
 
+            if (is_newPC | h.getValueByName("mode") == null)
+            {
+                showModeSelector();
+            }
+            else
+            {
+                newLog();
+            }
 
-            newLog();
 
-          
+        }
+        public void showModeSelector()
+        {
+            modeSelector = new ModeSelector();
+            modeSelector.Show();
+            modeSelector.button1.Click += new EventHandler(ModeSelectorButtonClick);
+        }
+        void ModeSelectorButtonClick(object sender, EventArgs e)
+        {
+            string mode = "";
+            foreach (var control in modeSelector.groupBox1.Controls)
+                if (control.GetType() == modeSelector.radioButton1.GetType())
+                {
+                    RadioButton rb = (RadioButton)control;
+                    if (rb.Checked)
+                    {
+                        mode = rb.Text;
+                    }
+                }
+
+            h.setValueByName("mode", mode);
+
+            var configLines = File.ReadAllLines("CONFIG.txt").ToList();
+
+            for (int i = 0; i < configLines.Count; i++)
+            {
+                //параметры конфигурации начинаются со строки содержащей имя компа
+                if (configLines[i].Contains(Environment.MachineName))
+                {
+                    for (int j = i + 1; j < configLines.Count; j++)
+                    {
+                        if (configLines[j].Contains("mode"))
+                        {
+                            configLines[j] = "mode:" + mode;
+                            break;
+                        }
+                        //параметры конфигурации заканчиваются, когда встречается пустая строка
+                        if (configLines[j] != "")
+                        { }
+                        else
+                        {
+                            configLines.Insert(j, "mode:" + mode);
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+            File.WriteAllLines("CONFIG.txt", configLines.ToArray());
+            Application.Exit();
         }
         /// <summary>
         /// Исправление блюра при включенном масштабировании в ОС windows 8 и выше
@@ -80,36 +140,10 @@ namespace Экспертная_система
         private static extern bool SetProcessDPIAware();
 
         public void startAgentManager()
-        {   
+        {
             agentManager = new AgentManager(this.form1);
         }
-        public Infrastructure(Hyperparameters h, Form1 form1)
-        {
-            form1.logBox.Text += (Environment.MachineName);
 
-            /////////чтене файла конфигурации///////////////////////
-            var configLines = File.ReadAllLines("config.txt");
-
-            for (int i = 0; i < configLines.Length; i++)
-            {
-                //параметры конфигурации начинаются со строки содержащей имя компа
-                if (configLines[i].Contains(Environment.MachineName))
-                {
-                    for (int j = i + 1; j < configLines.Length; j++)
-                    {
-                        //параметры конфигурации заканчиваются, когда встречается пустая строка
-                        if (configLines[j] != "")
-                            h.add(configLines[j]);
-                        else
-                            break;
-                    }
-                    break;
-                }
-            }
-            ////////////////////////////////////////////////////////
-            newLog();
-
-        }
         void newLog()
         {
             logPath = h.getValueByName("log_path") + DateTime.Now.ToString().Replace(':', '-') + '-' + DateTime.Now.Millisecond.ToString() + ".txt";
@@ -144,6 +178,17 @@ namespace Экспертная_система
                     logFilesInfo[i].Delete();
                 }
             }
+        }
+    }
+    public class logItem
+    {
+        public string text;
+        public System.Drawing.Color color;
+
+        public logItem(string text, Color color)
+        {
+            this.text = text;
+            this.color = color;
         }
     }
 }

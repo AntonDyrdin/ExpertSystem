@@ -23,7 +23,7 @@ from keras.layers import LSTM
 from keras.models import load_model
 import json
 
-print(sys.platform)
+#print(sys.platform)
 def createParser():
     parser = argparse.ArgumentParser()
     #parser.add_argument('--json_file_path',type=str,default='D:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\LSTM 1\json.txt')
@@ -108,7 +108,7 @@ while enough==False:
 
 
         predicted = model.predict(X)
-       # print(predicted)
+        print(predicted)
         predicted=predicted-AVG+0.5
         print("AVG: "+(str)(AVG))
         print("session = "+(str)(session))

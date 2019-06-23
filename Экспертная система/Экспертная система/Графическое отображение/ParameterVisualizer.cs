@@ -10,7 +10,7 @@ namespace Экспертная_система
         public PictureBox picBox;
         public Graphics g;
         public Bitmap bitmap;
-        public Form1 form1;
+        public MainForm form1;
         public double mainFontDepth;
         public double functionDepth = 1;
         public int Xmax;
@@ -26,13 +26,15 @@ namespace Экспертная_система
         public double yUpGap;
         public double yDownGap;
         public bool multy;
-        public bool enableGrid;
+        public bool enableGrid= false;
+        public bool showLastNValues = false;
+        public int window = 100;
         public System.Timers.Timer needToRefresh;
         //высота диаграммы в пикселах
         public int H;
 
         public bool lightsOn = false;
-        public ParameterVisualizer(PictureBox target_picBox, Form1 form1, string label, Color color)
+        public ParameterVisualizer(PictureBox target_picBox, MainForm form1, string label, Color color)
         {
             multy = false;
             this.label = label;
@@ -92,7 +94,7 @@ namespace Экспертная_система
             }
 
             Random r = new Random();
-            addFunction:
+        addFunction:
             try
             {
                 functions.Add(new Function(name, Color.FromArgb(255, functions[0].color.R + r.Next(-255, 255), functions[0].color.G + r.Next(-255, 255), functions[0].color.B + r.Next(-255, 255))));
@@ -103,7 +105,7 @@ namespace Экспертная_система
                 functions[functions.Count - 1].points.Add(point);
             }
             catch { goto addFunction; }
-            addPointOver:;
+        addPointOver:;
         }
         public void addPoint(double y, string name)
         {
@@ -128,15 +130,31 @@ namespace Экспертная_система
                 int maxPointsCountI = 0;
                 for (int i = 0; i < functions.Count; i++)
                 {
-                    if (functions[i].points.Count > maxPointsCount)
+                    if (showLastNValues & functions[i].points.Count > window)
                     {
-                        maxPointsCount = functions[i].points.Count;
+                        maxPointsCount = window;
                         maxPointsCountI = i;
+                        break;
+                    }
+                    else
+                    {
+                        if (functions[i].points.Count > maxPointsCount)
+                        {
+                            maxPointsCount = functions[i].points.Count;
+                            maxPointsCountI = i;
+                        }
                     }
                 }
+                maxY = double.MinValue;
+                minY = double.MaxValue;
                 foreach (Function function in functions)
                 {
-                    for (int i = 0; i < function.points.Count; i++)
+                    int start = 0;
+                    if (showLastNValues & function.points.Count > window)
+                    {
+                        start = function.points.Count - window ;
+                    }
+                    for (int i = start; i < function.points.Count; i++)
                     {
                         if (function.points[i].y > maxY)
                             maxY = function.points[i].y;
@@ -144,7 +162,14 @@ namespace Экспертная_система
                             minY = function.points[i].y;
                     }
                 }
-                dx = Convert.ToDouble(Xmax - (Xmax / 10)) / Convert.ToDouble(functions[maxPointsCountI].points.Count + 1);
+                if (showLastNValues & functions[maxPointsCountI].points.Count > window)
+                {
+                    dx = Convert.ToDouble(Xmax - (Xmax / 8)) / Convert.ToDouble(window);
+                }
+                else
+                {
+                    dx = Convert.ToDouble(Xmax - (Xmax / 8)) / Convert.ToDouble(functions[maxPointsCountI].points.Count);
+                }
                 drawStatic(dx);
 
 
@@ -152,31 +177,45 @@ namespace Экспертная_система
                 {
                     if (function.points.Count > 1)
                     {
-
-                        for (int i = 1; i < function.points.Count; i++)
+                        int start = 1;
+                        if (showLastNValues & function.points.Count > window)
                         {
+                            start = function.points.Count - window + 1;
+                            /*  foreach (Function function in functions)
+                              {
+                                  if (function.points.Count > window)
+                                  { function.points.RemoveAt(0); }
+                              }*/
+                        }
+                        int step = 0;
+                        for (int i = start; i < function.points.Count; i++)
+                        {
+                            step = i - start+1;
+
                             if (minY == maxY)
                             {
                                 drawLine(function.color, functionDepth,
-                                xZeroGap + dx * (i - 1), Ymin + (Ymax / 2),
-                                xZeroGap + dx * i, Ymin + (Ymax / 2));
-                                if (function.points[i].mark != function.points[i - 1].mark || i == 2)
-                                    drawStringVertical(function.points[i].mark, mainFontDepth, xZeroGap + dx * i, Ymin + (Ymax / 2));
+                                xZeroGap + dx * (step - 1), Ymin + (Ymax / 2),
+                                xZeroGap + dx * step, Ymin + (Ymax / 2));
+                                if (function.points[i].mark != function.points[i - 1].mark || step == 2)
+                                    drawStringVertical(function.points[i].mark, mainFontDepth, xZeroGap + dx * step, Ymin + (Ymax / 2));
                             }
                             else
                             {
                                 drawLine(function.color, functionDepth,
-                                  xZeroGap + dx * (i - 1), Ymin + Ymax - (((Ymax - yUpGap) * (function.points[i - 1].y - minY)) / (maxY - minY) + yDownGap),
-                                  xZeroGap + dx * i, Ymin + Ymax - (((Ymax - yUpGap) * (function.points[i].y - minY)) / (maxY - minY) + yDownGap));
+                                  xZeroGap + dx * (step - 1), Ymin + Ymax - (((Ymax - yUpGap) * (function.points[i - 1].y - minY)) / (maxY - minY) + yDownGap),
+                                  xZeroGap + dx * step, Ymin + Ymax - (((Ymax - yUpGap) * (function.points[i].y - minY)) / (maxY - minY) + yDownGap));
 
-                                if (function.points[i].mark != function.points[i - 1].mark || i == 2)
+                                if (function.points[i].mark != function.points[i - 1].mark || step == 2)
                                     drawStringVertical(function.points[i].mark, mainFontDepth,
-                                    xZeroGap + dx * i, Ymin + Ymax - (((Ymax - yUpGap) * (function.points[i].y - minY)) / (maxY - minY) + yDownGap));
+                                    xZeroGap + dx * step, Ymin + Ymax - (((Ymax - yUpGap) * (function.points[i].y - minY)) / (maxY - minY) + yDownGap));
                             }
                         }
                     }
                 }
             }
+
+
             return bitmap;
         }
         public void refresh()
@@ -253,7 +292,7 @@ namespace Экспертная_система
             if (functions.Count > 1)
                 for (int i = 1; i < functions.Count; i++)
                 {
-                    if (Ymin + i * (mainFontDepth * 0.8) + (i * mainFontDepth * 0.3) < Ymin+ Ymax)
+                    if (Ymin + i * (mainFontDepth * 0.8) + (i * mainFontDepth * 0.3) < Ymin + Ymax)
                     {
                         drawLine(functions[i].color, mainFontDepth * 0.8, Xmax - Xmax / 30, Ymin + i * (mainFontDepth * 0.8) + (i * mainFontDepth * 0.3), Xmax, Ymin + i * (mainFontDepth * 0.8) + (i * mainFontDepth * 0.3));
                         drawString(functions[i].label, (mainFontDepth * 0.8), Xmax - Xmax / 30 - functions[i].label.Length * (mainFontDepth * 0.8), Ymin + i * (mainFontDepth * 0.8) - (mainFontDepth * 0.8) + (i * mainFontDepth * 0.3));

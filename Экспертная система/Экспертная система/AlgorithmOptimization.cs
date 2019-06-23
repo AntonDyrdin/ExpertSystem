@@ -13,7 +13,7 @@ namespace Экспертная_система
         public Algorithm algorithm;
         public Hyperparameters[] population;
         public Hyperparameters A;
-        private Form1 form1;
+        private MainForm form1;
         public int mutation_rate;
         public int population_value;
         public double elite_ratio;
@@ -23,12 +23,14 @@ namespace Экспертная_система
         private int Iterarions = 0;
         private Random r;
         private AgentManager agentManager;
-        private bool showIndividsParameters = false;
+        private bool showIndividsParameters = true;
         private bool showOnlyBestIndividsParameters = true;
 
         public int screenshotIterationTimer = 5;
-        public bool multiThreadTraining = false;
-        public AlgorithmOptimization(Algorithm algorithm, Form1 form1, int population_value, int mutation_rate, double elite_ratio, int Iterarions)
+        public bool multiThreadTraining = true;
+        public int multiThreadTrainingRATE = 4;
+        int test_count = 6;
+        public AlgorithmOptimization(Algorithm algorithm, MainForm form1, int population_value, int mutation_rate, double elite_ratio, int Iterarions)
         {
             r = new Random();
             this.Iterarions = Iterarions;
@@ -54,7 +56,7 @@ namespace Экспертная_система
             //добавление переменных в  MultiParameterVisualizer
             for (int i = 0; i < population_value; i++)
                 variablesVisualizer.parameters[1].functions.Add(new Function(" [" + i.ToString() + "]", valueToColor(0, population_value, population_value - i - 1)));
-            recurciveVariableAdding(algorithm.h, 0, "0");
+            //  recurciveVariableAdding(algorithm.h, 0, "0");
             //добавление первых точек в  MultiParameterVisualizer
             // variableChangeMonitoring();
             //   variablesVisualizer.addPoint(0, "target_function");
@@ -83,7 +85,6 @@ namespace Экспертная_система
             while (opt_inc < Iterarions)
             {
                 var now = new DateTimeOffset(DateTime.Now);
-
                 var start = now.ToUnixTimeSeconds();
                 opt_inc++;
                 inc++;
@@ -92,7 +93,17 @@ namespace Экспертная_система
                 if (inc == screenshotIterationTimer)
                 {
                     inc = 0;
-                    Image screenShot = (Image)form1.picBox.Image.Clone();
+                    Bitmap screenShot = (Bitmap)form1.picBox.Image.Clone();
+                    int h = 3000;
+                    if (screenShot.Height < 3001)
+                        h = screenShot.Height;
+                    for (int i = 0; i < screenShot.Width; i++)
+                        for (int j = 0; j < h; j++)
+                        {
+                            Color c = screenShot.GetPixel(i, j);
+                            if (c == Color.FromArgb(0, 0, 0, 0))
+                            { screenShot.SetPixel(i, j, Color.Black); }
+                        }
                     screenShot.Save(opt_inc.ToString() + "_iteration.bmp");
                 }
 
@@ -121,8 +132,8 @@ namespace Экспертная_система
                 }
                 if (showOnlyBestIndividsParameters)
                 {
-                    // variablesIDs.Clear();
-                    //recurciveVariableAdding(population[0], 0, "0");
+                    variablesIDs.Clear();
+                    recurciveVariableAdding(population[0], 0, "0");
                 }
                 else
                 {
@@ -139,12 +150,17 @@ namespace Экспертная_система
                 kill_and_conceive();
 
                 //mutation
+                if (form1.mutationRate != 0)
+                    mutation_rate = form1.mutationRate;
                 for (int i = 0; i < mutation_rate; i++)
                 {
                     mutation();
                 }
+
+                if (form1.test_count != 0)
+                    test_count = form1.test_count;
                 //   ВВЕДЕНО МНОГОКРАТНОЕ ТЕСТИРОВНИЕ ИНДИВИДОВ ВСЕХ КАТЕГОРИЙ ДЛЯ ПОВЫШЕНИЯ ПОВТОРЯЕМОСТИ РЕЗУЛЬТАТОВ
-                int test_count = 1;
+
                 //   target_functions - матрица результатов тестирования,
                 //   где номер строки (первый индекс (i)) - индекс индивида, а номер столбца (второй индекс (j)) - итерация тестирования
                 double[,] target_functions = new double[population_value, test_count];
@@ -156,52 +172,68 @@ namespace Экспертная_система
 
 
 
-                    for (int j = 0; j < test_count; j++)
+                    for (int tc = 0; tc < test_count; tc++)
                     {
+                        var now2 = new DateTimeOffset(DateTime.Now);
+                        var start2 = now2.ToUnixTimeSeconds();
                         if (multiThreadTraining)
                         {
-                            List<Algorithm> algorithms = new List<Algorithm>();
-                            for (int i = 0; i < population_value; i++)
-                            {
-                                Algorithm alg = Algorithm.newInstance(algorithm);
-                                alg.h = population[i].Clone();
-                                algorithms.Add(alg);
-                            }
+                            if (form1.multiThreadTrainingRATE != 0)
+                                multiThreadTrainingRATE = form1.multiThreadTrainingRATE;
+                            log("multiThreadTrainingRATE = " + multiThreadTrainingRATE.ToString(), Color.Yellow);
+                            if (multiThreadTrainingRATE > population_value)
+                                multiThreadTrainingRATE = population_value;
 
-                            Task[] trainTasks = new Task[population_value];
-                            foreach (Algorithm alg in algorithms)
+                            for (int begin = 0; begin < population_value; begin += multiThreadTrainingRATE)
                             {
-                                trainTasks[algorithms.IndexOf(alg)] = new Task(() => algorithms[algorithms.IndexOf(alg)].train().Wait());
-                                trainTasks[algorithms.IndexOf(alg)].Start();
-                            }
+                                var now1 = new DateTimeOffset(DateTime.Now);
+                                var start1 = now1.ToUnixTimeSeconds();
+                                int end = 0;
+                                if (begin + multiThreadTrainingRATE >= population_value)
+                                {
+                                    end = population_value;
+                                }
+                                else
+                                {
+                                    end = begin + multiThreadTrainingRATE;
+                                }
+                                List<Algorithm> algorithms = new List<Algorithm>();
+                                for (int i = begin; i < end; i++)
+                                {
+                                    Algorithm alg = Algorithm.newInstance(algorithm);
+                                    alg.h = population[i].Clone();
+                                    algorithms.Add(alg);
+                                }
 
-                            bool done = false;
-                            while (done == false)
-                            {
-                                done = true;
+                                Task[] trainTasks = new Task[end - begin];
+                                foreach (Algorithm alg in algorithms)
+                                {
+                                    trainTasks[algorithms.IndexOf(alg)] = new Task(() => algorithms[algorithms.IndexOf(alg)].train().Wait());
+                                    trainTasks[algorithms.IndexOf(alg)].Start();
+                                }
+
                                 foreach (var task in trainTasks)
-                                    if (task.Status == TaskStatus.Running)
-                                    {
-                                        done = false;
-                                    }
-                            }
+                                    task.Wait();
 
-                            for (int i = 0; i < population_value; i++)
-                            {
-                                population[i] = algorithms[i].h.Clone();
-                                target_functions[i, j] = Convert.ToDouble(population[i].getValueByName("accuracy").Replace('.', ','));
+                                for (int i = begin; i < end; i++)
+                                {
+                                    population[i] = algorithms[i - begin].h.Clone();
+                                    target_functions[i, tc] = Convert.ToDouble(population[i].getValueByName("accuracy").Replace('.', ','));
+                                }
+                                log((end).ToString() + '/' + population_value.ToString() + " training comlete" + TimeSpan.FromSeconds((new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds()) - start1).ToString(), Color.LimeGreen);
                             }
                         }
                         else
                         {// SINGLE THREAD
                             for (int i = 0; i < population_value; i++)
                             {
-                                algorithm.h = new Hyperparameters(population[i].toJSON(0), form1);
+                                algorithm.h = population[i].Clone();
                                 algorithm.train().Wait();
-                                population[i] = new Hyperparameters(algorithm.h.toJSON(0), form1);
-                                target_functions[i, j] = Convert.ToDouble(population[i].getValueByName("target_function").Replace('.', ','));
+                                population[i] = algorithm.h.Clone();
+                                target_functions[i, tc] = Convert.ToDouble(population[i].getValueByName("accuracy").Replace('.', ','));
                             }
                         }
+                        log((tc + 1).ToString() + '/' + test_count.ToString() + " test comlete" + TimeSpan.FromSeconds((new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds()) - start2).ToString(), Color.LimeGreen);
                     }
 
                     //вычисление итоговых значений критерия оптимальности
@@ -321,7 +353,6 @@ namespace Экспертная_система
 
         private void mutation()
         {
-
             int variableIndex = variablesIDs[r.Next(0, variablesIDs.Count)];
             int individIndex = r.Next(Convert.ToInt16(Math.Round(population_value * elite_ratio)), population_value);
             if (population[individIndex].nodes[variableIndex].getAttributeValue("variable") == "categorical")
@@ -405,8 +436,6 @@ namespace Экспертная_система
 
         private void recurciveVariableAdding(Hyperparameters h, int ID, string modelName)
         {
-
-
             List<Node> branches = h.getNodesByparentID(ID);
             var asdad = branches;
             if (branches.Count == 0)
@@ -447,7 +476,7 @@ namespace Экспертная_система
                 {
                     foreach (int variableID in variablesIDs)
                     {
-                        string variableName = population[0].getValueByName("code") + " " + population[0].getNodeById(variableID).name() + " id=" + variableID.ToString();
+                        string variableName = "0 " + population[0].getNodeById(variableID).name() + " id=" + variableID.ToString();
                         string value = population[0].nodes[variableID].getValue().Replace('.', ',');
                         variablesVisualizer.addPoint(value, variableName);
                     }
@@ -473,9 +502,11 @@ namespace Экспертная_система
 
         private void log(String s, Color col)
         {
-            form1.logDelegate = new Form1.LogDelegate(form1.delegatelog);
-            form1.logBox.Invoke(form1.logDelegate, form1.logBox, s, col);
+            form1.log(s, col);
         }
-
+        public void log(string s)
+        {
+            form1.log(s);
+        }
     }
 }

@@ -4,7 +4,7 @@ namespace Экспертная_система
     public class LSTM_2 : Algorithm
     {
 
-        public LSTM_2(Form1 form1, string name) : base(form1, name)
+        public LSTM_2(MainForm form1, string name) : base(form1, name)
         {
             System.Threading.Thread.Sleep(20);
             this.name = "LSTM_2";

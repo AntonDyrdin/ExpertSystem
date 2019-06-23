@@ -64,7 +64,7 @@ baseNodeName=  next((v for i, v in enumerate(jsonObj.items()) if i == 0))[0]
 inputFile = open(h("input_file"))
            
 allLines = inputFile.readlines()
-dataset = numpy.zeros((len(allLines) - 1, len(allLines[0].split(';'))),dtype=float)
+dataset = numpy.zeros((len(allLines) - 1, len(allLines[0].split(';'))),dtype=numpy.float32)
 window_size = (int)(h("window_size"))
 for i in range(1,len(allLines)):
     for j in range(0,len(allLines[i].split(';'))):   
@@ -73,8 +73,8 @@ for i in range(1,len(allLines)):
             dataset[i - 1,j] = (float)(allLines[i].split(';')[j])
 
 print(dataset.shape)
-Dataset_X = numpy.zeros((dataset.shape[0] - window_size, window_size,dataset.shape[1]), dtype=float)
-Dataset_Y = numpy.zeros(dataset.shape[0] - window_size, dtype=float)
+Dataset_X = numpy.zeros((dataset.shape[0] - window_size, window_size,dataset.shape[1]), dtype=numpy.float32)
+Dataset_Y = numpy.zeros(dataset.shape[0] - window_size, dtype=numpy.float32)
 predicted_column_index = (int)(h("predicted_column_index"))
 for i in range(0,dataset.shape[0] - window_size):
     for j in range(0,window_size):
@@ -133,7 +133,7 @@ avg = sum / predicted.shape[0]
 
 for i in range(0,test_X.shape[0]):
     predicted[i,0] = predicted[i,0] - avg
-    predicted[i,0] = predicted[i,0] * 100
+    predicted[i,0] = predicted[i,0] * 10
     predicted[i,0] = predicted[i,0] + 0.5
 print("predictions_file_path: "+ h("predictions_file_path"))
 predictionsFile = open(h("predictions_file_path"), 'w')

@@ -11,15 +11,15 @@ namespace Экспертная_система
         public PictureBox pictureBox;
         public Graphics g;
         public Bitmap bitmap;
-        public Form1 form1;
+        public MainForm form1;
         public int hmin;
         public int Ymax;
         public int Xmax;
         private double mainFontDepth;
         public bool enableGrid = true;
-        public bool enableRefresh = true;
+        public bool enableRefresh = false;
         public bool lightsOn = false;
-        public MultiParameterVisualizer(PictureBox target_pictureBox, Form1 form1)
+        public MultiParameterVisualizer(PictureBox target_pictureBox, MainForm form1)
         {
             this.form1 = form1;
             pictureBox = target_pictureBox;
@@ -390,7 +390,7 @@ namespace Экспертная_система
                 }
             }
             bool isFirstTime = true;
-            drawHyperparametersAgain:
+        refreshAgain:
             for (int i = 0; i < parameters.Count; i++)
             {
                 bitmap = parameters[i].multyRefresh(bitmap);
@@ -404,7 +404,7 @@ namespace Экспертная_система
             if (isFirstTime)
             {
                 isFirstTime = false;
-                goto drawHyperparametersAgain;
+                goto refreshAgain;
             }
         }
         public void clear()

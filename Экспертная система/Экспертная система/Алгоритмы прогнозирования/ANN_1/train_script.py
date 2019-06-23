@@ -61,7 +61,7 @@ baseNodeName=  next((v for i, v in enumerate(jsonObj.items()) if i == 0))[0]
 #превращение входного файла в плоскую таблицу значений предикторов
 inputFile = open(h("input_file"))
 allLines = inputFile.readlines()
-dataset = numpy.zeros((len(allLines) - 1, len(allLines[0].split(';'))),dtype=float)
+dataset = numpy.zeros((len(allLines) - 1, len(allLines[0].split(';'))),dtype=numpy.float32)
 window_size = (int)(h("window_size"))
 for i in range(1,len(allLines)):
     for j in range(0,len(allLines[i].split(';'))):   
@@ -73,8 +73,8 @@ print(dataset.shape)
 
 #создание обучающей выборки из входных данных
 #в данном алгоритме вектор X - массив из одного предиктора (он же - прогнозируемая величина)
-Dataset_X = numpy.zeros((dataset.shape[0] - window_size, window_size), dtype=float)
-Dataset_Y = numpy.zeros(dataset.shape[0] - window_size, dtype=float)
+Dataset_X = numpy.zeros((dataset.shape[0] - window_size, window_size), dtype=numpy.float32)
+Dataset_Y = numpy.zeros(dataset.shape[0] - window_size, dtype=numpy.float32)
 predicted_column_index = (int)(h("predicted_column_index"))
 for i in range(0,dataset.shape[0] - window_size):
     for j in range(0,window_size):

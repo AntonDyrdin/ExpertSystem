@@ -52,7 +52,7 @@ namespace Экспертная_система
         private bool multiThreadPrediction = false;
 
         double Purchase = 0;
-        public void buildNew(string expertName, Form1 form1)
+        public void buildNew(string expertName, MainForm form1)
         {
             this.form1 = form1;
             path_prefix = form1.pathPrefix;
@@ -68,7 +68,7 @@ namespace Экспертная_система
             H.addVariable(0, "alpha", 0.001, 0.99, 0.01, 0.9);
             H.addVariable(0, "gamma", 0.001, 0.99, 0.01, 0.5);
         }
-        public Expert(string expertName, Form1 form1)
+        public Expert(string expertName, MainForm form1)
         {
             buildNew(expertName, form1);
 
@@ -80,7 +80,7 @@ namespace Экспертная_система
                 }
             }
         }
-        public Expert(string expertName, Form1 form1, bool DoNotDeleteExpertFolder)
+        public Expert(string expertName, MainForm form1, bool DoNotDeleteExpertFolder)
         {
             buildNew(expertName, form1);
         }
@@ -104,15 +104,29 @@ namespace Экспертная_система
             else
                 stateInString += ",DEP1:1";
 
-            if (deposit2 < closeValueHistory[closeValueHistory.Count - 1])
-                stateInString += ",DEP2:0";
-            else
+            if (closeValueHistory.Count == 0)
+            {
                 stateInString += ",DEP2:1";
-
-            if(closeValueHistory[closeValueHistory.Count-1] >Purchase)
-                stateInString += ",HigherThenPurchase:1";
+            }
             else
+            {
+                if (deposit2 < closeValueHistory[closeValueHistory.Count - 1])
+                    stateInString += ",DEP2:0";
+                else
+                    stateInString += ",DEP2:1";
+            }
+
+            if (closeValueHistory.Count == 0)
+            {
                 stateInString += ",HigherThenPurchase:0";
+            }
+            else
+            {
+                if (closeValueHistory[closeValueHistory.Count - 1] > Purchase)
+                    stateInString += ",HigherThenPurchase:1";
+                else
+                    stateInString += ",HigherThenPurchase:0";
+            }
 
             return stateInString;
         }
@@ -217,7 +231,7 @@ namespace Экспертная_система
                     committeeResponse[i] = 0;
             }
 
-            committeeResponseHistory.Add(committeeResponse);
+           // committeeResponseHistory.Add(committeeResponse);
             return committeeResponse;
         }
 
@@ -254,7 +268,6 @@ namespace Экспертная_система
             closeValueHistory = new List<double>();
             deposit1History = new List<double>();
             deposit2History = new List<double>();
-            closeValueHistory = new List<double>();
             actionHistory = new List<string>();
             report = new List<string>();
             presentLine = "";
@@ -312,6 +325,7 @@ namespace Экспертная_система
                             {
                                 //j+1, так как первая строка - заголовок
                                 input[j + 1] = allLines[i - windowSize + j];
+                                // ПРИ ОШИБКЕ В ЭТОЙ СТРОКИ - ПРОВЕРИТЬ НЕ ВЫХОДИТ ЛИ ЗА ГРАНИЦЫ ФАЙЛА ДАТА date1-window_size
                             }
 
                         }
@@ -335,7 +349,7 @@ namespace Экспертная_система
                                 closeIndexInRawDataset = i;
                         closeValueStr = rawInputLine.Split(';')[closeIndexInRawDataset];
                         closeValue = Convert.ToDouble(closeValueStr.Replace('.', ','));
-                        closeValueHistory.Add(closeValue);
+
                         if (!report[0].Contains(input[0]))
                             report[0] += input[0];
                         presentLine = input[input.Length - 1];
@@ -396,6 +410,8 @@ namespace Экспертная_система
                         action = "dateDoesn'tExist";
                         //   log("дата " + dateStr + " не найдена в файле " + rawDatasetFilePath);
                     }
+                    committeeResponseHistory.Add(committeeResponse);
+                    closeValueHistory.Add(closeValue);
                     deposit1History.Add(deposit1);
                     deposit2History.Add(deposit2);
 
@@ -655,11 +671,11 @@ namespace Экспертная_система
                 }
             }
         }
-        public static Expert Open(string expertName, Form1 form1)
+        public static Expert Open(string expertName, MainForm form1)
         {
             return Open(form1.pathPrefix + expertName, form1);
         }
-        public static Expert Open(string path, string expertName, Form1 form1)
+        public static Expert Open(string path, string expertName, MainForm form1)
         {
             Expert expert = new Expert(expertName, form1, true);
 
@@ -677,6 +693,8 @@ namespace Экспертная_система
                     expert.algorithms.Add(new LSTM_2(form1, "LSTM_2"));
                 if (algorithmBranch.name() == "ANN_1")
                     expert.algorithms.Add(new ANN_1(form1, "ANN_1"));
+                if (algorithmBranch.name() == "CNN_1")
+                    expert.algorithms.Add(new CNN_1(form1, "CNN_1"));
 
                 expert.algorithms[expert.algorithms.Count - 1].h = new Hyperparameters(expert.H.toJSON(algorithmBranch.ID), form1);
                 expert.algorithms[expert.algorithms.Count - 1].modelName = expert.algorithms[expert.algorithms.Count - 1].h.getValueByName("model_name");
@@ -749,17 +767,15 @@ namespace Экспертная_система
         { return algorithms[0].h; }
 
         [NonSerializedAttribute]
-        private Form1 form1;
+        private MainForm form1;
 
-        public void log(String s, System.Drawing.Color col)
+        private void log(String s, Color col)
         {
-            form1.logDelegate = new Form1.LogDelegate(form1.delegatelog);
-            form1.logBox.Invoke(form1.logDelegate, form1.logBox, s, col);
+            form1.log(s, col);
         }
-        public void log(String s)
+        public void log(string s)
         {
-            form1.logDelegate = new Form1.LogDelegate(form1.delegatelog);
-            form1.logBox.Invoke(form1.logDelegate, form1.logBox, s, System.Drawing.Color.White);
+            form1.log(s);
         }
 
         private double[,] normalize1(double[,] inputDataset)

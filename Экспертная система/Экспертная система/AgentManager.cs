@@ -12,13 +12,13 @@ namespace Экспертная_система
     {
         public List<Agent> agents;
         public List<AgentTask> tasks;
-        public Form1 form1;
+        public MainForm form1;
         public Task searchForAgentsTask;
         public Task listener;
         public string status;
         private const int port = 8888;
         public TcpListener TCPListener;
-        public AgentManager(Form1 form1)
+        public AgentManager(MainForm form1)
         {
             this.form1 = form1;
 
@@ -104,8 +104,7 @@ namespace Экспертная_система
 
         private void log(String s)
         {
-            form1.logDelegate = new Form1.LogDelegate(form1.delegatelog);
-            form1.logBox.Invoke(form1.logDelegate, form1.logBox, s, System.Drawing.Color.White);
+            form1.log(s);
         }
     }
 
@@ -116,11 +115,11 @@ namespace Экспертная_система
         public AgentTask task = null;
         public string workFolder;
         public TcpClient client;
-        private Form1 form1;
+        private MainForm form1;
 
         public string input;
         public string output;
-        public Agent(TcpClient tcpClient, Form1 form1)
+        public Agent(TcpClient tcpClient, MainForm form1)
         {
             client = tcpClient;
             this.form1 = form1;
@@ -225,10 +224,9 @@ namespace Экспертная_система
         }
 
 
-        public void log(String s)
+        public void log(string s)
         {
-            form1.logDelegate = new Form1.LogDelegate(form1.delegatelog);
-            form1.logBox.Invoke(form1.logDelegate, form1.logBox, s, System.Drawing.Color.White);
+            form1.log(s);
         }
     }
 

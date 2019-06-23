@@ -9,7 +9,7 @@ namespace Экспертная_система
     public class Hyperparameters
     {
         public int newNodeIdWillBe = 0;
-        public Hyperparameters(Form1 form1, string baseNodeName)
+        public Hyperparameters(MainForm form1, string baseNodeName)
         {
             this.form1 = form1;
             addByParentId(-1, "name:" + baseNodeName);
@@ -20,18 +20,18 @@ namespace Экспертная_система
               addByParentId(-1, "name:baseNode");
           }     */
 
-        public Hyperparameters( string path, Form1 form1,bool asFile)
+        public Hyperparameters( string path, MainForm form1,bool asFile)
         {
             this.form1 = form1;
             fromJSON(System.IO.File.ReadAllText(path, System.Text.Encoding.Default), -1);
         }
-        public Hyperparameters(string JSON, Form1 form1)
+        public Hyperparameters(string JSON, MainForm form1)
         {
             this.form1 = form1;
             fromJSON(JSON, -1);
         }
         [NonSerializedAttribute]
-        public Form1 form1;
+        public MainForm form1;
         public PictureBox picBox;
         public Graphics g;
         public Bitmap bitmap;
@@ -305,7 +305,7 @@ namespace Экспертная_система
         }
 
 
-        public void draw(int rootId, PictureBox target_pictureBox, Form1 form1, int fontDepth, int columnWidth)
+        public void draw(int rootId, PictureBox target_pictureBox, MainForm form1, int fontDepth, int columnWidth)
         {
             bool isFirstTime = true;
             drawHyperparametersAgain:
@@ -461,11 +461,12 @@ namespace Экспертная_система
             if (endOfAttr == -1)
                 endOfAttr = JSON.Length - 1;
             string[] RAWattr = JSON.Substring(0, endOfAttr).Split(',');
+            
             for (int i = 0; i < RAWattr.Length; i++)
             {
                 if (RAWattr[i].Split(':').Length == 1)
                 {
-                    newNode.attributes[i].value +=','+ RAWattr[i];
+                    newNode.attributes[newNode.attributes.Count-1].value +=','+ RAWattr[i];
                 }
                 else
                 {
@@ -651,7 +652,7 @@ namespace Экспертная_система
         public void refresh()
         {
             picBox.Image = bitmap;
-            form1.voidDelegate = new Form1.VoidDelegate(form1.Refresh);
+            form1.voidDelegate = new MainForm.VoidDelegate(form1.Refresh);
             form1.logBox.Invoke(form1.voidDelegate);
 
         }
@@ -746,14 +747,13 @@ namespace Экспертная_система
                     g.DrawLine(new Pen(col, Convert.ToInt16(depth)), Convert.ToInt16(Math.Round(x1)), Convert.ToInt16(Math.Round(y1)), Convert.ToInt16(Math.Round(x2)), Convert.ToInt16(Math.Round(y2)));
             }
         }
-        private void log(String s, System.Drawing.Color col)
+        private void log(String s, Color col)
         {
-            try
-            {
-                form1.logDelegate = new Form1.LogDelegate(form1.delegatelog);
-                form1.logBox.Invoke(form1.logDelegate, form1.logBox, s, col);
-            }
-            catch { }
+            form1.log(s, col);
+        }
+        public void log(string s)
+        {
+            form1.log(s);
         }
     }
 }
@@ -772,7 +772,7 @@ public class Node
         {
             if (rawAttributes[i].Split(':').Length == 1)
             {
-                attributes[i-1].value +=','+ rawAttributes[i];
+                attributes[attributes.Count-1].value +=','+ rawAttributes[i];
             }
             else
             {

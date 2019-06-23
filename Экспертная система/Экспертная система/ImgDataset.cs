@@ -10,7 +10,7 @@ namespace Экспертная_система
         public int Y = 0;
         public Bitmap bmp;
 
-        public ImgDataset(string pathToImageFile, bool toInvertPixelsBrightness, Form1 form1)
+        public ImgDataset(string pathToImageFile, bool toInvertPixelsBrightness, MainForm form1)
         {
 
             this.form1 = form1;
@@ -51,7 +51,7 @@ namespace Экспертная_система
             System.IO.File.WriteAllLines(path, csvLines);
         }
 
-        public ImgDataset(string pathToDatasetFile, Form1 form1)
+        public ImgDataset(string pathToDatasetFile, MainForm form1)
         {
             this.form1 = form1;
 
@@ -78,7 +78,7 @@ namespace Экспертная_система
 
 
         ///////////ВИЗУАЛИЗАЦИЯ//////////////////
-        public Form1 form1;
+        public MainForm form1;
         public PictureBox picBox;
 
         public void drawImgWhithPredictions(string outputCSVFile, string predictionsColumnName, string split_point, string predColInd)
@@ -151,10 +151,13 @@ namespace Экспертная_система
             picBox.Image = new Bitmap(bmp, new Size(picBox.Width, picBox.Height));
         }
 
-        public void log(String s, System.Drawing.Color col)
+        private void log(String s, Color col)
         {
-            form1.logDelegate = new Form1.LogDelegate(form1.delegatelog);
-            form1.logBox.Invoke(form1.logDelegate, form1.logBox, s, col);
+            form1.log(s, col);
+        }
+        public void log(string s)
+        {
+            form1.log(s);
         }
     }
 }

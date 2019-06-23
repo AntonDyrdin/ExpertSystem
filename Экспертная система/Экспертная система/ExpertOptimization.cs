@@ -13,7 +13,7 @@ namespace Экспертная_система
         public Expert expert;
         public Hyperparameters[] population;
         public Hyperparameters E;
-        private Form1 form1;
+        private MainForm form1;
         public int mutation_rate;
         public int population_value;
         public double elite_ratio;
@@ -26,10 +26,12 @@ namespace Экспертная_система
         private Random r;
         private AgentManager agentManager;
         private string rawDatasetFilePath;
-        private int test_count = 3;
+        private int test_count = 1;
         public int screenshotIterationTimer = 5;
-        private bool multiThreadTraining = false;
-        public ExpertOptimization(Expert expert, Form1 form1, int population_value, int test_count, int mutation_rate, double elite_ratio, int Iterarions, DateTime date1, DateTime date2, string rawDatasetFilePath)
+        private bool multiThreadTraining = true;
+
+        public int multiThreadTrainingRATE = 4;
+        public ExpertOptimization(Expert expert, MainForm form1, int population_value, int test_count, int mutation_rate, double elite_ratio, int Iterarions, DateTime date1, DateTime date2, string rawDatasetFilePath)
         {
             r = new Random();
             this.Iterarions = Iterarions;
@@ -62,12 +64,12 @@ namespace Экспертная_система
             for (int i = 0; i < population_value; i++)
                 variablesVisualizer.parameters[1].functions.Add(new Function(" [" + i.ToString() + "]", valueToColor(0, population_value, population_value - i - 1)));
 
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < population_value; i++)
             {
                 // variablesVisualizer.addParameter("actions [" + i.ToString() + "]", Color.Pink, 50);
                 variablesVisualizer.addParameter("committee response [" + i.ToString() + "]", Color.Pink, 300);
                 variablesVisualizer.addParameter("close [" + i.ToString() + "]", Color.Pink, 300);
-                variablesVisualizer.addParameter("deposit2 [" + i.ToString() + "]", Color.Green, 300);
+                variablesVisualizer.addParameter("deposit1 [" + i.ToString() + "]", Color.Green, 300);
                 variablesVisualizer.addParameter("exit [" + i.ToString() + "]", Color.LightSeaGreen, 300);
                 /* variablesVisualizer.addParameter("deposit history [" + i.ToString() + "]", Color.LightCyan, 300);
                  variablesVisualizer.parameters[1 + i].functions.Add(new Function("deposit1 [" + i.ToString() + "]", Color.Pink));
@@ -174,92 +176,109 @@ namespace Экспертная_система
 
                 for (int tc = 0; tc < test_count; tc++)
                 {
-                    if (agentManager.agents.Count == 0)
+                    if (opt_inc == 2)
                     {
-
-                        if (multiThreadTraining)
+                        if (agentManager.agents.Count == 0)
                         {
-                            List<Expert> experts = new List<Expert>();
-                            for (int i = 0; i < population_value; i++)
-                            {
-                                Expert exp = Expert.Open(form1.pathPrefix + "Optimization\\" + name + "\\" + name + "[" + i.ToString() + "]", name, form1);
-                                //   exp.H = population[i].Clone();
-                                experts.Add(exp);
-                            }
 
-                            Task[] trainTasks = new Task[population_value];
-                            foreach (Expert exp in experts)
+                            if (multiThreadTraining)
                             {
-                                trainTasks[experts.IndexOf(exp)] = new Task(() => experts[experts.IndexOf(exp)].trainAllAlgorithms(false));
-                                trainTasks[experts.IndexOf(exp)].Start();
-                            }
+                                if (form1.multiThreadTrainingRATE != 0)
+                                    multiThreadTrainingRATE = form1.multiThreadTrainingRATE;
+                                log("multiThreadTrainingRATE = " + multiThreadTrainingRATE.ToString(), Color.Yellow);
+                                if (multiThreadTrainingRATE > population_value)
+                                    multiThreadTrainingRATE = population_value;
 
-                            bool done = false;
-                            while (done == false)
-                            {
-                                done = true;
-                                foreach (var task in trainTasks)
-                                    if (task.Status == TaskStatus.Running)
+                                for (int begin = 0; begin < population_value; begin += multiThreadTrainingRATE)
+                                {
+                                    var now1 = new DateTimeOffset(DateTime.Now);
+                                    var start1 = now1.ToUnixTimeSeconds();
+                                    int end = 0;
+                                    if (begin + multiThreadTrainingRATE >= population_value)
                                     {
-                                        done = false;
+                                        end = population_value;
                                     }
-                            }
+                                    else
+                                    {
+                                        end = begin + multiThreadTrainingRATE;
+                                    }
+                                    List<Expert> experts = new List<Expert>();
+                                    for (int i = begin; i < end; i++)
+                                    {
+                                        Expert exp = Expert.Open(form1.pathPrefix + "Optimization\\" + name + "\\" + name + "[" + i.ToString() + "]", name, form1);
+                                        //   exp.H = population[i].Clone();
+                                        experts.Add(exp);
+                                    }
 
-                            for (int i = 0; i < population_value; i++)
+                                    Task[] trainTasks = new Task[end - begin];
+                                    foreach (Expert exp in experts)
+                                    {
+                                        trainTasks[experts.IndexOf(exp)] = new Task(() => experts[experts.IndexOf(exp)].trainAllAlgorithms(false));
+                                        trainTasks[experts.IndexOf(exp)].Start();
+                                    }
+
+                                    foreach (var task in trainTasks)
+                                        task.Wait();
+
+                                    for (int i = begin; i < end; i++)
+                                    {
+                                        // experts[i].copyHyperparametersFromAlgorithmsToExpert();
+                                        experts[i - begin].Save(form1.pathPrefix + "Optimization\\" + name + "\\" + name + "[" + i.ToString() + "]");
+                                        population[i] = experts[i - begin].H.Clone();
+                                    }
+                                    log((end).ToString() + '/' + population_value.ToString() + " training comlete" + TimeSpan.FromSeconds((new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds()) - start1).ToString(), Color.LimeGreen);
+                                }
+                            }
+                            else
                             {
-                                // experts[i].copyHyperparametersFromAlgorithmsToExpert();
-                                experts[i].Save(form1.pathPrefix + "Optimization\\" + name + "\\" + name + "[" + i.ToString() + "]");
-                                population[i] = experts[i].H.Clone();
-                            }
+                                for (int i = 0; i < population_value; i++)
+                                {
+                                    expert = Expert.Open(form1.pathPrefix + "Optimization\\" + name + "\\" + name + "[" + i.ToString() + "]", name, form1);
+                                    expert.trainAllAlgorithms(false);
+                                    expert.Save(form1.pathPrefix + "Optimization\\" + name + "\\" + name + "[" + i.ToString() + "]");
+                                    population[i] = expert.H.Clone();
+                                    log((i + 1).ToString() + '/' + population_value.ToString() + " training comlete", Color.LimeGreen);
+                                }
 
+                            }
                         }
                         else
                         {
                             for (int i = 0; i < population_value; i++)
                             {
-                                expert = Expert.Open(form1.pathPrefix + "Optimization\\" + name + "\\" + name + "[" + i.ToString() + "]", name, form1);
-                                expert.trainAllAlgorithms(false);
-                                expert.Save(form1.pathPrefix + "Optimization\\" + name + "\\" + name + "[" + i.ToString() + "]");
-                                population[i] = expert.H.Clone();
-                                log((i + 1).ToString() + '/' + population_value.ToString() + " training comlete", Color.LimeGreen);
-                            }
 
+                                var algorithmBranches = population[i].getNodesByparentID(expert.committeeNodeID);
+                                foreach (Node algorithmBranch in algorithmBranches)
+                                {
+                                    agentManager.tasks.Add(new AgentTask("train", new Hyperparameters(population[i].toJSON(algorithmBranch.ID), form1)));
+                                }
+                                Task.Factory.StartNew(() => { agentManager.work(); }).Wait();
+                                //  СПИСОК ВЕТВЕЙ АЛГОРИТМОВ
+                                List<Node> toDelete = population[i].getNodesByparentID(expert.committeeNodeID);
+                                //удаление старых конфигураций алгоритмов
+                                for (int j = 0; j < toDelete.Count; j++)
+                                    population[i].deleteBranch(toDelete[j].ID);
+
+                                //приращение новых конфигураций к узлу "committee"
+                                for (int j = 0; j < agentManager.tasks.Count; j++)
+                                {
+                                    population[i].addBranch(agentManager.tasks[j].h, agentManager.tasks[j].h.nodes[0].name(), expert.committeeNodeID);
+                                }
+                                agentManager.tasks.Clear();
+
+                                //   expert.synchronizeHyperparameters();
+                                File.WriteAllText(form1.pathPrefix + "Optimization\\" + name + "\\" + name + "[" + i.ToString() + "]" + "\\json.txt", population[i].toJSON(0), System.Text.Encoding.Default);
+                            }
                         }
                     }
-                    else
+                    for (int i = 0; i < population_value; i++)
                     {
-                        for (int i = 0; i < population_value; i++)
-                        {
-
-                            var algorithmBranches = population[i].getNodesByparentID(expert.committeeNodeID);
-                            foreach (Node algorithmBranch in algorithmBranches)
-                            {
-                                agentManager.tasks.Add(new AgentTask("train", new Hyperparameters(population[i].toJSON(algorithmBranch.ID), form1)));
-                            }
-                            Task.Factory.StartNew(() => { agentManager.work(); }).Wait();
-                            //  СПИСОК ВЕТВЕЙ АЛГОРИТМОВ
-                            List<Node> toDelete = population[i].getNodesByparentID(expert.committeeNodeID);
-                            //удаление старых конфигураций алгоритмов
-                            for (int j = 0; j < toDelete.Count; j++)
-                                population[i].deleteBranch(toDelete[j].ID);
-
-                            //приращение новых конфигураций к узлу "committee"
-                            for (int j = 0; j < agentManager.tasks.Count; j++)
-                            {
-                                population[i].addBranch(agentManager.tasks[j].h, agentManager.tasks[j].h.nodes[0].name(), expert.committeeNodeID);
-                            }
-                            agentManager.tasks.Clear();
-
-                            //   expert.synchronizeHyperparameters();
-                            File.WriteAllText(form1.pathPrefix + "Optimization\\" + name + "\\" + name + "[" + i.ToString() + "]" + "\\json.txt", population[i].toJSON(0), System.Text.Encoding.Default);
-                        }
+                        variablesVisualizer.Clear("committee response [" + i.ToString() + "]");
+                        variablesVisualizer.Clear("deposit2 [" + i.ToString() + "]");
+                        variablesVisualizer.Clear("deposit1 [" + i.ToString() + "]");
+                        variablesVisualizer.Clear("exit [" + i.ToString() + "]");
+                        variablesVisualizer.Clear("close [" + i.ToString() + "]");
                     }
-
-                    variablesVisualizer.Clear("committee response [0]");
-                    variablesVisualizer.Clear("deposit2 [0]");
-                    variablesVisualizer.Clear("exit [0]");
-                    variablesVisualizer.Clear("close [0]");
-
                     //Тестирование (вычисление целевой функции)
                     for (int i = 0; i < population_value; i++)
                     {
@@ -268,20 +287,19 @@ namespace Экспертная_система
                         log("test[" + i.ToString() + "]: " + expert.H.getValueByName("expert_target_function"), Color.Purple);
                         population[i] = expert.H.Clone();
                         File.WriteAllText(form1.pathPrefix + "Optimization\\" + name + "\\" + name + "[" + i.ToString() + "]" + "\\json.txt", population[i].toJSON(0), System.Text.Encoding.Default);
-                        //отрисовка истрии баланса
-                        /*  foreach (Function func in variablesVisualizer.parameters[1 + i].functions)
-                              func.points.Clear();       */
                         target_functions[i, tc] = Convert.ToDouble(population[i].getValueByName("expert_target_function").Replace('.', ','));
-                        if (i == 0)
+
+                        //отрисовка истрии баланса
                             for (int j = 0; j < expert.deposit1History.Count; j++)
                             {
                                 variablesVisualizer.addPoint(expert.committeeResponseHistory[j][0], "committee response [" + i.ToString() + "]");
                                 // variablesVisualizer.addPoint(expert.actionHistory[j], "actions [" + i.ToString() + "]");
                                 variablesVisualizer.addPoint(expert.deposit2History[j] + (expert.deposit1History[j] * expert.closeValueHistory[j]), "exit [" + i.ToString() + "]");
-                                variablesVisualizer.addPoint(expert.deposit2History[j], "deposit2 [" + i.ToString() + "]");
+                                variablesVisualizer.addPoint(expert.deposit1History[j], "deposit1 [" + i.ToString() + "]");
                                 variablesVisualizer.addPoint(expert.closeValueHistory[j], "close [" + i.ToString() + "]");
 
                             }
+                        variablesVisualizer.refresh();
                     }
                     log((tc + 1).ToString() + '/' + test_count.ToString() + " test comlete", Color.LimeGreen);
 
@@ -409,7 +427,6 @@ namespace Экспертная_система
                 {
                     for (int j = 0; j < Convert.ToInt16((Math.Round(population_value * elite_ratio))) - 1; j++)
                     {
-                        //смерть, зачатие и рождение в одной строке
                         population[inc] = get_child(population[j], population[j + 1], population[inc]);
                         inc++;
                         if (inc == population_value)
@@ -537,11 +554,14 @@ namespace Экспертная_система
 
         private void log(String s, Color col)
         {
-            form1.logDelegate = new Form1.LogDelegate(form1.delegatelog);
-            form1.logBox.Invoke(form1.logDelegate, form1.logBox, s, col);
+            form1.log(s, col);
+        }
+        public void log(string s)
+        {
+            form1.log(s);
         }
 
-        private Color valueToColor(double min, double max, double val)
+        public static Color valueToColor(double min, double max, double val)
         {
             double R = 0;
             double G = 0;
