@@ -13,7 +13,7 @@ namespace Экспертная_система
         public double[,] dataset1;
         public double[,] dataset2;
         public double[,] dataset3;
-        private string period = "day";
+        private string period = "minute";
         //критерий оптимальности
         public double target_function;
         public Hyperparameters H;
@@ -231,7 +231,7 @@ namespace Экспертная_система
                     committeeResponse[i] = 0;
             }
 
-           // committeeResponseHistory.Add(committeeResponse);
+            // committeeResponseHistory.Add(committeeResponse);
             return committeeResponse;
         }
 
@@ -274,6 +274,231 @@ namespace Экспертная_система
             double closeValue = 0;
             string action = "";
             string reportHead = "<presentDate>;<deposit1>;<deposit2>;<action>;<reward>;<closeValue>;";
+            foreach (Algorithm algorithm in algorithms)
+                reportHead += "<" + algorithm.modelName + ">;";
+            report.Add(reportHead);
+            if (date1 < date2)
+            {
+                //ЗАПУСК СКРИПТОВ ПОТОЧНОГО ПРОГНОЗИРОВНИЯ
+                Task[] RunTasks = new Task[algorithms.Count];
+                foreach (Algorithm algorithm in algorithms)
+                    RunTasks[algorithms.IndexOf(algorithm)] = Task.Run(() => algorithm.runGetPredictionScript());
+
+                //ОЖИДАНИЕ ЗАВЕРШЕНИЯ ЗАПУСКА
+                foreach (var task in RunTasks)
+                    task.Wait();
+
+                while (date1 < date2)
+                {
+                    string reportLine = "";
+                    string closeValueStr;
+
+                    bool dateExist = false;
+                    string dateStr = "";
+                    /* if (date1.Day < 10) dateStr += "0" + date1.Day.ToString(); else dateStr += date1.Day.ToString();
+                     dateStr += '/';
+                     if (date1.Month < 10) dateStr += "0" + date1.Month.ToString(); else dateStr += date1.Month.ToString();
+                     dateStr += '/';
+                     dateStr += date1.Year.ToString().Substring(2, 2);*/
+
+                    dateStr = date1.ToString().Replace('.', ',') ;
+
+                    int[] windowSizes = new int[algorithms.Count];
+                    for (int i = 0; i < algorithms.Count; i++)
+                        windowSizes[i] = Convert.ToInt32(algorithms[i].getValueByName("window_size"));
+                    int windowSize = 0;
+                    for (int i = 0; i < windowSizes.Length; i++)
+                    {
+                        if (windowSizes[i] > windowSize)
+                            windowSize = windowSizes[i];
+                    }
+                    //+1 для заголовка;+1 для нормализации i/(i-1)
+                    string[] input = new string[windowSize + 1 + 1];
+                    var allLines = skipEmptyLines(File.ReadAllLines(rawDatasetFilePath));
+                    //копирование заголовка
+                    input[0] = allLines[0];
+
+
+                    for (int i = 1; i < allLines.Length; i++)
+                    {
+                        if (allLines[i].Contains(dateStr))
+                        {
+                            dateExist = true;
+                            for (int j = 0; j < windowSize + 1; j++)
+                            {
+                                //j+1, так как первая строка - заголовок
+                                input[j + 1] = allLines[i - windowSize + j];
+                                // ПРИ ОШИБКЕ В ЭТОЙ СТРОКИ - ПРОВЕРИТЬ НЕ ВЫХОДИТ ЛИ ЗА ГРАНИЦЫ ФАЙЛА ДАТА date1-window_size
+                            }
+
+                        }
+                    }
+                    string rawInputLine = input[input.Length - 1];
+
+
+                    if (dateExist)
+                    {
+                        // ГЕНЕРАЦИЯ МАТРИЦЫ INPUT
+                        input = prepareDataset(input, algorithms[0].getValueByName("drop_columns"), Convert.ToBoolean(H.getValueByName("normalize")));
+                        // ВЫЗОВ getPrediction(input)
+                        var committeeResponse = getPrediction(input);
+
+
+                        int closeIndexInNormalizedDataset = Convert.ToInt32(H.getValueByName("predicted_column_index"));
+                        string featureName = input[0].Split(';')[closeIndexInNormalizedDataset];
+                        int closeIndexInRawDataset = -1;
+                        for (int i = 0; i < allLines[0].Split(';').Length; i++)
+                            if (allLines[0].Split(';')[i] == featureName)
+                                closeIndexInRawDataset = i;
+                        closeValueStr = rawInputLine.Split(';')[closeIndexInRawDataset];
+                        closeValue = Convert.ToDouble(closeValueStr.Replace('.', ','));
+
+                        if (!report[0].Contains(input[0]))
+                            report[0] += input[0];
+                        presentLine = input[input.Length - 1];
+
+                        //обновление состояния
+                        DMS.setActualState(getStateStr());
+                        //Отправка запроса к системе принятия решений
+                        action = getDecision(committeeResponse);
+                        if (action == "error")
+                        {
+                            deposit1 = 0;
+                            deposit2 = 0;
+                            break;
+                        }
+                        if (action == "buy")
+                        {
+                            if (closeValue != 0)
+                            {
+                                if (deposit2 > closeValue)
+                                {
+                                    deposit1 = deposit1 + 1;
+                                    deposit2 = deposit2 - closeValue;
+                                    Purchase = closeValue;
+                                }
+                                else
+                                {
+                                    //    log("Основной депозит исчерпан! Не возможно купить базовую валюту.");
+                                }
+                            }
+                            else
+                            {
+                                log("closeValue почему-то равно нулю!");
+                            }
+                        }
+                        if (action == "sell")
+                        {
+                            if (closeValue != 0)
+                            {
+                                if (deposit1 >= 1)
+                                {
+                                    deposit1 = deposit1 - 1;
+                                    deposit2 = deposit2 + closeValue;
+                                }
+                                else
+                                {
+                                    //      log("Депозит базовой валюты исчерпан (состояние выхода с рынка). Не возможно продать базовую валюту.");
+                                }
+                            }
+                            else
+                            {
+                                log("closeValue почему-то равно нулю!", Color.Red);
+                            }
+                        }
+
+                    }
+                    else
+                    {
+                        action = "dateDoesn'tExist";
+                        //   log("дата " + dateStr + " не найдена в файле " + rawDatasetFilePath);
+                    }
+                    committeeResponseHistory.Add(committeeResponse);
+                    closeValueHistory.Add(closeValue);
+                    deposit1History.Add(deposit1);
+                    deposit2History.Add(deposit2);
+
+                    //обновление состояния
+                    DMS.setActualState(getStateStr());
+                    //вознаграждение системы принятия решений
+                    double reward = 0;
+                    if (deposit1History.Count > 1)
+                    {
+                        reward = (closeValue * (deposit1History[deposit1History.Count - 1] - deposit1History[deposit1History.Count - 2])) + (deposit2History[deposit2History.Count - 1] - deposit2History[deposit2History.Count - 2]);
+                        // reward =  (deposit2History[deposit2History.Count - 1] - deposit2History[deposit2History.Count - 2]);
+
+                    }
+                    DMS.setR(reward);
+                    ////////////////////////////////////////
+
+                    actionHistory.Add(action);
+                    //print committee response
+                    string comRespStr = "committee response: ";
+                    for (int i = 0; i < committeeResponse.Length; i++)
+                        comRespStr += " [" + committeeResponse[i] + "]; ";
+                    string committeeResponseReportLine = "";
+                    for (int i = 0; i < committeeResponse.Length; i++)
+                        committeeResponseReportLine += committeeResponse[i] + ";";
+                    //    log(comRespStr);
+                    //  log("date: " + date1.ToString());
+                    //    log("deposit1: " + deposit1.ToString());
+                    //    log("deposit2: " + deposit2.ToString());
+                    //  log("action: " + action);
+                    //    log("reward: " + reward.ToString());
+                    //  log("closeValue: " + closeValue.ToString());
+                    //   log("presentLine: " + presentLine);
+
+                    reportLine += date1.ToString() + ';' + deposit1.ToString() + ';' + deposit2.ToString() + ';' + action + ';' + reward.ToString() + ';' + closeValue.ToString() + ';' + committeeResponseReportLine + presentLine;
+                    report.Add(reportLine);
+
+                    if (period == "day")
+                        date1 = date1.AddDays(1);
+                    if (period == "hour")
+                        date1 = date1.AddHours(1);
+                    if (period == "minute")
+                        date1 = date1.AddHours(1);
+                }
+            }
+            else
+                log("date1>=date2 !");
+            //выход с рынка
+            deposit2 = deposit2 + (closeValue * deposit1);
+            deposit1 = 0;
+            action = "exit";
+            string reportLineExit = date1.ToString() + ';' + deposit1.ToString() + ';' + deposit2.ToString() + ';' + action + ';' + closeValue.ToString() + ';';
+            report.Add(reportLineExit);
+
+            // запись отчёта
+            reportPath = H.getValueByName("report_path");
+            if (reportPath == "" || reportPath == null)
+            {
+                reportPath = path_prefix + expertName;
+            }
+            File.WriteAllLines(reportPath + "\\report.csv", report);
+
+
+            H.setValueByName("expert_target_function", deposit2.ToString().Replace(',', '.'));
+            return "expert has been tested";
+        }
+        public string testExmo(DateTime date1, DateTime date2, string rawDatasetFilePath)
+        {
+            deposit1 = deposit1StartValue;
+            deposit2 = deposit2StartValue;
+
+
+
+            Array a = new double[3];
+
+            committeeResponseHistory = new List<double[]>();
+            closeValueHistory = new List<double>();
+            deposit1History = new List<double>();
+            deposit2History = new List<double>();
+            actionHistory = new List<string>();
+            report = new List<string>();
+            presentLine = "";
+            double closeValue = 0;
+            string action = "";
+            string reportHead = "<presentDate>;<deposit1>;<deposit2>;<action>;<reward>;<ask>;<bid>;";
             foreach (Algorithm algorithm in algorithms)
                 reportHead += "<" + algorithm.modelName + ">;";
             report.Add(reportHead);
@@ -489,7 +714,10 @@ namespace Экспертная_система
         //возвращает путь к файлу датасета
         public string savePreparedDataset(string inputFile, string dropColumn, bool normalize)
         {
+            DateTime start = DateTime.Now;
             File.WriteAllLines(inputFile.Replace(".txt", "-dataset.txt"), prepareDataset(inputFile, dropColumn, normalize));
+            TimeSpan offset = DateTime.Now - start;
+            log("Обработка и сохранение файла " + inputFile.Replace(".txt", "-dataset.txt") + " - " + offset.Minutes.ToString() + ':' + offset.Seconds.ToString() + ':' + offset.Milliseconds.ToString());
             return inputFile.Replace(".txt", "-dataset.txt");
         }
         public string[] prepareDataset(string inputFile, string dropColumn, bool normalize)
@@ -548,42 +776,75 @@ namespace Экспертная_система
 
 
             dataset = new double[allLines.Length - 1, featuresNames.Length - colDropInd.Count];
+
+            int coreCount = Environment.ProcessorCount;
+            int[,] intervals = new int[coreCount, 3];
+
+            // распределение интервалов входной таблицы между ядрами
+            for (int i = 0; i < coreCount; i++)
+            {// [i, 0] - начало интервала i-ого ядра
+                intervals[i, 0] = allLines.Length / coreCount * i + 1;
+                // [i, 1] - конец интервала i-ого ядра
+                intervals[i, 1] = allLines.Length / coreCount * (i + 1) + 1;
+                // [i, 2] - как только одно из ядер приступает к обработке i-ого интервала это элемент матрицы становится равным единице 
+                intervals[i, 2] = 0;
+            }
+            //поправка второго края последнего интервала
+            intervals[coreCount - 1, 1] = allLines.Length;
+
+            Task[] prepDatasetTasks = new Task[coreCount];
             //формирование матрицы dataset
-            for (int i = 1; i < allLines.Length; i++)
+            for (int core = 0; core < coreCount; core++)
             {
-                string[] features = allLines[i].Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+                prepDatasetTasks[core] = new Task(() =>
+                  {//
+                      for (int core1 = 0; core1 < coreCount; core1++)
+                      {
+                          if (intervals[core1, 2] == 0)
+                          {
+                              intervals[core1, 2] = 1;
+                              for (int i = intervals[core1, 0]; i < intervals[core1, 1]; i++)
+                              {
+                                  string[] features = allLines[i].Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
 
-                int shift = 0;
-                for (int k = 0; k < features.Length; k++)
-                {
-                    bool dropIt = false;
-                    for (int c = 0; c < colDropInd.Count; c++)
-                    {
-                        if (colDropInd[c] == k)
-                        {
-                            dropIt = true;
-                            shift++;
-                        }
-                    }
+                                  int shift = 0;
+                                  for (int k = 0; k < features.Length; k++)
+                                  {
+                                      bool dropIt = false;
+                                      for (int c = 0; c < colDropInd.Count; c++)
+                                      {
+                                          if (colDropInd[c] == k)
+                                          {
+                                              dropIt = true;
+                                              shift++;
+                                          }
+                                      }
 
-                    if (!dropIt)
-                        try
-                        {
-                            dataset[i - 1, k - shift] = Convert.ToDouble(features[k]);
-                        }
-                        catch
-                        {
-                            try
-                            {
-                                dataset[i - 1, k - shift] = Convert.ToDouble(features[k]);
-                            }
-                            catch
-                            {
-
-                                dataset[i - 1, k - shift] = 0;
-                            }
-                        }
-                }
+                                      if (!dropIt)
+                                          try
+                                          {
+                                              dataset[i - 1, k - shift] = Convert.ToDouble(features[k]);
+                                          }
+                                          catch (Exception e)
+                                          {
+                                              log("Ошибка формирования датасета.", Color.Red);
+                                              log(e.Message, Color.Red);
+                                              if (features[k].Contains("."))
+                                                  log("Разделитель дробной и целой части - точка, а должна быть запятая.", Color.Red);
+                                          }
+                                  }
+                              }
+                          }
+                      }
+                  });
+            }
+            for (int core = 0; core < coreCount; core++)
+            {
+                prepDatasetTasks[core].Start();
+            }
+            for (int core = 0; core < coreCount; core++)
+            {
+                prepDatasetTasks[core].Wait();
             }
             if (normalize)
             {
@@ -598,8 +859,8 @@ namespace Экспертная_система
                 /////////////////////////////////
                 //////     СГЛАЖИВАНИЕ    ///////
                 /////////////////////////////////
-                dataset2 = levelOff2(dataset1);
-
+                //  dataset2 = levelOff2(dataset1);
+                dataset2 = dataset1;
             }
             else
             {
@@ -673,7 +934,7 @@ namespace Экспертная_система
         }
         public static Expert Open(string expertName, MainForm form1)
         {
-            return Open(form1.pathPrefix + expertName, form1);
+            return Open(form1.pathPrefix + expertName, expertName, form1);
         }
         public static Expert Open(string path, string expertName, MainForm form1)
         {
@@ -815,7 +1076,7 @@ namespace Экспертная_система
             ////////////////////////////////////////////////
             ///////////   НОРМАЛИЗАЦИЯ i/(i-1)   ///////////
             ////////////////////////////////////////////////
-            //первая строка датасета удаляется из-за нормализации типа i/(i-1)
+            //первая строка датасета удаляется из-за нормализации типа i-(i-1)
             double[,] normalizedDataset2 = new double[inputDataset.GetLength(0) - 1, inputDataset.GetLength(1)];
 
             //заполнение строки previousLine для первой итерации алгоритма   ____i/(i-1)__
@@ -829,10 +1090,7 @@ namespace Экспертная_система
             {
                 for (int k = 0; k < inputDataset.GetLength(1); k++)
                 {
-                    if (previousLine[k] != 0)
-                        normalizedDataset2[i, k] = Convert.ToDouble(inputDataset[i + 1, k]) - Convert.ToDouble(previousLine[k]);
-                    else
-                        normalizedDataset2[i, k] = 0;
+                    normalizedDataset2[i, k] = Convert.ToDouble(inputDataset[i + 1, k]) - Convert.ToDouble(previousLine[k]);
                 }
                 for (int j = 0; j < inputDataset.GetLength(1); j++)
                     previousLine[j] = inputDataset[i + 1, j];
@@ -937,7 +1195,28 @@ namespace Экспертная_система
             }
             return scaleedDataset;
         }
+        public static string[] skipGarbadge(string[] allLines)
+        {
+            bool sccflparse;
+            //пропуск строк без даты
+            List<string> goodLines = new List<string>();
+            foreach (string line in allLines)
+            {
+                DateTime dt;
+                sccflparse = DateTime.TryParse(line.Split(';')[0], out dt);
+                if (sccflparse)
+                {
+                    goodLines.Add(line);
+                }
+            }
+            var res = new string[goodLines.Count];
+            for (int i = 0; i < goodLines.Count; i++)
+            {
+                res[i] = goodLines[i];
+            }
 
+            return res;
+        }
         public static string[] skipEmptyLines(string[] allLines)
         {
 

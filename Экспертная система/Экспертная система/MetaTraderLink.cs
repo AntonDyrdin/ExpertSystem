@@ -59,6 +59,7 @@ namespace Экспертная_система
                             string request = builder.ToString();
                             string response = getResponse(request);
                             send(response);
+                            System.Threading.Thread.Sleep(1);
                         }
 
                     }
@@ -73,14 +74,25 @@ namespace Экспертная_система
             });
             listen.Start();
         }
-
+        public DateTime actualTime;
         public string getResponse(string request)
         {
+            DateTime dt;
+            if (DateTime.TryParse(request, out dt))
+            {
+                actualTime = dt;
+            }
+            else
             if (request == "get_action")
             {
                 string res = ACTION;
                 ACTION = "";
                 return res;
+            }
+            else
+            if (request == "shutdown")
+            {
+                mainForm.Form1_FormClosing(null,null);
             }
             return "";
         }

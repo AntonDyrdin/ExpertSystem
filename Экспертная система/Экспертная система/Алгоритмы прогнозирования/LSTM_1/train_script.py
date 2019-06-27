@@ -29,7 +29,7 @@ log("> время загрузки библиотек : "+ getTime())
 
 def createParser():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--json_file_path',type=str,default='D:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\LSTM_1\json.txt')
+    parser.add_argument('--json_file_path',type=str,default='E:\Anton\Desktop\MAIN\Optimization\LSTM_1\LSTM_1[0]\json.txt')
     # parser.add_argument('--json_file_path',type=str,default='C:\Users\anton\Рабочий стол\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\LSTM 1\json.txt')
     return parser
   
@@ -82,6 +82,7 @@ for i in range(0,dataset.shape[0] - window_size):
             Dataset_X[i,j,k] = dataset[i + j][k]
     Dataset_Y[i] = dataset[i + window_size,predicted_column_index]
 train_start_point = (int)((float)(h("start_point"))*Dataset_X.shape[0])
+print("start point =  start_point *",Dataset_X.shape[0],"= ", train_start_point)
 split_point = (float)(h("split_point"))
 train_X = Dataset_X[train_start_point:round(Dataset_X.shape[0] * (split_point)), :,:]
 test_X = Dataset_X[round(Dataset_X.shape[0] * (split_point)):, :,:]

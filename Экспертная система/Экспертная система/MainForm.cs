@@ -102,8 +102,10 @@ namespace Экспертная_система
             else
             { WindowState = FormWindowState.Minimized; }
         }
+        bool tester = false;
         void exmoAsIndicator()
         {
+            log("вход в exmoAsIndicator()");
             vis.addParameter("USD_RUB", Color.Lime, 900);
             vis.parameters[0].functions.Add(new Function("AVG1", Color.Green));
             vis.parameters[0].functions.Add(new Function("AVG2", Color.Pink));
@@ -117,7 +119,7 @@ namespace Экспертная_система
 
             mainThread = System.Threading.Thread.CurrentThread;
             Hyperparameters order_book;
-
+            log("Подключение к ExmoApi...");
             var api = new ExmoApi("k", "s");
             string result = "";
             string s = "";
@@ -127,7 +129,14 @@ namespace Экспертная_система
             double sum = 0;
             List<double> history = new List<double>();
 
+            string[] dataBase = null;
 
+            DateTime lastTime = new DateTime(1, 1, 1, 0, 0, 0);
+            if (tester)
+            {
+                dataBase = File.ReadAllLines("USD_RUB_exmo.txt");
+                DateTime.TryParse(dataBase[1].Split(';')[0], out lastTime);
+            }
 
 
             Invoke(new Action(() =>
@@ -138,74 +147,142 @@ namespace Экспертная_система
             }));
 
 
+
+            log("Попытка запустить сервер...");
             MetaTraderLink mtLink = new MetaTraderLink(this);
+            log("Сервер запущен.");
+            bool parse;
+            if (tester) while (mtLink.actualTime == new DateTime(1, 1, 1, 0, 0, 0))
+                {
+                    log("ожидание подключения metatrader...");
+                    Thread.Sleep(1000);
+                }
+
+
+            int screenshotIterationTimer = 3600;
+            int inc1 = 0;
             while (true)
             {
-
-
-                result = api.ApiQuery("order_book", new Dictionary<string, string> { { "pair", "USD_RUB" } });
-                order_book = new Hyperparameters(result, this);
-
-                s = DateTime.Now.ToString() + ';' + order_book.nodes[0].getAttributeValue("bid_top") + ';' + order_book.nodes[0].getAttributeValue("ask_top");
-
-                double bid = Convert.ToDouble(order_book.nodes[0].getAttributeValue("bid_top").Replace('.', ','));
-                double ask = Convert.ToDouble(order_book.nodes[0].getAttributeValue("ask_top").Replace('.', ','));
-
-                File.AppendAllText("USD_RUB_exmo.txt", s + '\n');
-
-
-                log(s);
-
-                if (history.Count == (Nl + Nh))
+                try
                 {
-                    sum = 0;
-                    for (int i = 0; i < Nl; i++)
+                    double bid = 0;
+                    if (tester)
                     {
-                        sum += history[i];
-                    }
-                    AVG1 = sum / Nl;
-                    sum = 0;
-                    for (int i = 0; i < Nh; i++)
-                    {
-                        sum += history[Nl + i];
-                    }
-                    AVG2 = sum / Nh;
 
-                    double Zi = AVG2 - AVG1;
-
-                    vis.addPoint(AVG1, "AVG1");
-                    vis.addPoint(AVG2, "AVG2");
-                    if (Zi >= Z)
-                    {
-                        vis.parameters[0].functions[0].points[vis.parameters[0].functions[0].points.Count - 1].mark = "buy";
-                        vis.addPoint(1, "OUTPUT");
-                        // ОТПРАВИТЬ КОМАНДУ НА ПОКУПКУ
-                        if (mtLink.handler != null)
+                        for (int i = 1; i < dataBase.Length; i++)
                         {
-                            mtLink.ACTION="buy";
+                            DateTime dt;
+                            parse = DateTime.TryParse(dataBase[i].Split(';')[0], out dt);
+                            if (parse)
+                            {
+                                if (mtLink.actualTime == dt)
+                                {
+                                    bid = Convert.ToDouble(dataBase[i].Split(';')[1].Replace('.', ','));
+
+                                    if (mtLink.actualTime != lastTime.AddSeconds(1))
+                                    {
+                                        log("Актуальное время не равно предыдущему плюс 1 сек.", Color.Red);
+                                        log("> mtLink.actualTime: " + mtLink.actualTime.ToString(), Color.Red);
+                                        log("> lastTime: " + lastTime.ToString(), Color.Red);
+                                    }
+                                    lastTime = mtLink.actualTime;
+                                }
+                            }
                         }
+                        s = mtLink.actualTime.ToString() + ";  " + bid.ToString();
+                        log(s);
+                    }
+                    else
+                    {
+                        result = api.ApiQuery("order_book", new Dictionary<string, string> { { "pair", "USD_RUB" } });
+                        order_book = new Hyperparameters(result, this);
+
+                        s = DateTime.Now.ToString() + ';' + order_book.nodes[0].getAttributeValue("bid_top") + ';' + order_book.nodes[0].getAttributeValue("ask_top");
+
+                        bid = Convert.ToDouble(order_book.nodes[0].getAttributeValue("bid_top").Replace('.', ','));
+                        //   double ask = Convert.ToDouble(order_book.nodes[0].getAttributeValue("ask_top").Replace('.', ','));
+
+                        File.AppendAllText("USD_RUB_exmo.txt", s + '\n');
+                        log(s);
+                    }
+
+
+
+                    if (history.Count >= (Nl + Nh))
+                    {
+                        sum = 0;
+                        for (int i = 0; i < Nl; i++)
+                        {
+                            sum += history[i];
+                        }
+                        AVG1 = sum / Nl;
+                        sum = 0;
+                        for (int i = 0; i < Nh; i++)
+                        {
+                            sum += history[Nl + i];
+                        }
+                        AVG2 = sum / Nh;
+
+                        double Zi = AVG2 - AVG1;
+
+                        vis.addPoint(AVG1, "AVG1");
+                        vis.addPoint(AVG2, "AVG2");
+                        if (Zi >= Z)
+                        {
+                            vis.parameters[0].functions[0].points[vis.parameters[0].functions[0].points.Count - 1].mark = "buy";
+                            vis.addPoint(1, "OUTPUT");
+                            // ОТПРАВИТЬ КОМАНДУ НА ПОКУПКУ
+                            if (mtLink.handler != null)
+                            {
+                                mtLink.ACTION = "buy";
+                            }
+                        }
+                        else
+                        {
+                            vis.addPoint(0, "OUTPUT");
+                        }
+                        vis.addPoint(Zi, "Z");
+                        history.RemoveAt(0);
                     }
                     else
                     {
                         vis.addPoint(0, "OUTPUT");
+                        vis.addPoint(0, "Z");
+                        vis.addPoint(bid, "AVG1");
+                        vis.addPoint(bid, "AVG2");
                     }
-                    vis.addPoint(Zi, "Z");
-                    history.RemoveAt(0);
+
+                    history.Add(bid);
+                    vis.addPoint(bid, "USD_RUB");
+                    vis.refresh();
+
+
+                    if (inc1 == screenshotIterationTimer)
+                    {
+                        inc1 = 0;
+                        Bitmap screenShot = (Bitmap)picBox.Image.Clone();
+                        int h = screenShot.Height;
+                        if (screenShot.Height > 3000)
+                            h = 3000;
+                        for (int i = 0; i < screenShot.Width; i++)
+                            for (int j = 0; j < h; j++)
+                            {
+                                Color c = screenShot.GetPixel(i, j);
+                                if (c == Color.FromArgb(0, 0, 0, 0))
+                                { screenShot.SetPixel(i, j, Color.Black); }
+                            }
+                        screenShot.Save(DateTime.Now.ToString().Replace(':', '-') + ".bmp");
+                    }
+                    inc1++;
                 }
-                else
+                catch (Exception e)
                 {
-                    vis.addPoint(0, "OUTPUT");
-                    vis.addPoint(0, "Z");
-                    vis.addPoint(bid, "AVG1");
-                    vis.addPoint(bid, "AVG2");
+                    log(e.Message, Color.Red);
                 }
-
-                history.Add(bid);
-                vis.addPoint(bid, "USD_RUB");
-                vis.refresh();
-
                 Thread.Sleep(1000);
             }
+
+
 
         }
         void script()
@@ -352,17 +429,17 @@ namespace Экспертная_система
             mainThread = System.Threading.Thread.CurrentThread;
             algorithm = new LSTM_1(this, "LSTM_1");
 
-            //  sourceDataFile = pathPrefix + @"Временные ряды\EURRUB_long_min.txt";
-            //  expert.H.add("input_file", expert.savePreparedDataset(sourceDataFile, "<TIME>;<TICKER>;<PER>;<DATE>;<VOL>", true));
+            // sourceDataFile = pathPrefix + @"Временные ряды\USD_RUB_exmo.txt";
+            //  expert.H.add("input_file", expert.savePreparedDataset(sourceDataFile, "<TIME>;<TICKER>;<PER>;<DATE>;<local_time>", true));
+            algorithm.h.setValueByName("start_point", "0.5");
+            algorithm.h.setValueByName("normalize", "true");
+            algorithm.h.add("input_file", pathPrefix + @"Временные ряды\USD_RUB_exmo-dataset.txt");
+            algorithm.h.add("path_prefix", pathPrefix);
+            algorithm.h.add("drop_columns:<local_time>");
+            algorithm.h.add("predicted_column_index:1");
+            algorithm.h.add("name:show_train_charts,value:False");
 
-            /* algorithm.h.add("normalize:true");
-             algorithm.h.add("input_file", pathPrefix + @"Временные ряды\SIN-dataset.txt");
-             algorithm.h.add("path_prefix", pathPrefix);
-             algorithm.h.add("drop_columns:<DATE>");
-             algorithm.h.add("predicted_column_index:1");
-             algorithm.h.add("name:show_train_charts,value:False");*/
-
-            algorithm.Open(@"E:\Anton\Desktop\MAIN\Optimization\LSTM_1\LSTM_1[0]\json.txt");
+            //algorithm.Open(@"E:\Anton\Desktop\MAIN\Optimization\LSTM_1\LSTM_1[0]\json.txt");
 
             AO = new AlgorithmOptimization(algorithm, this, 30, 10, 0.5, 100);
             AO.run();
@@ -373,32 +450,40 @@ namespace Экспертная_система
         {
             mainThread = System.Threading.Thread.CurrentThread;
 
-            expert = new Expert("Эксперт 1", this);
+            expert =  Expert.Open("Эксперт 1", this);
 
             //  expert.Add(new LSTM_1(this, "LSTM_1[0]"));
             // expert.Add(new LSTM_2(this, "LSTM_2[0]"));
             //expert.Add(new ANN_1(this, "ANN_1[0]"));
-            expert.Add(new CNN_1(this, "CNN_1[0]"));
-
+           // expert.Add(new CNN_1(this, "CNN_1[0]"));
+           // expert.algorithms[0].Open(@"E:\Anton\Desktop\MAIN\Эксперт 1\CNN_1[0]\json.txt");
             //    expert.algorithms[0].Open(pathPrefix + @"Optimization\LSTM_1\LSTM_1[0]\json.txt");
             //    expert.algorithms[1].Open(pathPrefix + @"Optimization\LSTM_2\LSTM_2[0]\json.txt");
             //   expert.algorithms[2].Open(pathPrefix + @"Optimization\ANN_1\ANN_1[0]\json.txt");
 
-            expert.H.add("normalize:true");
-            expert.H.add("input_file", pathPrefix + @"Временные ряды\EURRUB-dataset.txt");
-            expert.H.add("path_prefix", pathPrefix);
-            expert.H.add("drop_columns:none");
-            expert.H.add("predicted_column_index:3");
-            expert.H.add("name:show_train_charts,value:True");
-            expert.copyExpertParametersToAlgorithms();
+            /*    expert.H.setValueByName("start_point", "0.5");
+                 expert.H.setValueByName("normalize", "true");
+                 expert.H.add("input_file", pathPrefix + @"Временные ряды\USD_RUB_exmo-dataset.txt");
+                 expert.H.add("path_prefix", pathPrefix);
+                 expert.H.add("drop_columns:<local_time>");
+                 expert.H.add("predicted_column_index:1");
+                 expert.H.add("name:show_train_charts,value:True");*/
+
+            /* expert.H.add("normalize:true");
+             expert.H.add("input_file", pathPrefix + @"Временные ряды\EURRUB-dataset.txt");
+             expert.H.add("path_prefix", pathPrefix);
+             expert.H.add("drop_columns:none");
+             expert.H.add("predicted_column_index:3");
+             expert.H.add("name:show_train_charts,value:True");*/
+           /* expert.copyExpertParametersToAlgorithms();
             expert.trainAllAlgorithms(false);
 
             expert.copyHyperparametersFromAlgorithmsToExpert();
             expert.H.draw(0, picBox, this, 20, 150);
             expert.Save();
-
-            sourceDataFile = pathPrefix + @"Временные ряды\EURRUB.txt";
-            expert.test(new DateTime(2015, 9, 1), new DateTime(2016, 9, 1), sourceDataFile);
+            */
+            sourceDataFile = pathPrefix + @"Временные ряды\USD_RUB_exmo.txt";
+            expert.test(new DateTime(2019, 6, 27,0,0,0), new DateTime(2019, 6, 27,23,59,59), sourceDataFile);
 
 
         }
@@ -421,12 +506,7 @@ namespace Экспертная_система
 
             expert = new Expert("Эксперт 1", this);
 
-            /*  expert.Add(new ANN_1(this, "ANN_1[1]"));
-              expert.Add(new ANN_1(this, "ANN_1[2]"));
-              expert.Add(new ANN_1(this, "ANN_1[3]")); */
-            expert.Add(new LSTM_1(this, "LSTM_1[1]"));
-            /* expert.Add(new LSTM_1(this, "LSTM_1[2]"));
-             expert.Add(new LSTM_2(this, "LSTM_2[1]"));  */
+            expert.Add(new ANN_1(this, "ANN_1[1]"));
 
             expert.algorithms[0].setAttributeByName("number_of_epochs", 50);
             /*  expert.algorithms[0].setAttributeByName("window_size", 30); 
@@ -438,14 +518,7 @@ namespace Экспертная_система
              for (int i = 0; i < 20; i++)
                  expert.Add(new LSTM_1(this, "LSTM_1_[" + i.ToString() + "]"));*/
 
-            //EURRUB
-            /* sourceDataFile = pathPrefix + @"Временные ряды\EURRUB.txt";
-             expert.H.add("normalize:true");
-             expert.H.add("input_file", expert.savePreparedDataset(sourceDataFile, "<TIME>;<TICKER>;<PER>;<DATE>;<VOL>"));
-             expert.H.add("path_prefix", pathPrefix);
-             expert.H.add("drop_columns:<TIME>;<TICKER>;<PER>;<DATE>;<VOL>");  
-             expert.H.add("predicted_column_index:3");
-             expert.H.add("name:show_train_charts,value:False");      */
+
 
             sourceDataFile = pathPrefix + @"Временные ряды\EURRUB.txt";
             expert.H.add("normalize:true");
@@ -583,7 +656,7 @@ namespace Экспертная_система
             mainThread.Abort();
         }
 
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        public void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             try
             {
@@ -641,7 +714,7 @@ namespace Экспертная_система
         {
             for (int i = 0; i < vis.parameters.Count; i++)
                 vis.parameters[i].window = draw_window.Value * 10;
-            vis.refresh();
+            //  vis.refresh();
         }
 
         private void TrackBar5_Scroll(object sender, EventArgs e)
