@@ -6,13 +6,12 @@ namespace Экспертная_система
 
         public LSTM_2(MainForm form1, string name) : base(form1, name)
         {
-            System.Threading.Thread.Sleep(20);
             this.name = "LSTM_2";
             fillFilePaths();
             ///////////////////////
             //СТРУКТУРА НЕЙРОСЕТИ (https://www.youtube.com/watch?v=ftMq5ps503w)
             ///////////////////////
-            int NNscructNodeId = h.add("name:NN_sctruct");
+            int NNscructNodeId = h.add("name:NN_struct");
 
             int _1stLayer = h.addByParentId(NNscructNodeId, "name:layer1,value:LSTM");
             h.addVariable(_1stLayer, "neurons_count", 2, 10, 1, 9);

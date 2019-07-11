@@ -85,7 +85,7 @@ namespace Экспертная_система
                     TcpClient client = TCPListener.AcceptTcpClient();
                     Agent clientObject = new Agent(client, form1);
                     agents.Add(clientObject);
-                    log("Подключён агент");
+                    log("Подключён агент "+ client.Client.RemoteEndPoint.ToString());
                     // создаем новый поток для обслуживания нового клиента
                     Thread clientThread = new Thread(new ThreadStart(clientObject.Process));
                     clientThread.Start();

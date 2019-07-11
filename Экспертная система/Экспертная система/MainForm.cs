@@ -103,6 +103,68 @@ namespace Экспертная_система
             { WindowState = FormWindowState.Minimized; }
         }
         bool tester = false;
+        public void expertOptimization()
+        {
+            mainThread = System.Threading.Thread.CurrentThread;
+
+            expert = new Expert("Эксперт 1", this);
+            algorithm = new LSTM_1(this, "LSTM_1[0]");
+            algorithm.Open(@"E:\Anton\Desktop\MAIN\Optimization\" + algorithm.name + '\\' + algorithm.name + @"[0]\json.txt");
+            expert.Add(algorithm);
+
+            //expert.Add(new LSTM_2(this, "LSTM_2[0]"));
+            //expert.Add(new ANN_1(this, "ANN_1[0]"));
+            // expert.Add(new CNN_1(this, "CNN_1[0]"));
+
+            expert.H.add("normalize:true");
+
+            expert.H.add("path_prefix", pathPrefix);
+            expert.H.add("drop_columns:none");
+            expert.H.add("name:show_train_charts,value:False");
+
+
+            // EURRUB
+            //  expert.H.add("input_file", pathPrefix + @"Временные ряды\EURRUB-dataset.txt");
+            //  expert.H.add("predicted_column_index:3");
+
+            // SIN
+            sourceDataFile = pathPrefix + @"Временные ряды\SIN+date.txt";
+            // expert.H.add("input_file", expert.savePreparedDataset(sourceDataFile, "<DATE>;<X>", Convert.ToBoolean(expert.H.getValueByName("normalize"))));
+            expert.H.add("input_file", pathPrefix + @"Временные ряды\SIN-dataset.txt");
+            expert.H.add("predicted_column_index:1");
+
+            expert.Save();
+
+
+
+            optimization = new ExpertOptimization(expert, this, 8, 5, 10, 0.5, 100, new DateTime(2016, 9, 1), new DateTime(2018, 3, 1), sourceDataFile);
+            optimization.run();
+        }
+        public void algorithmOptimization()
+        {
+            expert = new Expert("Эксперт 1", this);
+            mainThread = System.Threading.Thread.CurrentThread;
+            algorithm = new LSTM_1(this, "LSTM_1");
+
+            // sourceDataFile = pathPrefix + @"Временные ряды\USD_RUB_exmo.txt";
+            //  expert.H.add("input_file", expert.savePreparedDataset(sourceDataFile, "<TIME>;<TICKER>;<PER>;<DATE>;<local_time>", true));
+            algorithm.h.setValueByName("start_point", "0.5");
+            algorithm.h.setValueByName("normalize", "true");
+            algorithm.h.add("input_file", pathPrefix + @"Временные ряды\USD_RUB_exmo-dataset.txt");
+            algorithm.h.add("path_prefix", pathPrefix);
+            algorithm.h.add("drop_columns:<local_time>");
+            algorithm.h.add("predicted_column_index:1");
+            algorithm.h.add("name:show_train_charts,value:False");
+
+            //algorithm.Open(@"E:\Anton\Desktop\MAIN\Optimization\LSTM_1\LSTM_1[0]\json.txt");
+
+            var value = algorithm.h.getAttrValue("/NN_struct/layer2/dropout/value");
+
+            AO = new AlgorithmOptimization(algorithm, this, 30, 10, 0.5, 100);
+            AO.run();
+            // algorithm.h.draw(0, picBox, this, 15, 150);
+            // algorithm.Save();
+        }
         void exmoAsIndicator()
         {
             log("вход в exmoAsIndicator()");
@@ -292,7 +354,7 @@ namespace Экспертная_система
 
             var api = new ExmoApi("k", "s");
 
-            File.AppendAllText("USD_RUB_exmo.txt", "<local_time>;<bid>;<ask>");
+            //  File.AppendAllText("USD_RUB_exmo.txt", "<local_time>;<bid>;<ask>");
 
             string result = "";
 
@@ -334,7 +396,7 @@ namespace Экспертная_система
                 catch (Exception e)
                 {
                     log(e.Message);
-                    log(result);
+                    // log(result);
                 }
                 Thread.Sleep(1000);
             }
@@ -387,76 +449,18 @@ namespace Экспертная_система
                 DMS.setR(r);
             }
         }
-        public void expertOptimization()
-        {
-            mainThread = System.Threading.Thread.CurrentThread;
 
-            expert = new Expert("Эксперт 1", this);
-            algorithm = new LSTM_1(this, "LSTM_1[0]");
-            algorithm.Open(@"E:\Anton\Desktop\MAIN\Optimization\" + algorithm.name + '\\' + algorithm.name + @"[0]\json.txt");
-            expert.Add(algorithm);
-
-            //expert.Add(new LSTM_2(this, "LSTM_2[0]"));
-            //expert.Add(new ANN_1(this, "ANN_1[0]"));
-            // expert.Add(new CNN_1(this, "CNN_1[0]"));
-
-            expert.H.add("normalize:true");
-
-            expert.H.add("path_prefix", pathPrefix);
-            expert.H.add("drop_columns:none");
-            expert.H.add("name:show_train_charts,value:False");
-
-            // EURRUB
-            //  expert.H.add("input_file", pathPrefix + @"Временные ряды\EURRUB-dataset.txt");
-            //  expert.H.add("predicted_column_index:3");
-
-            // SIN
-            sourceDataFile = pathPrefix + @"Временные ряды\SIN+date.txt";
-            // expert.H.add("input_file", expert.savePreparedDataset(sourceDataFile, "<DATE>;<X>", Convert.ToBoolean(expert.H.getValueByName("normalize"))));
-            expert.H.add("input_file", pathPrefix + @"Временные ряды\SIN-dataset.txt");
-            expert.H.add("predicted_column_index:1");
-
-            expert.Save();
-
-
-
-            optimization = new ExpertOptimization(expert, this, 8, 5, 10, 0.5, 100, new DateTime(2016, 9, 1), new DateTime(2018, 3, 1), sourceDataFile);
-            optimization.run();
-        }
-        public void algorithmOptimization()
-        {
-            expert = new Expert("Эксперт 1", this);
-            mainThread = System.Threading.Thread.CurrentThread;
-            algorithm = new LSTM_1(this, "LSTM_1");
-
-            // sourceDataFile = pathPrefix + @"Временные ряды\USD_RUB_exmo.txt";
-            //  expert.H.add("input_file", expert.savePreparedDataset(sourceDataFile, "<TIME>;<TICKER>;<PER>;<DATE>;<local_time>", true));
-            algorithm.h.setValueByName("start_point", "0.5");
-            algorithm.h.setValueByName("normalize", "true");
-            algorithm.h.add("input_file", pathPrefix + @"Временные ряды\USD_RUB_exmo-dataset.txt");
-            algorithm.h.add("path_prefix", pathPrefix);
-            algorithm.h.add("drop_columns:<local_time>");
-            algorithm.h.add("predicted_column_index:1");
-            algorithm.h.add("name:show_train_charts,value:False");
-
-            //algorithm.Open(@"E:\Anton\Desktop\MAIN\Optimization\LSTM_1\LSTM_1[0]\json.txt");
-
-            AO = new AlgorithmOptimization(algorithm, this, 30, 10, 0.5, 100);
-            AO.run();
-            // algorithm.h.draw(0, picBox, this, 15, 150);
-            // algorithm.Save();
-        }
         public void buildAndTest()
         {
             mainThread = System.Threading.Thread.CurrentThread;
 
-            expert =  Expert.Open("Эксперт 1", this);
+            expert = Expert.Open("Эксперт 1", this);
 
             //  expert.Add(new LSTM_1(this, "LSTM_1[0]"));
             // expert.Add(new LSTM_2(this, "LSTM_2[0]"));
             //expert.Add(new ANN_1(this, "ANN_1[0]"));
-           // expert.Add(new CNN_1(this, "CNN_1[0]"));
-           // expert.algorithms[0].Open(@"E:\Anton\Desktop\MAIN\Эксперт 1\CNN_1[0]\json.txt");
+            // expert.Add(new CNN_1(this, "CNN_1[0]"));
+            // expert.algorithms[0].Open(@"E:\Anton\Desktop\MAIN\Эксперт 1\CNN_1[0]\json.txt");
             //    expert.algorithms[0].Open(pathPrefix + @"Optimization\LSTM_1\LSTM_1[0]\json.txt");
             //    expert.algorithms[1].Open(pathPrefix + @"Optimization\LSTM_2\LSTM_2[0]\json.txt");
             //   expert.algorithms[2].Open(pathPrefix + @"Optimization\ANN_1\ANN_1[0]\json.txt");
@@ -475,15 +479,15 @@ namespace Экспертная_система
              expert.H.add("drop_columns:none");
              expert.H.add("predicted_column_index:3");
              expert.H.add("name:show_train_charts,value:True");*/
-           /* expert.copyExpertParametersToAlgorithms();
-            expert.trainAllAlgorithms(false);
+            /* expert.copyExpertParametersToAlgorithms();
+             expert.trainAllAlgorithms(false);
 
-            expert.copyHyperparametersFromAlgorithmsToExpert();
-            expert.H.draw(0, picBox, this, 20, 150);
-            expert.Save();
-            */
+             expert.copyHyperparametersFromAlgorithmsToExpert();
+             expert.H.draw(0, picBox, this, 20, 150);
+             expert.Save();
+             */
             sourceDataFile = pathPrefix + @"Временные ряды\USD_RUB_exmo.txt";
-            expert.test(new DateTime(2019, 6, 27,0,0,0), new DateTime(2019, 6, 27,23,59,59), sourceDataFile);
+            expert.test(new DateTime(2019, 6, 27, 0, 0, 0), new DateTime(2019, 6, 27, 23, 59, 59), sourceDataFile);
 
 
         }

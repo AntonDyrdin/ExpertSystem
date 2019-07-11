@@ -93,11 +93,11 @@ test_y = Dataset_Y[round(Dataset_Y.shape[0] * (split_point)):]
 print("> время чтения данных  : ", getTime())  
 
 model = Sequential()         
-model.add(Dense(h3INT("NN_sctruct","layer1","neurons_count"),input_dim=window_size,activation=h3("NN_sctruct","layer1","activation")))
+model.add(Dense(h3INT("NN_struct","layer1","neurons_count"),input_dim=window_size,activation=h3("NN_struct","layer1","activation")))
 #model.add(Dropout(0.5))
-model.add(Dense(h3INT("NN_sctruct","layer2","neurons_count"),activation=h3("NN_sctruct","layer2","activation")))
+model.add(Dense(h3INT("NN_struct","layer2","neurons_count"),activation=h3("NN_struct","layer2","activation")))
 #model.add(Dropout(0.5))
-model.add(Dense(h3INT("NN_sctruct","layer3","neurons_count"),activation=h3("NN_sctruct","layer3","activation")))
+model.add(Dense(h3INT("NN_struct","layer3","neurons_count"),activation=h3("NN_struct","layer3","activation")))
                                                                   
 log("компиляция НС...")
         

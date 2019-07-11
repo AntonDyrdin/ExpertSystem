@@ -14,7 +14,7 @@ namespace Экспертная_система
             ///////////////////////
             //СТРУКТУРА НЕЙРОСЕТИ//
             ///////////////////////
-            int NNscructNodeId = h.add("name:NN_sctruct");
+            int NNscructNodeId = h.add("name:NN_struct");
 
             /*  int _1stLayer = h.addByParentId(NNscructNodeId, "name:layer1,value:Conv1D");
               h.addByParentId(_1stLayer, "neurons_count:" + window_size.ToString());

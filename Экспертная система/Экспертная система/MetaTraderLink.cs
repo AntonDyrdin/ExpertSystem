@@ -13,15 +13,16 @@ namespace Экспертная_система
         public Socket handler;
 
         public string ACTION = "";
+        // string IP = "192.168.1.7";
 
-
+     //string IP = "localhost";
         public MetaTraderLink(MainForm mainForm)
         {
             this.mainForm = mainForm;
 
 
             // получаем адреса для запуска сокета
-            IPEndPoint ipPoint = new IPEndPoint(IPAddress.Parse("192.168.1.7"), Convert.ToInt32("80"));
+            IPEndPoint ipPoint = new IPEndPoint(IPAddress.Loopback, Convert.ToInt32("80"));
 
             // создаем сокет
             Socket listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);

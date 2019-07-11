@@ -87,11 +87,15 @@ namespace JsonView
 
         private void Form1_SizeChanged(object sender, EventArgs e)
         {
-            panel1.Size = new Size(this.Size.Width - 200, this.Size.Height - 80 - 30);
-            picBox.Size = new Size(this.Size.Width - 200, this.Size.Height - 80 - 30);
-            logBox.Location = new Point(200, this.Size.Height - 80 - 30);
-            logBox.Size = new Size(this.Size.Width - 200, 80);
-            refresh();
+            try
+            {
+                panel1.Size = new Size(this.Size.Width - 200, this.Size.Height - 80 - 30);
+                picBox.Size = new Size(this.Size.Width - 200, this.Size.Height - 80 - 30);
+                logBox.Location = new Point(200, this.Size.Height - 80 - 30);
+                logBox.Size = new Size(this.Size.Width - 200, 80);
+                refresh();
+            }
+            catch { }
         }
         ViewSettings vs;
         private void Button3_Click(object sender, EventArgs e)

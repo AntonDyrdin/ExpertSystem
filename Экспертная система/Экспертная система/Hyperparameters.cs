@@ -20,7 +20,7 @@ namespace Экспертная_система
               addByParentId(-1, "name:baseNode");
           }     */
 
-        public Hyperparameters( string path, MainForm form1,bool asFile)
+        public Hyperparameters(string path, MainForm form1, bool asFile)
         {
             this.form1 = form1;
             fromJSON(System.IO.File.ReadAllText(path, System.Text.Encoding.Default), -1);
@@ -43,6 +43,38 @@ namespace Экспертная_система
         {
             return new Hyperparameters(this.toJSON(0), form1);
         }
+        public Node getNode(string request)
+        {
+            string[] nodesStr = request.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+
+            int curID = 0;
+            for (int i = 0; i < nodesStr.Length; i++)
+            {
+                var childrens = getNodesByparentID(curID);
+                foreach (Node node in childrens)
+                {
+                    if (node.getAttributeValue("name") == nodesStr[i])
+                    {
+                        curID = node.ID;
+                    }
+                }
+            }
+            return nodes[curID];
+        }
+        public void Save(string filePath)
+        {
+            System.IO.File.WriteAllText(filePath, toJSON(0), System.Text.Encoding.Default);
+        }
+        public string getAttrValue(string request)
+        {
+            string[] reqStr = request.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+
+            string nodeRequest = request.Substring(0, request.IndexOf(reqStr[reqStr.Length - 1]));
+
+            Node node = getNode(nodeRequest);
+
+            return node.getAttributeValue(reqStr[reqStr.Length-1]);
+          }
         public void replaceStringInAllValues(string oldString, string newString)
         {
             for (int i = 0; i < nodes.Count; i++)
@@ -120,7 +152,7 @@ namespace Экспертная_система
             Node newNode = new Node(newNodeIdWillBe, parentID);
             newNode.addAttribute("name", name);
             newNode.addAttribute("value", value.ToString().Replace(',', '.'));
-            newNode.addAttribute("min", min.ToString().Replace(',','.'));
+            newNode.addAttribute("min", min.ToString().Replace(',', '.'));
             newNode.addAttribute("max", max.ToString().Replace(',', '.'));
             newNode.addAttribute("step", step.ToString().Replace(',', '.'));
             newNode.addAttribute("variable", "numerical");
@@ -308,7 +340,7 @@ namespace Экспертная_система
         public void draw(int rootId, PictureBox target_pictureBox, MainForm form1, int fontDepth, int columnWidth)
         {
             bool isFirstTime = true;
-            drawHyperparametersAgain:
+        drawHyperparametersAgain:
 
             totalAttributesNumber = 0;
             deepnessRate = 0;
@@ -461,12 +493,12 @@ namespace Экспертная_система
             if (endOfAttr == -1)
                 endOfAttr = JSON.Length - 1;
             string[] RAWattr = JSON.Substring(0, endOfAttr).Split(',');
-            
+
             for (int i = 0; i < RAWattr.Length; i++)
             {
                 if (RAWattr[i].Split(':').Length == 1)
                 {
-                    newNode.attributes[newNode.attributes.Count-1].value +=','+ RAWattr[i];
+                    newNode.attributes[newNode.attributes.Count - 1].value += ',' + RAWattr[i];
                 }
                 else
                 {
@@ -772,7 +804,7 @@ public class Node
         {
             if (rawAttributes[i].Split(':').Length == 1)
             {
-                attributes[attributes.Count-1].value +=','+ rawAttributes[i];
+                attributes[attributes.Count - 1].value += ',' + rawAttributes[i];
             }
             else
             {
@@ -789,11 +821,11 @@ public class Node
     }
     public Node Clone()
     {
-         string attributesString = "";
-         foreach (Attribute attr in attributes)
-             attributesString += attr.name + ':' + attr.value + ',';
-         attributesString = attributesString.Remove(attributesString.Length - 1, 1);
-         Node newNode = new Node(this.ID, this.parentID, attributesString);
+        string attributesString = "";
+        foreach (Attribute attr in attributes)
+            attributesString += attr.name + ':' + attr.value + ',';
+        attributesString = attributesString.Remove(attributesString.Length - 1, 1);
+        Node newNode = new Node(this.ID, this.parentID, attributesString);
 
         return newNode;
     }

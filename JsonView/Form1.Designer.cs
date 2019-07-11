@@ -320,7 +320,6 @@
             this.textBox9.Name = "textBox9";
             this.textBox9.Size = new System.Drawing.Size(100, 20);
             this.textBox9.TabIndex = 69;
-            this.textBox9.Text = " ";
             // 
             // Form1
             // 

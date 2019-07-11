@@ -87,7 +87,7 @@
             this.picBox.InitialImage = null;
             this.picBox.Location = new System.Drawing.Point(3, 3);
             this.picBox.Name = "picBox";
-            this.picBox.Size = new System.Drawing.Size(1304, 998);
+            this.picBox.Size = new System.Drawing.Size(1322, 1024);
             this.picBox.TabIndex = 37;
             this.picBox.TabStop = false;
             this.picBox.Click += new System.EventHandler(this.picBox_Click);
@@ -97,15 +97,15 @@
             // 
             this.panel1.AutoScroll = true;
             this.panel1.Controls.Add(this.picBox);
-            this.panel1.Location = new System.Drawing.Point(2, 4);
+            this.panel1.Location = new System.Drawing.Point(2, 2);
             this.panel1.Margin = new System.Windows.Forms.Padding(2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1309, 1006);
+            this.panel1.Size = new System.Drawing.Size(1328, 1036);
             this.panel1.TabIndex = 38;
             // 
             // trackBar1
             // 
-            this.trackBar1.Location = new System.Drawing.Point(1428, 201);
+            this.trackBar1.Location = new System.Drawing.Point(1450, 188);
             this.trackBar1.Margin = new System.Windows.Forms.Padding(2);
             this.trackBar1.Maximum = 30;
             this.trackBar1.Minimum = 5;
@@ -120,7 +120,7 @@
             this.checkBox1.AutoSize = true;
             this.checkBox1.BackColor = System.Drawing.Color.Transparent;
             this.checkBox1.ForeColor = System.Drawing.Color.White;
-            this.checkBox1.Location = new System.Drawing.Point(1409, 25);
+            this.checkBox1.Location = new System.Drawing.Point(1431, 12);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(72, 17);
             this.checkBox1.TabIndex = 38;
@@ -132,7 +132,7 @@
             // 
             this.buttonHyperparameters.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonHyperparameters.ForeColor = System.Drawing.Color.Aqua;
-            this.buttonHyperparameters.Location = new System.Drawing.Point(1492, 12);
+            this.buttonHyperparameters.Location = new System.Drawing.Point(1514, -1);
             this.buttonHyperparameters.Name = "buttonHyperparameters";
             this.buttonHyperparameters.Size = new System.Drawing.Size(80, 40);
             this.buttonHyperparameters.TabIndex = 39;
@@ -144,7 +144,7 @@
             // 
             this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button2.ForeColor = System.Drawing.Color.Magenta;
-            this.button2.Location = new System.Drawing.Point(1578, 12);
+            this.button2.Location = new System.Drawing.Point(1600, -1);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(80, 40);
             this.button2.TabIndex = 40;
@@ -156,7 +156,7 @@
             // 
             this.button3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button3.ForeColor = System.Drawing.Color.Yellow;
-            this.button3.Location = new System.Drawing.Point(1664, 12);
+            this.button3.Location = new System.Drawing.Point(1686, -1);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(80, 40);
             this.button3.TabIndex = 41;
@@ -168,7 +168,7 @@
             // 
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button1.ForeColor = System.Drawing.Color.Red;
-            this.button1.Location = new System.Drawing.Point(1750, 12);
+            this.button1.Location = new System.Drawing.Point(1772, -1);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(80, 40);
             this.button1.TabIndex = 42;
@@ -178,7 +178,7 @@
             // 
             // trackBar2
             // 
-            this.trackBar2.Location = new System.Drawing.Point(1428, 119);
+            this.trackBar2.Location = new System.Drawing.Point(1450, 106);
             this.trackBar2.Minimum = 1;
             this.trackBar2.Name = "trackBar2";
             this.trackBar2.Size = new System.Drawing.Size(402, 45);
@@ -191,7 +191,7 @@
             this.label1.AutoSize = true;
             this.label1.BackColor = System.Drawing.Color.Black;
             this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(1355, 206);
+            this.label1.Location = new System.Drawing.Point(1377, 193);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(68, 13);
             this.label1.TabIndex = 44;
@@ -202,7 +202,7 @@
             this.label2.AutoSize = true;
             this.label2.BackColor = System.Drawing.Color.Black;
             this.label2.ForeColor = System.Drawing.Color.White;
-            this.label2.Location = new System.Drawing.Point(1351, 119);
+            this.label2.Location = new System.Drawing.Point(1373, 106);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(72, 13);
             this.label2.TabIndex = 45;
@@ -213,7 +213,7 @@
             this.label3.AutoSize = true;
             this.label3.BackColor = System.Drawing.Color.Black;
             this.label3.ForeColor = System.Drawing.Color.White;
-            this.label3.Location = new System.Drawing.Point(1355, 151);
+            this.label3.Location = new System.Drawing.Point(1377, 138);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(68, 13);
             this.label3.TabIndex = 47;
@@ -221,7 +221,7 @@
             // 
             // trackBar3
             // 
-            this.trackBar3.Location = new System.Drawing.Point(1428, 151);
+            this.trackBar3.Location = new System.Drawing.Point(1450, 138);
             this.trackBar3.Maximum = 100;
             this.trackBar3.Minimum = 5;
             this.trackBar3.Name = "trackBar3";
@@ -235,7 +235,7 @@
             this.label4.AutoSize = true;
             this.label4.BackColor = System.Drawing.Color.Black;
             this.label4.ForeColor = System.Drawing.Color.White;
-            this.label4.Location = new System.Drawing.Point(1410, 183);
+            this.label4.Location = new System.Drawing.Point(1432, 170);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(13, 13);
             this.label4.TabIndex = 48;
@@ -246,7 +246,7 @@
             this.label5.AutoSize = true;
             this.label5.BackColor = System.Drawing.Color.Black;
             this.label5.ForeColor = System.Drawing.Color.White;
-            this.label5.Location = new System.Drawing.Point(1836, 183);
+            this.label5.Location = new System.Drawing.Point(1858, 170);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(25, 13);
             this.label5.TabIndex = 49;
@@ -257,7 +257,7 @@
             this.label6.AutoSize = true;
             this.label6.BackColor = System.Drawing.Color.Black;
             this.label6.ForeColor = System.Drawing.Color.White;
-            this.label6.Location = new System.Drawing.Point(1369, 69);
+            this.label6.Location = new System.Drawing.Point(1391, 56);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(54, 13);
             this.label6.TabIndex = 51;
@@ -265,7 +265,7 @@
             // 
             // trackBar4
             // 
-            this.trackBar4.Location = new System.Drawing.Point(1428, 69);
+            this.trackBar4.Location = new System.Drawing.Point(1450, 56);
             this.trackBar4.Margin = new System.Windows.Forms.Padding(2);
             this.trackBar4.Maximum = 6;
             this.trackBar4.Minimum = 1;
@@ -283,10 +283,10 @@
             this.logBox.DetectUrls = false;
             this.logBox.Font = new System.Drawing.Font("Century Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.logBox.ForeColor = System.Drawing.Color.White;
-            this.logBox.Location = new System.Drawing.Point(1324, 528);
+            this.logBox.Location = new System.Drawing.Point(1335, 455);
             this.logBox.Name = "logBox";
             this.logBox.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.logBox.Size = new System.Drawing.Size(557, 477);
+            this.logBox.Size = new System.Drawing.Size(548, 574);
             this.logBox.TabIndex = 52;
             this.logBox.Text = "";
             this.logBox.MouseEnter += new System.EventHandler(this.LogBox_MouseEnter);
@@ -360,9 +360,9 @@
             this.groupBox1.Controls.Add(this.label9);
             this.groupBox1.Controls.Add(this.label8);
             this.groupBox1.ForeColor = System.Drawing.Color.White;
-            this.groupBox1.Location = new System.Drawing.Point(1324, 251);
+            this.groupBox1.Location = new System.Drawing.Point(1335, 218);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(548, 271);
+            this.groupBox1.Size = new System.Drawing.Size(548, 231);
             this.groupBox1.TabIndex = 58;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Управление";

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Text;
 using System.Windows.Forms;
 
 namespace JsonView
@@ -531,7 +532,7 @@ namespace JsonView
         }
         public void Save(string filePath)
         {
-            System.IO.File.WriteAllText(filePath, toJSON(0));
+            System.IO.File.WriteAllText(filePath, toJSON(0),Encoding.Default);
         }
 
         private int totalAttributesNumber = 0;

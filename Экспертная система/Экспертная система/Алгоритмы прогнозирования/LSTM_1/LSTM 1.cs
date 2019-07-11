@@ -12,7 +12,7 @@ namespace Экспертная_система
             ///////////////////////
             //СТРУКТУРА НЕЙРОСЕТИ//
             ///////////////////////
-            int NNscructNodeId = h.add("name:NN_sctruct");
+            int NNscructNodeId = h.add("name:NN_struct");
 
             int _1stLayer = h.addByParentId(NNscructNodeId, "name:layer1,value:LSTM");
             h.addVariable(_1stLayer, "neurons_count", 2, 20, 1, 9);
