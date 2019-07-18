@@ -1,4 +1,4 @@
-prediction_algorithm_name = 'FlexNN'
+﻿prediction_algorithm_name = 'FlexNN'
 
 # лог
 def log(s):
@@ -40,11 +40,10 @@ log("> время загрузки библиотек : " + getTime())
 # чтение параметров командной строки
 def createParser():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--json_file_path',type=str,default='E:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\LSTM_2\json.txt')
+    parser.add_argument('--json_file_path',type=str,default='json.txt')
     return parser
 #####################################################################
  
-
 def h(request):
     nodeArray = request.split('/')
     if(len(nodeArray) == 1):
@@ -72,7 +71,7 @@ jsonObj = json.loads(jsontext)
 baseNodeName = next((v for i, v in enumerate(jsonObj.items()) if i == 0))[0]
 
 inputFile = open(h("input_file/value"))
-#превращение входного файла в плоскую таблицу значений предикторов           
+#превращение входного файла в плоскую таблицу значений предикторов
 allLines = inputFile.readlines()
 dataset = numpy.zeros((len(allLines) - 1, len(allLines[0].split(';'))),dtype=numpy.float32)
 window_size = (int)(h("window_size/value"))
@@ -84,64 +83,148 @@ for i in range(1,len(allLines)):
 
 # train_start_point определяет процент данных, которые будут отброшены
 train_start_point = (int)((float)(h("start_point/value")) * dataset.shape[0])
-dataset=dataset[train_start_point:,:]
+dataset = dataset[train_start_point:,:]
 
 print("dataset.shape: ",dataset.shape)   
 
-
-
-Dataset_X = numpy.zeros((dataset.shape[0] - window_size, window_size,dataset.shape[1]), dtype=numpy.float32)
-# выходной вектор состоит из двух значений
-#принцип классификации: выходной слой - 2 нейрона, если значение второго больше первого - прогноз роста, иначе - прогноз снижения.
-
-Dataset_Y = numpy.zeros(dataset.shape[0] - window_size,2, dtype=numpy.float32)
-predicted_column_index = (int)(h("predicted_column_index/value"))
-for i in range(0,dataset.shape[0] - window_size):
-    for j in range(0,window_size):
-        for k in range(0,dataset.shape[1]):
-            Dataset_X[i,j,k] = dataset[i + j][k]
-#   при убывающем тренде вектор Y=[1,0],
-    if(dataset[i + window_size,predicted_column_index])>0:
-        Dataset_Y[i,0] = 0
-        Dataset_Y[i,1] = 1    
-#   при растущем тренде Y=[0,1].
-    if(dataset[i + window_size,predicted_column_index])<=0:
-        Dataset_Y[i,0] = 1
-        Dataset_Y[i,1] = 0 
-
-
-#разбиение на обучающую и тестовую выборки 
 split_point = (float)(h("split_point/value"))
-train_X = Dataset_X[train_start_point:round(Dataset_X.shape[0] * (split_point)), :,:]
-test_X = Dataset_X[round(Dataset_X.shape[0] * (split_point)):, :,:]
-train_y = Dataset_Y[train_start_point:round(Dataset_Y.shape[0] * (split_point)):]
-test_y = Dataset_Y[round(Dataset_Y.shape[0] * (split_point)):]
+
+# если первый слой рекуррентный, то построть трёхмерный тензор - иначе плоскую
+# матрицу
+if h("NN_struct/layer1/value") == "LSTM":
+
+    Dataset_X = numpy.zeros((dataset.shape[0] - window_size, window_size,dataset.shape[1]), dtype=numpy.float32)
+    # выходной вектор состоит из двух значений
+    #принцип классификации: выходной слой - 2 нейрона, если значение второго
+    #больше первого - прогноз роста, иначе - прогноз снижения.
+
+    Dataset_Y = numpy.zeros((dataset.shape[0] - window_size,2), dtype=numpy.float32)
+    predicted_column_index = (int)(h("predicted_column_index/value"))
+    for i in range(0,dataset.shape[0] - window_size):
+        for j in range(0,window_size):
+            for k in range(0,dataset.shape[1]):
+                Dataset_X[i,j,k] = dataset[i + j][k]
+    #   при убывающем тренде вектор Y=[1,0],
+        if(dataset[i + window_size,predicted_column_index]) > 0:
+            Dataset_Y[i,0] = 0
+            Dataset_Y[i,1] = 1    
+    #   при растущем тренде Y=[0,1].
+        if(dataset[i + window_size,predicted_column_index]) <= 0:
+            Dataset_Y[i,0] = 1
+            Dataset_Y[i,1] = 0 
+
+    #разбиение на обучающую и тестовую выборки
+
+    train_X = Dataset_X[:round(Dataset_X.shape[0] * (split_point)), :,:]
+    test_X = Dataset_X[round(Dataset_X.shape[0] * (split_point)):, :,:]
+    train_y = Dataset_Y[:round(Dataset_Y.shape[0] * (split_point)):]
+    test_y = Dataset_Y[round(Dataset_Y.shape[0] * (split_point)):]
+
+else:
+    Dataset_X = numpy.zeros((dataset.shape[0] - window_size, window_size), dtype=numpy.float32)
+    Dataset_Y = numpy.zeros(dataset.shape[0] - window_size, dtype=numpy.float32)
+    predicted_column_index = (int)(h("predicted_column_index/value"))
+    for i in range(0,dataset.shape[0] - window_size):
+        for j in range(0,window_size):
+                Dataset_X[i,j] = dataset[i + j][predicted_column_index]
+    #   при убывающем тренде вектор Y=[1,0],
+        if(dataset[i + window_size,predicted_column_index]) > 0:
+            Dataset_Y[i,0] = 0
+            Dataset_Y[i,1] = 1    
+    #   при растущем тренде Y=[0,1].
+        if(dataset[i + window_size,predicted_column_index]) <= 0:
+            Dataset_Y[i,0] = 1
+            Dataset_Y[i,1] = 0 
+
+    train_X = Dataset_X[train_start_point:round(Dataset_X.shape[0] * (split_point)), :]
+    test_X = Dataset_X[round(Dataset_X.shape[0] * (split_point)):, :]
+    train_y = Dataset_Y[train_start_point:round(Dataset_Y.shape[0] * (split_point)):]
+    test_y = Dataset_Y[round(Dataset_Y.shape[0] * (split_point)):]
 ####################################################################################
 print("> время чтения данных  : ", getTime())  
 
 model = Sequential()         
 
-LAYERS=h("NN_struct")
+LAYERS = list(h("NN_struct").keys())
 
-for layerNODE in LAYERS:
-    if(h("NN_struct/"+layerNODE+"/value")=="Dense"):
-        model.add(Dense(h("NN_struct/"+layerNODE+"/neurons_count/value")))
+isFirst = True
 
-    if(h("NN_struct/"+layerNODE+"/value")=="LSTM"):
-        model.add(LSTM(h("NN_struct/"+layerNODE+"/neurons_count/value")))
 
-    if(h("NN_struct/"+layerNODE+"/value")=="Conv1D"):
-        model.add(Conv1D(h("NN_struct/"+layerNODE+"/neurons_count/value")))
+for i in range(0,len(LAYERS)):
+    if isFirst:
+        if(h("NN_struct/" + LAYERS[i] + "/value") == "Dense"):
+            log("add Dense layer "+h("NN_struct/" + LAYERS[i] + "/neurons_count/value")+" neurons, input_dim="+(str)(window_size)+", activation"+ h("NN_struct/" + LAYERS[i] + "/activation/value"))
+            model.add(Dense((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),input_dim=window_size,activation=h("NN_struct/" + LAYERS[i] + "/activation/value")))
 
-    if(h("NN_struct/"+layerNODE+"/value")=="MaxPooling1D"):
-        model.add(MaxPooling1D(h("NN_struct/"+layerNODE+"/neurons_count/value")))
+        if  h("NN_struct/" + LAYERS[i] + "/value") == "LSTM":
+               if(i < len(LAYERS) - 1):
+                    # если следующий слой тоже рекуррентный - return_sequens =
+                    # True
+                    if(h("NN_struct/layer" + (str)(i + 1) + "/value") == "LSTM"):
+                        log("add LSTM layer "+h("NN_struct/" + LAYERS[i] + "/neurons_count/value")+" neurons, input_shape=( "+(str)(train_X.shape[1])+", "+(str)(train_X.shape[2])+"), return_sequences=True")
+                        model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=True, input_shape=(train_X.shape[1], train_X.shape[2])))
+                    else:
+                            if(LAYERS.index(LAYERS[i]) < len(LAYERS) - 2):
+                                if(h("NN_struct/layer" + (str)(i + 2) + "/value") == "LSTM"):
+                                    log("add LSTM layer "+h("NN_struct/" + LAYERS[i] + "/neurons_count/value")+" neurons, input_shape=( "+(str)(train_X.shape[1])+", "+(str)(train_X.shape[2])+"), return_sequences=True")
+                                    model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=True, input_shape=(train_X.shape[1], train_X.shape[2])))
+                                else:
+                                    log("add LSTM layer "+h("NN_struct/" + LAYERS[i] + "/neurons_count/value")+" neurons, input_shape=( "+(str)(train_X.shape[1])+", "+(str)(train_X.shape[2])+"), return_sequences=False")
+                                    model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=False, input_shape=(train_X.shape[1], train_X.shape[2])))
+                            else:
+                                log("add LSTM layer "+h("NN_struct/" + LAYERS[i] + "/neurons_count/value")+" neurons, input_shape=( "+(str)(train_X.shape[1])+", "+(str)(train_X.shape[2])+"), return_sequences=False")
+                                model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=False, input_shape=(train_X.shape[1], train_X.shape[2])))
+               else:
+                    log("add LSTM layer "+h("NN_struct/" + LAYERS[i] + "/neurons_count/value")+" neurons, input_shape=( "+(str)(train_X.shape[1])+", "+(str)(train_X.shape[2])+"), return_sequences=False")
+                    model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=False, input_shape=(train_X.shape[1], train_X.shape[2])))
+        if(h("NN_struct/" + LAYERS[i] + "/value") == "Conv1D"):
+            log("add Conv1D layer "+h("NN_struct/" + LAYERS[i] + "/neurons_count/value")+" neurons, input_shape=( "+(str)(window_size)+", "+(str)(train_X.shape[1])+"), kernel_size=" +h("NN_struct/" + LAYERS[i] + "/kernel_size/value")+", activation - relu")
+            model.add(Conv1D((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),(int)(h("NN_struct/" + LAYERS[i] + "/kernel_size/value")),activation='relu',input_shape=(window_size,dataset.shape[1])))
 
-    if(h("NN_struct/"+layerNODE+"/value")=="GlobalAveragePooling1D"):
-        model.add(GlobalAveragePooling1D(h("NN_struct/"+layerNODE+"/neurons_count/value")))
+    else:
+        if(h("NN_struct/" + LAYERS[i] + "/value") == "Dense"):
+            log("add Dense layer "+h("NN_struct/" + LAYERS[i] + "/neurons_count/value")+" neurons, input_dim="+(str)(window_size)+", activation"+ h("NN_struct/" + LAYERS[i] + "/activation/value"))
+            model.add(Dense((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),activation=h("NN_struct/" + LAYERS[i] + "/activation/value")))
+                                                                  
+        if  h("NN_struct/" + LAYERS[i] + "/value") == "LSTM":
+            if(i < len(LAYERS) - 1):
+                # если следующий слой тоже рекуррентный - return_sequens = True
+                if(h("NN_struct/layer" + (str)(i + 2) + "/value") == "LSTM"):
+                    log("add LSTM layer "+h("NN_struct/" + LAYERS[i] + "/neurons_count/value")+" neurons, return_sequences=True")
+                    model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=True))
+                else:
+                        if(LAYERS.index(LAYERS[i]) < len(LAYERS) - 2):
+                            if(h("NN_struct/layer" + (str)(i + 3) + "/value") == "LSTM"):
+                                log("add LSTM layer "+h("NN_struct/" + LAYERS[i] + "/neurons_count/value")+" neurons, return_sequences=True")
+                                model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=True))
+                            else:
+                                log("add LSTM layer "+h("NN_struct/" + LAYERS[i] + "/neurons_count/value")+" neurons, return_sequences=False")
+                                model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=False))
+                        else:
+                            log("add LSTM layer "+h("NN_struct/" + LAYERS[i] + "/neurons_count/value")+" neurons, return_sequences=False")
+                            model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=False))
+            else:
+                log("add LSTM layer "+h("NN_struct/" + LAYERS[i] + "/neurons_count/value")+" neurons, return_sequences=False")
+                model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=False))
 
-    if(h("NN_struct/"+layerNODE+"/value")=="Dropout"):
-        model.add(Dropout(h("NN_struct/"+layerNODE+"/neurons_count/value")))
+        if(h("NN_struct/" + LAYERS[i] + "/value") == "Conv1D"):
+            log("add Conv1D layer "+h("NN_struct/" + LAYERS[i] + "/neurons_count/value")+" neurons, kernel_size=" +h("NN_struct/" + LAYERS[i] + "/kernel_size/value")+", activation - relu")
+            model.add(Conv1D((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),(int)(h("NN_struct/" + LAYERS[i] + "/kernel_size/value")),activation='relu'))
 
+    if(h("NN_struct/" + LAYERS[i] + "/value") == "MaxPooling1D"):
+        log("add Conv1D layer "+h("NN_struct/" + LAYERS[i] + "/neurons_count/value")+" neurons, pool_size="+h("NN_struct/" + LAYERS[i] + "/pool_size/value"))
+        model.add(MaxPooling1D(pool_size=(int)(h("NN_struct/" + LAYERS[i] + "/pool_size/value"))))
+
+    if(h("NN_struct/" + LAYERS[i] + "/value") == "GlobalAveragePooling1D"):
+        log("add GlobalAveragePooling1D layer")
+        model.add(GlobalAveragePooling1D())
+
+    if(h("NN_struct/" + LAYERS[i] + "/value") == "Dropout"):
+        log("add Dropout layer, dropout= "+h("NN_struct/" + LAYERS[i] + "/dropout/value"))
+        model.add(Dropout((float)(h("NN_struct/" + LAYERS[i] + "/dropout/value"))))
+
+
+    isFirst=False
                                                                   
 log("компиляция НС...")
         
@@ -188,7 +271,7 @@ for i in range(0,len(allLines[0].split(';'))):
 head = head[0:-1]
 head = head.replace('\n',';')
 #log(h("predictions_file_path"))
-head = head + '(predicted -> )' + allLines[0].split(';')[(int)(h("predicted_column_index"))] 
+head = head + '(predicted -> )' + allLines[0].split(';')[(int)(h("predicted_column_index/value"))] 
 # if head[:-1]==';':
 #     head = head[0:-1]
 predictionsFile.write(head + '\n')

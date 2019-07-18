@@ -31,10 +31,9 @@ namespace Экспертная_система
         private AlgorithmOptimization AO;
         private Algorithm algorithm;
         private ExpertOptimization optimization;
-
-        int Nl = 0;
-        int Nh = 0;
-        double Z = 0;
+        private int Nl = 0;
+        private int Nh = 0;
+        private double Z = 0;
         public void Form1_Load(object sender, EventArgs e)
         {
 
@@ -53,7 +52,7 @@ namespace Экспертная_система
             else
             { }
 
-            //I.showModeSelector();
+          //  I.showModeSelector();
             if (I.modeSelector == null)
             {
                 string mode = I.h.getValueByName("mode");
@@ -102,7 +101,33 @@ namespace Экспертная_система
             else
             { WindowState = FormWindowState.Minimized; }
         }
-        bool tester = false;
+
+        private bool tester = false;
+        public void algorithmOptimization()
+        {
+            expert = new Expert("Эксперт 1", this);
+            mainThread = System.Threading.Thread.CurrentThread;
+            algorithm = new FlexNN(this, "FlexNN");
+
+            // sourceDataFile = pathPrefix + @"Временные ряды\USD_RUB_exmo.txt";
+            //  expert.H.add("input_file", expert.savePreparedDataset(sourceDataFile, "<TIME>;<TICKER>;<PER>;<DATE>;<local_time>", true));
+            algorithm.h.setValueByName("start_point", "0.9");
+            algorithm.h.setValueByName("normalize", "true");
+            algorithm.h.add("input_file", pathPrefix + @"Временные ряды\USD_RUB_exmo-dataset.txt");
+            algorithm.h.add("path_prefix", pathPrefix);
+            algorithm.h.add("drop_columns:<local_time>");
+            algorithm.h.add("predicted_column_index:1");
+            algorithm.h.add("name:show_train_charts,value:False");
+
+            //algorithm.Open(@"E:\Anton\Desktop\MAIN\Optimization\LSTM_1\LSTM_1[0]\json.txt");
+
+            algorithm.Save();
+
+           AO = new AlgorithmOptimization(algorithm, this, 30, 10, 0.5, 100);
+            AO.run();
+            // algorithm.h.draw(0, picBox, this, 15, 150);
+            // algorithm.Save();
+        }
         public void expertOptimization()
         {
             mainThread = System.Threading.Thread.CurrentThread;
@@ -140,32 +165,9 @@ namespace Экспертная_система
             optimization = new ExpertOptimization(expert, this, 8, 5, 10, 0.5, 100, new DateTime(2016, 9, 1), new DateTime(2018, 3, 1), sourceDataFile);
             optimization.run();
         }
-        public void algorithmOptimization()
-        {
-            expert = new Expert("Эксперт 1", this);
-            mainThread = System.Threading.Thread.CurrentThread;
-            algorithm = new LSTM_1(this, "LSTM_1");
 
-            // sourceDataFile = pathPrefix + @"Временные ряды\USD_RUB_exmo.txt";
-            //  expert.H.add("input_file", expert.savePreparedDataset(sourceDataFile, "<TIME>;<TICKER>;<PER>;<DATE>;<local_time>", true));
-            algorithm.h.setValueByName("start_point", "0.5");
-            algorithm.h.setValueByName("normalize", "true");
-            algorithm.h.add("input_file", pathPrefix + @"Временные ряды\USD_RUB_exmo-dataset.txt");
-            algorithm.h.add("path_prefix", pathPrefix);
-            algorithm.h.add("drop_columns:<local_time>");
-            algorithm.h.add("predicted_column_index:1");
-            algorithm.h.add("name:show_train_charts,value:False");
 
-            //algorithm.Open(@"E:\Anton\Desktop\MAIN\Optimization\LSTM_1\LSTM_1[0]\json.txt");
-
-            var value = algorithm.h.getAttrValue("/NN_struct/layer2/dropout/value");
-
-            AO = new AlgorithmOptimization(algorithm, this, 30, 10, 0.5, 100);
-            AO.run();
-            // algorithm.h.draw(0, picBox, this, 15, 150);
-            // algorithm.Save();
-        }
-        void exmoAsIndicator()
+        private void exmoAsIndicator()
         {
             log("вход в exmoAsIndicator()");
             vis.addParameter("USD_RUB", Color.Lime, 900);
@@ -347,7 +349,8 @@ namespace Экспертная_система
 
 
         }
-        void script()
+
+        private void script()
         {
             mainThread = System.Threading.Thread.CurrentThread;
             Hyperparameters order_book;
@@ -630,20 +633,24 @@ namespace Экспертная_система
             }));
             var strings = new string[1];
             strings[0] = s;
-
-        AppendAllLinesAgain:
-            try
-            {
-                File.AppendAllLines(I.logPath, strings);
-            }
-            catch (IOException e)
-            {
-                goto AppendAllLinesAgain;
-            }
+            if (I != null)
+                if (I.logPath != null)
+                {
+                AppendAllLinesAgain:
+                    try
+                    {
+                        File.AppendAllLines(I.logPath, strings);
+                    }
+                    catch (IOException e)
+                    {
+                        goto AppendAllLinesAgain;
+                    }
+                }
         }
         public void log(string s)
         {
             // if (checkBox1.Checked)
+
             log(s, Color.White);
             /*else
                 log(s, Color.White);*/
@@ -701,7 +708,8 @@ namespace Экспертная_система
         {
             freezeLogBox = true;
         }
-        bool freezeLogBox = false;
+
+        private bool freezeLogBox = false;
         private void LogBox_MouseLeave(object sender, EventArgs e)
         {
             freezeLogBox = false;

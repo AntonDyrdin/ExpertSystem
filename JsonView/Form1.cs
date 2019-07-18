@@ -1,18 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace JsonView
 {
     public partial class Form1 : Form
     {
-        string fileName = "";
+        private string fileName = "";
         public Form1(string fileName)
         {
             InitializeComponent();
@@ -25,19 +19,29 @@ namespace JsonView
         {
             try
             {
+
                 if (onlyValue.Checked)
+                {
+                    var oldValue = h.getNodeById(int.Parse(textBox1.Text)).getAttributeValue("value");
                     h.getNodeById(int.Parse(textBox1.Text)).setAttribute("value", textBox4.Text);
+                    log("атрибут value изменён с " + oldValue + " на " + h.getNodeById(int.Parse(textBox1.Text)).getAttributeValue("value"));
+                }
                 else
+                {
+                    var oldValue = h.getNodeById(int.Parse(textBox1.Text)).getAttributeValue(textBox2.Text);
                     h.getNodeById(int.Parse(textBox1.Text)).setAttribute(textBox2.Text, textBox4.Text);
+                    log("атрибут value изменён с " + oldValue + " на " + h.getNodeById(int.Parse(textBox1.Text)).getAttributeValue(textBox2.Text));
+                }
             }
             catch { }
             refresh();
         }
-        int depth = 12;
-        int width = 120;
-        int rowH = 20;
-        Hyperparameters h;
-        Hyperparameters settings;
+
+        private int depth = 12;
+        private int width = 120;
+        private int rowH = 20;
+        private Hyperparameters h;
+        private Hyperparameters settings;
         private void Form1_Load(object sender, EventArgs e)
         {
             try
@@ -97,7 +101,8 @@ namespace JsonView
             }
             catch { }
         }
-        ViewSettings vs;
+
+        private ViewSettings vs;
         private void Button3_Click(object sender, EventArgs e)
         {
             vs = new ViewSettings();
@@ -136,7 +141,8 @@ namespace JsonView
             textBox2.Enabled = true;
 
         }
-        void refresh()
+
+        private void refresh()
         {
             settings.setValueByName("depth", depth);
             settings.setValueByName("width", width);
@@ -148,10 +154,16 @@ namespace JsonView
         private void Button1_Click(object sender, EventArgs e)
         {
             if (checkBox2.Checked)
-                h.addByParentId(int.Parse(textBox8.Text), "name:"+textBox9.Text+",value:" + textBox6.Text);
+            {
+                h.addByParentId(int.Parse(textBox8.Text), "name:" + textBox9.Text + ",value:" + textBox6.Text);
+                log("добавлен узел parentID = " + textBox8.Text + "name:" + textBox9.Text + ",value:" + textBox6.Text);
+            }
             else
+            {
                 h.addByParentId(int.Parse(textBox8.Text), "name:" + textBox9.Text + "," + textBox6.Text);
-            refresh();
+                log("добавлен узел parentID = " + textBox8.Text + "name:" + textBox9.Text + "," +textBox6.Text);
+            }
+                refresh();
         }
 
         private void CheckBox2_CheckedChanged(object sender, EventArgs e)
@@ -176,6 +188,7 @@ namespace JsonView
         private void Button2_Click(object sender, EventArgs e)
         {
             h.deleteBranch(int.Parse(textBox5.Text));
+            log("удалён узел ID = " + textBox5.Text);
             refresh();
         }
     }

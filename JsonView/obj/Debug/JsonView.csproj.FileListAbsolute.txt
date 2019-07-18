@@ -9,3 +9,14 @@ E:\Anton\Desktop\MAIN\JsonView\obj\Debug\JsonView.csproj.CoreCompileInputs.cache
 E:\Anton\Desktop\MAIN\JsonView\obj\Debug\JsonView.exe
 E:\Anton\Desktop\MAIN\JsonView\obj\Debug\JsonView.pdb
 E:\Anton\Desktop\MAIN\JsonView\obj\Debug\JsonView.ViewSettings.resources
+C:\Users\anton\Рабочий стол\MAIN\JsonView\obj\Debug\JsonView.csprojAssemblyReference.cache
+C:\Users\anton\Рабочий стол\MAIN\JsonView\obj\Debug\JsonView.Form1.resources
+C:\Users\anton\Рабочий стол\MAIN\JsonView\obj\Debug\JsonView.Properties.Resources.resources
+C:\Users\anton\Рабочий стол\MAIN\JsonView\obj\Debug\JsonView.ViewSettings.resources
+C:\Users\anton\Рабочий стол\MAIN\JsonView\obj\Debug\JsonView.csproj.GenerateResource.cache
+C:\Users\anton\Рабочий стол\MAIN\JsonView\obj\Debug\JsonView.csproj.CoreCompileInputs.cache
+C:\Users\anton\Рабочий стол\MAIN\JsonView\obj\Debug\JsonView.exe
+C:\Users\anton\Рабочий стол\MAIN\JsonView\obj\Debug\JsonView.pdb
+C:\Users\anton\Рабочий стол\MAIN\JsonView\bin\Debug\JsonView.exe.config
+C:\Users\anton\Рабочий стол\MAIN\JsonView\bin\Debug\JsonView.exe
+C:\Users\anton\Рабочий стол\MAIN\JsonView\bin\Debug\JsonView.pdb
