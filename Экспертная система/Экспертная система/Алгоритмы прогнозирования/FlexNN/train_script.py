@@ -1,9 +1,17 @@
 ﻿prediction_algorithm_name = 'FlexNN'
 
 # лог
+import os
+logPath = os.path.dirname(os.path.abspath(__file__)) + "\\log.txt"
+logFile = open(logPath,"w")
+logFile.write(logPath)
+logFile.close()
 def log(s):
     print(s)
-############
+    logFile = open(logPath,"a")
+    logFile.write((str)(s)+'\n')
+    logFile.close()
+######################################################################
 log("СКРИПТ ОБУЧЕНИЯ " + prediction_algorithm_name + " ЗАПУЩЕН...") 
 
 # секундомер
@@ -19,9 +27,9 @@ def getTime():
 # попытка задать GPU, как устройство для вычислений
 from cntk.device import try_set_default_device, gpu
 import cntk.device as C
-print(C.all_devices())
-print(C.try_set_default_device(C.gpu(0)))
-print(C.use_default_device())  
+log(C.all_devices())
+log(C.try_set_default_device(C.gpu(0)))
+log(C.use_default_device())  
 ###################################################
 
 #  загрузка библиотек
@@ -40,10 +48,9 @@ log("> время загрузки библиотек : " + getTime())
 # чтение параметров командной строки
 def createParser():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--json_file_path',type=str,default='json.txt')
+    parser.add_argument('--json_file_path',type=str,default='h.json')
     return parser
 #####################################################################
- 
 def h(request):
     nodeArray = request.split('/')
     if(len(nodeArray) == 1):
@@ -66,7 +73,7 @@ jsonFile = open(args.json_file_path, 'r')
 jsontext = jsonFile.read()
 jsonFile.close()
 jsonObj = json.loads(jsontext)
-#print(json.dumps(jsonObj,indent=12,ensure_ascii=False))
+#log(json.dumps(jsonObj,indent=12,ensure_ascii=False))
 #
 baseNodeName = next((v for i, v in enumerate(jsonObj.items()) if i == 0))[0]
 
@@ -85,7 +92,7 @@ for i in range(1,len(allLines)):
 train_start_point = (int)((float)(h("start_point/value")) * dataset.shape[0])
 dataset = dataset[train_start_point:,:]
 
-print("dataset.shape: ",dataset.shape)   
+log("dataset.shape: " + (str)(dataset.shape))   
 
 split_point = (float)(h("split_point/value"))
 
@@ -141,7 +148,7 @@ else:
     train_y = Dataset_Y[train_start_point:round(Dataset_Y.shape[0] * (split_point)):]
     test_y = Dataset_Y[round(Dataset_Y.shape[0] * (split_point)):]
 ####################################################################################
-print("> время чтения данных  : ", getTime())  
+log("> время чтения данных  : " + (str)(getTime()))  
 
 model = Sequential()         
 
@@ -153,7 +160,7 @@ isFirst = True
 for i in range(0,len(LAYERS)):
     if isFirst:
         if(h("NN_struct/" + LAYERS[i] + "/value") == "Dense"):
-            log("add Dense layer "+h("NN_struct/" + LAYERS[i] + "/neurons_count/value")+" neurons, input_dim="+(str)(window_size)+", activation"+ h("NN_struct/" + LAYERS[i] + "/activation/value"))
+            log("add Dense layer " + h("NN_struct/" + LAYERS[i] + "/neurons_count/value") + " neurons, input_dim=" + (str)(window_size) + ", activation" + h("NN_struct/" + LAYERS[i] + "/activation/value"))
             model.add(Dense((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),input_dim=window_size,activation=h("NN_struct/" + LAYERS[i] + "/activation/value")))
 
         if  h("NN_struct/" + LAYERS[i] + "/value") == "LSTM":
@@ -161,58 +168,58 @@ for i in range(0,len(LAYERS)):
                     # если следующий слой тоже рекуррентный - return_sequens =
                     # True
                     if(h("NN_struct/layer" + (str)(i + 1) + "/value") == "LSTM"):
-                        log("add LSTM layer "+h("NN_struct/" + LAYERS[i] + "/neurons_count/value")+" neurons, input_shape=( "+(str)(train_X.shape[1])+", "+(str)(train_X.shape[2])+"), return_sequences=True")
+                        log("add LSTM layer " + h("NN_struct/" + LAYERS[i] + "/neurons_count/value") + " neurons, input_shape=( " + (str)(train_X.shape[1]) + ", " + (str)(train_X.shape[2]) + "), return_sequences=True")
                         model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=True, input_shape=(train_X.shape[1], train_X.shape[2])))
                     else:
                             if(LAYERS.index(LAYERS[i]) < len(LAYERS) - 2):
                                 if(h("NN_struct/layer" + (str)(i + 2) + "/value") == "LSTM"):
-                                    log("add LSTM layer "+h("NN_struct/" + LAYERS[i] + "/neurons_count/value")+" neurons, input_shape=( "+(str)(train_X.shape[1])+", "+(str)(train_X.shape[2])+"), return_sequences=True")
+                                    log("add LSTM layer " + h("NN_struct/" + LAYERS[i] + "/neurons_count/value") + " neurons, input_shape=( " + (str)(train_X.shape[1]) + ", " + (str)(train_X.shape[2]) + "), return_sequences=True")
                                     model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=True, input_shape=(train_X.shape[1], train_X.shape[2])))
                                 else:
-                                    log("add LSTM layer "+h("NN_struct/" + LAYERS[i] + "/neurons_count/value")+" neurons, input_shape=( "+(str)(train_X.shape[1])+", "+(str)(train_X.shape[2])+"), return_sequences=False")
+                                    log("add LSTM layer " + h("NN_struct/" + LAYERS[i] + "/neurons_count/value") + " neurons, input_shape=( " + (str)(train_X.shape[1]) + ", " + (str)(train_X.shape[2]) + "), return_sequences=False")
                                     model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=False, input_shape=(train_X.shape[1], train_X.shape[2])))
                             else:
-                                log("add LSTM layer "+h("NN_struct/" + LAYERS[i] + "/neurons_count/value")+" neurons, input_shape=( "+(str)(train_X.shape[1])+", "+(str)(train_X.shape[2])+"), return_sequences=False")
+                                log("add LSTM layer " + h("NN_struct/" + LAYERS[i] + "/neurons_count/value") + " neurons, input_shape=( " + (str)(train_X.shape[1]) + ", " + (str)(train_X.shape[2]) + "), return_sequences=False")
                                 model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=False, input_shape=(train_X.shape[1], train_X.shape[2])))
                else:
-                    log("add LSTM layer "+h("NN_struct/" + LAYERS[i] + "/neurons_count/value")+" neurons, input_shape=( "+(str)(train_X.shape[1])+", "+(str)(train_X.shape[2])+"), return_sequences=False")
+                    log("add LSTM layer " + h("NN_struct/" + LAYERS[i] + "/neurons_count/value") + " neurons, input_shape=( " + (str)(train_X.shape[1]) + ", " + (str)(train_X.shape[2]) + "), return_sequences=False")
                     model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=False, input_shape=(train_X.shape[1], train_X.shape[2])))
         if(h("NN_struct/" + LAYERS[i] + "/value") == "Conv1D"):
-            log("add Conv1D layer "+h("NN_struct/" + LAYERS[i] + "/neurons_count/value")+" neurons, input_shape=( "+(str)(window_size)+", "+(str)(train_X.shape[1])+"), kernel_size=" +h("NN_struct/" + LAYERS[i] + "/kernel_size/value")+", activation - relu")
+            log("add Conv1D layer " + h("NN_struct/" + LAYERS[i] + "/neurons_count/value") + " neurons, input_shape=( " + (str)(window_size) + ", " + (str)(train_X.shape[1]) + "), kernel_size=" + h("NN_struct/" + LAYERS[i] + "/kernel_size/value") + ", activation - relu")
             model.add(Conv1D((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),(int)(h("NN_struct/" + LAYERS[i] + "/kernel_size/value")),activation='relu',input_shape=(window_size,dataset.shape[1])))
 
     else:
         if(h("NN_struct/" + LAYERS[i] + "/value") == "Dense"):
-            log("add Dense layer "+h("NN_struct/" + LAYERS[i] + "/neurons_count/value")+" neurons, input_dim="+(str)(window_size)+", activation"+ h("NN_struct/" + LAYERS[i] + "/activation/value"))
+            log("add Dense layer " + h("NN_struct/" + LAYERS[i] + "/neurons_count/value") + " neurons, activation" + h("NN_struct/" + LAYERS[i] + "/activation/value"))
             model.add(Dense((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),activation=h("NN_struct/" + LAYERS[i] + "/activation/value")))
                                                                   
         if  h("NN_struct/" + LAYERS[i] + "/value") == "LSTM":
             if(i < len(LAYERS) - 1):
                 # если следующий слой тоже рекуррентный - return_sequens = True
                 if(h("NN_struct/layer" + (str)(i + 2) + "/value") == "LSTM"):
-                    log("add LSTM layer "+h("NN_struct/" + LAYERS[i] + "/neurons_count/value")+" neurons, return_sequences=True")
+                    log("add LSTM layer " + h("NN_struct/" + LAYERS[i] + "/neurons_count/value") + " neurons, return_sequences=True")
                     model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=True))
                 else:
                         if(LAYERS.index(LAYERS[i]) < len(LAYERS) - 2):
                             if(h("NN_struct/layer" + (str)(i + 3) + "/value") == "LSTM"):
-                                log("add LSTM layer "+h("NN_struct/" + LAYERS[i] + "/neurons_count/value")+" neurons, return_sequences=True")
+                                log("add LSTM layer " + h("NN_struct/" + LAYERS[i] + "/neurons_count/value") + " neurons, return_sequences=True")
                                 model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=True))
                             else:
-                                log("add LSTM layer "+h("NN_struct/" + LAYERS[i] + "/neurons_count/value")+" neurons, return_sequences=False")
+                                log("add LSTM layer " + h("NN_struct/" + LAYERS[i] + "/neurons_count/value") + " neurons, return_sequences=False")
                                 model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=False))
                         else:
-                            log("add LSTM layer "+h("NN_struct/" + LAYERS[i] + "/neurons_count/value")+" neurons, return_sequences=False")
+                            log("add LSTM layer " + h("NN_struct/" + LAYERS[i] + "/neurons_count/value") + " neurons, return_sequences=False")
                             model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=False))
             else:
-                log("add LSTM layer "+h("NN_struct/" + LAYERS[i] + "/neurons_count/value")+" neurons, return_sequences=False")
+                log("add LSTM layer " + h("NN_struct/" + LAYERS[i] + "/neurons_count/value") + " neurons, return_sequences=False")
                 model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=False))
 
         if(h("NN_struct/" + LAYERS[i] + "/value") == "Conv1D"):
-            log("add Conv1D layer "+h("NN_struct/" + LAYERS[i] + "/neurons_count/value")+" neurons, kernel_size=" +h("NN_struct/" + LAYERS[i] + "/kernel_size/value")+", activation - relu")
+            log("add Conv1D layer " + h("NN_struct/" + LAYERS[i] + "/neurons_count/value") + " neurons, kernel_size=" + h("NN_struct/" + LAYERS[i] + "/kernel_size/value") + ", activation - relu")
             model.add(Conv1D((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),(int)(h("NN_struct/" + LAYERS[i] + "/kernel_size/value")),activation='relu'))
 
     if(h("NN_struct/" + LAYERS[i] + "/value") == "MaxPooling1D"):
-        log("add Conv1D layer "+h("NN_struct/" + LAYERS[i] + "/neurons_count/value")+" neurons, pool_size="+h("NN_struct/" + LAYERS[i] + "/pool_size/value"))
+        log("add Conv1D layer " + h("NN_struct/" + LAYERS[i] + "/neurons_count/value") + " neurons, pool_size=" + h("NN_struct/" + LAYERS[i] + "/pool_size/value"))
         model.add(MaxPooling1D(pool_size=(int)(h("NN_struct/" + LAYERS[i] + "/pool_size/value"))))
 
     if(h("NN_struct/" + LAYERS[i] + "/value") == "GlobalAveragePooling1D"):
@@ -220,11 +227,11 @@ for i in range(0,len(LAYERS)):
         model.add(GlobalAveragePooling1D())
 
     if(h("NN_struct/" + LAYERS[i] + "/value") == "Dropout"):
-        log("add Dropout layer, dropout= "+h("NN_struct/" + LAYERS[i] + "/dropout/value"))
+        log("add Dropout layer, dropout= " + h("NN_struct/" + LAYERS[i] + "/dropout/value"))
         model.add(Dropout((float)(h("NN_struct/" + LAYERS[i] + "/dropout/value"))))
 
 
-    isFirst=False
+    isFirst = False
                                                                   
 log("компиляция НС...")
         
@@ -248,21 +255,10 @@ if h("save_folder/value") != "none":
         model.save(save_path)
     log("> время сохранения НС  : " + getTime()) 
     
-sum = 0    
-    
 log("создание тестового прогноза")
 predicted = model.predict(test_X)
 log(predicted.shape)
-for i in range(0,test_X.shape[0]):
-    sum = sum + predicted[i,0]
-avg = sum / predicted.shape[0]
 
-
-
-for i in range(0,test_X.shape[0]):
-    predicted[i,0] = predicted[i,0] - avg
-    predicted[i,0] = predicted[i,0] * 1000
-    predicted[i,0] = predicted[i,0] + 0.5
 predictionsFile = open(h("predictions_file_path/value"), 'w')
 head = ''
 for i in range(0,len(allLines[0].split(';'))):
@@ -275,21 +271,17 @@ head = head + '(predicted -> )' + allLines[0].split(';')[(int)(h("predicted_colu
 # if head[:-1]==';':
 #     head = head[0:-1]
 predictionsFile.write(head + '\n')
-print("test_X.shape",test_X.shape)
+log("test_X.shape" + (str)(test_X.shape))
 for i in range(0,test_X.shape[0]):
     line = ''
     for k in range(0,test_X.shape[2]): 
         line = line + (str)(test_X[i,window_size - 1,k]) + ';'
-    line = line + (str)(predicted[i,0])
+    line = line + (str)(predicted[i,1] - predicted[i,0])
     predictionsFile.write(line + '\n')
 predictionsFile.close()
 log("> время создания и записи тестового прогноза  : " + getTime()) 
 log("__________________________________")    
 log("______________END________________")     
-RESPONSE = "{RESPONSE:{"
-RESPONSE = RESPONSE + "AVG:{value:" + (str)(avg)
-RESPONSE = RESPONSE + "}}}"
-print(RESPONSE)
 
 
 if h("show_train_charts/value") == "True":
@@ -303,3 +295,8 @@ if h("show_train_charts/value") == "True":
     pyplot.plot(history.history['val_acc'], label='val_acc')
     pyplot.legend()
     pyplot.show()
+
+RESPONSE="{RESPONSE:{"
+RESPONSE=RESPONSE+ "response:{value:скрипт "+prediction_algorithm_name+" успешно завершён"
+RESPONSE=RESPONSE+ "}}}"
+log(RESPONSE)

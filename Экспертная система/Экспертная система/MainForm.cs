@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Экспертная_система
@@ -52,7 +53,8 @@ namespace Экспертная_система
             else
             { }
 
-          //  I.showModeSelector();
+
+            //  I.showModeSelector();
             if (I.modeSelector == null)
             {
                 string mode = I.h.getValueByName("mode");
@@ -105,13 +107,15 @@ namespace Экспертная_система
         private bool tester = false;
         public void algorithmOptimization()
         {
+
+
             expert = new Expert("Эксперт 1", this);
             mainThread = System.Threading.Thread.CurrentThread;
             algorithm = new FlexNN(this, "FlexNN");
 
             // sourceDataFile = pathPrefix + @"Временные ряды\USD_RUB_exmo.txt";
             //  expert.H.add("input_file", expert.savePreparedDataset(sourceDataFile, "<TIME>;<TICKER>;<PER>;<DATE>;<local_time>", true));
-            algorithm.h.setValueByName("start_point", "0.9");
+            algorithm.h.setValueByName("start_point", "0.99");
             algorithm.h.setValueByName("normalize", "true");
             algorithm.h.add("input_file", pathPrefix + @"Временные ряды\USD_RUB_exmo-dataset.txt");
             algorithm.h.add("path_prefix", pathPrefix);
@@ -119,12 +123,22 @@ namespace Экспертная_система
             algorithm.h.add("predicted_column_index:1");
             algorithm.h.add("name:show_train_charts,value:False");
 
-            //algorithm.Open(@"E:\Anton\Desktop\MAIN\Optimization\LSTM_1\LSTM_1[0]\json.txt");
+             algorithm.train();
+           // I.executePythonScript("C:\\Python34\\test.py", "");
+          
 
-            algorithm.Save();
 
-           AO = new AlgorithmOptimization(algorithm, this, 30, 10, 0.5, 100);
-            AO.run();
+            /*  vis.addParameter("ask", Color.White, 500);
+               vis.addCSV(algorithm.h.getValueByName("predictions_file_path"),"_ask","<ask>", "ask", 500, 0.95,-1);
+               vis.addCSV(algorithm.h.getValueByName("predictions_file_path"),"_ask", "LAST_COLUMN", "ask", 500, 0.95, 0);
+               vis.enableGrid = false;
+               vis.refresh();*/
+            //algorithm.Open(@"E:\Anton\Desktop\MAIN\Optimization\LSTM_1\LSTM_1[0]\h.json");
+            /*
+                        algorithm.Save();
+
+                       AO = new AlgorithmOptimization(algorithm, this, 30, 10, 0.5, 100);
+                        AO.run();*/
             // algorithm.h.draw(0, picBox, this, 15, 150);
             // algorithm.Save();
         }
@@ -134,7 +148,7 @@ namespace Экспертная_система
 
             expert = new Expert("Эксперт 1", this);
             algorithm = new LSTM_1(this, "LSTM_1[0]");
-            algorithm.Open(@"E:\Anton\Desktop\MAIN\Optimization\" + algorithm.name + '\\' + algorithm.name + @"[0]\json.txt");
+            algorithm.Open(@"E:\Anton\Desktop\MAIN\Optimization\" + algorithm.name + '\\' + algorithm.name + @"[0]\h.json");
             expert.Add(algorithm);
 
             //expert.Add(new LSTM_2(this, "LSTM_2[0]"));
@@ -463,10 +477,10 @@ namespace Экспертная_система
             // expert.Add(new LSTM_2(this, "LSTM_2[0]"));
             //expert.Add(new ANN_1(this, "ANN_1[0]"));
             // expert.Add(new CNN_1(this, "CNN_1[0]"));
-            // expert.algorithms[0].Open(@"E:\Anton\Desktop\MAIN\Эксперт 1\CNN_1[0]\json.txt");
-            //    expert.algorithms[0].Open(pathPrefix + @"Optimization\LSTM_1\LSTM_1[0]\json.txt");
-            //    expert.algorithms[1].Open(pathPrefix + @"Optimization\LSTM_2\LSTM_2[0]\json.txt");
-            //   expert.algorithms[2].Open(pathPrefix + @"Optimization\ANN_1\ANN_1[0]\json.txt");
+            // expert.algorithms[0].Open(@"E:\Anton\Desktop\MAIN\Эксперт 1\CNN_1[0]\h.json");
+            //    expert.algorithms[0].Open(pathPrefix + @"Optimization\LSTM_1\LSTM_1[0]\h.json");
+            //    expert.algorithms[1].Open(pathPrefix + @"Optimization\LSTM_2\LSTM_2[0]\h.json");
+            //   expert.algorithms[2].Open(pathPrefix + @"Optimization\ANN_1\ANN_1[0]\h.json");
 
             /*    expert.H.setValueByName("start_point", "0.5");
                  expert.H.setValueByName("normalize", "true");
@@ -614,38 +628,42 @@ namespace Экспертная_система
 
         public void log(String s, System.Drawing.Color col)
         {
-            Invoke(new Action(() =>
+            try
             {
-                if (!freezeLogBox)
+                Invoke(new Action(() =>
                 {
-                    logBox.SelectionColor = col;
-                    logBox.AppendText(s + '\n');
-                    logBox.SelectionColor = Color.White;
+                    if (!freezeLogBox)
+                    {
+                        logBox.SelectionColor = col;
+                        logBox.AppendText(s + '\n');
+                        logBox.SelectionColor = Color.White;
 
 
-                    logBox.SelectionStart = logBox.Text.Length;
-                    logBox.ScrollToCaret();
-                }
-                else
-                {
-                    collectLogWhileItFreezed.Add(new logItem(s, col));
-                }
-            }));
-            var strings = new string[1];
-            strings[0] = s;
-            if (I != null)
-                if (I.logPath != null)
-                {
-                AppendAllLinesAgain:
-                    try
-                    {
-                        File.AppendAllLines(I.logPath, strings);
+                        logBox.SelectionStart = logBox.Text.Length;
+                        logBox.ScrollToCaret();
                     }
-                    catch (IOException e)
+                    else
                     {
-                        goto AppendAllLinesAgain;
+                        collectLogWhileItFreezed.Add(new logItem(s, col));
                     }
-                }
+                }));
+                var strings = new string[1];
+                strings[0] = s;
+                if (I != null)
+                    if (I.logPath != null)
+                    {
+                    AppendAllLinesAgain:
+                        try
+                        {
+                            File.AppendAllLines(I.logPath, strings);
+                        }
+                        catch (IOException e)
+                        {
+                            goto AppendAllLinesAgain;
+                        }
+                    }
+            }
+            catch { }
         }
         public void log(string s)
         {
@@ -669,11 +687,11 @@ namespace Экспертная_система
 
         public void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            try
-            {
-                I.agentManager.TCPListener.Stop();
-            }
-            catch { }
+            //  try
+            //{
+            I.agentManager.TCPListener.Stop();
+            // }
+            //catch { }
             try
             {
                 mainThread.Abort();
@@ -701,7 +719,7 @@ namespace Экспертная_система
 
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            Process.GetCurrentProcess().Kill();
+            // Process.GetCurrentProcess().Kill();
         }
 
         private void LogBox_MouseEnter(object sender, EventArgs e)

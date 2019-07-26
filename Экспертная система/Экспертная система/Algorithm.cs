@@ -30,7 +30,7 @@ namespace Экспертная_система
         public static Algorithm newInstance(Algorithm algorithm)
         {
             if (algorithm.GetType().Name == "LSTM_1")
-              return new LSTM_1(algorithm.form1, "LSTM_1");
+                return new LSTM_1(algorithm.form1, "LSTM_1");
             if (algorithm.GetType().Name == "LSTM_2")
                 return new LSTM_2(algorithm.form1, "LSTM_2");
             if (algorithm.GetType().Name == "ANN_1")
@@ -47,7 +47,7 @@ namespace Экспертная_система
             h.add("get_prediction_script_path:" + getPredictionFilePath);
             string trainScriptPath = mainFolder + "train_script.py";
             h.add("train_script_path:" + trainScriptPath);
-            string jsonFilePath = mainFolder + "json.txt";
+            string jsonFilePath = mainFolder + "h.json";
             string predictionsFilePath = mainFolder + "predictions.txt";
             h.add("predictions_file_path", predictionsFilePath);
             h.add("json_file_path:" + jsonFilePath);
@@ -66,7 +66,9 @@ namespace Экспертная_система
         {
             args = "--json_file_path " + '"' + getValueByName("json_file_path") + '"';
             var get_prediction_script_path = getValueByName("get_prediction_script_path");
-            predict_process = runProcess(get_prediction_script_path, args);
+
+            // ЗАПУСК ПРОЦЕССА
+            predict_process = form1.I.runProcess(get_prediction_script_path, args);
             predict_process_error_stream = predict_process.StandardError;
             predict_process_write_stream = predict_process.StandardInput;
             predict_process_read_stream = predict_process.StandardOutput;
@@ -150,7 +152,7 @@ namespace Экспертная_система
                         Continue = true;
 
                         //ПОЛНЫЙ ЛОГ ВЫПОЛНЕНИЯ СКРИПТА
-                           log(script_conclusion);
+                        log(script_conclusion);
                         script_conclusion = script_conclusion.Substring(script_conclusion.IndexOf("prediction:") + 11);
 
                         //ТОЛЬКО ПРОГНОЗ
@@ -220,16 +222,26 @@ namespace Экспертная_система
             File.WriteAllText(h.getValueByName("json_file_path"), h.toJSON(0), System.Text.Encoding.Default);
             args = "--json_file_path " + '"' + h.getValueByName("json_file_path") + '"';
 
-            string response = await Task.Run(() => runPythonScript(getValueByName("train_script_path"), args));
+            string response = await Task.Run(() => form1.I.executePythonScript(getValueByName("train_script_path"), args));
 
             try
             {
                 response = response.Substring(response.IndexOf('{'));
                 Hyperparameters responseH = new Hyperparameters(response, form1);
                 var avg = responseH.getValueByName("AVG");
-                h.setValueByName("AVG", avg);
-          
+                if (avg != null)
+                    h.setValueByName("AVG", avg);
 
+                log(responseH.getValueByName("response"));
+            }
+            catch
+            {
+                log("Не удалось спарсить RESPONSE");
+
+                h.setValueByName("AVG", "-1");
+                h.setValueByName("accuracy", "0");
+                h.setValueByName("stdDev", "0");
+            }
 
 
             string[] predictionsCSV = null;
@@ -244,15 +256,9 @@ namespace Экспертная_система
             {
                 getAccAndStdDev(predictionsCSV);
             }
-            }
-            catch
+            else
             {
-
-                log("Не удалось спарсить RESPONSE");
-
-                h.setValueByName("AVG", "10");
-                h.setValueByName("accuracy", "0");
-                h.setValueByName("stdDev", "0");
+                log("Не удалось прочитать файл с тестовым прогнозом",Color.Red);
             }
             // return "обучение алгоритма " + name + "заверешно.";
         }
@@ -288,7 +294,7 @@ namespace Экспертная_система
 
             }
             accuracy = Convert.ToDouble(rightCount) / Convert.ToDouble(rightCount + leftCount) * 100;
-            stdDev = Math.Sqrt(sqrtSum / inc );
+            stdDev = Math.Sqrt(sqrtSum / inc);
 
             if (double.IsNaN(accuracy))
                 accuracy = 0;
@@ -299,67 +305,11 @@ namespace Экспертная_система
             log("_____________________________________________");
             h.setValueByName("accuracy", accuracy.ToString().Replace(',', '.'));
             h.setValueByName("stdDev", stdDev.ToString().Replace(',', '.'));
-        //    h.setValueByName("target_function", (accuracy).ToString().Replace(',', '.'));
+            //    h.setValueByName("target_function", (accuracy).ToString().Replace(',', '.'));
 
             h.setValueByName("processed_by", System.Net.Dns.GetHostName());
         }
-        public string runPythonScript(string scriptFile, string args)
-        {
-            ProcessStartInfo start = new ProcessStartInfo();
 
-            start.FileName = form1.I.h.getValueByName("python_path");
-            start.Arguments = '"' + scriptFile + '"' + " " + args;
-            start.ErrorDialog = true;
-            start.RedirectStandardError = true;
-            start.UseShellExecute = false;
-            start.CreateNoWindow = true;
-            start.RedirectStandardOutput = true;
-            Process process = Process.Start(start);
-
-            StreamReader standardOutputReader = process.StandardOutput;
-            /*  int blockSize = 1;
-             * char[] buffer = new char[blockSize];
-             * int size = 0;
-              string line = "";
-              size = standardOutputReader.Read(buffer, 0, blockSize);
-              line += new string(buffer);
-              while (size > 0)
-              {
-                  size = standardOutputReader.Read(buffer, 0, blockSize);
-                  line += new string(buffer);
-                  if (line.Contains("\n"))
-                  {
-                      log(line);
-                      line = "";
-                  }
-              }  */
-            StreamReader errorReader = process.StandardError;
-            string response = standardOutputReader.ReadToEnd();
-            ///////////////////////////////////////////////////////////////
-            ///////// ВЫВОД В КОНСОЛЬ РЕЗУЛЬТАТА ВЫПОЛНЕНИЯ СКРИПТА ///////
-           // log(response);                                            ///    
-            var error = "";                                             ///
-            error = errorReader.ReadToEnd();                            ///
-            log(error);                                                 ///
-            ///////////////////////////////////////////////////////////////
-            return response;
-        }
-
-        private Process runProcess(string scriptFile, string args)
-        {
-            ProcessStartInfo start = new ProcessStartInfo();
-
-            start.FileName = form1.I.h.getValueByName("python_path");
-            start.Arguments = '"' + scriptFile + '"' + " " + args;
-            start.ErrorDialog = true;
-            start.CreateNoWindow = true;
-            start.UseShellExecute = false;
-            start.RedirectStandardInput = true;
-            start.RedirectStandardOutput = true;
-            start.RedirectStandardError = true;
-            Process process = Process.Start(start);
-            return process;
-        }
         public abstract void Save();
         public abstract void Open(string jsonPath);
 
@@ -373,14 +323,14 @@ namespace Экспертная_система
                 foreach (string file in Directory.GetFiles(source))
                 {
 
-                    if (Path.GetFileName(file) != "json.txt")
+                    if (Path.GetFileName(file) != "h.json")
                         File.Copy(file, destination + Path.GetFileName(file), true);
                 }
             }
 
             //указание пути сохранения в параметрах
             h.setValueByName("save_folder", destination);
-            string jsonFilePath = destination + "json.txt";
+            string jsonFilePath = destination + "h.json";
             h.setValueByName("json_file_path", jsonFilePath);
             string predictionsFilePath = destination + "predictions.txt";
             h.setValueByName("predictions_file_path", predictionsFilePath);
@@ -401,10 +351,10 @@ namespace Экспертная_система
                 }
                 foreach (string file in Directory.GetFiles(source))
                 {
-                    repeat1:
+                repeat1:
                     try
                     {
-                        if (Path.GetFileName(file) != "json.txt")
+                        if (Path.GetFileName(file) != "h.json")
                             File.Copy(file, destination + Path.GetFileName(file));
                         else
                             File.Delete(file);
@@ -420,7 +370,7 @@ namespace Экспертная_система
             }
             //указание пути сохранения в параметрах
             h.setValueByName("save_folder", destination);
-            string jsonFilePath = destination + "json.txt";
+            string jsonFilePath = destination + "h.json";
             h.setValueByName("json_file_path", jsonFilePath);
             string predictionsFilePath = destination + "predictions.txt";
             h.setValueByName("predictions_file_path", predictionsFilePath);

@@ -29,8 +29,8 @@ log("> время загрузки библиотек : "+ getTime())
 
 def createParser():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--json_file_path',type=str,default='E:\Anton\Desktop\MAIN\Optimization\LSTM_1\LSTM_1[0]\json.txt')
-    # parser.add_argument('--json_file_path',type=str,default='C:\Users\anton\Рабочий стол\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\LSTM 1\json.txt')
+    parser.add_argument('--json_file_path',type=str,default='E:\Anton\Desktop\MAIN\Optimization\LSTM_1\LSTM_1[0]\h.json')
+    # parser.add_argument('--json_file_path',type=str,default='C:\Users\anton\Рабочий стол\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\LSTM 1\h.json')
     return parser
   
 def h(nodeName):

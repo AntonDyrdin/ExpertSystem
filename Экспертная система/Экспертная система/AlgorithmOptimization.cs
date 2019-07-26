@@ -118,7 +118,7 @@ namespace Экспертная_система
                 algorithm.h.setValueByName("save_folder", new_save_folder);
                 string predictionsFilePath = new_save_folder + "predictions.txt";
                 algorithm.h.setValueByName("predictions_file_path", predictionsFilePath);
-                File.WriteAllText(new_save_folder + "json.txt", algorithm.h.toJSON(0), System.Text.Encoding.Default);
+                File.WriteAllText(new_save_folder + "h.json", algorithm.h.toJSON(0), System.Text.Encoding.Default);
 
                 algorithm.train().Wait();
                 algorithm.h.setValueByName("target_function", algorithm.h.getValueByName("accuracy"));
@@ -308,7 +308,7 @@ namespace Экспертная_система
                 for (int i = 0; i < population_value; i++)
                 {
                     string newPath = form1.pathPrefix + "Optimization\\" + algorithm.name + "\\" + algorithm.name + "[" + i.ToString() + "]";
-                    Hyperparameters oldH = new Hyperparameters(newPath + "\\json.txt", form1, true);
+                    Hyperparameters oldH = new Hyperparameters(newPath + "\\h.json", form1, true);
                     string oldPath = population[i].getValueByName("save_folder");
 
                     Algorithm.MoveFiles(oldH, newPath, tempFolder);
@@ -319,13 +319,13 @@ namespace Экспертная_система
                 {
                     string newPath = form1.pathPrefix + "Optimization\\temp\\" + algorithm.name + "\\" + algorithm.name + "[" + i.ToString() + "]";
                     string oldPath = form1.pathPrefix + "Optimization\\" + algorithm.name + "\\" + algorithm.name + "[" + i.ToString() + "]";
-                    Hyperparameters oldH = new Hyperparameters(newPath + "\\json.txt", form1, true);
+                    Hyperparameters oldH = new Hyperparameters(newPath + "\\h.json", form1, true);
                     Algorithm.MoveFiles(oldH, newPath, tempFolder);
                 }
                 for (int i = 0; i < population_value - 1; i++)
                 {
                     string oldPath = form1.pathPrefix + "Optimization\\temp\\" + algorithm.name + "\\" + algorithm.name + "[" + i.ToString() + "]";
-                    Hyperparameters oldH = new Hyperparameters(oldPath + "\\json.txt", form1, true);
+                    Hyperparameters oldH = new Hyperparameters(oldPath + "\\h.json", form1, true);
                     string newPath = population[i].getValueByName("save_folder");
                     //взять код из i-ого индивида в папке temp, а затем искать индекс того же идивида по коду в массиве population
                     string code = oldH.getValueByName("code");

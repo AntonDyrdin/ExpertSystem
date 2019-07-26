@@ -115,8 +115,8 @@ namespace Экспертная_система
                     expert.algorithms[j].h.setValueByName("save_folder", new_save_folder);
                     string predictionsFilePath = new_save_folder + "predictions.txt";
                     expert.algorithms[j].h.setValueByName("predictions_file_path", predictionsFilePath);
-                    expert.algorithms[j].h.setValueByName("json_file_path", new_save_folder + "json.txt");
-                    File.WriteAllText(new_save_folder + "json.txt", expert.algorithms[j].h.toJSON(0), System.Text.Encoding.Default);
+                    expert.algorithms[j].h.setValueByName("json_file_path", new_save_folder + "h.json");
+                    File.WriteAllText(new_save_folder + "h.json", expert.algorithms[j].h.toJSON(0), System.Text.Encoding.Default);
 
                     expert.algorithms[j].train().Wait();
                 }
@@ -165,7 +165,7 @@ namespace Экспертная_система
                 }
 
                 for (int i = 0; i < population_value; i++)
-                    File.WriteAllText(form1.pathPrefix + "Optimization\\" + name + "\\" + name + "[" + i.ToString() + "]" + "\\json.txt", population[i].toJSON(0), System.Text.Encoding.Default);
+                    File.WriteAllText(form1.pathPrefix + "Optimization\\" + name + "\\" + name + "[" + i.ToString() + "]" + "\\h.json", population[i].toJSON(0), System.Text.Encoding.Default);
 
 
                 //   ВВЕДЕНО МНОГОКРАТНОЕ ТЕСТИРОВНИЕ ИНДИВИДОВ ВСЕХ КАТЕГОРИЙ ДЛЯ ПОВЫШЕНИЯ ПОВТОРЯЕМОСТИ РЕЗУЛЬТАТОВ
@@ -267,7 +267,7 @@ namespace Экспертная_система
                                 agentManager.tasks.Clear();
 
                                 //   expert.synchronizeHyperparameters();
-                                File.WriteAllText(form1.pathPrefix + "Optimization\\" + name + "\\" + name + "[" + i.ToString() + "]" + "\\json.txt", population[i].toJSON(0), System.Text.Encoding.Default);
+                                File.WriteAllText(form1.pathPrefix + "Optimization\\" + name + "\\" + name + "[" + i.ToString() + "]" + "\\h.json", population[i].toJSON(0), System.Text.Encoding.Default);
                             }
                         }
                     }
@@ -286,7 +286,7 @@ namespace Экспертная_система
                         expert.test(date1, date2, rawDatasetFilePath);
                         log("test[" + i.ToString() + "]: " + expert.H.getValueByName("expert_target_function"), Color.Purple);
                         population[i] = expert.H.Clone();
-                        File.WriteAllText(form1.pathPrefix + "Optimization\\" + name + "\\" + name + "[" + i.ToString() + "]" + "\\json.txt", population[i].toJSON(0), System.Text.Encoding.Default);
+                        File.WriteAllText(form1.pathPrefix + "Optimization\\" + name + "\\" + name + "[" + i.ToString() + "]" + "\\h.json", population[i].toJSON(0), System.Text.Encoding.Default);
                         target_functions[i, tc] = Convert.ToDouble(population[i].getValueByName("expert_target_function").Replace('.', ','));
 
                         //отрисовка истрии баланса
@@ -530,7 +530,7 @@ namespace Экспертная_система
             {
                 var h = new Hyperparameters(H.toJSON(algorithmBranches[j].ID), form1);
                 var new_save_folder = destination + "\\" + h.getValueByName("model_name") + "\\";
-                //новые пути прописываются в json.txt автоматически, если передать объект Hyperparameters по ссылке, а не по значению
+                //новые пути прописываются в h.json автоматически, если передать объект Hyperparameters по ссылке, а не по значению
                 Algorithm.CopyFiles(h, h.getValueByName("save_folder"), new_save_folder);
                 hs.Add(h);
             }
@@ -547,7 +547,7 @@ namespace Экспертная_система
 
             H.setValueByName("report_path", destination);
             H = H.Clone();
-            File.WriteAllText(destination + "\\json.txt", H.toJSON(0), System.Text.Encoding.Default);
+            File.WriteAllText(destination + "\\h.json", H.toJSON(0), System.Text.Encoding.Default);
 
             return H;
         }

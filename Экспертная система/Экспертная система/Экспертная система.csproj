@@ -49,6 +49,12 @@
     <Compile Include="AgentManager.cs" />
     <Compile Include="Algorithm.cs" />
     <Compile Include="AlgorithmOptimization.cs" />
+    <Compile Include="ExecutionProgress.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ExecutionProgress.Designer.cs">
+      <DependentUpon>ExecutionProgress.cs</DependentUpon>
+    </Compile>
     <Compile Include="ExmoApi.cs" />
     <Compile Include="MetaTraderLink.cs" />
     <Compile Include="ModeSelector.cs">
@@ -73,11 +79,20 @@
     <Compile Include="Алгоритмы прогнозирования\ANN_1\ANN 1.cs" />
     <Compile Include="Алгоритмы прогнозирования\FlexNN\FlexNN.cs" />
     <Compile Include="Алгоритмы прогнозирования\LSTM_1\LSTM 1.cs" />
+    <Compile Include="Алгоритмы прогнозирования\LSTM_2\ExecutionProcess.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Алгоритмы прогнозирования\LSTM_2\ExecutionProcess.Designer.cs">
+      <DependentUpon>ExecutionProcess.cs</DependentUpon>
+    </Compile>
     <Compile Include="Алгоритмы прогнозирования\LSTM_2\LSTM 2.cs" />
     <Compile Include="Графическое отображение\MultiParameterVisualizer.cs" />
     <Compile Include="Графическое отображение\ParameterVisualizer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="ExecutionProgress.resx">
+      <DependentUpon>ExecutionProgress.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -93,6 +108,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Алгоритмы прогнозирования\LSTM_2\ExecutionProcess.resx">
+      <DependentUpon>ExecutionProcess.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

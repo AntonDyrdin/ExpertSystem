@@ -39,7 +39,7 @@ namespace Экспертная_система
             //////////////////////
             //ПАРАМЕТРЫ ОБУЧЕНИЯ//
             //////////////////////
-            h.addVariable(0, "number_of_epochs", 10, 20, 1, 1);
+            h.addVariable(0, "number_of_epochs", 1, 20, 1, 1);
             h.add("split_point:0.7");
             h.addVariable(0, "batch_size", 10, 300, 1, 43);
             h.add("name:loss,value:mean_squared_error");

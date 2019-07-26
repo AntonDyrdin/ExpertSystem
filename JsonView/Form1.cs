@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 namespace JsonView
@@ -12,7 +13,7 @@ namespace JsonView
             InitializeComponent();
 
             this.fileName = fileName;
-
+            DpiFix();
         }
 
         private void Save_button_Click(object sender, EventArgs e)
@@ -191,5 +192,14 @@ namespace JsonView
             log("удалён узел ID = " + textBox5.Text);
             refresh();
         }
+        public static void DpiFix()
+        {
+            if (Environment.OSVersion.Version.Major >= 6)
+            {
+                SetProcessDPIAware();
+            }
+        }
+        [DllImport("user32.dll")]
+        private static extern bool SetProcessDPIAware();
     }
 }

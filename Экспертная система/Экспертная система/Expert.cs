@@ -704,7 +704,7 @@ namespace Экспертная_система
         {
             Directory.CreateDirectory(path_prefix + expertName + "\\" + algorithm.modelName + "\\");
             algorithm.h.setValueByName("save_folder", path_prefix + expertName + "\\" + algorithm.modelName + "\\");
-            algorithm.h.setValueByName("json_file_path", path_prefix + expertName + "\\" + algorithm.modelName + "\\json.txt");
+            algorithm.h.setValueByName("json_file_path", path_prefix + expertName + "\\" + algorithm.modelName + "\\h.json");
             algorithm.h.setValueByName("predictions_file_path", path_prefix + expertName + "\\" + algorithm.modelName + "\\predictions.txt");
 
             algorithms.Add(algorithm);
@@ -940,7 +940,7 @@ namespace Экспертная_система
         {
             Expert expert = new Expert(expertName, form1, true);
 
-            expert.H = new Hyperparameters(path + "\\json.txt", form1, true);
+            expert.H = new Hyperparameters(path + "\\h.json", form1, true);
             expert.committeeNodeID = expert.H.getNodeByName("committee")[0].ID;
             var algorithmBranches = expert.H.getNodesByparentID(expert.committeeNodeID);
             foreach (Node algorithmBranch in algorithmBranches)
@@ -975,7 +975,7 @@ namespace Экспертная_система
         /// <returns></returns>
         public string Save(string path)
         {
-            path += "\\json.txt";
+            path += "\\h.json";
             File.WriteAllText(path, H.toJSON(0), System.Text.Encoding.Default);
             foreach (Algorithm algorithm in algorithms)
                 algorithm.Save();
