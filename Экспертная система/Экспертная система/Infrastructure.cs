@@ -68,9 +68,76 @@ namespace Экспертная_система
             {
                 newLog();
             }
-
+            // ИНИЦИАЛИЗАЦИЯ ГЛАВНОЙ ФОРМЫ
             executionProgressForm = new ExecutionProgress();
             executionProgressForm.Show();
+
+            DpiFix();
+            form1.WindowState = FormWindowState.Minimized;
+
+            if (logPath != null)
+            {
+                form1.vis = new MultiParameterVisualizer(form1.picBox, form1);
+                startAgentManager();
+                form1.pathPrefix = h.getValueByName("path_prefix");
+                form1.log("");
+                form1.log("");
+                form1.WindowState = FormWindowState.Maximized;
+            }
+            else
+            { }
+
+            if (modeSelector == null)
+            {
+                string mode = h.getValueByName("mode");
+
+                if (mode != null)
+                {
+                    form1.log(mode);
+                    if (mode == "Агент")
+                    {
+
+                    }
+                    if (mode == "Оптимизация эксперта")
+                    {
+                        form1.mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { form1.expertOptimization(); });
+                    }
+                    if (mode == "Оптимизация алгоритма")
+                    {
+                        form1.mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { form1.algorithmOptimization(); });
+                    }
+                    if (mode == "Тестирование эксперта")
+                    {
+                        form1.mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { form1.TEST(); });
+                    }
+                    if (mode == "Создание и тестирова эксперта")
+                    {
+                        form1.mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { form1.buildAndTest(); });
+                    }
+                    if (mode == "Создание и обучение эксперта")
+                    {
+                        form1.mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { form1.buildAndTrain(); });
+                    }
+                    if (mode == "SARSA")
+                    {
+                        form1.mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { form1.SARSA(); });
+                    }
+                    if (mode == "скрипт")
+                    {
+                        form1.mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { form1.script(); });
+                    }
+                    if (mode == "exmo as indicator")
+                    {
+                        form1.mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { form1.exmoAsIndicator(); });
+                    }
+                }
+            }
+            else
+            { form1.WindowState = FormWindowState.Minimized; }
+
+            form1.TrackBar2_Scroll(null, null);
+            form1.TrackBar3_Scroll(null, null);
+            form1.TrackBar4_Scroll(null, null);
         }
         public void showModeSelector()
         {
@@ -130,25 +197,40 @@ namespace Экспертная_система
 
         internal ExecutionProgress executionProgressForm;
         private List<Process> executingProcesses = new List<Process>();
+
         internal void newProcessToShow(Process process)
         {
 
             executingProcesses.Add(process);
-            process.WaitForExit(1000);
+            //process.WaitForExit(1);
+            IntPtr fMWH = (IntPtr)0x00000000;
             executionProgressForm.panel1.Invoke(new Action(() =>
             {
-                SetParent(process.MainWindowHandle, executionProgressForm.panel1.Handle);
-
-                int count = executingProcesses.Count;
-                var width = executionProgressForm.panel1.Width;
-
-                for (int i = 0; i < count; i++)
-                    if (executingProcesses[i].HasExited)
-                        executingProcesses.Remove(executingProcesses[i]);
-
-                for (int i = 0; i < count; i++)
-                    MoveWindow(executingProcesses[i].MainWindowHandle, width / count * i, 0, width / count, executionProgressForm.panel1.Height, true);
+                while (fMWH == (IntPtr)0x00000000)
+                    fMWH = SetParent(process.MainWindowHandle, executionProgressForm.panel1.Handle);
             }));
+            int width = 0;
+            executionProgressForm.panel1.Invoke(new Action(() =>
+            {
+                width = executionProgressForm.panel1.Width;
+            }));
+            for (int i = 0; i < executingProcesses.Count; i++)
+            {
+                if (executingProcesses[i] == null)
+                {
+                    executingProcesses.Remove(executingProcesses[i]);
+                    i--;
+                }
+                else
+                    if (executingProcesses[i].HasExited)
+                {
+                    executingProcesses.Remove(executingProcesses[i]);
+                    i--;
+                }
+            }
+
+            for (int i = 0; i < executingProcesses.Count; i++)
+                MoveWindow(executingProcesses[i].MainWindowHandle, width / executingProcesses.Count * i, 0, width / executingProcesses.Count, executionProgressForm.panel1.Height - 50, true);
         }
 
         internal void deleteLogBox(int processID)
@@ -271,26 +353,31 @@ namespace Экспертная_система
         }
         public string executePythonScript(string scriptFile, string args)
         {
+
             ProcessStartInfo start = new ProcessStartInfo();
 
             start.FileName = form1.I.h.getValueByName("python_path");
             start.Arguments = '"' + scriptFile + '"' + " " + args;
             start.ErrorDialog = true;
             //start.RedirectStandardError = true;
-             //start.UseShellExecute = false;
+            //start.UseShellExecute = false;
             // start.CreateNoWindow = true;
             //start.RedirectStandardOutput = true;
             Process process = Process.Start(start);
             string pid = process.Id.ToString();
             form1.I.newProcessToShow(process);
             // newLogBox(process.Id);
-
             while (!process.HasExited)
             {
+
                 System.Threading.Thread.Sleep(100);
             }
-            string response = File.ReadAllText(Path.GetDirectoryName(scriptFile) + "\\log.txt", System.Text.Encoding.Default);
 
+            string logPath = args.Substring(18);
+            logPath = logPath.Remove(logPath.Length - 1, 1);
+
+            string response = File.ReadAllText(Path.GetDirectoryName(logPath) + "\\log.txt", System.Text.Encoding.Default);
+            string error = File.ReadAllText(Path.GetDirectoryName(logPath) + "\\log_error.txt", System.Text.Encoding.Default);
             /*   StreamReader standardOutputReader = process.StandardOutput;
 
                string response = "";
@@ -313,10 +400,10 @@ namespace Экспертная_система
                    }
                }
                */
-          //  StreamReader errorReader = process.StandardError;
+            //  StreamReader errorReader = process.StandardError;
             ///////////////////////////////////////////////////////////////
             ///////// ВЫВОД В КОНСОЛЬ РЕЗУЛЬТАТА ВЫПОЛНЕНИЯ СКРИПТА ///////
-            // log(response);                                            ///    
+            form1.log(error, Color.Red);                                            ///    
            // var error = "";                                             ///
             //error = errorReader.ReadToEnd();                            ///
             //form1.log(error);                                           ///

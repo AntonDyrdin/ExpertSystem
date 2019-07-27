@@ -50,11 +50,7 @@
             this.ShowIcon = false;
             this.Text = "ExecutionProgress";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
-            this.Activated += new System.EventHandler(this.ExecutionProgress_Activated);
-            this.Load += new System.EventHandler(this.ExecutionProgress_Load);
-            this.Shown += new System.EventHandler(this.ExecutionProgress_Shown);
             this.SizeChanged += new System.EventHandler(this.ExecutionProgress_SizeChanged);
-            this.Enter += new System.EventHandler(this.ExecutionProgress_Enter);
             this.ResumeLayout(false);
 
         }

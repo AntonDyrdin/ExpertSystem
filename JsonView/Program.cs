@@ -14,8 +14,6 @@ namespace JsonView
         [STAThread]
         static void Main(string [] args)
         {
-            args = new string[1];
-            args[0] = "json.txt";
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1(args[0]));

@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.picBox = new System.Windows.Forms.PictureBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.Save_button = new System.Windows.Forms.Button();
@@ -65,9 +66,10 @@
             this.picBox.BackColor = System.Drawing.Color.Black;
             this.picBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.picBox.InitialImage = null;
-            this.picBox.Location = new System.Drawing.Point(2, 3);
+            this.picBox.Location = new System.Drawing.Point(3, 5);
+            this.picBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.picBox.Name = "picBox";
-            this.picBox.Size = new System.Drawing.Size(835, 648);
+            this.picBox.Size = new System.Drawing.Size(1252, 996);
             this.picBox.TabIndex = 37;
             this.picBox.TabStop = false;
             // 
@@ -76,17 +78,17 @@
             this.panel1.AutoScroll = true;
             this.panel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.panel1.Controls.Add(this.picBox);
-            this.panel1.Location = new System.Drawing.Point(200, 7);
-            this.panel1.Margin = new System.Windows.Forms.Padding(2);
+            this.panel1.Location = new System.Drawing.Point(300, 11);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(843, 654);
+            this.panel1.Size = new System.Drawing.Size(1264, 1006);
             this.panel1.TabIndex = 39;
             // 
             // Save_button
             // 
-            this.Save_button.Location = new System.Drawing.Point(10, 140);
+            this.Save_button.Location = new System.Drawing.Point(15, 215);
+            this.Save_button.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Save_button.Name = "Save_button";
-            this.Save_button.Size = new System.Drawing.Size(182, 31);
+            this.Save_button.Size = new System.Drawing.Size(273, 48);
             this.Save_button.TabIndex = 40;
             this.Save_button.Text = "Установить значение";
             this.Save_button.UseVisualStyleBackColor = true;
@@ -94,43 +96,48 @@
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(37, 7);
+            this.textBox1.Location = new System.Drawing.Point(56, 11);
+            this.textBox1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(100, 20);
+            this.textBox1.Size = new System.Drawing.Size(148, 26);
             this.textBox1.TabIndex = 41;
             this.textBox1.TextChanged += new System.EventHandler(this.TextBox1_TextChanged);
             // 
             // textBox2
             // 
             this.textBox2.Enabled = false;
-            this.textBox2.Location = new System.Drawing.Point(69, 62);
+            this.textBox2.Location = new System.Drawing.Point(104, 95);
+            this.textBox2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(100, 20);
+            this.textBox2.Size = new System.Drawing.Size(148, 26);
             this.textBox2.TabIndex = 42;
             this.textBox2.Text = "value";
             // 
             // textBox3
             // 
-            this.textBox3.Location = new System.Drawing.Point(92, 88);
+            this.textBox3.Location = new System.Drawing.Point(138, 135);
+            this.textBox3.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(100, 20);
+            this.textBox3.Size = new System.Drawing.Size(148, 26);
             this.textBox3.TabIndex = 43;
             // 
             // ID
             // 
             this.ID.AutoSize = true;
-            this.ID.Location = new System.Drawing.Point(10, 10);
+            this.ID.Location = new System.Drawing.Point(15, 15);
+            this.ID.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.ID.Name = "ID";
-            this.ID.Size = new System.Drawing.Size(21, 13);
+            this.ID.Size = new System.Drawing.Size(30, 20);
             this.ID.TabIndex = 44;
             this.ID.Text = "ID:";
             // 
             // value
             // 
             this.value.AutoSize = true;
-            this.value.Location = new System.Drawing.Point(25, 91);
+            this.value.Location = new System.Drawing.Point(38, 140);
+            this.value.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.value.Name = "value";
-            this.value.Size = new System.Drawing.Size(61, 13);
+            this.value.Size = new System.Drawing.Size(91, 20);
             this.value.TabIndex = 45;
             this.value.Text = "Значение: ";
             // 
@@ -139,9 +146,10 @@
             this.onlyValue.AutoSize = true;
             this.onlyValue.Checked = true;
             this.onlyValue.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.onlyValue.Location = new System.Drawing.Point(13, 39);
+            this.onlyValue.Location = new System.Drawing.Point(20, 60);
+            this.onlyValue.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.onlyValue.Name = "onlyValue";
-            this.onlyValue.Size = new System.Drawing.Size(149, 17);
+            this.onlyValue.Size = new System.Drawing.Size(220, 24);
             this.onlyValue.TabIndex = 46;
             this.onlyValue.Text = "Изменить атрибут Value";
             this.onlyValue.UseVisualStyleBackColor = true;
@@ -150,25 +158,28 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(7, 114);
+            this.label1.Location = new System.Drawing.Point(10, 175);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(79, 13);
+            this.label1.Size = new System.Drawing.Size(114, 20);
             this.label1.TabIndex = 48;
             this.label1.Text = "Изменить на: ";
             // 
             // textBox4
             // 
-            this.textBox4.Location = new System.Drawing.Point(92, 114);
+            this.textBox4.Location = new System.Drawing.Point(138, 175);
+            this.textBox4.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(100, 20);
+            this.textBox4.Size = new System.Drawing.Size(148, 26);
             this.textBox4.TabIndex = 47;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(10, 65);
+            this.label2.Location = new System.Drawing.Point(15, 100);
+            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(53, 13);
+            this.label2.Size = new System.Drawing.Size(80, 20);
             this.label2.TabIndex = 49;
             this.label2.Text = "Атрибут: ";
             // 
@@ -179,19 +190,21 @@
             this.logBox.DetectUrls = false;
             this.logBox.Font = new System.Drawing.Font("Century Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.logBox.ForeColor = System.Drawing.Color.White;
-            this.logBox.Location = new System.Drawing.Point(200, 663);
+            this.logBox.Location = new System.Drawing.Point(300, 1020);
+            this.logBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.logBox.Name = "logBox";
             this.logBox.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.logBox.Size = new System.Drawing.Size(843, 80);
+            this.logBox.Size = new System.Drawing.Size(1264, 123);
             this.logBox.TabIndex = 53;
             this.logBox.Text = "";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(11, 320);
+            this.label3.Location = new System.Drawing.Point(16, 492);
+            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(61, 13);
+            this.label3.Size = new System.Drawing.Size(91, 20);
             this.label3.TabIndex = 63;
             this.label3.Text = "Атрибуты: ";
             // 
@@ -200,9 +213,10 @@
             this.checkBox2.AutoSize = true;
             this.checkBox2.Checked = true;
             this.checkBox2.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox2.Location = new System.Drawing.Point(14, 294);
+            this.checkBox2.Location = new System.Drawing.Point(21, 452);
+            this.checkBox2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(135, 17);
+            this.checkBox2.Size = new System.Drawing.Size(199, 24);
             this.checkBox2.TabIndex = 60;
             this.checkBox2.Text = "Только атрибут Value";
             this.checkBox2.UseVisualStyleBackColor = true;
@@ -211,49 +225,55 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(26, 346);
+            this.label5.Location = new System.Drawing.Point(39, 532);
+            this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(61, 13);
+            this.label5.Size = new System.Drawing.Size(91, 20);
             this.label5.TabIndex = 59;
             this.label5.Text = "Значение: ";
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(10, 241);
+            this.label6.Location = new System.Drawing.Point(15, 371);
+            this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(55, 13);
+            this.label6.Size = new System.Drawing.Size(81, 20);
             this.label6.TabIndex = 58;
             this.label6.Text = "Parent ID:";
             // 
             // textBox6
             // 
-            this.textBox6.Location = new System.Drawing.Point(93, 343);
+            this.textBox6.Location = new System.Drawing.Point(140, 528);
+            this.textBox6.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.textBox6.Name = "textBox6";
-            this.textBox6.Size = new System.Drawing.Size(100, 20);
+            this.textBox6.Size = new System.Drawing.Size(148, 26);
             this.textBox6.TabIndex = 57;
             // 
             // textBox7
             // 
             this.textBox7.Enabled = false;
-            this.textBox7.Location = new System.Drawing.Point(78, 317);
+            this.textBox7.Location = new System.Drawing.Point(117, 488);
+            this.textBox7.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.textBox7.Name = "textBox7";
-            this.textBox7.Size = new System.Drawing.Size(100, 20);
+            this.textBox7.Size = new System.Drawing.Size(148, 26);
             this.textBox7.TabIndex = 56;
             this.textBox7.Text = "att1:val1,att2:val2";
             // 
             // textBox8
             // 
-            this.textBox8.Location = new System.Drawing.Point(69, 238);
+            this.textBox8.Location = new System.Drawing.Point(104, 366);
+            this.textBox8.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.textBox8.Name = "textBox8";
-            this.textBox8.Size = new System.Drawing.Size(100, 20);
+            this.textBox8.Size = new System.Drawing.Size(148, 26);
             this.textBox8.TabIndex = 55;
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(11, 369);
+            this.button1.Location = new System.Drawing.Point(16, 568);
+            this.button1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(182, 31);
+            this.button1.Size = new System.Drawing.Size(273, 48);
             this.button1.TabIndex = 54;
             this.button1.Text = "Добавить";
             this.button1.UseVisualStyleBackColor = true;
@@ -262,24 +282,27 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(9, 447);
+            this.label4.Location = new System.Drawing.Point(14, 688);
+            this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(21, 13);
+            this.label4.Size = new System.Drawing.Size(30, 20);
             this.label4.TabIndex = 65;
             this.label4.Text = "ID:";
             // 
             // textBox5
             // 
-            this.textBox5.Location = new System.Drawing.Point(36, 444);
+            this.textBox5.Location = new System.Drawing.Point(54, 683);
+            this.textBox5.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.textBox5.Name = "textBox5";
-            this.textBox5.Size = new System.Drawing.Size(49, 20);
+            this.textBox5.Size = new System.Drawing.Size(72, 26);
             this.textBox5.TabIndex = 64;
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(95, 439);
+            this.button2.Location = new System.Drawing.Point(142, 675);
+            this.button2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(100, 28);
+            this.button2.Size = new System.Drawing.Size(150, 43);
             this.button2.TabIndex = 66;
             this.button2.Text = "Удалить";
             this.button2.UseVisualStyleBackColor = true;
@@ -287,9 +310,10 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(10, 652);
+            this.button3.Location = new System.Drawing.Point(15, 1003);
+            this.button3.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(182, 39);
+            this.button3.Size = new System.Drawing.Size(273, 60);
             this.button3.TabIndex = 67;
             this.button3.Text = "Открыть настройки отображения";
             this.button3.UseVisualStyleBackColor = true;
@@ -297,9 +321,10 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(10, 712);
+            this.button4.Location = new System.Drawing.Point(15, 1095);
+            this.button4.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(182, 31);
+            this.button4.Size = new System.Drawing.Size(273, 48);
             this.button4.TabIndex = 68;
             this.button4.Text = "Сохранить изменения";
             this.button4.UseVisualStyleBackColor = true;
@@ -308,24 +333,26 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(25, 267);
+            this.label7.Location = new System.Drawing.Point(38, 411);
+            this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(38, 13);
+            this.label7.Size = new System.Drawing.Size(55, 20);
             this.label7.TabIndex = 70;
             this.label7.Text = "Name:";
             // 
             // textBox9
             // 
-            this.textBox9.Location = new System.Drawing.Point(69, 264);
+            this.textBox9.Location = new System.Drawing.Point(104, 406);
+            this.textBox9.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.textBox9.Name = "textBox9";
-            this.textBox9.Size = new System.Drawing.Size(100, 20);
+            this.textBox9.Size = new System.Drawing.Size(148, 26);
             this.textBox9.TabIndex = 69;
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1043, 745);
+            this.ClientSize = new System.Drawing.Size(1564, 1050);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.textBox9);
             this.Controls.Add(this.button4);
@@ -353,8 +380,11 @@
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.Save_button);
             this.Controls.Add(this.panel1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "Form1";
             this.Text = "Form1";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.Form1_Load);
             this.SizeChanged += new System.EventHandler(this.Form1_SizeChanged);
             ((System.ComponentModel.ISupportInitialize)(this.picBox)).EndInit();

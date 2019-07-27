@@ -29,7 +29,10 @@ namespace Экспертная_система
         }
         public static Algorithm newInstance(Algorithm algorithm)
         {
-            if (algorithm.GetType().Name == "LSTM_1")
+            var constr = algorithm.GetType().GetConstructor(new Type[] { algorithm.form1.GetType(), (" asd").GetType() });
+            var algInst=(Algorithm)constr.Invoke(new object[] { algorithm.form1, algorithm.GetType().ToString() });
+            return algInst;
+            /*   if (algorithm.GetType().Name == "LSTM_1")
                 return new LSTM_1(algorithm.form1, "LSTM_1");
             if (algorithm.GetType().Name == "LSTM_2")
                 return new LSTM_2(algorithm.form1, "LSTM_2");
@@ -37,7 +40,12 @@ namespace Экспертная_система
                 return new ANN_1(algorithm.form1, "ANN_1");
             if (algorithm.GetType().Name == "CNN_1")
                 return new CNN_1(algorithm.form1, "CNN_1");
-            return null;
+            if (algorithm.GetType().Name == "CNN_1")
+                return new CNN_1(algorithm.form1, "CNN_1");
+            if (algorithm.GetType().Name == "FlexNN")
+                return new FlexNN(algorithm.form1, "FlexNN");
+
+            return null;*/
         }
         public void fillFilePaths()
         {

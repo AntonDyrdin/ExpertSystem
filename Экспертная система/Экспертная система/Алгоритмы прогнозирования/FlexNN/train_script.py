@@ -1,8 +1,21 @@
 ﻿prediction_algorithm_name = 'FlexNN'
 
+# чтение параметров командной строки
+import argparse
+def createParser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--json_file_path',type=str,default='h.json')
+    return parser
+parser = createParser()
+args = parser.parse_args()
+#####################################################################
 # лог
 import os
-logPath = os.path.dirname(os.path.abspath(__file__)) + "\\log.txt"
+logPath = os.path.dirname(args.json_file_path) + "\\log.txt"
+logErrorPath = os.path.dirname(args.json_file_path) + "\\log_error.txt"
+import sys
+sys.stderr = open(logErrorPath, 'w')
+
 logFile = open(logPath,"w")
 logFile.write(logPath)
 logFile.close()
@@ -11,6 +24,7 @@ def log(s):
     logFile = open(logPath,"a")
     logFile.write((str)(s)+'\n')
     logFile.close()
+log(logPath)
 ######################################################################
 log("СКРИПТ ОБУЧЕНИЯ " + prediction_algorithm_name + " ЗАПУЩЕН...") 
 
@@ -33,7 +47,6 @@ log(C.use_default_device())
 ###################################################
 
 #  загрузка библиотек
-import argparse
 import numpy
 import json
 from keras.models import Sequential
@@ -45,12 +58,7 @@ from keras.layers import Conv1D, GlobalAveragePooling1D, MaxPooling1D
 #####################################################################
 log("> время загрузки библиотек : " + getTime())  
 
-# чтение параметров командной строки
-def createParser():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--json_file_path',type=str,default='h.json')
-    return parser
-#####################################################################
+
 def h(request):
     nodeArray = request.split('/')
     if(len(nodeArray) == 1):
@@ -67,8 +75,7 @@ def h(request):
         return jsonObj[baseNodeName][nodeArray[0]][nodeArray[1]][nodeArray[2]][nodeArray[3]][nodeArray[4]][nodeArray[5]]
     return  "PARAMETER NOT FOUND"
 
-parser = createParser()
-args = parser.parse_args()
+
 jsonFile = open(args.json_file_path, 'r')
 jsontext = jsonFile.read()
 jsonFile.close()
@@ -129,7 +136,7 @@ if h("NN_struct/layer1/value") == "LSTM":
 
 else:
     Dataset_X = numpy.zeros((dataset.shape[0] - window_size, window_size), dtype=numpy.float32)
-    Dataset_Y = numpy.zeros(dataset.shape[0] - window_size, dtype=numpy.float32)
+    Dataset_Y = numpy.zeros((dataset.shape[0] - window_size,2), dtype=numpy.float32)
     predicted_column_index = (int)(h("predicted_column_index/value"))
     for i in range(0,dataset.shape[0] - window_size):
         for j in range(0,window_size):
@@ -300,3 +307,4 @@ RESPONSE="{RESPONSE:{"
 RESPONSE=RESPONSE+ "response:{value:скрипт "+prediction_algorithm_name+" успешно завершён"
 RESPONSE=RESPONSE+ "}}}"
 log(RESPONSE)
+sys.stderr.close()

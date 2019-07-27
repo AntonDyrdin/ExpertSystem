@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Экспертная_система
@@ -12,12 +11,9 @@ namespace Экспертная_система
     public partial class MainForm : Form
     {
         // C:\Users\Антон\AppData\Local\Theano\compiledir_Windows-10-10.0.17134-SP0-Intel64_Family_6_Model_158_Stepping_9_GenuineIntel-3.6.1-64\lock_dir
-
-
         public MainForm()
         {
             InitializeComponent();
-
         }
         public List<logItem> collectLogWhileItFreezed;
         public string pathPrefix;
@@ -25,7 +21,6 @@ namespace Экспертная_система
         public Expert expert;
         public MultiParameterVisualizer vis;
         public AgentManager agentManager;
-        //   private ImgDataset visPredictions;
         public string sourceDataFile;
         public System.Threading.Tasks.Task mainTask;
         public System.Threading.Thread mainThread;
@@ -35,110 +30,45 @@ namespace Экспертная_система
         private int Nl = 0;
         private int Nh = 0;
         private double Z = 0;
+        private bool tester = false;
         public void Form1_Load(object sender, EventArgs e)
         {
-
-            Infrastructure.DpiFix();
-            WindowState = FormWindowState.Minimized;
             I = new Infrastructure(this);
-            if (I.logPath != null)
-            {
-                vis = new MultiParameterVisualizer(picBox, this);
-                I.startAgentManager();
-                pathPrefix = I.h.getValueByName("path_prefix");
-                log("");
-                log("");
-                WindowState = FormWindowState.Maximized;
-            }
-            else
-            { }
-
 
             //  I.showModeSelector();
-            if (I.modeSelector == null)
-            {
-                string mode = I.h.getValueByName("mode");
-
-                if (mode != null)
-                {
-                    log(mode);
-                    if (mode == "Агент")
-                    {
-
-                    }
-                    if (mode == "Оптимизация эксперта")
-                    {
-                        mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { expertOptimization(); });
-                    }
-                    if (mode == "Оптимизация алгоритма")
-                    {
-                        mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { algorithmOptimization(); });
-                    }
-                    if (mode == "Тестирование эксперта")
-                    {
-                        mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { TEST(); });
-                    }
-                    if (mode == "Создание и тестирова эксперта")
-                    {
-                        mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { buildAndTest(); });
-                    }
-                    if (mode == "Создание и обучение эксперта")
-                    {
-                        mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { buildAndTrain(); });
-                    }
-                    if (mode == "SARSA")
-                    {
-                        mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { SARSA(); });
-                    }
-                    if (mode == "скрипт")
-                    {
-                        mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { script(); });
-                    }
-                    if (mode == "exmo as indicator")
-                    {
-                        mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { exmoAsIndicator(); });
-                    }
-                }
-            }
-            else
-            { WindowState = FormWindowState.Minimized; }
         }
 
-        private bool tester = false;
         public void algorithmOptimization()
         {
-
-
             expert = new Expert("Эксперт 1", this);
             mainThread = System.Threading.Thread.CurrentThread;
-            algorithm = new FlexNN(this, "FlexNN");
+            algorithm = new ANN_1(this, "ANN_1");
 
-            // sourceDataFile = pathPrefix + @"Временные ряды\USD_RUB_exmo.txt";
-            //  expert.H.add("input_file", expert.savePreparedDataset(sourceDataFile, "<TIME>;<TICKER>;<PER>;<DATE>;<local_time>", true));
+            //sourceDataFile = pathPrefix + @"Временные ряды\USD_RUB_exmo_norm.txt";
+            //expert.H.add("input_file", expert.savePreparedDataset(sourceDataFile, "<TIME>;<TICKER>;<PER>;<DATE>;<local_time>", true));
             algorithm.h.setValueByName("start_point", "0.99");
             algorithm.h.setValueByName("normalize", "true");
-            algorithm.h.add("input_file", pathPrefix + @"Временные ряды\USD_RUB_exmo-dataset.txt");
+            algorithm.h.add("input_file", pathPrefix + @"Временные ряды\USD_RUB_exmo_norm-dataset.txt");
             algorithm.h.add("path_prefix", pathPrefix);
             algorithm.h.add("drop_columns:<local_time>");
-            algorithm.h.add("predicted_column_index:1");
+            algorithm.h.add("predicted_column_index:0");
             algorithm.h.add("name:show_train_charts,value:False");
 
-             algorithm.train();
-           // I.executePythonScript("C:\\Python34\\test.py", "");
-          
+            algorithm.train().Wait();
+            // I.executePythonScript("C:\\Python34\\test.py", "");
 
 
-            /*  vis.addParameter("ask", Color.White, 500);
-               vis.addCSV(algorithm.h.getValueByName("predictions_file_path"),"_ask","<ask>", "ask", 500, 0.95,-1);
-               vis.addCSV(algorithm.h.getValueByName("predictions_file_path"),"_ask", "LAST_COLUMN", "ask", 500, 0.95, 0);
-               vis.enableGrid = false;
-               vis.refresh();*/
+            /*vis.addParameter("ask", Color.White, 500);
+            vis.addCSV(algorithm.h.getValueByName("predictions_file_path"), "_ask", "<ask>", "ask", 500, 0, -1);
+            vis.addCSV(algorithm.h.getValueByName("predictions_file_path"), "_ask", "LAST_COLUMN", "ask", 500, 0, 0);
+            vis.enableGrid = false;
+            vis.refresh();*/
             //algorithm.Open(@"E:\Anton\Desktop\MAIN\Optimization\LSTM_1\LSTM_1[0]\h.json");
-            /*
-                        algorithm.Save();
 
-                       AO = new AlgorithmOptimization(algorithm, this, 30, 10, 0.5, 100);
-                        AO.run();*/
+            algorithm.Save();
+
+            AO = new AlgorithmOptimization(algorithm, this, 8, 10, 0.5, 100);
+            AO.run();
             // algorithm.h.draw(0, picBox, this, 15, 150);
             // algorithm.Save();
         }
@@ -181,7 +111,7 @@ namespace Экспертная_система
         }
 
 
-        private void exmoAsIndicator()
+        internal void exmoAsIndicator()
         {
             log("вход в exmoAsIndicator()");
             vis.addParameter("USD_RUB", Color.Lime, 900);
@@ -364,7 +294,7 @@ namespace Экспертная_система
 
         }
 
-        private void script()
+        internal void script()
         {
             mainThread = System.Threading.Thread.CurrentThread;
             Hyperparameters order_book;
@@ -702,17 +632,17 @@ namespace Экспертная_система
         }
         public int multiThreadTrainingRATE = 0;
 
-        private void TrackBar2_Scroll(object sender, EventArgs e)
+        internal void TrackBar2_Scroll(object sender, EventArgs e)
         {
             multiThreadTrainingRATE = trackBar2.Value;
         }
         public int mutationRate = 0;
-        private void TrackBar3_Scroll(object sender, EventArgs e)
+        internal void TrackBar3_Scroll(object sender, EventArgs e)
         {
             mutationRate = trackBar3.Value;
         }
         public int test_count = 0;
-        private void TrackBar4_Scroll(object sender, EventArgs e)
+        internal void TrackBar4_Scroll(object sender, EventArgs e)
         {
             test_count = trackBar4.Value;
         }
@@ -747,19 +677,19 @@ namespace Экспертная_система
             //  vis.refresh();
         }
 
-        private void TrackBar5_Scroll(object sender, EventArgs e)
+        internal void TrackBar5_Scroll(object sender, EventArgs e)
         {
             Nl = trackBar5.Value * 10;
             textBox1.Text = Nl.ToString();
         }
 
-        private void TrackBar6_Scroll(object sender, EventArgs e)
+        internal void TrackBar6_Scroll(object sender, EventArgs e)
         {
             Nh = trackBar6.Value * 10;
             textBox2.Text = Nh.ToString();
         }
 
-        private void TrackBar7_Scroll(object sender, EventArgs e)
+        internal void TrackBar7_Scroll(object sender, EventArgs e)
         {
             Z = trackBar7.Value / 20000.0;
             textBox3.Text = Z.ToString();

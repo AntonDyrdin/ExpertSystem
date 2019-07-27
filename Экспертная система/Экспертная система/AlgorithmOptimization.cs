@@ -200,6 +200,7 @@ namespace Экспертная_система
                                 List<Algorithm> algorithms = new List<Algorithm>();
                                 for (int i = begin; i < end; i++)
                                 {
+                                    //если в методе Algorithm.newInstance возникает ошибка, значит новый алгоритм не добавлен в конструктор
                                     Algorithm alg = Algorithm.newInstance(algorithm);
                                     alg.h = population[i].Clone();
                                     algorithms.Add(alg);

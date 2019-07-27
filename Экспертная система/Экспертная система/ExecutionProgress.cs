@@ -15,29 +15,12 @@ namespace Экспертная_система
         public ExecutionProgress()
         {
             InitializeComponent();
-          
-        }
-
-        private void ExecutionProgress_Load(object sender, EventArgs e)
-        {
-
-        }
-        private void ExecutionProgress_Shown(object sender, EventArgs e)
-        {
         }
 
         private void ExecutionProgress_SizeChanged(object sender, EventArgs e)
         {
             panel1.Height = Height;
             panel1.Width = Width;
-        }
-
-        private void ExecutionProgress_Activated(object sender, EventArgs e)
-        {
-        }
-
-        private void ExecutionProgress_Enter(object sender, EventArgs e)
-        {
         }
     }
 }

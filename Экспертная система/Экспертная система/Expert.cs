@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Threading.Tasks;
+using System.Linq;
+
 namespace Экспертная_система
 {
     [Serializable]
@@ -945,10 +947,24 @@ namespace Экспертная_система
             var algorithmBranches = expert.H.getNodesByparentID(expert.committeeNodeID);
             foreach (Node algorithmBranch in algorithmBranches)
             {
-                // Type t = Type.GetType("Namespace." + algorithmBranch.name());
-                //  object cc = Activator.CreateInstance(t);
+                Type algorithmType = typeof(Algorithm); 
+                IEnumerable<Type> list = System.Reflection.Assembly.GetAssembly(algorithmType).GetTypes().Where(type => type.IsSubclassOf(algorithmType));  // using System.Linq
 
-                if (algorithmBranch.name() == "LSTM_1")
+
+                foreach (Type type in list)
+                {
+                    if (type.Name == algorithmBranch.name())
+                    {
+                        algorithmType = type;
+                        break;
+                    }
+                }
+
+                var constr = algorithmType.GetConstructor(new Type[] { form1.GetType(), ("asd").GetType() });
+                var algInst = (Algorithm)constr.Invoke(new object[] { form1, algorithmType.ToString() });
+
+
+               /* if (algorithmBranch.name() == "LSTM_1")
                     expert.algorithms.Add(new LSTM_1(form1, "LSTM_1"));
                 if (algorithmBranch.name() == "LSTM_2")
                     expert.algorithms.Add(new LSTM_2(form1, "LSTM_2"));
@@ -956,6 +972,8 @@ namespace Экспертная_система
                     expert.algorithms.Add(new ANN_1(form1, "ANN_1"));
                 if (algorithmBranch.name() == "CNN_1")
                     expert.algorithms.Add(new CNN_1(form1, "CNN_1"));
+                if (algorithmBranch.name() == "FlexNN")
+                    expert.algorithms.Add(new FlexNN(form1, "FlexNN"));*/
 
                 expert.algorithms[expert.algorithms.Count - 1].h = new Hyperparameters(expert.H.toJSON(algorithmBranch.ID), form1);
                 expert.algorithms[expert.algorithms.Count - 1].modelName = expert.algorithms[expert.algorithms.Count - 1].h.getValueByName("model_name");

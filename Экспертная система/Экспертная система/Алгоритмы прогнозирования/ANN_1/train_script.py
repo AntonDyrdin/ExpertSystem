@@ -1,6 +1,30 @@
 ﻿prediction_algorithm_name = 'ANN_1'
+# чтение параметров командной строки
+import argparse
+def createParser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--json_file_path',type=str,default='C:\\Users\\anton\\Рабочий стол\\MAIN\\Экспертная система\\Экспертная система\\Алгоритмы прогнозирования\\ANN_1\\h.json')
+    return parser
+parser = createParser()
+args = parser.parse_args()
+#####################################################################
+# лог
+import os
+logPath = os.path.dirname(args.json_file_path) + "\\log.txt"
+logErrorPath = os.path.dirname(args.json_file_path) + "\\log_error.txt"
+import sys
+sys.stderr = open(logErrorPath, 'w')
+
+logFile = open(logPath,"w")
+logFile.write(logPath)
+logFile.close()
 def log(s):
     print(s)
+    logFile = open(logPath,"a")
+    logFile.write((str)(s)+'\n')
+    logFile.close()
+log(logPath)
+######################################################################
 log("СКРИПТ ОБУЧЕНИЯ " + prediction_algorithm_name + " ЗАПУЩЕН...") 
 import time
 tempTime = time.time()
@@ -13,10 +37,9 @@ def getTime():
         
 from cntk.device import try_set_default_device, gpu
 import cntk.device as C
-print(C.all_devices())
-print(C.try_set_default_device(C.gpu(0)))
-print(C.use_default_device())
-import argparse
+log(C.all_devices())
+log(C.try_set_default_device(C.gpu(0)))
+log(C.use_default_device())
 import numpy
 import json
 from keras.models import Sequential
@@ -25,12 +48,6 @@ from keras.layers import Dropout
 
 log("> время загрузки библиотек : "+ getTime())  
 
-
-def createParser():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--json_file_path',type=str,default='h.json')
-    #parser.add_argument('--json_file_path',type=str,default='C:\\Users\\anton\\Рабочий стол\\MAIN\\Экспертная система\\Экспертная система\\Алгоритмы прогнозирования\\ANN 1\\h.json')
-    return parser
 def h(nodeName):
     return  jsonObj[baseNodeName][nodeName]["value"]
 
@@ -48,8 +65,6 @@ def h3INT(nodeName1,nodeName2,nodeName3):
     return  (int)(jsonObj[baseNodeName][nodeName1][nodeName2][nodeName3]["value"])
 
 #парсинг json файла
-parser = createParser()
-args = parser.parse_args()
 jsonFile = open(args.json_file_path, 'r')
 jsontext = jsonFile.read()
 jsonFile.close()
@@ -69,7 +84,13 @@ for i in range(1,len(allLines)):
         if featureStringValue != '\n':     
             dataset[i - 1,j] = (float)(allLines[i].split(';')[j])
 
-print(dataset.shape)
+# train_start_point определяет процент данных, которые будут отброшены
+train_start_point = (int)((float)(h("start_point")) * dataset.shape[0])
+dataset = dataset[train_start_point:,:]
+
+log("dataset.shape: " + (str)(dataset.shape))   
+
+split_point = (float)(h("split_point"))
 
 #создание обучающей выборки из входных данных
 #в данном алгоритме вектор X - массив из одного предиктора (он же - прогнозируемая величина)
@@ -83,14 +104,12 @@ for i in range(0,dataset.shape[0] - window_size):
     Dataset_Y[i] = dataset[i + window_size,predicted_column_index]
 
 #разбиение на обучающую и тестовую выборки 
-train_start_point = (int)((float)(h("start_point"))*Dataset_X.shape[0])
-split_point = (float)(h("split_point"))
-train_X = Dataset_X[train_start_point:round(Dataset_X.shape[0] * (split_point)), :]
+train_X = Dataset_X[:round(Dataset_X.shape[0] * (split_point)), :]
 test_X = Dataset_X[round(Dataset_X.shape[0] * (split_point)):, :]
-train_y = Dataset_Y[train_start_point:round(Dataset_Y.shape[0] * (split_point)):]
+train_y = Dataset_Y[:round(Dataset_Y.shape[0] * (split_point)):]
 test_y = Dataset_Y[round(Dataset_Y.shape[0] * (split_point)):]
 
-print("> время чтения данных  : ", getTime())  
+log("> время чтения данных  : "+(str)( getTime()))  
 
 model = Sequential()         
 model.add(Dense(h3INT("NN_struct","layer1","neurons_count"),input_dim=window_size,activation=h3("NN_struct","layer1","activation")))
@@ -147,7 +166,7 @@ head = head + '(predicted -> )' + allLines[0].split(';')[(int)(h("predicted_colu
 # if  head[:-1]==';':
 #     head = head[0:-1]
 predictionsFile.write(head +'\n')
-print("test_X.shape: ",test_X.shape )
+log("test_X.shape: "+(str)(test_X.shape) )
 for i in range(0,test_X.shape[0]):
     line = ''
     for k in range(0,dataset.shape[1]): 
@@ -159,9 +178,10 @@ log("> время создания и записи тестового прогн
 log("__________________________________")    
 log("______________END________________")    
 RESPONSE="{RESPONSE:{"
-RESPONSE=RESPONSE+ "AVG:{value:"+(str)(avg)
+RESPONSE=RESPONSE+ "AVG:{value:"+(str)(avg)+"},"
+RESPONSE=RESPONSE+ "response:{value:скрипт "+prediction_algorithm_name+" успешно завершён"
 RESPONSE=RESPONSE+ "}}}"
-print(RESPONSE)
+log(RESPONSE)
 
 if h("show_train_charts")=="True":
     import matplotlib.pyplot as pyplot
@@ -178,3 +198,4 @@ if h("show_train_charts")=="True":
 
     #import os
     #save_path = os.getcwd()
+sys.stderr.close()

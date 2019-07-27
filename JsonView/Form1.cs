@@ -47,7 +47,7 @@ namespace JsonView
         {
             try
             {
-                settings = new Hyperparameters("settings.json", this, true);
+                settings = new Hyperparameters(System.IO.Path.GetDirectoryName(Application.ExecutablePath)+"\\settings.json", this, true);
 
                 depth = int.Parse(settings.getValueByName("depth"));
                 width = int.Parse(settings.getValueByName("width"));
