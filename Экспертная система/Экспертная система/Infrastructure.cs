@@ -218,8 +218,12 @@ namespace Экспертная_система
             {
                 if (executingProcesses[i] == null)
                 {
-                    executingProcesses.Remove(executingProcesses[i]);
-                    i--;
+                    try
+                    {
+                        executingProcesses.Remove(executingProcesses[i]);
+                        i--;
+                    }
+                    catch { }
                 }
                 else
                     if (executingProcesses[i].HasExited)

@@ -271,7 +271,7 @@ namespace Экспертная_система
                     if (nodes[i].parentID == parentID)
                     {
                         lastIdBySameParentId = nodes[i].ID;
-                        resnodes.Add(nodes[i]);
+                        resnodes.Add(nodes[i].Clone());
                         inc++;
                         if (inc == targetCount)
                             break;
@@ -285,7 +285,7 @@ namespace Экспертная_система
                 if (nodes[i].parentID == parentID)
                 {
                     lastIdBySameParentId = nodes[i].ID;
-                    resnodes.Add(nodes[i]);
+                    resnodes.Add(nodes[i].Clone());
                 }
             }
             return resnodes;

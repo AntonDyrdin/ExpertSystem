@@ -42,7 +42,7 @@ namespace Экспертная_система
         {
             expert = new Expert("Эксперт 1", this);
             mainThread = System.Threading.Thread.CurrentThread;
-            algorithm = new ANN_1(this, "ANN_1");
+            algorithm = new FlexNN(this, "FlexNN");
 
             //sourceDataFile = pathPrefix + @"Временные ряды\USD_RUB_exmo_norm.txt";
             //expert.H.add("input_file", expert.savePreparedDataset(sourceDataFile, "<TIME>;<TICKER>;<PER>;<DATE>;<local_time>", true));
@@ -54,9 +54,7 @@ namespace Экспертная_система
             algorithm.h.add("predicted_column_index:0");
             algorithm.h.add("name:show_train_charts,value:False");
 
-            algorithm.train().Wait();
-            // I.executePythonScript("C:\\Python34\\test.py", "");
-
+            //algorithm.train().Wait();
 
             /*vis.addParameter("ask", Color.White, 500);
             vis.addCSV(algorithm.h.getValueByName("predictions_file_path"), "_ask", "<ask>", "ask", 500, 0, -1);
@@ -67,9 +65,9 @@ namespace Экспертная_система
 
             algorithm.Save();
 
-            AO = new AlgorithmOptimization(algorithm, this, 8, 10, 0.5, 100);
+            AO = new AlgorithmOptimization(algorithm, this, 4, 10, 5, 0.5, 100);
             AO.run();
-            // algorithm.h.draw(0, picBox, this, 15, 150);
+            algorithm.h.draw(0, picBox, this, 15, 150);
             // algorithm.Save();
         }
         public void expertOptimization()

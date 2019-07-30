@@ -14,16 +14,21 @@ import os
 logPath = os.path.dirname(args.json_file_path) + "\\log.txt"
 logErrorPath = os.path.dirname(args.json_file_path) + "\\log_error.txt"
 import sys
-sys.stderr = open(logErrorPath, 'w')
-
-logFile = open(logPath,"w")
-logFile.write(logPath)
-logFile.close()
-def log(s):
-    print(s)
-    logFile = open(logPath,"a")
-    logFile.write((str)(s)+'\n')
+try:
+    sys.stderr = open(logErrorPath, 'w')
+    logFile = open(logPath,"w")
+    logFile.write(logPath)
     logFile.close()
+except:
+    print("не удалось открыть файл логгирования ",logPath)
+def log(s):
+    try:
+        logFile = open(logPath,"a")
+        logFile.write((str)(s)+'\n')
+        logFile.close()
+        print(s)
+    except:
+        print(s)
 log(logPath)
 ######################################################################
 log("СКРИПТ ОБУЧЕНИЯ " + prediction_algorithm_name + " ЗАПУЩЕН...") 
@@ -150,12 +155,14 @@ else:
             Dataset_Y[i,0] = 1
             Dataset_Y[i,1] = 0 
 
-    train_X = Dataset_X[train_start_point:round(Dataset_X.shape[0] * (split_point)), :]
+    train_X = Dataset_X[:round(Dataset_X.shape[0] * (split_point)), :]
     test_X = Dataset_X[round(Dataset_X.shape[0] * (split_point)):, :]
-    train_y = Dataset_Y[train_start_point:round(Dataset_Y.shape[0] * (split_point)):]
-    test_y = Dataset_Y[round(Dataset_Y.shape[0] * (split_point)):]
+    train_y = Dataset_Y[:round(Dataset_Y.shape[0] * (split_point)):,:]
+    test_y = Dataset_Y[round(Dataset_Y.shape[0] * (split_point)):,:]
 ####################################################################################
 log("> время чтения данных  : " + (str)(getTime()))  
+log("train_X.shape" + (str)(train_X.shape))
+log("train_y.shape" + (str)(train_y.shape))
 
 model = Sequential()         
 
@@ -167,19 +174,19 @@ isFirst = True
 for i in range(0,len(LAYERS)):
     if isFirst:
         if(h("NN_struct/" + LAYERS[i] + "/value") == "Dense"):
-            log("add Dense layer " + h("NN_struct/" + LAYERS[i] + "/neurons_count/value") + " neurons, input_dim=" + (str)(window_size) + ", activation" + h("NN_struct/" + LAYERS[i] + "/activation/value"))
+            log("add Dense layer " + h("NN_struct/" + LAYERS[i] + "/neurons_count/value") + " neurons, input_dim=" + (str)(window_size) + ", activation: " + h("NN_struct/" + LAYERS[i] + "/activation/value"))
             model.add(Dense((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),input_dim=window_size,activation=h("NN_struct/" + LAYERS[i] + "/activation/value")))
 
         if  h("NN_struct/" + LAYERS[i] + "/value") == "LSTM":
                if(i < len(LAYERS) - 1):
                     # если следующий слой тоже рекуррентный - return_sequens =
                     # True
-                    if(h("NN_struct/layer" + (str)(i + 1) + "/value") == "LSTM"):
+                    if(h("NN_struct/layer" + (str)(i + 2) + "/value") == "LSTM"):
                         log("add LSTM layer " + h("NN_struct/" + LAYERS[i] + "/neurons_count/value") + " neurons, input_shape=( " + (str)(train_X.shape[1]) + ", " + (str)(train_X.shape[2]) + "), return_sequences=True")
                         model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=True, input_shape=(train_X.shape[1], train_X.shape[2])))
                     else:
                             if(LAYERS.index(LAYERS[i]) < len(LAYERS) - 2):
-                                if(h("NN_struct/layer" + (str)(i + 2) + "/value") == "LSTM"):
+                                if(h("NN_struct/layer" + (str)(i + 3) + "/value") == "LSTM"):
                                     log("add LSTM layer " + h("NN_struct/" + LAYERS[i] + "/neurons_count/value") + " neurons, input_shape=( " + (str)(train_X.shape[1]) + ", " + (str)(train_X.shape[2]) + "), return_sequences=True")
                                     model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=True, input_shape=(train_X.shape[1], train_X.shape[2])))
                                 else:
@@ -197,7 +204,7 @@ for i in range(0,len(LAYERS)):
 
     else:
         if(h("NN_struct/" + LAYERS[i] + "/value") == "Dense"):
-            log("add Dense layer " + h("NN_struct/" + LAYERS[i] + "/neurons_count/value") + " neurons, activation" + h("NN_struct/" + LAYERS[i] + "/activation/value"))
+            log("add Dense layer " + h("NN_struct/" + LAYERS[i] + "/neurons_count/value") + " neurons, activation: " + h("NN_struct/" + LAYERS[i] + "/activation/value"))
             model.add(Dense((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),activation=h("NN_struct/" + LAYERS[i] + "/activation/value")))
                                                                   
         if  h("NN_struct/" + LAYERS[i] + "/value") == "LSTM":
@@ -225,17 +232,17 @@ for i in range(0,len(LAYERS)):
             log("add Conv1D layer " + h("NN_struct/" + LAYERS[i] + "/neurons_count/value") + " neurons, kernel_size=" + h("NN_struct/" + LAYERS[i] + "/kernel_size/value") + ", activation - relu")
             model.add(Conv1D((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),(int)(h("NN_struct/" + LAYERS[i] + "/kernel_size/value")),activation='relu'))
 
-    if(h("NN_struct/" + LAYERS[i] + "/value") == "MaxPooling1D"):
-        log("add Conv1D layer " + h("NN_struct/" + LAYERS[i] + "/neurons_count/value") + " neurons, pool_size=" + h("NN_struct/" + LAYERS[i] + "/pool_size/value"))
-        model.add(MaxPooling1D(pool_size=(int)(h("NN_struct/" + LAYERS[i] + "/pool_size/value"))))
+        if(h("NN_struct/" + LAYERS[i] + "/value") == "MaxPooling1D"):
+            log("add Conv1D layer " + h("NN_struct/" + LAYERS[i] + "/neurons_count/value") + " neurons, pool_size=" + h("NN_struct/" + LAYERS[i] + "/pool_size/value"))
+            model.add(MaxPooling1D(pool_size=(int)(h("NN_struct/" + LAYERS[i] + "/pool_size/value"))))
 
-    if(h("NN_struct/" + LAYERS[i] + "/value") == "GlobalAveragePooling1D"):
-        log("add GlobalAveragePooling1D layer")
-        model.add(GlobalAveragePooling1D())
+        if(h("NN_struct/" + LAYERS[i] + "/value") == "GlobalAveragePooling1D"):
+            log("add GlobalAveragePooling1D layer")
+            model.add(GlobalAveragePooling1D())
 
-    if(h("NN_struct/" + LAYERS[i] + "/value") == "Dropout"):
-        log("add Dropout layer, dropout= " + h("NN_struct/" + LAYERS[i] + "/dropout/value"))
-        model.add(Dropout((float)(h("NN_struct/" + LAYERS[i] + "/dropout/value"))))
+        if(h("NN_struct/" + LAYERS[i] + "/value") == "Dropout"):
+            log("add Dropout layer, dropout= " + h("NN_struct/" + LAYERS[i] + "/dropout/value"))
+            model.add(Dropout((float)(h("NN_struct/" + LAYERS[i] + "/dropout/value"))))
 
 
     isFirst = False
@@ -278,13 +285,23 @@ head = head + '(predicted -> )' + allLines[0].split(';')[(int)(h("predicted_colu
 # if head[:-1]==';':
 #     head = head[0:-1]
 predictionsFile.write(head + '\n')
-log("test_X.shape" + (str)(test_X.shape))
-for i in range(0,test_X.shape[0]):
-    line = ''
-    for k in range(0,test_X.shape[2]): 
-        line = line + (str)(test_X[i,window_size - 1,k]) + ';'
-    line = line + (str)(predicted[i,1] - predicted[i,0])
-    predictionsFile.write(line + '\n')
+
+
+if h("NN_struct/layer1/value") == "LSTM":
+    for i in range(0,test_X.shape[0]):
+        line = ''
+        for k in range(0,test_X.shape[2]): 
+            line = line + (str)(test_X[i,window_size - 1,k]) + ';'
+        line = line + (str)(predicted[i,1] - predicted[i,0])
+        predictionsFile.write(line + '\n')
+else:
+    for i in range(0,test_X.shape[0]):
+        line = ''
+        for k in range(0,dataset.shape[1]): 
+            line = line + (str)(dataset[i,k]) + ';'
+        line = line + (str)(predicted[i,0])
+        predictionsFile.write(line + '\n')
+
 predictionsFile.close()
 log("> время создания и записи тестового прогноза  : " + getTime()) 
 log("__________________________________")    

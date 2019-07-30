@@ -1,0 +1,25 @@
+C:\Users\anton\Рабочий стол\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\FlexNN\log.txtC:\Users\anton\Рабочий стол\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\FlexNN\log.txt
+СКРИПТ ОБУЧЕНИЯ FlexNN ЗАПУЩЕН...
+(GPU[0] GeForce MX150, CPU)
+True
+GPU[0] GeForce MX150
+> время загрузки библиотек : 4.641 сек.
+dataset.shape: (6481, 1)
+> время чтения данных  : 1.954 сек.
+train_X.shape(4465, 102)
+train_y.shape(4465, 2)
+add Dense layer 10 neurons, input_dim=102, activation: sigmoid
+add Dropout layer, dropout= 0.1
+add Dense layer 2 neurons, activation: sigmoid
+компиляция НС...
+> время компиляции НС  : 1.188 сек.
+обучение НС...
+> время обучения  НС  : 0.969 сек.
+сохранение модели: C:\Users\anton\Рабочий стол\MAIN\Optimization\FlexNN\FlexNN[0]\weights.h5
+> время сохранения НС  : 0.038 сек.
+создание тестового прогноза
+(1914, 2)
+> время создания и записи тестового прогноза  : 0.130 сек.
+__________________________________
+______________END________________
+{RESPONSE:{response:{value:скрипт FlexNN успешно завершён}}}

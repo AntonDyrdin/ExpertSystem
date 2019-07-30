@@ -19,18 +19,20 @@ namespace Экспертная_система
         public double elite_ratio;
         private MultiParameterVisualizer variablesVisualizer;
         private List<string> variablesNames;
-        private List<int> variablesIDs;
+        private List<int>[] variablesIDs;
         private int Iterarions = 0;
         private Random r;
         private AgentManager agentManager;
         private bool showIndividsParameters = true;
         private bool showOnlyBestIndividsParameters = true;
+        private int architecture_variation_rate;
+
 
         public int screenshotIterationTimer = 5;
         public bool multiThreadTraining = true;
         public int multiThreadTrainingRATE = 4;
-        int test_count = 6;
-        public AlgorithmOptimization(Algorithm algorithm, MainForm form1, int population_value, int mutation_rate, double elite_ratio, int Iterarions)
+        private int test_count = 6;
+        public AlgorithmOptimization(Algorithm algorithm, MainForm form1, int population_value, int mutation_rate, int architecture_variation_rate, double elite_ratio, int Iterarions)
         {
             r = new Random();
             this.Iterarions = Iterarions;
@@ -39,10 +41,13 @@ namespace Экспертная_система
             this.elite_ratio = elite_ratio;
             this.mutation_rate = mutation_rate;
             this.population_value = population_value;
+            this.architecture_variation_rate = architecture_variation_rate;
             variablesVisualizer = new MultiParameterVisualizer(form1.picBox, form1);
             population = new Hyperparameters[population_value];
             variablesNames = new List<string>();
-            variablesIDs = new List<int>();
+            variablesIDs = new List<int>[population_value];
+            for (int i = 0; i < population_value; i++)
+                variablesIDs[i] = new List<int>();
 
             this.agentManager = form1.I.agentManager;
 
@@ -130,19 +135,18 @@ namespace Экспертная_система
                     new_save_folder = form1.pathPrefix + "Optimization\\" + name + "\\" + name + "[" + i.ToString() + "]" + "\\";
                     Algorithm.CopyFiles(population[i], algorithm.h.getValueByName("save_folder"), new_save_folder);
                 }
-                if (showOnlyBestIndividsParameters)
+
+                /*if (showOnlyBestIndividsParameters)
                 {
-                    variablesIDs.Clear();
-                    recurciveVariableAdding(population[0], 0, "0");
+                    recurciveVariableAdding(population[0],0, 0, "0");
                 }
                 else
+                {*/
+                for (int i = 0; i < population_value; i++)
                 {
-                    for (int i = 1; i < population_value; i++)
-                    {
-                        variablesIDs.Clear();
-                        recurciveVariableAdding(population[i], 0, population[i].getValueByName("code"));
-                    }
+                    recurciveVariableAdding(population[i], i, 0, population[i].getValueByName("code"));
                 }
+                // }
             }
             else
             {
@@ -157,6 +161,9 @@ namespace Экспертная_система
                     mutation();
                 }
 
+                for (int i = 0; i < architecture_variation_rate; i++)
+                    variateArchitecture();
+
                 if (form1.test_count != 0)
                     test_count = form1.test_count;
                 //   ВВЕДЕНО МНОГОКРАТНОЕ ТЕСТИРОВНИЕ ИНДИВИДОВ ВСЕХ КАТЕГОРИЙ ДЛЯ ПОВЫШЕНИЯ ПОВТОРЯЕМОСТИ РЕЗУЛЬТАТОВ
@@ -168,9 +175,6 @@ namespace Экспертная_система
                 if (agentManager.agents.Count == 0)
                 {
                     //  for (int i = Convert.ToInt16(Math.Round(population_value * elite_ratio)); i < population_value; i++)
-
-
-
 
                     for (int tc = 0; tc < test_count; tc++)
                     {
@@ -283,6 +287,7 @@ namespace Экспертная_система
                 string temp;
                 string tempFolder = form1.pathPrefix + "Optimization\\" + algorithm.name + "\\temp";
 
+                List<int> tempVariableIDs;
                 for (int i = 0; i < population_value - 1; i++)
                 {
                     for (int j = i + 1; j < population_value; j++)
@@ -300,12 +305,17 @@ namespace Экспертная_система
                             population[i] = new Hyperparameters(population[j].toJSON(0), form1);
                             population[j] = new Hyperparameters(temp, form1);
 
+                            tempVariableIDs = variablesIDs[i];
+                            variablesIDs[i] = variablesIDs[j];
+                            variablesIDs[j] = tempVariableIDs;
+
                             /* Algorithm.MoveFiles(population[j], path_to_i, tempFolder);
                              Algorithm.MoveFiles(population[i], path_to_j, path_to_i);
                              Algorithm.MoveFiles(population[j], tempFolder, path_to_j);*/
                         }
                     }
                 }
+
                 for (int i = 0; i < population_value; i++)
                 {
                     string newPath = form1.pathPrefix + "Optimization\\" + algorithm.name + "\\" + algorithm.name + "[" + i.ToString() + "]";
@@ -352,10 +362,182 @@ namespace Экспертная_система
             variablesVisualizer.refresh();
         }
 
+        private string[] layerTypes = new string[]
+    {
+            "Dense",
+            "LSTM",
+            "Conv1D",
+            "Dropout"
+    };
+        internal void variateArchitecture()
+        {
+            bool isInvalidArchitecure = false;
+            //удаление или добавление
+            bool deleteTrueInsertFalse;
+
+            int deleteOrInsert = r.Next(0, 2);
+            if (deleteOrInsert == 0)
+                deleteTrueInsertFalse = true;
+            else
+                deleteTrueInsertFalse = false;
+
+            int individIndex = r.Next(Convert.ToInt16(Math.Round(population_value * elite_ratio)), population_value);
+
+        tryToVariateArchitectureAgain:
+
+            var NNstructNode = population[individIndex].getNodeByName("NN_struct")[0];
+            //список слоёв
+            var layerNodes = population[individIndex].getNodesByparentID(NNstructNode.ID);
+
+            if (deleteTrueInsertFalse & layerNodes.Count > 1)
+            {
+                //выбор слоя, который будет удалён
+                int layerNode_X_Index = r.Next(0, layerNodes.Count - 1);
+                Node layerNode_X = layerNodes[layerNode_X_Index];
+
+                //удаление слоя
+                population[individIndex].deleteBranch(layerNode_X.ID);
+
+                for (int i = 0; i < layerNodes.Count - layerNode_X_Index - 1; i++)
+                {
+                    //уменьшение номера слоя на единицу
+                    population[individIndex].getNodeByName("layer" + (layerNode_X_Index + i + 2).ToString())[0].setAttribute("name", "layer" + (layerNode_X_Index + i + 1).ToString());
+                }
+
+                //исключение дублирования слоя дропаута
+                if (layerNode_X.getAttributeValue("name") == "Dropout")
+                {
+                    layerNodes = population[individIndex].getNodesByparentID(NNstructNode.ID);
+
+                    string lastLayerType = "";
+                    for (int i = 0; i < layerNodes.Count; i++)
+                    {
+                        if (layerNodes[i].getAttributeValue("name") == "Dropout" & lastLayerType == "Dropout")
+                        {
+                            //удаление второго слоя дропаут
+                            population[individIndex].deleteBranch(layerNodes[i].ID);
+                            for (int k = 0; k < layerNodes.Count - i - 1; k++)
+                            {
+                                //уменьшение номера слоя на единицу
+                                population[individIndex].getNodeByName("layer" + (i + k + 2).ToString())[0].setAttribute("name", "layer" + (i + k + 1).ToString());
+                            }
+                            break;
+                        }
+
+                        lastLayerType = layerNodes[i].getAttributeValue("name");
+                    }
+                }
+            }
+            else
+            {
+
+
+                //добавление слоя
+                //позиция вставки: 0 - перед первым слоем,layerNodes.Count-1 - перед последним  
+                int insertPosition = r.Next(0, layerNodes.Count - 1);
+
+                string newLayerType = layerTypes[r.Next(0, layerTypes.Length)];
+
+                // временно отсекаемые слои, которые идут после позиции вставки, и у которых далее будут заменены индексы
+                string[] surgeryLayersInJSON = new string[layerNodes.Count - insertPosition];
+
+                for (int i = 0; i < surgeryLayersInJSON.Length; i++)
+                    surgeryLayersInJSON[i] = population[individIndex].toJSON(layerNodes[insertPosition + i].ID);
+
+                for (int i = surgeryLayersInJSON.Length - 1; i >= 0; i--)
+                    population[individIndex].deleteBranch(layerNodes[insertPosition + i].ID);
+
+                // id нового слоя
+                int newLayerNodeID;
+
+                if (newLayerType == "Dense")
+                {
+                    newLayerNodeID = population[individIndex].addByParentId(NNstructNode.ID, "name:layer" + (insertPosition + 1).ToString() + ",value:Dense");
+                    population[individIndex].addVariable(newLayerNodeID, "neurons_count", 2, 10, 1, 9);
+                    population[individIndex].addVariable(newLayerNodeID, "activation", "sigmoid", "sigmoid,linear");
+                    isInvalidArchitecure = false;
+                }
+                if (newLayerType == "LSTM")
+                {
+                    for (int i = 0; i < insertPosition; i++)
+                    {
+                        if (layerNodes[i].getValue() == "Dense")
+                        {
+                            // ошибка размерности входов
+                            isInvalidArchitecure = true;
+                            goto invalidArchitecure;
+                        }
+                    }
+                    newLayerNodeID = population[individIndex].addByParentId(NNstructNode.ID, "name:layer" + (insertPosition + 1).ToString() + ",value:LSTM");
+                    population[individIndex].addVariable(newLayerNodeID, "neurons_count", 2, 10, 1, 9);
+                    population[individIndex].addVariable(newLayerNodeID, "activation", "sigmoid", "sigmoid,linear");
+                    isInvalidArchitecure = false;
+                }
+                if (newLayerType == "Conv1D")
+                {
+                    isInvalidArchitecure = true;
+                    goto invalidArchitecure;
+
+                    // РАЗОБРАТЬСЯ В РАБОТЕ СВЁРТОЧНЫХ 1D СЕТЕЙ
+
+                    //  newLayerNodeID = population[individIndex].addByParentId(NNstructNode.ID, "name:layer" + (insertPosition + 1).ToString() + ",value:Conv1D");
+                    //  population[individIndex].addVariable(newLayerNodeID, "neurons_count:" );
+                    // population[individIndex].addVariable(newLayerNodeID, "kernel_size:3");
+                }
+                if (newLayerType == "Dropout")
+                {
+                    if (insertPosition == 0 || layerNodes[insertPosition + 1].getValue() == "Dropout")
+                    {
+                        //дропаут - первый слой или два дропаута подряд
+                        isInvalidArchitecure = true;
+                        goto invalidArchitecure;
+                    }
+                    else
+                    {
+                        if (layerNodes[insertPosition - 1].getValue() == "Dropout")
+                        {
+                            // два дропаута подряд
+                            isInvalidArchitecure = true;
+                            goto invalidArchitecure;
+                        }
+                    }
+                    newLayerNodeID = population[individIndex].addByParentId(NNstructNode.ID, "name:layer" + (insertPosition + 1).ToString() + ",value:Dropout");
+                    population[individIndex].addVariable(newLayerNodeID, "dropout", 0.01, 0.8, 0.01, 0.1);
+                    isInvalidArchitecure = false;
+                }
+            invalidArchitecure:
+                if (isInvalidArchitecure)
+                    insertPosition--;
+                //возврат отсечённых слоёв
+                for (int i = 0; i < surgeryLayersInJSON.Length; i++)
+                {
+                    //увеличение номера слоя на единицу
+                    Hyperparameters layer = new Hyperparameters(surgeryLayersInJSON[i], form1);
+                    string oldName = layer.nodes[0].getAttributeValue("name");
+                    layer.nodes[0].setAttribute("name", "layer" + (insertPosition + i + 2).ToString());
+
+                    population[individIndex].addBranch(layer, "layer" + (insertPosition + i + 2).ToString(), NNstructNode.ID);
+                }
+                if (isInvalidArchitecure)
+                    goto tryToVariateArchitectureAgain;
+            }
+            // перезапись списка переменных
+            variablesNames.Clear();
+            for (int i = 0; i < population_value; i++)
+                variablesIDs[i].Clear();
+
+            for (int i = 0; i < population_value; i++)
+            {
+                recurciveVariableAdding(population[i], i, 0, population[i].getValueByName("code"));
+            }
+            // GC.Collect();
+        }
+
         private void mutation()
         {
-            int variableIndex = variablesIDs[r.Next(0, variablesIDs.Count)];
+
             int individIndex = r.Next(Convert.ToInt16(Math.Round(population_value * elite_ratio)), population_value);
+            int variableIndex = variablesIDs[individIndex][r.Next(0, variablesIDs[individIndex].Count)];
             if (population[individIndex].nodes[variableIndex].getAttributeValue("variable") == "categorical")
             {
                 int categoryIndex = r.Next(0, population[individIndex].nodes[variableIndex].getAttributeValue("categories").Split(',').Length);
@@ -395,7 +577,7 @@ namespace Экспертная_система
                 {
                     for (int j = 0; j < Convert.ToInt16((Math.Round(population_value * elite_ratio))) - 1; j++)
                     {
-                        population[inc] = get_child(population[j], population[j + 1], population[inc]);
+                        population[inc] = get_child(population[j], population[j + 1], population[inc], inc);
                         //    log("SET Child: population[" + inc.ToString() + "] " + '\n' + population[inc].prediction_Algorithms[0].get_Hyperparameters().ToString(), Color.LightCyan);
                         inc++;
                         if (inc == population_value)
@@ -409,11 +591,68 @@ namespace Экспертная_система
             }
         }
 
-        private Hyperparameters get_child(Hyperparameters parent1, Hyperparameters parent2, Hyperparameters old)
+        private Hyperparameters get_child(Hyperparameters parent1, Hyperparameters parent2, Hyperparameters old, int indexOld)
+        {
+            Hyperparameters child = old.Clone();
+
+            int parent_of_architechture = r.Next(0, 2);
+
+            child.deleteBranch(child.getNodeByName("NN_struct")[0].ID);
+
+            if (parent_of_architechture == 0)
+            {
+                child.addBranch(new Hyperparameters(parent1.toJSON(parent1.getNodeByName("NN_struct")[0].ID), form1), "NN_struct", 0);
+            }
+            else
+            {
+                child.addBranch(new Hyperparameters(parent2.toJSON(parent2.getNodeByName("NN_struct")[0].ID), form1), "NN_struct", 0);
+            }
+
+            //      При переходе на вариативную архитектуру встала проблема несовместимости параметров родителей.
+            //  До тех пор, пока не найдено решение по совмещению параметров разных архитектур,
+            //  перекомбинация параметров архитектуры отключена!
+            string path = child.getValueByName("json_file_path");
+            child.Save(path);
+
+
+            foreach (int variableID in variablesIDs[indexOld])
+            {
+                //родитель гена выбирается случайно
+                int parent_of_gene = r.Next(0, 2);
+
+                // если имена параметров совпадают - производится перекомбинация
+                // возможны ошибки при одинаковых именах параметров в разных местах одной архитектуры
+
+                if (parent_of_gene == 0)
+                {
+                    if (child.nodes.Count > variableID & parent1.nodes.Count > variableID)
+                        if (child.nodes[variableID].getAttributeValue("name") == parent1.nodes[variableID].getAttributeValue("name"))
+                        {
+                            child.nodes[variableID].setAttribute("value", parent1.nodes[variableID].getValue());
+                        }
+                }
+                else
+                {
+                    if (child.nodes.Count > variableID & parent2.nodes.Count > variableID)
+                        if (child.nodes[variableID].getAttributeValue("name") == parent2.nodes[variableID].getAttributeValue("name"))
+                        {
+                            child.nodes[variableID].setAttribute("value", parent2.nodes[variableID].getValue());
+                        }
+                }
+
+            }
+            // string path = child.getValueByName("json_file_path");
+            child.Save(path);
+            return child;
+        }
+
+        // метод перекомбинации параметров индивидов без вариативности архитектуры
+        // перед использованием необходимо сформировать списки идентификаторов переменных
+        private Hyperparameters get_child_OLD(Hyperparameters parent1, Hyperparameters parent2, Hyperparameters old, int indexOld)
         {
             Hyperparameters child = new Hyperparameters(old.toJSON(0), form1);
 
-            foreach (int variableID in variablesIDs)
+            foreach (int variableID in variablesIDs[indexOld])
             {
 
                 //родитель гена выбирается случайно
@@ -435,7 +674,7 @@ namespace Экспертная_система
             log("OPTIMIZATION STARTED", Color.Cyan);
         }
 
-        private void recurciveVariableAdding(Hyperparameters h, int ID, string modelName)
+        private void recurciveVariableAdding(Hyperparameters h, int index, int ID, string modelName)
         {
             List<Node> branches = h.getNodesByparentID(ID);
             var asdad = branches;
@@ -447,24 +686,24 @@ namespace Экспертная_система
                     if (showIndividsParameters)
                     {
                         if (h.getNodeById(ID).getAttributeValue("variable") == "numerical")
-                            variablesVisualizer.addParameter(modelName + " " + h.getNodeById(ID).name() + " id=" + ID.ToString(), Color.Cyan, 200);
+                            //    variablesVisualizer.addParameter(modelName + " " + h.getNodeById(ID).name() + " id=" + ID.ToString(), Color.Cyan, 200);
 
-                        if (h.getNodeById(ID).getAttributeValue("variable") == "categorical")
-                        {
-                            variablesVisualizer.addParameter(modelName + " " + h.getNodeById(ID).name() + " id=" + ID.ToString(), Color.Black, 40);
-                            variablesVisualizer.parameters[variablesVisualizer.parameters.Count - 1].mainFontDepth = 12;
-                        }
+                            if (h.getNodeById(ID).getAttributeValue("variable") == "categorical")
+                            {
+                                //  variablesVisualizer.addParameter(modelName + " " + h.getNodeById(ID).name() + " id=" + ID.ToString(), Color.Black, 40);
+                                //variablesVisualizer.parameters[variablesVisualizer.parameters.Count - 1].mainFontDepth = 12;
+                            }
                     }
 
                     variablesNames.Add(modelName + " " + h.getNodeById(ID).name() + " id=" + ID.ToString());
-                    variablesIDs.Add(ID);
+                    variablesIDs[index].Add(ID);
                 }
             }
             else
             {
                 for (int i = 0; i < branches.Count; i++)
                 {
-                    recurciveVariableAdding(h, branches[i].ID, modelName);
+                    recurciveVariableAdding(h, index, branches[i].ID, modelName);
                 }
             }
         }
@@ -475,7 +714,7 @@ namespace Экспертная_система
             {
                 if (showOnlyBestIndividsParameters)
                 {
-                    foreach (int variableID in variablesIDs)
+                    foreach (int variableID in variablesIDs[0])
                     {
                         string variableName = "0 " + population[0].getNodeById(variableID).name() + " id=" + variableID.ToString();
                         string value = population[0].nodes[variableID].getValue().Replace('.', ',');
@@ -484,11 +723,11 @@ namespace Экспертная_система
                 }
                 else
                 {
-                    foreach (Hyperparameters individ in population)
-                        foreach (int variableID in variablesIDs)
+                    for (int i = 0; i < population_value; i++)
+                        foreach (int variableID in variablesIDs[i])
                         {
-                            string variableName = individ.getValueByName("code") + " " + individ.getNodeById(variableID).name() + " id=" + variableID.ToString();
-                            string value = individ.nodes[variableID].getValue().Replace('.', ',');
+                            string variableName = population[i].getValueByName("code") + " " + population[i].getNodeById(variableID).name() + " id=" + variableID.ToString();
+                            string value = population[i].nodes[variableID].getValue().Replace('.', ',');
                             variablesVisualizer.addPoint(value, variableName);
                         }
                 }
@@ -509,5 +748,7 @@ namespace Экспертная_система
         {
             form1.log(s);
         }
+
     }
+
 }
