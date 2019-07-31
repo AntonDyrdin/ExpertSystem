@@ -87,6 +87,12 @@ namespace Экспертная_система
         private int inc = 0;
         private void optimization()
         {
+            form1.Invoke(new Action(() =>
+            {
+                OptimizationView AOV = new OptimizationView(this);
+                AOV.Show();
+            }));
+
             while (opt_inc < Iterarions)
             {
                 var now = new DateTimeOffset(DateTime.Now);
@@ -116,6 +122,8 @@ namespace Экспертная_система
         }
         public void iteration_of_optimization()
         {
+
+
             if (opt_inc == 1)
             {
                 string new_save_folder = form1.pathPrefix + "Optimization\\" + name + "\\" + name + "[0]" + "\\";
@@ -153,6 +161,7 @@ namespace Экспертная_система
                 //kill and concieve
                 kill_and_conceive();
 
+                rewriteVariableIDs();
                 //mutation
                 if (form1.mutationRate != 0)
                     mutation_rate = form1.mutationRate;
@@ -163,6 +172,8 @@ namespace Экспертная_система
 
                 for (int i = 0; i < architecture_variation_rate; i++)
                     variateArchitecture();
+
+                rewriteVariableIDs();
 
                 if (form1.test_count != 0)
                     test_count = form1.test_count;
@@ -208,6 +219,8 @@ namespace Экспертная_система
                                     Algorithm alg = Algorithm.newInstance(algorithm);
                                     alg.h = population[i].Clone();
                                     algorithms.Add(alg);
+
+                                    population[i].setValueByName("state", "обучение..");
                                 }
 
                                 Task[] trainTasks = new Task[end - begin];
@@ -224,6 +237,7 @@ namespace Экспертная_система
                                 {
                                     population[i] = algorithms[i - begin].h.Clone();
                                     target_functions[i, tc] = Convert.ToDouble(population[i].getValueByName("accuracy").Replace('.', ','));
+
                                 }
                                 log((end).ToString() + '/' + population_value.ToString() + " training comlete" + TimeSpan.FromSeconds((new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds()) - start1).ToString(), Color.LimeGreen);
                             }
@@ -238,7 +252,12 @@ namespace Экспертная_система
                                 target_functions[i, tc] = Convert.ToDouble(population[i].getValueByName("accuracy").Replace('.', ','));
                             }
                         }
+                        for (int i = 0; i < population_value; i++)
+                        {
+                            population[i].setValueByName("state", (tc + 1).ToString() + '/' + test_count.ToString() + " " + population[i].getValueByName("state"));
+                        }
                         log((tc + 1).ToString() + '/' + test_count.ToString() + " test comlete" + TimeSpan.FromSeconds((new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds()) - start2).ToString(), Color.LimeGreen);
+
                     }
 
                     //вычисление итоговых значений критерия оптимальности
@@ -533,6 +552,19 @@ namespace Экспертная_система
             // GC.Collect();
         }
 
+        private void rewriteVariableIDs()
+        {
+            // перезапись списка переменных
+            variablesNames.Clear();
+            for (int i = 0; i < population_value; i++)
+                variablesIDs[i].Clear();
+
+            for (int i = 0; i < population_value; i++)
+            {
+                recurciveVariableAdding(population[i], i, 0, population[i].getValueByName("code"));
+            }
+        }
+
         private void mutation()
         {
 
@@ -643,6 +675,8 @@ namespace Экспертная_система
             }
             // string path = child.getValueByName("json_file_path");
             child.Save(path);
+
+            child.setValueByName("state", "создан из " + parent1.getValueByName("model_name") + " code: " + parent1.getValueByName("code") + " и " + parent2.getValueByName("model_name") + " code: " + parent2.getValueByName("code"));
             return child;
         }
 

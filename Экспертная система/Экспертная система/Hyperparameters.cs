@@ -337,7 +337,7 @@ namespace Экспертная_система
         }
 
 
-        public void draw(int rootId, PictureBox target_pictureBox, MainForm form1, int fontDepth, int columnWidth)
+        public void draw(int rootId, PictureBox target_pictureBox, int fontDepth, int columnWidth)
         {
             bool isFirstTime = true;
         drawHyperparametersAgain:
@@ -348,7 +348,7 @@ namespace Экспертная_система
             currentH = 0;
             mainDepth = Convert.ToInt16(h * 0.4);
             this.columnWidth = columnWidth;
-            this.form1 = form1;
+           // this.form1 = form1;
             incGetNodeByID = 0;
             totalAttributesNumber = recurciveAttributeCountSearch(rootId);
             picBox = target_pictureBox;

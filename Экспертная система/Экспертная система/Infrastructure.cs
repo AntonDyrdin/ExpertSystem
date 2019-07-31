@@ -105,6 +105,7 @@ namespace Экспертная_система
                     if (mode == "Оптимизация алгоритма")
                     {
                         form1.mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { form1.algorithmOptimization(); });
+
                     }
                     if (mode == "Тестирование эксперта")
                     {
@@ -138,6 +139,8 @@ namespace Экспертная_система
             form1.TrackBar2_Scroll(null, null);
             form1.TrackBar3_Scroll(null, null);
             form1.TrackBar4_Scroll(null, null);
+
+
         }
         public void showModeSelector()
         {

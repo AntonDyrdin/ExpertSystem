@@ -63,6 +63,12 @@
     <Compile Include="ModeSelector.Designer.cs">
       <DependentUpon>ModeSelector.cs</DependentUpon>
     </Compile>
+    <Compile Include="PicBoxOnPanel.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PicBoxOnPanel.Designer.cs">
+      <DependentUpon>PicBoxOnPanel.cs</DependentUpon>
+    </Compile>
     <Compile Include="Алгоритмы прогнозирования\CNN_1\CNN_1.cs" />
     <Compile Include="DecisionMakingSystem.cs" />
     <Compile Include="Expert.cs" />
@@ -78,6 +84,12 @@
     <Compile Include="Infrastructure.cs" />
     <Compile Include="Алгоритмы прогнозирования\ANN_1\ANN 1.cs" />
     <Compile Include="Алгоритмы прогнозирования\FlexNN\FlexNN.cs" />
+    <Compile Include="OptimizationView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="OptimizationView.Designer.cs">
+      <DependentUpon>OptimizationView.cs</DependentUpon>
+    </Compile>
     <Compile Include="Алгоритмы прогнозирования\LSTM_1\LSTM 1.cs" />
     <Compile Include="Алгоритмы прогнозирования\LSTM_2\ExecutionProcess.cs">
       <SubType>Form</SubType>
@@ -99,6 +111,9 @@
     <EmbeddedResource Include="ModeSelector.resx">
       <DependentUpon>ModeSelector.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="PicBoxOnPanel.resx">
+      <DependentUpon>PicBoxOnPanel.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -108,6 +123,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="OptimizationView.resx">
+      <DependentUpon>OptimizationView.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Алгоритмы прогнозирования\LSTM_2\ExecutionProcess.resx">
       <DependentUpon>ExecutionProcess.cs</DependentUpon>
     </EmbeddedResource>

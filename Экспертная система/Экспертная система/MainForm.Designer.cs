@@ -86,7 +86,7 @@
             this.picBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.picBox.InitialImage = null;
             this.picBox.Location = new System.Drawing.Point(4, 4);
-            this.picBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.picBox.Margin = new System.Windows.Forms.Padding(4);
             this.picBox.Name = "picBox";
             this.picBox.Size = new System.Drawing.Size(1982, 1535);
             this.picBox.TabIndex = 37;
@@ -120,7 +120,7 @@
             this.checkBox1.BackColor = System.Drawing.Color.Transparent;
             this.checkBox1.ForeColor = System.Drawing.Color.White;
             this.checkBox1.Location = new System.Drawing.Point(2146, 18);
-            this.checkBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.checkBox1.Margin = new System.Windows.Forms.Padding(4);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(104, 24);
             this.checkBox1.TabIndex = 38;
@@ -133,7 +133,7 @@
             this.buttonHyperparameters.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonHyperparameters.ForeColor = System.Drawing.Color.Aqua;
             this.buttonHyperparameters.Location = new System.Drawing.Point(2271, -2);
-            this.buttonHyperparameters.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.buttonHyperparameters.Margin = new System.Windows.Forms.Padding(4);
             this.buttonHyperparameters.Name = "buttonHyperparameters";
             this.buttonHyperparameters.Size = new System.Drawing.Size(120, 60);
             this.buttonHyperparameters.TabIndex = 39;
@@ -146,7 +146,7 @@
             this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button2.ForeColor = System.Drawing.Color.Magenta;
             this.button2.Location = new System.Drawing.Point(2400, -2);
-            this.button2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button2.Margin = new System.Windows.Forms.Padding(4);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(120, 60);
             this.button2.TabIndex = 40;
@@ -159,7 +159,7 @@
             this.button3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button3.ForeColor = System.Drawing.Color.Yellow;
             this.button3.Location = new System.Drawing.Point(2529, -2);
-            this.button3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button3.Margin = new System.Windows.Forms.Padding(4);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(120, 60);
             this.button3.TabIndex = 41;
@@ -172,7 +172,7 @@
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button1.ForeColor = System.Drawing.Color.Red;
             this.button1.Location = new System.Drawing.Point(2658, -2);
-            this.button1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button1.Margin = new System.Windows.Forms.Padding(4);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(120, 60);
             this.button1.TabIndex = 42;
@@ -183,7 +183,7 @@
             // trackBar2
             // 
             this.trackBar2.Location = new System.Drawing.Point(2175, 159);
-            this.trackBar2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.trackBar2.Margin = new System.Windows.Forms.Padding(4);
             this.trackBar2.Minimum = 1;
             this.trackBar2.Name = "trackBar2";
             this.trackBar2.Size = new System.Drawing.Size(603, 69);
@@ -230,7 +230,7 @@
             // trackBar3
             // 
             this.trackBar3.Location = new System.Drawing.Point(2175, 207);
-            this.trackBar3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.trackBar3.Margin = new System.Windows.Forms.Padding(4);
             this.trackBar3.Maximum = 100;
             this.trackBar3.Minimum = 5;
             this.trackBar3.Name = "trackBar3";
@@ -295,7 +295,7 @@
             this.logBox.Font = new System.Drawing.Font("Century Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.logBox.ForeColor = System.Drawing.Color.White;
             this.logBox.Location = new System.Drawing.Point(2002, 682);
-            this.logBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.logBox.Margin = new System.Windows.Forms.Padding(4);
             this.logBox.Name = "logBox";
             this.logBox.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
             this.logBox.Size = new System.Drawing.Size(822, 861);
@@ -344,7 +344,7 @@
             // 
             this.draw_window.BackColor = System.Drawing.Color.Black;
             this.draw_window.Location = new System.Drawing.Point(128, 28);
-            this.draw_window.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.draw_window.Margin = new System.Windows.Forms.Padding(4);
             this.draw_window.Maximum = 10000;
             this.draw_window.Minimum = 1;
             this.draw_window.Name = "draw_window";
@@ -377,9 +377,9 @@
             this.groupBox1.Controls.Add(this.label8);
             this.groupBox1.ForeColor = System.Drawing.Color.White;
             this.groupBox1.Location = new System.Drawing.Point(2002, 327);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(4);
             this.groupBox1.Size = new System.Drawing.Size(822, 346);
             this.groupBox1.TabIndex = 58;
             this.groupBox1.TabStop = false;
@@ -388,7 +388,7 @@
             // textBox3
             // 
             this.textBox3.Location = new System.Drawing.Point(740, 258);
-            this.textBox3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.textBox3.Margin = new System.Windows.Forms.Padding(4);
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(72, 26);
             this.textBox3.TabIndex = 72;
@@ -397,7 +397,7 @@
             // 
             this.trackBar7.BackColor = System.Drawing.Color.Black;
             this.trackBar7.Location = new System.Drawing.Point(128, 258);
-            this.trackBar7.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.trackBar7.Margin = new System.Windows.Forms.Padding(4);
             this.trackBar7.Maximum = 10000;
             this.trackBar7.Minimum = 1;
             this.trackBar7.Name = "trackBar7";
@@ -445,7 +445,7 @@
             // textBox2
             // 
             this.textBox2.Location = new System.Drawing.Point(740, 182);
-            this.textBox2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.textBox2.Margin = new System.Windows.Forms.Padding(4);
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(72, 26);
             this.textBox2.TabIndex = 67;
@@ -453,7 +453,7 @@
             // textBox1
             // 
             this.textBox1.Location = new System.Drawing.Point(740, 105);
-            this.textBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.textBox1.Margin = new System.Windows.Forms.Padding(4);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(72, 26);
             this.textBox1.TabIndex = 66;
@@ -462,7 +462,7 @@
             // 
             this.trackBar6.BackColor = System.Drawing.Color.Black;
             this.trackBar6.Location = new System.Drawing.Point(128, 182);
-            this.trackBar6.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.trackBar6.Margin = new System.Windows.Forms.Padding(4);
             this.trackBar6.Maximum = 1000;
             this.trackBar6.Minimum = 1;
             this.trackBar6.Name = "trackBar6";
@@ -511,7 +511,7 @@
             // 
             this.trackBar5.BackColor = System.Drawing.Color.Black;
             this.trackBar5.Location = new System.Drawing.Point(128, 105);
-            this.trackBar5.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.trackBar5.Margin = new System.Windows.Forms.Padding(4);
             this.trackBar5.Maximum = 1000;
             this.trackBar5.Minimum = 1;
             this.trackBar5.Name = "trackBar5";
@@ -563,7 +563,7 @@
             this.BackColor = System.Drawing.Color.Black;
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.ClientSize = new System.Drawing.Size(2509, 1325);
+            this.ClientSize = new System.Drawing.Size(1924, 1050);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.logBox);
             this.Controls.Add(this.label6);
@@ -584,7 +584,7 @@
             this.Controls.Add(this.panel1);
             this.DoubleBuffered = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Экспертная система";

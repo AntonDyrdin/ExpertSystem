@@ -24,7 +24,7 @@ namespace Экспертная_система
             this.modelName = modelName;
             h = new Hyperparameters(form1, modelName);
             h.add("model_name", modelName);
-
+            h.add("state", "created");
             this.form1 = form1;
         }
         public static Algorithm newInstance(Algorithm algorithm)
@@ -223,6 +223,8 @@ namespace Экспертная_система
 
         public async Task train()
         {
+            h.setValueByName("state", "обучение..");
+
             if (h.getValueByName("input_file") == null)
             {
                 log("файл датасета не задан");
@@ -236,10 +238,11 @@ namespace Экспертная_система
             {
                 response = response.Substring(response.IndexOf('{'));
                 Hyperparameters responseH = new Hyperparameters(response, form1);
-                var avg = responseH.getValueByName("AVG");
-                if (avg != null)
-                    h.setValueByName("AVG", avg);
+             //   var avg = responseH.getValueByName("AVG");
+             //   if (avg != null)
+             //       h.setValueByName("AVG", avg);
 
+                h.setValueByName("state", "обучение завершено");
                 log(responseH.getValueByName("response"));
             }
             catch
@@ -249,6 +252,8 @@ namespace Экспертная_система
                 h.setValueByName("AVG", "-1");
                 h.setValueByName("accuracy", "0");
                 h.setValueByName("stdDev", "0");
+
+                h.setValueByName("state", "ошибка при обучении");
             }
 
 
@@ -267,6 +272,7 @@ namespace Экспертная_система
             else
             {
                 log("Не удалось прочитать файл с тестовым прогнозом",Color.Red);
+                h.setValueByName("state", "Не удалось прочитать файл с тестовым прогнозом");
             }
             // return "обучение алгоритма " + name + "заверешно.";
         }

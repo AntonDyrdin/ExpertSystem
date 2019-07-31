@@ -24,7 +24,7 @@ namespace Экспертная_система
         public string sourceDataFile;
         public System.Threading.Tasks.Task mainTask;
         public System.Threading.Thread mainThread;
-        private AlgorithmOptimization AO;
+        internal AlgorithmOptimization AO;
         private Algorithm algorithm;
         private ExpertOptimization optimization;
         private int Nl = 0;
@@ -67,7 +67,7 @@ namespace Экспертная_система
 
             AO = new AlgorithmOptimization(algorithm, this, 4, 10, 5, 0.5, 100);
             AO.run();
-            algorithm.h.draw(0, picBox, this, 15, 150);
+            algorithm.h.draw(0, picBox, 15, 150);
             // algorithm.Save();
         }
         public void expertOptimization()
@@ -446,7 +446,7 @@ namespace Экспертная_система
             expert.copyExpertParametersToAlgorithms();
             expert.copyHyperparametersFromAlgorithmsToExpert();
             expert.test(new DateTime(2017, 8, 1), new DateTime(2017, 9, 30), sourceDataFile);
-            expert.H.draw(0, picBox, this, 15, 150);
+            expert.H.draw(0, picBox, 15, 150);
             expert.Save();
         }
         public void buildAndTrain()
@@ -482,7 +482,7 @@ namespace Экспертная_система
             expert.trainAllAlgorithms(false);
             expert.copyExpertParametersToAlgorithms();
             expert.copyHyperparametersFromAlgorithmsToExpert();
-            expert.H.draw(0, picBox, this, 15, 150);
+            expert.H.draw(0, picBox, 15, 150);
             expert.Save();
         }
         private void Hyperparameters_Click(object sender, EventArgs e)
@@ -493,7 +493,7 @@ namespace Экспертная_система
                 expert.H.draw(0, picBox, this, 25, 150);
             */
             if (AO != null)
-                AO.A.draw(0, picBox, this, 25, 150);
+                AO.A.draw(0, picBox, 25, 150);
             /* if (algorithm != null)
                  algorithm.h.draw(0, picBox, this, 25, 150);*/
         }
