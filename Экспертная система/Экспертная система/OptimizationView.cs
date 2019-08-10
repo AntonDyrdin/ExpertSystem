@@ -35,6 +35,7 @@ namespace Экспертная_система
                     AO.population[i].getValueByName("model_name"),
                     AO.population[i].getValueByName("code"),
                     AO.population[i].getValueByName("state"),
+                    AO.population[i].getValueByName("parents"),
                     AO.population[i].getValueByName("target_function")
                      });
                 }

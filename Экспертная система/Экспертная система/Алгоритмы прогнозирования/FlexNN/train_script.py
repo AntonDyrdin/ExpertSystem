@@ -24,7 +24,7 @@ except:
 def log(s):
     try:
         logFile = open(logPath,"a")
-        logFile.write((str)(s)+'\n')
+        logFile.write((str)(s) + '\n')
         logFile.close()
         print(s)
     except:
@@ -55,11 +55,7 @@ log(C.use_default_device())
 import numpy
 import json
 from keras.models import Sequential
-from keras.layers import Dense
-from keras.layers import LSTM
-from keras.layers import Dropout
-from keras.layers import Embedding
-from keras.layers import Conv1D, GlobalAveragePooling1D, MaxPooling1D
+from keras.layers import Dense, LSTM, Dropout, Conv1D, GlobalAveragePooling1D, MaxPooling1D, Flatten
 #####################################################################
 log("> время загрузки библиотек : " + getTime())  
 
@@ -110,7 +106,7 @@ split_point = (float)(h("split_point/value"))
 
 # если первый слой рекуррентный, то построть трёхмерный тензор - иначе плоскую
 # матрицу
-if h("NN_struct/layer1/value") == "LSTM":
+if (h("NN_struct/layer1/value") == "LSTM") | (h("NN_struct/layer1/value") == "Conv1D"):
 
     Dataset_X = numpy.zeros((dataset.shape[0] - window_size, window_size,dataset.shape[1]), dtype=numpy.float32)
     # выходной вектор состоит из двух значений
@@ -233,7 +229,7 @@ for i in range(0,len(LAYERS)):
             model.add(Conv1D((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),(int)(h("NN_struct/" + LAYERS[i] + "/kernel_size/value")),activation='relu'))
 
         if(h("NN_struct/" + LAYERS[i] + "/value") == "MaxPooling1D"):
-            log("add Conv1D layer " + h("NN_struct/" + LAYERS[i] + "/neurons_count/value") + " neurons, pool_size=" + h("NN_struct/" + LAYERS[i] + "/pool_size/value"))
+            log("add MaxPooling1D layer, pool_size=" + h("NN_struct/" + LAYERS[i] + "/pool_size/value"))
             model.add(MaxPooling1D(pool_size=(int)(h("NN_struct/" + LAYERS[i] + "/pool_size/value"))))
 
         if(h("NN_struct/" + LAYERS[i] + "/value") == "GlobalAveragePooling1D"):
@@ -243,6 +239,10 @@ for i in range(0,len(LAYERS)):
         if(h("NN_struct/" + LAYERS[i] + "/value") == "Dropout"):
             log("add Dropout layer, dropout= " + h("NN_struct/" + LAYERS[i] + "/dropout/value"))
             model.add(Dropout((float)(h("NN_struct/" + LAYERS[i] + "/dropout/value"))))
+
+        if(h("NN_struct/" + LAYERS[i] + "/value") == "Flatten"):
+            log("add Flatten layer")
+            model.add(Flatten())
 
 
     isFirst = False
@@ -320,8 +320,8 @@ if h("show_train_charts/value") == "True":
     pyplot.legend()
     pyplot.show()
 
-RESPONSE="{RESPONSE:{"
-RESPONSE=RESPONSE+ "response:{value:скрипт "+prediction_algorithm_name+" успешно завершён"
-RESPONSE=RESPONSE+ "}}}"
+RESPONSE = "{RESPONSE:{"
+RESPONSE = RESPONSE + "response:{value:скрипт " + prediction_algorithm_name + " успешно завершён"
+RESPONSE = RESPONSE + "}}}"
 log(RESPONSE)
 sys.stderr.close()

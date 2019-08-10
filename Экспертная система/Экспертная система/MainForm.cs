@@ -65,9 +65,9 @@ namespace Экспертная_система
 
             algorithm.Save();
 
-            AO = new AlgorithmOptimization(algorithm, this, 4, 10, 5, 0.5, 100);
+            AO = new AlgorithmOptimization(algorithm, this, 12, 10, 5, 0.5, 100);
             AO.run();
-            algorithm.h.draw(0, picBox, 15, 150);
+            algorithm.h.draw(0, picBox, 25, 300);
             // algorithm.Save();
         }
         public void expertOptimization()

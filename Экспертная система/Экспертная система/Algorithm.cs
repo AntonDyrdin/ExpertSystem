@@ -25,12 +25,13 @@ namespace Экспертная_система
             h = new Hyperparameters(form1, modelName);
             h.add("model_name", modelName);
             h.add("state", "created");
+            h.add("parents", "создан в "+this.GetType().ToString());
             this.form1 = form1;
         }
         public static Algorithm newInstance(Algorithm algorithm)
         {
             var constr = algorithm.GetType().GetConstructor(new Type[] { algorithm.form1.GetType(), (" asd").GetType() });
-            var algInst=(Algorithm)constr.Invoke(new object[] { algorithm.form1, algorithm.GetType().ToString() });
+            var algInst = (Algorithm)constr.Invoke(new object[] { algorithm.form1, algorithm.GetType().ToString() });
             return algInst;
             /*   if (algorithm.GetType().Name == "LSTM_1")
                 return new LSTM_1(algorithm.form1, "LSTM_1");
@@ -238,12 +239,30 @@ namespace Экспертная_система
             {
                 response = response.Substring(response.IndexOf('{'));
                 Hyperparameters responseH = new Hyperparameters(response, form1);
-             //   var avg = responseH.getValueByName("AVG");
-             //   if (avg != null)
-             //       h.setValueByName("AVG", avg);
+                //   var avg = responseH.getValueByName("AVG");
+                //   if (avg != null)
+                //       h.setValueByName("AVG", avg);
 
                 h.setValueByName("state", "обучение завершено");
                 log(responseH.getValueByName("response"));
+
+                string[] predictionsCSV = null;
+                //попытка прочитать данные из файла, полученного из скрипта 
+                try
+                {
+                    predictionsCSV = File.ReadAllLines(h.getValueByName("predictions_file_path"));
+                }
+                catch { }
+                //если данные имеются, то определить показатели точности прогнозирования
+                if (predictionsCSV != null)
+                {
+                    getAccAndStdDev(predictionsCSV);
+                }
+                else
+                {
+                    log("Не удалось прочитать файл с тестовым прогнозом", Color.Red);
+                    h.setValueByName("state", "Не удалось прочитать файл с тестовым прогнозом");
+                }
             }
             catch
             {
@@ -254,25 +273,6 @@ namespace Экспертная_система
                 h.setValueByName("stdDev", "0");
 
                 h.setValueByName("state", "ошибка при обучении");
-            }
-
-
-            string[] predictionsCSV = null;
-            //попытка прочитать данные из файла, полученного из скрипта 
-            try
-            {
-                predictionsCSV = File.ReadAllLines(h.getValueByName("predictions_file_path"));
-            }
-            catch { }
-            //если данные имеются, то определить показатели точности прогнозирования
-            if (predictionsCSV != null)
-            {
-                getAccAndStdDev(predictionsCSV);
-            }
-            else
-            {
-                log("Не удалось прочитать файл с тестовым прогнозом",Color.Red);
-                h.setValueByName("state", "Не удалось прочитать файл с тестовым прогнозом");
             }
             // return "обучение алгоритма " + name + "заверешно.";
         }

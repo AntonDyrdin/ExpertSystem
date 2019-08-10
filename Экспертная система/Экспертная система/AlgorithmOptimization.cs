@@ -142,6 +142,8 @@ namespace Экспертная_система
                     population[i].setValueByName("model_name", population[i].nodes[0].name() + "[" + i.ToString() + "]");
                     new_save_folder = form1.pathPrefix + "Optimization\\" + name + "\\" + name + "[" + i.ToString() + "]" + "\\";
                     Algorithm.CopyFiles(population[i], algorithm.h.getValueByName("save_folder"), new_save_folder);
+
+                    population[i].setValueByName("parents", "создан из " + population[i].nodes[0].name() + "[0]");
                 }
 
                 /*if (showOnlyBestIndividsParameters)
@@ -386,7 +388,8 @@ namespace Экспертная_система
             "Dense",
             "LSTM",
             "Conv1D",
-            "Dropout"
+            "Dropout",
+            "MaxPooling1D"
     };
         internal void variateArchitecture()
         {
@@ -424,28 +427,28 @@ namespace Экспертная_система
                 }
 
                 //исключение дублирования слоя дропаута
-                if (layerNode_X.getAttributeValue("name") == "Dropout")
+                //   if (layerNode_X.getAttributeValue("name") == "Dropout")
+                //  {
+                layerNodes = population[individIndex].getNodesByparentID(NNstructNode.ID);
+
+                string lastLayerType = "";
+                for (int i = 0; i < layerNodes.Count; i++)
                 {
-                    layerNodes = population[individIndex].getNodesByparentID(NNstructNode.ID);
-
-                    string lastLayerType = "";
-                    for (int i = 0; i < layerNodes.Count; i++)
+                    if (layerNodes[i].getAttributeValue("name") == "Dropout" & lastLayerType == "Dropout")
                     {
-                        if (layerNodes[i].getAttributeValue("name") == "Dropout" & lastLayerType == "Dropout")
+                        //удаление второго слоя дропаут
+                        population[individIndex].deleteBranch(layerNodes[i].ID);
+                        for (int k = 0; k < layerNodes.Count - i - 1; k++)
                         {
-                            //удаление второго слоя дропаут
-                            population[individIndex].deleteBranch(layerNodes[i].ID);
-                            for (int k = 0; k < layerNodes.Count - i - 1; k++)
-                            {
-                                //уменьшение номера слоя на единицу
-                                population[individIndex].getNodeByName("layer" + (i + k + 2).ToString())[0].setAttribute("name", "layer" + (i + k + 1).ToString());
-                            }
-                            break;
+                            //уменьшение номера слоя на единицу
+                            population[individIndex].getNodeByName("layer" + (i + k + 2).ToString())[0].setAttribute("name", "layer" + (i + k + 1).ToString());
                         }
-
-                        lastLayerType = layerNodes[i].getAttributeValue("name");
+                        break;
                     }
+
+                    lastLayerType = layerNodes[i].getAttributeValue("name");
                 }
+                //}
             }
             else
             {
@@ -471,6 +474,12 @@ namespace Экспертная_система
 
                 if (newLayerType == "Dense")
                 {
+                    if (layerNodes[0].getValue() == "Dense")
+                    {
+                        // ошибка размерности входов
+                        isInvalidArchitecure = true;
+                        goto invalidArchitecure;
+                    }
                     newLayerNodeID = population[individIndex].addByParentId(NNstructNode.ID, "name:layer" + (insertPosition + 1).ToString() + ",value:Dense");
                     population[individIndex].addVariable(newLayerNodeID, "neurons_count", 2, 10, 1, 9);
                     population[individIndex].addVariable(newLayerNodeID, "activation", "sigmoid", "sigmoid,linear");
@@ -494,14 +503,22 @@ namespace Экспертная_система
                 }
                 if (newLayerType == "Conv1D")
                 {
-                    isInvalidArchitecure = true;
-                    goto invalidArchitecure;
 
-                    // РАЗОБРАТЬСЯ В РАБОТЕ СВЁРТОЧНЫХ 1D СЕТЕЙ
+                    for (int i = 0; i < insertPosition; i++)
+                    {
+                        if (layerNodes[i].getValue() == "Dense")
+                        {
+                            // ошибка размерности входов
+                            isInvalidArchitecure = true;
+                            goto invalidArchitecure;
+                        }
+                    }
 
-                    //  newLayerNodeID = population[individIndex].addByParentId(NNstructNode.ID, "name:layer" + (insertPosition + 1).ToString() + ",value:Conv1D");
-                    //  population[individIndex].addVariable(newLayerNodeID, "neurons_count:" );
-                    // population[individIndex].addVariable(newLayerNodeID, "kernel_size:3");
+                    newLayerNodeID = population[individIndex].addByParentId(NNstructNode.ID, "name:layer" + (insertPosition + 1).ToString() + ",value:Conv1D");
+                    population[individIndex].addVariable(newLayerNodeID, "neurons_count", 1, 128, 1, 16);
+                    population[individIndex].addVariable(newLayerNodeID, "kernel_size", 3, 3, 1, 3);
+
+                    isInvalidArchitecure = false;
                 }
                 if (newLayerType == "Dropout")
                 {
@@ -520,8 +537,45 @@ namespace Экспертная_система
                             goto invalidArchitecure;
                         }
                     }
+                   
                     newLayerNodeID = population[individIndex].addByParentId(NNstructNode.ID, "name:layer" + (insertPosition + 1).ToString() + ",value:Dropout");
                     population[individIndex].addVariable(newLayerNodeID, "dropout", 0.01, 0.8, 0.01, 0.1);
+                    isInvalidArchitecure = false;
+                }
+                if (newLayerType == "MaxPooling1D")
+                {
+                    if (insertPosition == 0 || layerNodes[insertPosition + 1].getValue() == "MaxPooling1D")
+                    {
+                        //MaxPooling1D - первый слой или два MaxPooling1D подряд
+                        isInvalidArchitecure = true;
+                        goto invalidArchitecure;
+                    }
+                    else
+                    {
+                        if (layerNodes[insertPosition - 1].getValue() == "MaxPooling1D")
+                        {
+                            // два MaxPooling1D подряд
+                            isInvalidArchitecure = true;
+                            goto invalidArchitecure;
+                        }
+                    }
+                    bool isItCNN = false;
+                    for (int i = 0; i < insertPosition; i++)
+                    {
+                        if (layerNodes[i].getValue() == "Conv1D")
+                        {
+                            isItCNN = true;
+                        }
+                    }
+                    if (isItCNN == false)
+                    {
+                        //это вообще не CNN, а значит слой пуллинга здесь не нужен
+                        isInvalidArchitecure = true;
+                        goto invalidArchitecure;
+                    }
+
+                    newLayerNodeID = population[individIndex].addByParentId(NNstructNode.ID, "name:layer" + (insertPosition + 1).ToString() + ",value:MaxPooling1D");
+                    population[individIndex].addVariable(newLayerNodeID, "pool_size", 1, 10, 1, 3);
                     isInvalidArchitecure = false;
                 }
             invalidArchitecure:
@@ -549,7 +603,8 @@ namespace Экспертная_система
             {
                 recurciveVariableAdding(population[i], i, 0, population[i].getValueByName("code"));
             }
-            // GC.Collect();
+            if (!isInvalidArchitecure)
+                population[individIndex].setValueByName("state", "изменена архитектура");
         }
 
         private void rewriteVariableIDs()
@@ -598,6 +653,8 @@ namespace Экспертная_система
                     population[individIndex].nodes[variableIndex].setAttribute("value", newValue.ToString().Replace(',', '.'));
                 }
             }
+
+            population[individIndex].setValueByName("state", "изменены параметры");
         }
 
         private void kill_and_conceive()
@@ -676,7 +733,8 @@ namespace Экспертная_система
             // string path = child.getValueByName("json_file_path");
             child.Save(path);
 
-            child.setValueByName("state", "создан из " + parent1.getValueByName("model_name") + " code: " + parent1.getValueByName("code") + " и " + parent2.getValueByName("model_name") + " code: " + parent2.getValueByName("code"));
+            child.setValueByName("state", "создан");
+            child.setValueByName("parents", parent1.getValueByName("model_name") + " code: " + parent1.getValueByName("code") + " и " + parent2.getValueByName("model_name") + " code: " + parent2.getValueByName("code"));
             return child;
         }
 

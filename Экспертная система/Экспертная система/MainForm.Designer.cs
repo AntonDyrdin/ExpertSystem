@@ -88,7 +88,7 @@
             this.picBox.Location = new System.Drawing.Point(4, 4);
             this.picBox.Margin = new System.Windows.Forms.Padding(4);
             this.picBox.Name = "picBox";
-            this.picBox.Size = new System.Drawing.Size(1982, 1535);
+            this.picBox.Size = new System.Drawing.Size(1856, 1535);
             this.picBox.TabIndex = 37;
             this.picBox.TabStop = false;
             this.picBox.Click += new System.EventHandler(this.picBox_Click);
@@ -100,7 +100,7 @@
             this.panel1.Controls.Add(this.picBox);
             this.panel1.Location = new System.Drawing.Point(3, 3);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1992, 1554);
+            this.panel1.Size = new System.Drawing.Size(1870, 1554);
             this.panel1.TabIndex = 38;
             // 
             // trackBar1
@@ -294,11 +294,11 @@
             this.logBox.DetectUrls = false;
             this.logBox.Font = new System.Drawing.Font("Century Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.logBox.ForeColor = System.Drawing.Color.White;
-            this.logBox.Location = new System.Drawing.Point(2002, 682);
+            this.logBox.Location = new System.Drawing.Point(1893, 279);
             this.logBox.Margin = new System.Windows.Forms.Padding(4);
             this.logBox.Name = "logBox";
             this.logBox.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.logBox.Size = new System.Drawing.Size(822, 861);
+            this.logBox.Size = new System.Drawing.Size(931, 1216);
             this.logBox.TabIndex = 52;
             this.logBox.Text = "";
             this.logBox.MouseEnter += new System.EventHandler(this.LogBox_MouseEnter);
@@ -563,9 +563,9 @@
             this.BackColor = System.Drawing.Color.Black;
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.ClientSize = new System.Drawing.Size(1924, 1050);
-            this.Controls.Add(this.groupBox1);
+            this.ClientSize = new System.Drawing.Size(2509, 1360);
             this.Controls.Add(this.logBox);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.trackBar4);
             this.Controls.Add(this.label5);

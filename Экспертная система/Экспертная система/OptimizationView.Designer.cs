@@ -37,6 +37,7 @@
             this.name = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.code = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.state = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.parents = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.target_function = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
@@ -59,6 +60,7 @@
             this.name,
             this.code,
             this.state,
+            this.parents,
             this.target_function});
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.BackColor = System.Drawing.Color.Black;
@@ -100,6 +102,11 @@
             this.state.HeaderText = "Состояние";
             this.state.Name = "state";
             // 
+            // parents
+            // 
+            this.parents.HeaderText = "Родители";
+            this.parents.Name = "parents";
+            // 
             // target_function
             // 
             this.target_function.FillWeight = 60F;
@@ -131,6 +138,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn name;
         private System.Windows.Forms.DataGridViewTextBoxColumn code;
         private System.Windows.Forms.DataGridViewTextBoxColumn state;
+        private System.Windows.Forms.DataGridViewTextBoxColumn parents;
         private System.Windows.Forms.DataGridViewTextBoxColumn target_function;
     }
 }
