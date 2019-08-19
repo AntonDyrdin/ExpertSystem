@@ -44,17 +44,23 @@ namespace Экспертная_система
             mainThread = System.Threading.Thread.CurrentThread;
             algorithm = new FlexNN(this, "FlexNN");
 
-            //sourceDataFile = pathPrefix + @"Временные ряды\USD_RUB_exmo_norm.txt";
+          //  sourceDataFile = pathPrefix + @"Временные ряды\USD_RUB_exmo.txt";
             //expert.H.add("input_file", expert.savePreparedDataset(sourceDataFile, "<TIME>;<TICKER>;<PER>;<DATE>;<local_time>", true));
-            algorithm.h.setValueByName("start_point", "0.99");
+            algorithm.h.setValueByName("start_point", "0");
             algorithm.h.setValueByName("normalize", "true");
-            algorithm.h.add("input_file", pathPrefix + @"Временные ряды\USD_RUB_exmo_norm-dataset.txt");
+            algorithm.h.add("input_file", pathPrefix + @"Временные ряды\SIN+date-dataset.txt");
             algorithm.h.add("path_prefix", pathPrefix);
             algorithm.h.add("drop_columns:<local_time>");
             algorithm.h.add("predicted_column_index:0");
             algorithm.h.add("name:show_train_charts,value:False");
 
-            //algorithm.train().Wait();
+        //    algorithm.train().Wait();
+
+        /*    vis.addParameter("X", Color.White, 500);
+            vis.addCSV(algorithm.h.getValueByName("predictions_file_path"), "_X", "<X>", "X", 500, 0, -1);
+            vis.addCSV(algorithm.h.getValueByName("predictions_file_path"), "_X", "LAST_COLUMN", "X", 500, 0, 0);
+            vis.enableGrid = false;
+            vis.refresh();*/
 
             /*vis.addParameter("ask", Color.White, 500);
             vis.addCSV(algorithm.h.getValueByName("predictions_file_path"), "_ask", "<ask>", "ask", 500, 0, -1);
@@ -65,9 +71,9 @@ namespace Экспертная_система
 
             algorithm.Save();
 
-            AO = new AlgorithmOptimization(algorithm, this, 12, 10, 5, 0.5, 100);
+           AO = new AlgorithmOptimization(algorithm, this, 8, 10, 5, 0.5, 100);
             AO.run();
-            algorithm.h.draw(0, picBox, 25, 300);
+        //    algorithm.h.draw(0, picBox, 25, 300);
             // algorithm.Save();
         }
         public void expertOptimization()

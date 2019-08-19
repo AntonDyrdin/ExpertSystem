@@ -203,22 +203,27 @@ namespace Экспертная_система
 
         internal void newProcessToShow(Process process)
         {
-
-            executingProcesses.Add(process);
-            //process.WaitForExit(1);
-            IntPtr fMWH = (IntPtr)0x00000000;
-            executionProgressForm.panel1.Invoke(new Action(() =>
-            {
-                while (fMWH == (IntPtr)0x00000000)
-                    fMWH = SetParent(process.MainWindowHandle, executionProgressForm.panel1.Handle);
-            }));
             int width = 0;
             int height = 0;
             executionProgressForm.panel1.Invoke(new Action(() =>
             {
                 width = executionProgressForm.panel1.Width;
-                height = executionProgressForm.panel1.Height-50;
+                height = executionProgressForm.panel1.Height - 50;
             }));
+
+
+            if (width > 100 & height > 100)
+            {
+                executingProcesses.Add(process);
+                //process.WaitForExit(1);
+                IntPtr fMWH = (IntPtr)0x00000000;
+                executionProgressForm.panel1.Invoke(new Action(() =>
+                {
+                    while (fMWH == (IntPtr)0x00000000)
+                        fMWH = SetParent(process.MainWindowHandle, executionProgressForm.panel1.Handle);
+                }));
+            }
+          
             for (int i = 0; i < executingProcesses.Count; i++)
             {
                 if (executingProcesses[i] == null)
@@ -237,21 +242,23 @@ namespace Экспертная_система
                     i--;
                 }
             }
-
-            if (executingProcesses.Count == 1)
-                MoveWindow(executingProcesses[0].MainWindowHandle, 0, 0, width, executionProgressForm.panel1.Height - 50, true);
-            if (executingProcesses.Count > 1)
-                for (int i = 0; i < executingProcesses.Count; i++)
-                {
-                    if (i % 2 == 0)
+            if (width > 100 & height > 100)
+            {
+                if (executingProcesses.Count == 1)
+                    MoveWindow(executingProcesses[0].MainWindowHandle, 0, 0, width, executionProgressForm.panel1.Height - 50, true);
+                if (executingProcesses.Count > 1)
+                    for (int i = 0; i < executingProcesses.Count; i++)
                     {
-                        MoveWindow(executingProcesses[i].MainWindowHandle, 0, height / executingProcesses.Count * 2*(i/2), width / 2, height / executingProcesses.Count*2, true);
+                        if (i % 2 == 0)
+                        {
+                            MoveWindow(executingProcesses[i].MainWindowHandle, 0, height / executingProcesses.Count * 2 * (i / 2), width / 2, height / executingProcesses.Count * 2, true);
+                        }
+                        else
+                        {
+                            MoveWindow(executingProcesses[i].MainWindowHandle, width / 2, height / executingProcesses.Count * 2 * (i / 2), width / 2, height / executingProcesses.Count * 2, true);
+                        }
                     }
-                    else
-                    {
-                        MoveWindow(executingProcesses[i].MainWindowHandle, width/2, height / executingProcesses.Count * 2 * (i/ 2), width / 2, height / executingProcesses.Count * 2, true);
-                    }
-                }
+            }
         }
 
         internal void deleteLogBox(int processID)

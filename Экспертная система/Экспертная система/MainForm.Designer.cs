@@ -188,7 +188,7 @@
             this.trackBar2.Name = "trackBar2";
             this.trackBar2.Size = new System.Drawing.Size(603, 69);
             this.trackBar2.TabIndex = 43;
-            this.trackBar2.Value = 3;
+            this.trackBar2.Value = 4;
             this.trackBar2.Scroll += new System.EventHandler(this.TrackBar2_Scroll);
             // 
             // label1
@@ -284,7 +284,7 @@
             this.trackBar4.Size = new System.Drawing.Size(603, 69);
             this.trackBar4.SmallChange = 3;
             this.trackBar4.TabIndex = 50;
-            this.trackBar4.Value = 3;
+            this.trackBar4.Value = 1;
             this.trackBar4.Scroll += new System.EventHandler(this.TrackBar4_Scroll);
             // 
             // logBox

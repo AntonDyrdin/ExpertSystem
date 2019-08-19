@@ -25,7 +25,7 @@ namespace Экспертная_система
             h = new Hyperparameters(form1, modelName);
             h.add("model_name", modelName);
             h.add("state", "created");
-            h.add("parents", "создан в "+this.GetType().ToString());
+            h.add("parents", "создан в " + this.GetType().ToString());
             this.form1 = form1;
         }
         public static Algorithm newInstance(Algorithm algorithm)

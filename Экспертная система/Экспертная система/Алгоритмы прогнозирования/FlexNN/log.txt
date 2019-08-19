@@ -3,27 +3,22 @@ C:\Users\anton\Рабочий стол\MAIN\Экспертная система\Экспертная система\Алгоритмы
 (GPU[0] GeForce MX150, CPU)
 True
 GPU[0] GeForce MX150
-> время загрузки библиотек : 3.642 сек.
-dataset.shape: (6481, 1)
-> время чтения данных  : 3.148 сек.
-train_X.shape(4465, 102, 1)
-train_y.shape(4465, 2)
-add Conv1D layer 16 neurons, input_shape=( 102, 102), kernel_size=3, activation - relu
-add Conv1D layer 16 neurons, kernel_size=3, activation - relu
-add MaxPooling1D layer, pool_size=3
-add Conv1D layer 32 neurons, kernel_size=3, activation - relu
-add Conv1D layer 32 neurons, kernel_size=3, activation - relu
-add Flatten layer
+> время загрузки библиотек : 4.159 сек.
+dataset.shape: (922, 1)
+> время чтения данных  : 0.065 сек.
+train_X.shape(644, 2, 1)
+train_y.shape(644, 2)
+add LSTM layer 9 neurons, input_shape=( 2, 1), return_sequences=False
 add Dense layer 2 neurons, activation: softmax
 компиляция НС...
-> время компиляции НС  : 1.494 сек.
+> время компиляции НС  : 2.170 сек.
 обучение НС...
-> время обучения  НС  : 5.915 сек.
+> время обучения  НС  : 11.44 сек.
 сохранение модели: C:\Users\anton\Рабочий стол\MAIN\Optimization\FlexNN\FlexNN[0]\weights.h5
-> время сохранения НС  : 0.112 сек.
+> время сохранения НС  : 0.051 сек.
 создание тестового прогноза
-(1914, 2)
-> время создания и записи тестового прогноза  : 0.334 сек.
+(276, 2)
+> время создания и записи тестового прогноза  : 0.085 сек.
 __________________________________
 ______________END________________
 {RESPONSE:{response:{value:скрипт FlexNN успешно завершён}}}

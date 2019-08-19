@@ -861,8 +861,7 @@ namespace Экспертная_система
                 /////////////////////////////////
                 //////     СГЛАЖИВАНИЕ    ///////
                 /////////////////////////////////
-                //  dataset2 = levelOff2(dataset1);
-                dataset2 = dataset1;
+                 dataset2 = levelOff2(dataset1);
             }
             else
             {
@@ -1092,7 +1091,7 @@ namespace Экспертная_система
         {
 
             ////////////////////////////////////////////////
-            ///////////   НОРМАЛИЗАЦИЯ i/(i-1)   ///////////
+            ///////////   НОРМАЛИЗАЦИЯ i - (i-1) ///////////
             ////////////////////////////////////////////////
             //первая строка датасета удаляется из-за нормализации типа i-(i-1)
             double[,] normalizedDataset2 = new double[inputDataset.GetLength(0) - 1, inputDataset.GetLength(1)];
@@ -1160,6 +1159,7 @@ namespace Экспертная_система
                 {
                     //масштабирование
                     //  levelOffDataset[i, k] = levelOffDataset[i, k] * (1 / (Math.Abs(levelOffDataset[i, k] + 0.5)));
+
                     //0.5 - среднее
                     levelOffDataset[i, k] = inputDataset[i, k] + 0.5;
                     //выбросы

@@ -56,6 +56,7 @@ import numpy
 import json
 from keras.models import Sequential
 from keras.layers import Dense, LSTM, Dropout, Conv1D, GlobalAveragePooling1D, MaxPooling1D, Flatten
+from keras import optimizers
 #####################################################################
 log("> время загрузки библиотек : " + getTime())  
 
@@ -119,12 +120,12 @@ if (h("NN_struct/layer1/value") == "LSTM") | (h("NN_struct/layer1/value") == "Co
         for j in range(0,window_size):
             for k in range(0,dataset.shape[1]):
                 Dataset_X[i,j,k] = dataset[i + j][k]
-    #   при убывающем тренде вектор Y=[1,0],
-        if(dataset[i + window_size,predicted_column_index]) > 0:
+    #   при растущем тренде Y=[0,1].
+        if(dataset[i + window_size,predicted_column_index]) > 0.5:
             Dataset_Y[i,0] = 0
             Dataset_Y[i,1] = 1    
-    #   при растущем тренде Y=[0,1].
-        if(dataset[i + window_size,predicted_column_index]) <= 0:
+#   при убывающем тренде вектор Y=[1,0],
+        if(dataset[i + window_size,predicted_column_index]) < 0.5:
             Dataset_Y[i,0] = 1
             Dataset_Y[i,1] = 0 
 
@@ -141,13 +142,13 @@ else:
     predicted_column_index = (int)(h("predicted_column_index/value"))
     for i in range(0,dataset.shape[0] - window_size):
         for j in range(0,window_size):
-                Dataset_X[i,j] = dataset[i + j][predicted_column_index]
+                Dataset_X[i,j] = dataset[i + j][predicted_column_index] 
     #   при убывающем тренде вектор Y=[1,0],
-        if(dataset[i + window_size,predicted_column_index]) > 0:
+        if(dataset[i + window_size,predicted_column_index]) > 0.5:
             Dataset_Y[i,0] = 0
             Dataset_Y[i,1] = 1    
     #   при растущем тренде Y=[0,1].
-        if(dataset[i + window_size,predicted_column_index]) <= 0:
+        if(dataset[i + window_size,predicted_column_index]) <= 0.5:
             Dataset_Y[i,0] = 1
             Dataset_Y[i,1] = 0 
 
@@ -249,7 +250,10 @@ for i in range(0,len(LAYERS)):
                                                                   
 log("компиляция НС...")
         
-model.compile(loss=h("loss/value"), optimizer=h("optimizer/value"),metrics=['accuracy'])
+#optimizer=h("optimizer/value")
+optimizer = optimizers.Adam(lr=(float)(h("learning_rate/value")), beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
+
+model.compile(loss=h("loss/value"),optimizer=optimizer ,metrics=['accuracy'])
 log("> время компиляции НС  : " + getTime())    
 
 
@@ -292,14 +296,14 @@ if h("NN_struct/layer1/value") == "LSTM":
         line = ''
         for k in range(0,test_X.shape[2]): 
             line = line + (str)(test_X[i,window_size - 1,k]) + ';'
-        line = line + (str)(predicted[i,1] - predicted[i,0])
+        line = line + (str)(predicted[i,1] - predicted[i,0] + 0.5)
         predictionsFile.write(line + '\n')
 else:
     for i in range(0,test_X.shape[0]):
         line = ''
         for k in range(0,dataset.shape[1]): 
             line = line + (str)(dataset[i,k]) + ';'
-        line = line + (str)(predicted[i,0])
+        line = line + (str)(predicted[i,1] - predicted[i,0] + 0.5)
         predictionsFile.write(line + '\n')
 
 predictionsFile.close()
