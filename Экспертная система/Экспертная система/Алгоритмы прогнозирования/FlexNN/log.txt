@@ -1,24 +1,25 @@
-C:\Users\anton\Рабочий стол\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\FlexNN\log.txtC:\Users\anton\Рабочий стол\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\FlexNN\log.txt
+E:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\FlexNN\log.txtE:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\FlexNN\log.txt
 СКРИПТ ОБУЧЕНИЯ FlexNN ЗАПУЩЕН...
-(GPU[0] GeForce MX150, CPU)
-True
-GPU[0] GeForce MX150
-> время загрузки библиотек : 4.159 сек.
-dataset.shape: (922, 1)
-> время чтения данных  : 0.065 сек.
-train_X.shape(644, 2, 1)
-train_y.shape(644, 2)
-add LSTM layer 9 neurons, input_shape=( 2, 1), return_sequences=False
+Все вычислительные устройства: (GPU[0] GeForce GTX 1050 Ti, CPU)
+Попытка установить GPU как устройство по умолчанию: True
+GPU[0] GeForce GTX 1050 Ti
+> время загрузки библиотек : 3.262 сек.
+dataset.shape: (649, 1)
+> время чтения данных  : 1.113 сек.
+train_X.shape(453, 2, 1)
+train_y.shape(453, 2)
+add LSTM layer 9 neurons, input_shape=( 2, 1), return_sequences=True
+add LSTM layer 9 neurons, return_sequences=False
 add Dense layer 2 neurons, activation: softmax
 компиляция НС...
-> время компиляции НС  : 2.170 сек.
+> время компиляции НС  : 1.254 сек.
 обучение НС...
-> время обучения  НС  : 11.44 сек.
-сохранение модели: C:\Users\anton\Рабочий стол\MAIN\Optimization\FlexNN\FlexNN[0]\weights.h5
-> время сохранения НС  : 0.051 сек.
+> время обучения  НС  : 4.782 сек.
+сохранение модели: E:\Anton\Desktop\MAIN\Optimization\FlexNN\FlexNN[0]\weights.h5
+> время сохранения НС  : 0.048 сек.
 создание тестового прогноза
-(276, 2)
-> время создания и записи тестового прогноза  : 0.085 сек.
+(194, 2)
+> время создания и записи тестового прогноза  : 0.058 сек.
 __________________________________
 ______________END________________
 {RESPONSE:{response:{value:скрипт FlexNN успешно завершён}}}

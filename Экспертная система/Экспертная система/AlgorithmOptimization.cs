@@ -537,7 +537,7 @@ namespace Экспертная_система
                             goto invalidArchitecure;
                         }
                     }
-                   
+
                     newLayerNodeID = population[individIndex].addByParentId(NNstructNode.ID, "name:layer" + (insertPosition + 1).ToString() + ",value:Dropout");
                     population[individIndex].addVariable(newLayerNodeID, "dropout", 0.01, 0.8, 0.01, 0.1);
                     isInvalidArchitecure = false;
@@ -634,6 +634,84 @@ namespace Экспертная_система
             }
             if (population[individIndex].nodes[variableIndex].getAttributeValue("variable") == "numerical")
             {
+                // новая логика - новое значение параметра получается в результате увеличения или уменьшения старого на величину step 
+                int upOrDown = r.Next(0, 2);
+                if (population[individIndex].nodes[variableIndex].getValue()[0] != '0')
+                {//если первый символ атрибута value неравен '0' - значит это Int и все остальные атрибуты будут приводиться к int
+                    int newValue = 0;
+                    if (upOrDown == 0)
+                    {
+                        newValue = Convert.ToInt32(population[individIndex].nodes[variableIndex].getValue()) + Convert.ToInt32(population[individIndex].nodes[variableIndex].getAttributeValue("step"));
+
+                        // Если newValue меньше max, то прибавить - иначе вычесть. Таким образом каждое выполнение метода mutation()
+                        // ведёт к изменению параметров
+                        if (newValue <= Convert.ToInt32(population[individIndex].nodes[variableIndex].getAttributeValue("max")))
+                        {
+                            population[individIndex].nodes[variableIndex].setAttribute("value", newValue.ToString());
+                            log("individIndex = " + individIndex.ToString() + "; variableIndex = " + variableIndex.ToString() + " (" + population[individIndex].nodes[variableIndex].name() + ")" + "; newValue = " + newValue.ToString(), Color.White);
+                        }
+                        else
+                        {
+                            newValue = Convert.ToInt32(population[individIndex].nodes[variableIndex].getValue()) - Convert.ToInt32(population[individIndex].nodes[variableIndex].getAttributeValue("step"));
+                            population[individIndex].nodes[variableIndex].setAttribute("value", newValue.ToString());
+                            log("individIndex = " + individIndex.ToString() + "; variableIndex = " + variableIndex.ToString() + " (" + population[individIndex].nodes[variableIndex].name() + ")" + "; newValue = " + newValue.ToString(), Color.White);
+                        }
+                    }
+                    else
+                    {
+                        newValue = Convert.ToInt32(population[individIndex].nodes[variableIndex].getValue()) - Convert.ToInt32(population[individIndex].nodes[variableIndex].getAttributeValue("step"));
+                        if (newValue >= Convert.ToInt32(population[individIndex].nodes[variableIndex].getAttributeValue("min")))
+                        {
+                            population[individIndex].nodes[variableIndex].setAttribute("value", newValue.ToString());
+                            log("individIndex = " + individIndex.ToString() + "; variableIndex = " + variableIndex.ToString() + " (" + population[individIndex].nodes[variableIndex].name() + ")" + "; newValue = " + newValue.ToString(), Color.White);
+                        }
+                        else
+                        {
+                            newValue = Convert.ToInt32(population[individIndex].nodes[variableIndex].getValue()) + Convert.ToInt32(population[individIndex].nodes[variableIndex].getAttributeValue("step"));
+                            population[individIndex].nodes[variableIndex].setAttribute("value", newValue.ToString());
+                            log("individIndex = " + individIndex.ToString() + "; variableIndex = " + variableIndex.ToString() + " (" + population[individIndex].nodes[variableIndex].name() + ")" + "; newValue = " + newValue.ToString(), Color.White);
+                        }
+                    }
+                }
+                else
+                {
+                    double newValue = 0;
+                    if (upOrDown == 0)
+                    {
+                        newValue = Convert.ToDouble(population[individIndex].nodes[variableIndex].getValue().Replace('.', ',')) + Convert.ToDouble(population[individIndex].nodes[variableIndex].getAttributeValue("step").Replace('.', ','));
+
+                        if (newValue <= Convert.ToDouble(population[individIndex].nodes[variableIndex].getAttributeValue("max").Replace('.', ',')))
+                        {
+                            population[individIndex].nodes[variableIndex].setAttribute("value", newValue.ToString().Replace(',', '.'));
+                            log("individIndex = " + individIndex.ToString() + "; variableIndex = " + variableIndex.ToString() + " (" + population[individIndex].nodes[variableIndex].name() + ")" + "; newValue = " + newValue.ToString(), Color.White);
+                        }
+                        else
+                        {
+                            newValue = Convert.ToDouble(population[individIndex].nodes[variableIndex].getValue().Replace('.', ',')) - Convert.ToDouble(population[individIndex].nodes[variableIndex].getAttributeValue("step").Replace('.', ','));
+                            population[individIndex].nodes[variableIndex].setAttribute("value", newValue.ToString().Replace(',', '.'));
+                            log("individIndex = " + individIndex.ToString() + "; variableIndex = " + variableIndex.ToString() + " (" + population[individIndex].nodes[variableIndex].name() + ")" + "; newValue = " + newValue.ToString(), Color.White);
+
+                        }
+                    }
+                    else
+                    {
+                        newValue = Convert.ToDouble(population[individIndex].nodes[variableIndex].getValue().Replace('.', ',')) - Convert.ToDouble(population[individIndex].nodes[variableIndex].getAttributeValue("step").Replace('.', ','));
+                        if (newValue >= Convert.ToDouble(population[individIndex].nodes[variableIndex].getAttributeValue("min").Replace('.', ',')))
+                        {
+                            population[individIndex].nodes[variableIndex].setAttribute("value", newValue.ToString().Replace(',', '.'));
+                            log("individIndex = " + individIndex.ToString() + "; variableIndex = " + variableIndex.ToString() + " (" + population[individIndex].nodes[variableIndex].name() + ")" + "; newValue = " + newValue.ToString(), Color.White);
+                        }
+                        else
+                        {
+                            newValue = Convert.ToDouble(population[individIndex].nodes[variableIndex].getValue().Replace('.', ',')) + Convert.ToDouble(population[individIndex].nodes[variableIndex].getAttributeValue("step").Replace('.', ','));
+                            population[individIndex].nodes[variableIndex].setAttribute("value", newValue.ToString().Replace(',', '.'));
+                            log("individIndex = " + individIndex.ToString() + "; variableIndex = " + variableIndex.ToString() + " (" + population[individIndex].nodes[variableIndex].name() + ")" + "; newValue = " + newValue.ToString(), Color.White);
+                        }
+                    }
+                }
+
+                // логика работы метода mutation(), при которой новое значение параметра выбирается случайным образом из интервала min - max
+                /*
                 if (population[individIndex].nodes[variableIndex].getValue()[0] != '0')
                 {
                     int newValue = r.Next(Convert.ToInt32(population[individIndex].nodes[variableIndex].getAttributeValue("min")), Convert.ToInt32(population[individIndex].nodes[variableIndex].getAttributeValue("max")) + 1);
@@ -651,7 +729,7 @@ namespace Экспертная_система
                     }
                     log("individIndex = " + individIndex.ToString() + "; variableIndex = " + variableIndex.ToString() + " (" + population[individIndex].nodes[variableIndex].name() + ")" + "; newValue = " + newValue.ToString(), Color.White);
                     population[individIndex].nodes[variableIndex].setAttribute("value", newValue.ToString().Replace(',', '.'));
-                }
+                }*/
             }
 
             population[individIndex].setValueByName("state", "изменены параметры");

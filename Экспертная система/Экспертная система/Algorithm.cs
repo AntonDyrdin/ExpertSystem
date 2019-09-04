@@ -19,6 +19,8 @@ namespace Экспертная_система
         public string modelName;
         public int modelLoadingDelay = 180 * 1000;
         public int pred_script_timeout = 50000;
+        public int NNscructNodeId;
+        public int layersCount = 0;
         public Algorithm(MainForm form1, string modelName)
         {
             this.modelName = modelName;
@@ -26,8 +28,33 @@ namespace Экспертная_система
             h.add("model_name", modelName);
             h.add("state", "created");
             h.add("parents", "создан в " + this.GetType().ToString());
+            NNscructNodeId = h.add("name:NN_struct");
+
             this.form1 = form1;
         }
+
+        public void addLayer(string layerType, parameter[] parameters)
+        {
+            layersCount++;
+
+            int layerParentID = h.addByParentId(NNscructNodeId, "name:layer" + layersCount.ToString() + ",value:" + layerType);
+            foreach (parameter param in parameters)
+                if (param.type == parameterType.Const)
+                {
+                    h.addByParentId(layerParentID, param.name + ':' + param.caonstant);
+                }
+                else
+                    if (param.type == parameterType.Numerical)
+                {
+                    h.addVariable(layerParentID, param.name, param.min, param.max, param.step, param.value);
+                }
+                else
+                    if (param.type == parameterType.Categorical)
+                {
+                    h.addVariable(layerParentID, param.name, param.category, param.categories);
+                }
+        }
+
         public static Algorithm newInstance(Algorithm algorithm)
         {
             var constr = algorithm.GetType().GetConstructor(new Type[] { algorithm.form1.GetType(), (" asd").GetType() });
@@ -405,6 +432,43 @@ namespace Экспертная_система
         public void log(string s)
         {
             form1.log(s);
+        }
+        public enum parameterType
+        {
+            Const,
+            Numerical,
+            Categorical
+        }
+        public class parameter
+        {
+            public parameter(string name, string caonstant)
+            {
+                this.name = name;
+                this.caonstant = caonstant;
+                type = parameterType.Const;
+            }
+            public parameter(string name,double min,double max,double step,double value)
+            {
+                this.name = name;
+                this.value = value;
+                type = parameterType.Numerical;
+            }
+            public parameter(string name,string category,string categories)
+            {
+                this.name = name;
+                this.category = category;
+                this.categories = categories;
+                type = parameterType.Categorical;
+            }
+            public string name;
+            public parameterType type;
+            public double min;
+            public double max;
+            public double step;
+            public double value;
+            public string caonstant;
+            public string category;
+            public string categories;
         }
     }
 }

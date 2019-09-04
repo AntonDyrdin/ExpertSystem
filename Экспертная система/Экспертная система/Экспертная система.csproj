@@ -69,7 +69,6 @@
     <Compile Include="PicBoxOnPanel.Designer.cs">
       <DependentUpon>PicBoxOnPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="Алгоритмы прогнозирования\CNN_1\CNN_1.cs" />
     <Compile Include="DecisionMakingSystem.cs" />
     <Compile Include="Expert.cs" />
     <Compile Include="MainForm.cs">
@@ -82,7 +81,6 @@
     <Compile Include="ImgDataset.cs" />
     <Compile Include="ExpertOptimization.cs" />
     <Compile Include="Infrastructure.cs" />
-    <Compile Include="Алгоритмы прогнозирования\ANN_1\ANN 1.cs" />
     <Compile Include="Алгоритмы прогнозирования\FlexNN\FlexNN.cs" />
     <Compile Include="OptimizationView.cs">
       <SubType>Form</SubType>
@@ -90,14 +88,6 @@
     <Compile Include="OptimizationView.Designer.cs">
       <DependentUpon>OptimizationView.cs</DependentUpon>
     </Compile>
-    <Compile Include="Алгоритмы прогнозирования\LSTM_1\LSTM 1.cs" />
-    <Compile Include="Алгоритмы прогнозирования\LSTM_2\ExecutionProcess.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Алгоритмы прогнозирования\LSTM_2\ExecutionProcess.Designer.cs">
-      <DependentUpon>ExecutionProcess.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Алгоритмы прогнозирования\LSTM_2\LSTM 2.cs" />
     <Compile Include="Графическое отображение\MultiParameterVisualizer.cs" />
     <Compile Include="Графическое отображение\ParameterVisualizer.cs" />
     <Compile Include="Program.cs" />
@@ -126,9 +116,6 @@
     <EmbeddedResource Include="OptimizationView.resx">
       <DependentUpon>OptimizationView.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Алгоритмы прогнозирования\LSTM_2\ExecutionProcess.resx">
-      <DependentUpon>ExecutionProcess.cs</DependentUpon>
-    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -143,16 +130,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Алгоритмы прогнозирования\ANN_1\get_prediction.py" />
-    <Content Include="Алгоритмы прогнозирования\ANN_1\train_script.py" />
-    <Content Include="Алгоритмы прогнозирования\CNN_1\get_prediction.py" />
-    <Content Include="Алгоритмы прогнозирования\CNN_1\train_script.py" />
-    <Content Include="Алгоритмы прогнозирования\LSTM_1\get_prediction.py" />
-    <Content Include="Алгоритмы прогнозирования\LSTM_1\train_script.py" />
-    <Content Include="Алгоритмы прогнозирования\LSTM_2\get_prediction.py" />
-    <Content Include="Алгоритмы прогнозирования\LSTM_2\train_script.py" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

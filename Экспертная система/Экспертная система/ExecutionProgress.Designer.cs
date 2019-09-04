@@ -44,12 +44,14 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
-            this.ClientSize = new System.Drawing.Size(1422, 782);
+            this.ClientSize = new System.Drawing.Size(1924, 1050);
             this.Controls.Add(this.panel1);
             this.Name = "ExecutionProgress";
             this.ShowIcon = false;
             this.Text = "ExecutionProgress";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.Activated += new System.EventHandler(this.ExecutionProgress_Activated);
+            this.Load += new System.EventHandler(this.ExecutionProgress_Load);
             this.SizeChanged += new System.EventHandler(this.ExecutionProgress_SizeChanged);
             this.ResumeLayout(false);
 

@@ -46,8 +46,11 @@ def getTime():
 # попытка задать GPU, как устройство для вычислений
 from cntk.device import try_set_default_device, gpu
 import cntk.device as C
-log(C.all_devices())
-log(C.try_set_default_device(C.gpu(0)))
+log("Все вычислительные устройства: "+str(C.all_devices()))
+try:
+    log("Попытка установить GPU как устройство по умолчанию: "+str(C.try_set_default_device(C.gpu(0))))
+except Exception as e:
+    log(str(e))   
 log(C.use_default_device())  
 ###################################################
 
@@ -135,7 +138,7 @@ if (h("NN_struct/layer1/value") == "LSTM") | (h("NN_struct/layer1/value") == "Co
     test_X = Dataset_X[round(Dataset_X.shape[0] * (split_point)):, :,:]
     train_y = Dataset_Y[:round(Dataset_Y.shape[0] * (split_point)):]
     test_y = Dataset_Y[round(Dataset_Y.shape[0] * (split_point)):]
-
+    
 else:
     Dataset_X = numpy.zeros((dataset.shape[0] - window_size, window_size), dtype=numpy.float32)
     Dataset_Y = numpy.zeros((dataset.shape[0] - window_size,2), dtype=numpy.float32)
@@ -148,7 +151,7 @@ else:
             Dataset_Y[i,0] = 0
             Dataset_Y[i,1] = 1    
     #   при растущем тренде Y=[0,1].
-        if(dataset[i + window_size,predicted_column_index]) <= 0.5:
+        if(dataset[i + window_size,predicted_column_index]) < 0.5:
             Dataset_Y[i,0] = 1
             Dataset_Y[i,1] = 0 
 

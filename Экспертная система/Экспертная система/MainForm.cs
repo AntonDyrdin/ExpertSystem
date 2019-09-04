@@ -46,21 +46,21 @@ namespace Экспертная_система
 
           //  sourceDataFile = pathPrefix + @"Временные ряды\USD_RUB_exmo.txt";
             //expert.H.add("input_file", expert.savePreparedDataset(sourceDataFile, "<TIME>;<TICKER>;<PER>;<DATE>;<local_time>", true));
-            algorithm.h.setValueByName("start_point", "0");
+            algorithm.h.setValueByName("start_point", "0.999");
             algorithm.h.setValueByName("normalize", "true");
-            algorithm.h.add("input_file", pathPrefix + @"Временные ряды\SIN+date-dataset.txt");
+            algorithm.h.add("input_file", pathPrefix + @"Временные ряды\USD_RUB_exmo_norm-dataset.txt");
             algorithm.h.add("path_prefix", pathPrefix);
             algorithm.h.add("drop_columns:<local_time>");
             algorithm.h.add("predicted_column_index:0");
             algorithm.h.add("name:show_train_charts,value:False");
 
-        //    algorithm.train().Wait();
+       //    algorithm.train().Wait();
 
-        /*    vis.addParameter("X", Color.White, 500);
+         /*  vis.addParameter("X", Color.White, 500);
             vis.addCSV(algorithm.h.getValueByName("predictions_file_path"), "_X", "<X>", "X", 500, 0, -1);
             vis.addCSV(algorithm.h.getValueByName("predictions_file_path"), "_X", "LAST_COLUMN", "X", 500, 0, 0);
             vis.enableGrid = false;
-            vis.refresh();*/
+            vis.refresh();
 
             /*vis.addParameter("ask", Color.White, 500);
             vis.addCSV(algorithm.h.getValueByName("predictions_file_path"), "_ask", "<ask>", "ask", 500, 0, -1);
@@ -69,7 +69,7 @@ namespace Экспертная_система
             vis.refresh();*/
             //algorithm.Open(@"E:\Anton\Desktop\MAIN\Optimization\LSTM_1\LSTM_1[0]\h.json");
 
-            algorithm.Save();
+         //   algorithm.Save();
 
            AO = new AlgorithmOptimization(algorithm, this, 8, 10, 5, 0.5, 100);
             AO.run();
@@ -78,7 +78,7 @@ namespace Экспертная_система
         }
         public void expertOptimization()
         {
-            mainThread = System.Threading.Thread.CurrentThread;
+       /*     mainThread = System.Threading.Thread.CurrentThread;
 
             expert = new Expert("Эксперт 1", this);
             algorithm = new LSTM_1(this, "LSTM_1[0]");
@@ -111,7 +111,7 @@ namespace Экспертная_система
 
 
             optimization = new ExpertOptimization(expert, this, 8, 5, 10, 0.5, 100, new DateTime(2016, 9, 1), new DateTime(2018, 3, 1), sourceDataFile);
-            optimization.run();
+            optimization.run();*/
         }
 
 
@@ -461,7 +461,7 @@ namespace Экспертная_система
 
             expert = new Expert("Эксперт 1", this);
 
-            expert.Add(new ANN_1(this, "ANN_1[1]"));
+        //    expert.Add(new ANN_1(this, "ANN_1[1]"));
 
             expert.algorithms[0].setAttributeByName("number_of_epochs", 50);
             /*  expert.algorithms[0].setAttributeByName("window_size", 30); 

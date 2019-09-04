@@ -72,3 +72,6 @@ C:\Users\anton\Рабочий стол\MAIN\Экспертная система\
 C:\Users\anton\Рабочий стол\MAIN\Экспертная система\Экспертная система\obj\Debug\Экспертная система.csprojAssemblyReference.cache
 C:\Users\anton\Рабочий стол\MAIN\Экспертная система\Экспертная система\obj\Debug\Экспертная_система.OptimizationView.resources
 C:\Users\anton\Рабочий стол\MAIN\Экспертная система\Экспертная система\obj\Debug\Экспертная_система.PicBoxOnPanel.resources
+E:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\obj\Debug\Экспертная_система.ExecutionProgress.resources
+E:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\obj\Debug\Экспертная_система.PicBoxOnPanel.resources
+E:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\obj\Debug\Экспертная_система.OptimizationView.resources

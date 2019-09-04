@@ -71,6 +71,7 @@ namespace Экспертная_система
             // ИНИЦИАЛИЗАЦИЯ ГЛАВНОЙ ФОРМЫ
             executionProgressForm = new ExecutionProgress();
             executionProgressForm.Show();
+        
 
             DpiFix();
             form1.WindowState = FormWindowState.Minimized;
@@ -203,10 +204,12 @@ namespace Экспертная_система
 
         internal void newProcessToShow(Process process)
         {
+         
             int width = 0;
             int height = 0;
             executionProgressForm.panel1.Invoke(new Action(() =>
             {
+
                 width = executionProgressForm.panel1.Width;
                 height = executionProgressForm.panel1.Height - 50;
             }));

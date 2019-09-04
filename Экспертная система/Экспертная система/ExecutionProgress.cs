@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Экспертная_система
@@ -21,6 +14,22 @@ namespace Экспертная_система
         {
             panel1.Height = Height;
             panel1.Width = Width;
+        }
+
+        private void ExecutionProgress_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private int wasMaximized = 0;
+        private void ExecutionProgress_Activated(object sender, EventArgs e)
+        {
+            if (wasMaximized <2)
+            {
+                WindowState = FormWindowState.Normal;
+                WindowState = FormWindowState.Maximized;
+                wasMaximized ++;
+            }
         }
     }
 }
