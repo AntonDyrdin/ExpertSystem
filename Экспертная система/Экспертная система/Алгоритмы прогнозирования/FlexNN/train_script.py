@@ -43,7 +43,7 @@ def getTime():
     return str(offset)[0:5] + " сек."
 #####################################
 
-# попытка задать GPU, как устройство для вычислений
+# попытка задать GPU, как устройство для ускорения вычислений
 from cntk.device import try_set_default_device, gpu
 import cntk.device as C
 log("Все вычислительные устройства: "+str(C.all_devices()))
@@ -51,7 +51,7 @@ try:
     log("Попытка установить GPU как устройство по умолчанию: "+str(C.try_set_default_device(C.gpu(0))))
 except Exception as e:
     log(str(e))   
-log(C.use_default_device())  
+#log(C.use_default_device())  
 ###################################################
 
 #  загрузка библиотек
@@ -108,8 +108,7 @@ log("dataset.shape: " + (str)(dataset.shape))
 
 split_point = (float)(h("split_point/value"))
 
-# если первый слой рекуррентный, то построть трёхмерный тензор - иначе плоскую
-# матрицу
+# если первый слой рекуррентный, то построть трёхмерный массив - иначе плоскую матрицу
 if (h("NN_struct/layer1/value") == "LSTM") | (h("NN_struct/layer1/value") == "Conv1D"):
 
     Dataset_X = numpy.zeros((dataset.shape[0] - window_size, window_size,dataset.shape[1]), dtype=numpy.float32)
@@ -162,8 +161,15 @@ else:
 ####################################################################################
 log("> время чтения данных  : " + (str)(getTime()))  
 log("train_X.shape" + (str)(train_X.shape))
+if (h("NN_struct/layer1/value") == "LSTM") | (h("NN_struct/layer1/value") == "Conv1D"):
+    log((str)(train_X[0,:,:]))
+else:
+    log((str)(train_X[0,:]))
 log("train_y.shape" + (str)(train_y.shape))
-
+if (h("NN_struct/layer1/value") == "LSTM") | (h("NN_struct/layer1/value") == "Conv1D"):
+    log((str)(train_y[0]))
+else:
+    log((str)(train_y[0,:]))
 model = Sequential()         
 
 LAYERS = list(h("NN_struct").keys())

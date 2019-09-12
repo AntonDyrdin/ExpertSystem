@@ -44,17 +44,18 @@ namespace Экспертная_система
             mainThread = System.Threading.Thread.CurrentThread;
             algorithm = new FlexNN(this, "FlexNN");
 
-          //  sourceDataFile = pathPrefix + @"Временные ряды\USD_RUB_exmo.txt";
-            //expert.H.add("input_file", expert.savePreparedDataset(sourceDataFile, "<TIME>;<TICKER>;<PER>;<DATE>;<local_time>", true));
-            algorithm.h.setValueByName("start_point", "0.999");
+          //  sourceDataFile = pathPrefix + @"Временные ряды\USD_RUBmt5.txt";
+           // expert.H.add("input_file", expert.savePreparedDataset(sourceDataFile, "<symbol_time>;<server_time>;<TIME>;<TICKER>;<PER>;<DATE>;<local_time>", true));
+
+            algorithm.h.setValueByName("start_point", "0.9");
             algorithm.h.setValueByName("normalize", "true");
-            algorithm.h.add("input_file", pathPrefix + @"Временные ряды\USD_RUB_exmo_norm-dataset.txt");
+            algorithm.h.add("input_file", pathPrefix + @"Временные ряды\EURRUB_long_min-dataset-cut.txt");
             algorithm.h.add("path_prefix", pathPrefix);
-            algorithm.h.add("drop_columns:<local_time>");
-            algorithm.h.add("predicted_column_index:0");
+            algorithm.h.add("drop_columns:<local_time>,<DATEandTIME>");
+            algorithm.h.add("predicted_column_index:3");
             algorithm.h.add("name:show_train_charts,value:False");
 
-       //    algorithm.train().Wait();
+        //  algorithm.train().Wait();
 
          /*  vis.addParameter("X", Color.White, 500);
             vis.addCSV(algorithm.h.getValueByName("predictions_file_path"), "_X", "<X>", "X", 500, 0, -1);
@@ -71,7 +72,7 @@ namespace Экспертная_система
 
          //   algorithm.Save();
 
-           AO = new AlgorithmOptimization(algorithm, this, 8, 10, 5, 0.5, 100);
+           AO = new AlgorithmOptimization(algorithm, this, 8, 10, 2, 0.5, 100);
             AO.run();
         //    algorithm.h.draw(0, picBox, 25, 300);
             // algorithm.Save();

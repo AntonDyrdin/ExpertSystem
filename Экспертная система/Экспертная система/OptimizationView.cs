@@ -9,7 +9,7 @@ namespace Экспертная_система
         internal OptimizationView(AlgorithmOptimization AO)
         {
             InitializeComponent();
-            Text = "Оптимизация " + AO.algorithm.h.nodes[1].name();
+            Text = "Оптимизация " + AO.algorithm.h.nodes[1].getValue();
             this.AO = AO;
         }
         private void Optimization_Load(object sender, EventArgs e)
