@@ -15,10 +15,13 @@ namespace Экспертная_система
         public string logPath;
         public Hyperparameters h;
         public AgentManager agentManager;
+        public AgentManagerView agentManagerView;
         public int maxlogFilesCount = 10;
         private MainForm form1;
 
         public ModeSelector modeSelector;
+
+
         public Infrastructure(MainForm form1)
         {
             this.form1 = form1;
@@ -69,9 +72,8 @@ namespace Экспертная_система
                 newLog();
             }
             // ИНИЦИАЛИЗАЦИЯ ГЛАВНОЙ ФОРМЫ
-            executionProgressForm = new ExecutionProgress();
-            executionProgressForm.Show();
-        
+
+
 
             DpiFix();
             form1.WindowState = FormWindowState.Minimized;
@@ -79,46 +81,80 @@ namespace Экспертная_система
             if (logPath != null)
             {
                 form1.vis = new MultiParameterVisualizer(form1.picBox, form1);
-                startAgentManager();
+
+                mode = h.getValueByName("mode");
+                if (mode != "Агент")
+                {
+                    startAgentManager();
+                    form1.log("");
+                  //  agentManagerView = new AgentManagerView(agentManager);
+                 //   agentManagerView.Show();
+                }
                 form1.pathPrefix = h.getValueByName("path_prefix");
-                form1.log("");
+
                 form1.log("");
                 form1.WindowState = FormWindowState.Maximized;
             }
             else
             { }
+        }
+        private string mode;
 
+        public void runSelectedMode()
+        {
             if (modeSelector == null)
             {
-                string mode = h.getValueByName("mode");
-
                 if (mode != null)
                 {
                     form1.log(mode);
                     if (mode == "Агент")
                     {
+                        if (mode == "Агент")
+                        {
+                            form1.mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { form1.agent(); });
+                          //  executionProgressForm = new ExecutionProgress();
+                          //  executionProgressForm.Show();
+                        }
 
                     }
                     if (mode == "Оптимизация эксперта")
                     {
                         form1.mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { form1.expertOptimization(); });
+
+                      //  executionProgressForm = new ExecutionProgress();
+                      //  executionProgressForm.Show();
                     }
                     if (mode == "Оптимизация алгоритма")
                     {
                         form1.mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { form1.algorithmOptimization(); });
 
+                        executionProgressForm = new ExecutionProgress();
+                        executionProgressForm.Show();
                     }
                     if (mode == "Тестирование эксперта")
                     {
                         form1.mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { form1.TEST(); });
+
+                        executionProgressForm = new ExecutionProgress();
+                        executionProgressForm.Show();
+
+                        form1.showInpOutp = new TextBoxes();
+                        form1.showInpOutp.Show();
+
                     }
                     if (mode == "Создание и тестирова эксперта")
                     {
                         form1.mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { form1.buildAndTest(); });
+
+                       executionProgressForm = new ExecutionProgress();
+                        executionProgressForm.Show();
                     }
                     if (mode == "Создание и обучение эксперта")
                     {
                         form1.mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { form1.buildAndTrain(); });
+
+                        executionProgressForm = new ExecutionProgress();
+                        executionProgressForm.Show();
                     }
                     if (mode == "SARSA")
                     {
@@ -140,8 +176,6 @@ namespace Экспертная_система
             form1.TrackBar2_Scroll(null, null);
             form1.TrackBar3_Scroll(null, null);
             form1.TrackBar4_Scroll(null, null);
-
-
         }
         public void showModeSelector()
         {
@@ -204,7 +238,7 @@ namespace Экспертная_система
 
         internal void newProcessToShow(Process process)
         {
-         
+
             int width = 0;
             int height = 0;
             executionProgressForm.panel1.Invoke(new Action(() =>
@@ -222,11 +256,17 @@ namespace Экспертная_система
                 IntPtr fMWH = (IntPtr)0x00000000;
                 executionProgressForm.panel1.Invoke(new Action(() =>
                 {
-                    while (fMWH == (IntPtr)0x00000000)
+                    int waitFor = 100;
+                    int inc = 0;
+                    while (fMWH == (IntPtr)0x00000000 & inc < waitFor)
+                    {
                         fMWH = SetParent(process.MainWindowHandle, executionProgressForm.panel1.Handle);
+                        System.Threading.Thread.Sleep(10);
+                        inc++;
+                    }
                 }));
             }
-          
+
             for (int i = 0; i < executingProcesses.Count; i++)
             {
                 if (executingProcesses[i] == null)
@@ -404,8 +444,10 @@ namespace Экспертная_система
                 System.Threading.Thread.Sleep(100);
             }
 
-            string logPath = args.Substring(18);
-            logPath = logPath.Remove(logPath.Length - 1, 1);
+
+            string logPath = args.Replace("--json_file_path ","");
+
+            logPath= logPath.Replace("\"", "");
 
             string response = File.ReadAllText(Path.GetDirectoryName(logPath) + "\\log.txt", System.Text.Encoding.Default);
             string error = File.ReadAllText(Path.GetDirectoryName(logPath) + "\\log_error.txt", System.Text.Encoding.Default);
@@ -446,6 +488,7 @@ namespace Экспертная_система
 
         public Process runProcess(string scriptFile, string args)
         {
+
             ProcessStartInfo start = new ProcessStartInfo();
 
             start.FileName = form1.I.h.getValueByName("python_path");
@@ -457,6 +500,7 @@ namespace Экспертная_система
             start.RedirectStandardOutput = true;
             start.RedirectStandardError = true;
             Process process = Process.Start(start);
+            form1.log("Run process " + scriptFile + " " + args);
             return process;
         }
         private void newLog()

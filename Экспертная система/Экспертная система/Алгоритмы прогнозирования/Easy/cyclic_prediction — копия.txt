@@ -1,0 +1,22 @@
+"MT_250";(predicted -> )"MT_250";type
+0.61808819;0.61808819; real (1st window)
+0.43875342;0.43875342; real (1st window)
+0.33194711;0.33194711; real (1st window)
+0.34775373;0.34775373; real (1st window)
+0.47942612;0.47942612; real (1st window)
+0.6179092;0.6179092; real (1st window)
+0.40037302;0.40037302; real (1st window)
+0.5;0.5; real (1st window)
+0.61808819;0.61808819; real (1st window)
+0.54097729;0.54097729; real (1st window)
+0.38191181;0.38191181; real (1st window)
+0.38191181;0.53827924; 0 prediction
+0.59981344;0.58463186; 1 prediction
+0.66805288;0.572571; 2 prediction
+0.54097729;0.533501; 3 prediction
+0.5;0.47326174; 4 prediction
+0.27722353;0.57740724; 5 prediction
+0.5;0.5121095; 6 prediction
+0.52057388;0.45691624; 7 prediction
+0.54097729;0.48606494; 8 prediction
+0.43875342;0.5526228; 9 prediction

@@ -132,6 +132,7 @@ namespace Экспертная_система
                 string predictionsFilePath = new_save_folder + "predictions.txt";
                 algorithm.h.setValueByName("predictions_file_path", predictionsFilePath);
                 File.WriteAllText(new_save_folder + "h.json", algorithm.h.toJSON(0), System.Text.Encoding.Default);
+                algorithm.h.setValueByName("show_train_charts", "False");
 
                 algorithm.train().Wait();
                 algorithm.h.setValueByName("target_function", algorithm.h.getValueByName("accuracy"));
@@ -185,22 +186,22 @@ namespace Экспертная_система
                 //   где номер строки (первый индекс (i)) - индекс индивида, а номер столбца (второй индекс (j)) - итерация тестирования
                 double[,] target_functions = new double[population_value, test_count];
 
-                if (agentManager.agents.Count == 0)
+
+                //  for (int i = Convert.ToInt16(Math.Round(population_value * elite_ratio)); i < population_value; i++)
+
+                for (int tc = 0; tc < test_count; tc++)
                 {
-                    //  for (int i = Convert.ToInt16(Math.Round(population_value * elite_ratio)); i < population_value; i++)
-
-                    for (int tc = 0; tc < test_count; tc++)
+                    var now2 = new DateTimeOffset(DateTime.Now);
+                    var start2 = now2.ToUnixTimeSeconds();
+                    if (multiThreadTraining)
                     {
-                        var now2 = new DateTimeOffset(DateTime.Now);
-                        var start2 = now2.ToUnixTimeSeconds();
-                        if (multiThreadTraining)
+                        if (form1.multiThreadTrainingRATE != 0)
+                            multiThreadTrainingRATE = form1.multiThreadTrainingRATE;
+                        log("multiThreadTrainingRATE = " + multiThreadTrainingRATE.ToString(), Color.Yellow);
+                        if (multiThreadTrainingRATE > population_value)
+                            multiThreadTrainingRATE = population_value;
+                        if (agentManager.agents.Count == 0)
                         {
-                            if (form1.multiThreadTrainingRATE != 0)
-                                multiThreadTrainingRATE = form1.multiThreadTrainingRATE;
-                            log("multiThreadTrainingRATE = " + multiThreadTrainingRATE.ToString(), Color.Yellow);
-                            if (multiThreadTrainingRATE > population_value)
-                                multiThreadTrainingRATE = population_value;
-
                             for (int begin = 0; begin < population_value; begin += multiThreadTrainingRATE)
                             {
                                 var now1 = new DateTimeOffset(DateTime.Now);
@@ -228,8 +229,7 @@ namespace Экспертная_система
                                 Task[] trainTasks = new Task[end - begin];
                                 foreach (Algorithm alg in algorithms)
                                 {
-                                    trainTasks[algorithms.IndexOf(alg)] = new Task(() => algorithms[algorithms.IndexOf(alg)].train().Wait());
-                                    trainTasks[algorithms.IndexOf(alg)].Start();
+                                    trainTasks[algorithms.IndexOf(alg)] = algorithms[algorithms.IndexOf(alg)].train();
                                 }
 
                                 foreach (var task in trainTasks)
@@ -245,64 +245,65 @@ namespace Экспертная_система
                             }
                         }
                         else
-                        {// SINGLE THREAD
+                        {
                             for (int i = 0; i < population_value; i++)
                             {
-                                algorithm.h = population[i].Clone();
-                                algorithm.train().Wait();
-                                population[i] = algorithm.h.Clone();
+                                agentManager.tasks.Add(new AgentTask("train", population[i].Clone()));
+                            }
+
+                            Task.Factory.StartNew(() => { agentManager.work(); }).Wait();
+
+                            for (int i = 0; i < population_value; i++)
+                            {
+                                population[i] = agentManager.tasks[i].h.Clone();
                                 target_functions[i, tc] = Convert.ToDouble(population[i].getValueByName("accuracy").Replace('.', ','));
                             }
+                            agentManager.tasks.Clear();
                         }
-                        for (int i = 0; i < population_value; i++)
-                        {
-                            population[i].setValueByName("state", (tc + 1).ToString() + '/' + test_count.ToString() + " " + population[i].getValueByName("state"));
-                        }
-                        log((tc + 1).ToString() + '/' + test_count.ToString() + " test comlete" + TimeSpan.FromSeconds((new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds()) - start2).ToString(), Color.LimeGreen);
-
                     }
-
-                    //вычисление итоговых значений критерия оптимальности
+                    else
+                    {
+                        // SINGLE THREAD - устаревший код
+                        /*   for (int i = 0; i < population_value; i++)
+                           {
+                               algorithm.h = population[i].Clone();
+                               algorithm.train().Wait();
+                               population[i] = algorithm.h.Clone();
+                               target_functions[i, tc] = Convert.ToDouble(population[i].getValueByName("accuracy").Replace('.', ','));
+                           }*/
+                    }
                     for (int i = 0; i < population_value; i++)
                     {
-                        double sum = 0;
-
-                        // AVG
-                        for (int j = 0; j < test_count; j++)
-                            sum += target_functions[i, j];
-                        double AVG = sum / test_count;
-
-                        sum = 0;
-                        // StdDev
-                        for (int j = 0; j < test_count; j++)
-                            sum += (AVG - target_functions[i, j]) * (AVG - target_functions[i, j]);
-
-                        double StdDev = Math.Sqrt(sum / test_count);
-
-                        // если  target_function равна  (AVG - StdDev), то последующее вычисление критерия оптимальности будет давать результаты ВЫШЕ, чем  target_function
-                        population[i].setValueByName("target_function", (AVG - StdDev).ToString().Replace(',', '.'));
-                        population[i].setValueByName("target_function_AVG", (AVG).ToString().Replace(',', '.'));
-                        population[i].setValueByName("target_function_StdDev", (StdDev).ToString().Replace(',', '.'));
-                        // File.WriteAllText(population[i].getValueByName("json_file_path"), population[i].toJSON(0), System.Text.Encoding.Default);
+                        population[i].setValueByName("state", (tc + 1).ToString() + '/' + test_count.ToString() + " " + population[i].getValueByName("state"));
                     }
+                    log((tc + 1).ToString() + '/' + test_count.ToString() + " test comlete" + TimeSpan.FromSeconds((new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds()) - start2).ToString(), Color.LimeGreen);
+
                 }
-                else
+
+                //вычисление итоговых значений критерия оптимальности
+                for (int i = 0; i < population_value; i++)
                 {
-                    for (int i = 0; i < population_value; i++)
-                    {
-                        agentManager.tasks.Add(new AgentTask("train", population[i]));
-                    }
+                    double sum = 0;
 
-                    Task.Factory.StartNew(() => { agentManager.work(); }).Wait();
+                    // AVG
+                    for (int j = 0; j < test_count; j++)
+                        sum += target_functions[i, j];
+                    double AVG = sum / test_count;
 
-                    for (int i = 0; i < population_value; i++)
-                    {
-                        // population[i] = agentManager.tasks[i - Convert.ToInt16(Math.Round(population_value * elite_ratio))].h;
-                        population[i] = agentManager.tasks[i].h;
-                        File.WriteAllText(population[i].getValueByName("json_file_path"), population[i].toJSON(0), System.Text.Encoding.Default);
-                    }
-                    agentManager.tasks.Clear();
+                    sum = 0;
+                    // StdDev
+                    for (int j = 0; j < test_count; j++)
+                        sum += (AVG - target_functions[i, j]) * (AVG - target_functions[i, j]);
+
+                    double StdDev = Math.Sqrt(sum / test_count);
+
+                    // если  target_function равна  (AVG - StdDev), то последующее вычисление критерия оптимальности будет давать результаты ВЫШЕ, чем  target_function
+                    population[i].setValueByName("target_function", (AVG - StdDev).ToString().Replace(',', '.'));
+                    population[i].setValueByName("target_function_AVG", (AVG).ToString().Replace(',', '.'));
+                    population[i].setValueByName("target_function_StdDev", (StdDev).ToString().Replace(',', '.'));
                 }
+
+
 
                 // сортировка по точности
                 string temp;
@@ -347,24 +348,25 @@ namespace Экспертная_система
                     Algorithm.MoveFiles(population[i], oldPath, newPath);
                     Algorithm.MoveFiles(oldH, tempFolder, oldPath);
                 }
-                /*   for (int i = 0; i < population_value - 1; i++)
-                {
-                    string newPath = form1.pathPrefix + "Optimization\\temp\\" + algorithm.name + "\\" + algorithm.name + "[" + i.ToString() + "]";
-                    string oldPath = form1.pathPrefix + "Optimization\\" + algorithm.name + "\\" + algorithm.name + "[" + i.ToString() + "]";
-                    Hyperparameters oldH = new Hyperparameters(newPath + "\\h.json", form1, true);
-                    Algorithm.MoveFiles(oldH, newPath, tempFolder);
-                }
-                for (int i = 0; i < population_value - 1; i++)
-                {
-                    string oldPath = form1.pathPrefix + "Optimization\\temp\\" + algorithm.name + "\\" + algorithm.name + "[" + i.ToString() + "]";
-                    Hyperparameters oldH = new Hyperparameters(oldPath + "\\h.json", form1, true);
-                    string newPath = population[i].getValueByName("save_folder");
-                    //взять код из i-ого индивида в папке temp, а затем искать индекс того же идивида по коду в массиве population
-                    string code = oldH.getValueByName("code");
-                    for (int i = 0; i < population_value - 1; i++)
+
+                    /*   for (int i = 0; i < population_value - 1; i++)
+                    {
+                        string newPath = form1.pathPrefix + "Optimization\\temp\\" + algorithm.name + "\\" + algorithm.name + "[" + i.ToString() + "]";
+                        string oldPath = form1.pathPrefix + "Optimization\\" + algorithm.name + "\\" + algorithm.name + "[" + i.ToString() + "]";
+                        Hyperparameters oldH = new Hyperparameters(newPath + "\\h.json", form1, true);
                         Algorithm.MoveFiles(oldH, newPath, tempFolder);
-                }*/
-            }
+                    }
+                    for (int i = 0; i < population_value - 1; i++)
+                    {
+                        string oldPath = form1.pathPrefix + "Optimization\\temp\\" + algorithm.name + "\\" + algorithm.name + "[" + i.ToString() + "]";
+                        Hyperparameters oldH = new Hyperparameters(oldPath + "\\h.json", form1, true);
+                        string newPath = population[i].getValueByName("save_folder");
+                        //взять код из i-ого индивида в папке temp, а затем искать индекс того же идивида по коду в массиве population
+                        string code = oldH.getValueByName("code");
+                        for (int i = 0; i < population_value - 1; i++)
+                            Algorithm.MoveFiles(oldH, newPath, tempFolder);
+                    }*/
+                }
 
             for (int i = 0; i < population_value; i++)
                 population[i].setValueByName("model_name", population[i].nodes[0].name() + "[" + i.ToString() + "]");
@@ -381,6 +383,7 @@ namespace Экспертная_система
             variablesVisualizer.addPoint(Convert.ToDouble(population[0].getValueByName("target_function").Replace('.', ',')), "best individ");
 
             variablesVisualizer.refresh();
+
         }
 
         private string[] layerTypes = new string[]
@@ -633,7 +636,7 @@ namespace Экспертная_система
                 population[individIndex].nodes[variableIndex].setAttribute("value", newValue);
             }
             if (population[individIndex].nodes[variableIndex].getAttributeValue("variable") == "numerical")
-            {
+            { /*
                 // новая логика - новое значение параметра получается в результате увеличения или уменьшения старого на величину step 
                 int upOrDown = r.Next(0, 2);
                 if (population[individIndex].nodes[variableIndex].getValue()[0] != '0')
@@ -708,13 +711,17 @@ namespace Экспертная_система
                             log("individIndex = " + individIndex.ToString() + "; variableIndex = " + variableIndex.ToString() + " (" + population[individIndex].nodes[variableIndex].name() + ")" + "; newValue = " + newValue.ToString(), Color.White);
                         }
                     }
-                }
+                }*/
 
                 // логика работы метода mutation(), при которой новое значение параметра выбирается случайным образом из интервала min - max
-                /*
+
                 if (population[individIndex].nodes[variableIndex].getValue()[0] != '0')
                 {
                     int newValue = r.Next(Convert.ToInt32(population[individIndex].nodes[variableIndex].getAttributeValue("min")), Convert.ToInt32(population[individIndex].nodes[variableIndex].getAttributeValue("max")) + 1);
+                    if (newValue == 0)
+                        log("individIndex = " + individIndex.ToString() + "; variableIndex = " + variableIndex.ToString() + " (" + population[individIndex].nodes[variableIndex].name() + ")" + "; newValue = " + newValue.ToString(), Color.White);
+
+
                     population[individIndex].nodes[variableIndex].setAttribute("value", newValue.ToString());
                     log("individIndex = " + individIndex.ToString() + "; variableIndex = " + variableIndex.ToString() + " (" + population[individIndex].nodes[variableIndex].name() + ")" + "; newValue = " + newValue.ToString(), Color.White);
 
@@ -729,7 +736,7 @@ namespace Экспертная_система
                     }
                     log("individIndex = " + individIndex.ToString() + "; variableIndex = " + variableIndex.ToString() + " (" + population[individIndex].nodes[variableIndex].name() + ")" + "; newValue = " + newValue.ToString(), Color.White);
                     population[individIndex].nodes[variableIndex].setAttribute("value", newValue.ToString().Replace(',', '.'));
-                }*/
+                }
             }
 
             population[individIndex].setValueByName("state", "изменены параметры");

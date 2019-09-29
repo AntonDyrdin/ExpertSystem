@@ -75,3 +75,5 @@ C:\Users\anton\Рабочий стол\MAIN\Экспертная система\
 E:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\obj\Debug\Экспертная_система.ExecutionProgress.resources
 E:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\obj\Debug\Экспертная_система.PicBoxOnPanel.resources
 E:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\obj\Debug\Экспертная_система.OptimizationView.resources
+E:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\obj\Debug\Экспертная_система.TextBoxes.resources
+E:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\obj\Debug\Экспертная_система.AgentManagerView.resources

@@ -1,0 +1,30 @@
+E:\Anton\Desktop\MAIN\work_folder\log.txtE:\Anton\Desktop\MAIN\work_folder\log.txt
+СКРИПТ ОБУЧЕНИЯ BidAsk ЗАПУЩЕН...
+Все вычислительные устройства: (GPU[0] GeForce GTX 1050 Ti, CPU)
+Попытка установить GPU как устройство по умолчанию: True
+> время загрузки библиотек : 1.888 сек.
+dataset.shape: (9082, 7)
+[0;0;1] = 2256    25.005542008423852 %
+[0;1;0] = 3277    36.32232320993128 %
+[1;0;0] = 3489    38.67213478164487 %
+Всего = 9022
+под ресемплирование зарезервировано 0 мест
+> время чтения данных  : 4.483 сек.
+train_X.shape(8120, 60, 6)
+train_y.shape(8120, 3)
+[0. 1. 0.]
+add LSTM layer 9 neurons, input_shape=( 60, 6), return_sequences=True
+add LSTM layer 6 neurons, return_sequences=False
+add Dense layer 3 neurons, activation: softmax
+компиляция НС...
+> время компиляции НС  : 0.641 сек.
+обучение НС...
+> время обучения  НС  : 8.646 сек.
+сохранение модели: E:\Anton\Desktop\MAIN\work_folder\weights.h5
+> время сохранения НС  : 0.099 сек.
+создание тестового прогноза
+(902, 3)
+> время создания и записи тестового прогноза  : 0.669 сек.
+__________________________________
+______________END________________
+{RESPONSE:{response:{value:скрипт BidAsk успешно завершён}}}

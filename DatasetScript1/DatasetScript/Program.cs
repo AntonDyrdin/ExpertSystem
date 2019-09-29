@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 namespace DatasetScript
 {
@@ -8,16 +9,48 @@ namespace DatasetScript
         {
             var allLines = File.ReadAllLines(args[0]);
             List<string> newLines = new List<string>();
-            foreach (string line in allLines)
+
+            string s = "";
+
+            newLines.Add(allLines[0]);
+            int window = 10;
+            double avg = 0;
+            for (int i = 1; i < allLines.Length-window; i++)
             {
-                if (line != "")
+                s = "";
+                string[] features = allLines[i].Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+
+                double sum = 0;
+                for (int j = 0; j < window; j++)
                 {
-                    var newline = line.Replace(',', ';');
-                    newLines.Add(newline.Replace('.', ','));
-                   // System.Console.WriteLine(newline);
+                    features = allLines[i + j].Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+                    double x = double.Parse(features[0].Replace('.', ','));
+                    sum += x;
                 }
+                avg = sum / window;
+                s += String.Format("{0:0.########}", avg).Replace(',', '.') + ';';
+                newLines.Add(s);
             }
-            File.WriteAllLines(args[0], newLines);
+            /*  for (int i = 0; i < 10000 ;i++)
+              {
+                  s = "";
+                  string[] features= allLines[i].Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+                  for (int j = 250; j < 254; j++)
+                  {
+                    s+=  String.Format("{0:0.########}", features[j]).Replace(',', '.') + ';';
+                  }
+                  newLines.Add(s);
+              }*/
+            /*  foreach (string line in allLines)
+              {
+                  if (line != "")
+                  {
+                      var newline = line.Replace(',', ';');
+                      newLines.Add(newline.Replace('.', ','));
+                     // System.Console.WriteLine(newline);
+                  }
+              }*/
+            File.WriteAllLines(args[0].Replace(".txt", " MAVG.txt"), newLines);
         }
     }
 }

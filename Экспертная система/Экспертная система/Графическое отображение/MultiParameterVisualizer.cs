@@ -56,6 +56,27 @@ namespace Экспертная_система
                 }
             }
         }
+        public void markLast(string value, string name)
+        {
+            foreach (ParameterVisualizer visualizer in parameters)
+            {
+                foreach (Function function in visualizer.functions)
+                {
+                    if (function.label == name)
+                    {
+                        visualizer.functions[visualizer.functions.IndexOf(function)].points[visualizer.functions[visualizer.functions.IndexOf(function)].points.Count-1].mark=value;
+                        goto endOfAddPoint;
+                    }
+                }
+                if (visualizer.label == name)
+                {
+                    visualizer.functions[0].points[visualizer.functions[0].points.Count - 1].mark = value;
+                    goto endOfAddPoint;
+                }
+            }
+        endOfAddPoint:
+            ;
+        }
         public void addPoint(string value, string name)
         {
             try

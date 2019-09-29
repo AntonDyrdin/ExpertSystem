@@ -98,7 +98,7 @@
             this.panel1.AutoScroll = true;
             this.panel1.Controls.Add(this.picBox);
             this.panel1.Location = new System.Drawing.Point(2, 2);
-            this.panel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panel1.Margin = new System.Windows.Forms.Padding(2);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1247, 1036);
             this.panel1.TabIndex = 38;
@@ -106,7 +106,7 @@
             // trackBar1
             // 
             this.trackBar1.Location = new System.Drawing.Point(1450, 188);
-            this.trackBar1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.trackBar1.Margin = new System.Windows.Forms.Padding(2);
             this.trackBar1.Maximum = 30;
             this.trackBar1.Minimum = 5;
             this.trackBar1.Name = "trackBar1";
@@ -136,7 +136,7 @@
             this.buttonHyperparameters.Name = "buttonHyperparameters";
             this.buttonHyperparameters.Size = new System.Drawing.Size(80, 40);
             this.buttonHyperparameters.TabIndex = 39;
-            this.buttonHyperparameters.Text = "Hyperparameters";
+            this.buttonHyperparameters.Text = "Agent manager";
             this.buttonHyperparameters.UseVisualStyleBackColor = true;
             this.buttonHyperparameters.Click += new System.EventHandler(this.Hyperparameters_Click);
             // 
@@ -148,7 +148,7 @@
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(80, 40);
             this.button2.TabIndex = 40;
-            this.button2.Text = "Charts";
+            this.button2.Text = "Execution progress";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.Charts_Click);
             // 
@@ -223,11 +223,11 @@
             // 
             this.trackBar3.Location = new System.Drawing.Point(1450, 138);
             this.trackBar3.Maximum = 100;
-            this.trackBar3.Minimum = 5;
+            this.trackBar3.Minimum = 1;
             this.trackBar3.Name = "trackBar3";
             this.trackBar3.Size = new System.Drawing.Size(402, 45);
             this.trackBar3.TabIndex = 46;
-            this.trackBar3.Value = 5;
+            this.trackBar3.Value = 2;
             this.trackBar3.Scroll += new System.EventHandler(this.TrackBar3_Scroll);
             // 
             // label4
@@ -239,7 +239,7 @@
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(13, 13);
             this.label4.TabIndex = 48;
-            this.label4.Text = "5";
+            this.label4.Text = "1";
             // 
             // label5
             // 
@@ -266,7 +266,7 @@
             // trackBar4
             // 
             this.trackBar4.Location = new System.Drawing.Point(1450, 56);
-            this.trackBar4.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.trackBar4.Margin = new System.Windows.Forms.Padding(2);
             this.trackBar4.Maximum = 6;
             this.trackBar4.Minimum = 1;
             this.trackBar4.Name = "trackBar4";

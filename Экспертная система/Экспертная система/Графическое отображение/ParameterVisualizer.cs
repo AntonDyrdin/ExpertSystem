@@ -206,7 +206,7 @@ namespace Экспертная_система
                                   xZeroGap + dx * (step - 1), Ymin + Ymax - (((Ymax - yUpGap) * (function.points[i - 1].y - minY)) / (maxY - minY) + yDownGap),
                                   xZeroGap + dx * step, Ymin + Ymax - (((Ymax - yUpGap) * (function.points[i].y - minY)) / (maxY - minY) + yDownGap));
 
-                                if (function.points[i].mark != function.points[i - 1].mark || step == 2)
+                             //   if (function.points[i].mark != function.points[i - 1].mark || step == 2)
                                     drawStringVertical(function.points[i].mark, mainFontDepth,
                                     xZeroGap + dx * step, Ymin + Ymax - (((Ymax - yUpGap) * (function.points[i].y - minY)) / (maxY - minY) + yDownGap));
                             }

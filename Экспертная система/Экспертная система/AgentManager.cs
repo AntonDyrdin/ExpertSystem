@@ -16,6 +16,7 @@ namespace Экспертная_система
         public Task searchForAgentsTask;
         public Task listener;
         public string status;
+        public string IP = "192.168.1.5";
         private const int port = 8888;
         public TcpListener TCPListener;
         public AgentManager(MainForm form1)
@@ -25,7 +26,7 @@ namespace Экспертная_система
             searchForAgentsTask = Task.Factory.StartNew(() => { searchForAgents(); });
             tasks = new List<AgentTask>();
             agents = new List<Agent>();
-         
+
         }
 
         public void doWork()
@@ -42,7 +43,7 @@ namespace Экспертная_система
                 anyTasks = false;
                 foreach (AgentTask task in tasks)
                 {
-                    if (task.status == "undone")
+                    if (task.status == "undone" | task.status == "working")
                         anyTasks = true;
                 }
                 if (anyTasks)
@@ -73,19 +74,21 @@ namespace Экспертная_система
         {
             try
             {
-                // TCPListener = new TcpListener(IPAddress.Parse("127.0.0.1"), port);
-                log("IP: "+Dns.GetHostByName(Dns.GetHostName()).AddressList[0].ToString());
-                TCPListener = new TcpListener(Dns.GetHostByName(Dns.GetHostName()).AddressList[0], port);
+                log("IP: " + IP);
+                TCPListener = new TcpListener(IPAddress.Parse(IP), port);
                 TCPListener.Start();
                 log("Менеджер агентов запущен");
-               // log("Ожидание подключений...");
+                // log("Ожидание подключений...");
 
                 while (true)
                 {
                     TcpClient client = TCPListener.AcceptTcpClient();
                     Agent clientObject = new Agent(client, form1);
                     agents.Add(clientObject);
-                    log("Подключён агент "+ client.Client.RemoteEndPoint.ToString());
+                    agents[agents.Count - 1].ip = client.Client.RemoteEndPoint.ToString().Split(':')[0];
+                    agents[agents.Count - 1].hostName = Dns.GetHostEntry(IPAddress.Parse(agents[agents.Count - 1].ip)).HostName;
+                    log("Подключён агент " + agents[agents.Count - 1].ip);
+                    log("                " + agents[agents.Count - 1].hostName);
                     // создаем новый поток для обслуживания нового клиента
                     Thread clientThread = new Thread(new ThreadStart(clientObject.Process));
                     clientThread.Start();
@@ -110,7 +113,9 @@ namespace Экспертная_система
 
     public class Agent
     {
+
         public string ip;
+        public string hostName;
         public string status = "free";
         public AgentTask task = null;
         public string workFolder;
@@ -123,7 +128,6 @@ namespace Экспертная_система
         {
             client = tcpClient;
             this.form1 = form1;
-
         }
 
         public void Process()
@@ -174,6 +178,9 @@ namespace Экспертная_система
 
                                 task.status = "done";
                                 status = "free";
+
+                                log(task.h.getValueByName("model_name") + " trained;   accuracy = " + task.h.getValueByName("accuracy") + " %");
+
                             }
                             else
                             {
@@ -200,19 +207,19 @@ namespace Экспертная_система
         }
         public void sendCommand(BinaryWriter writer, string Command)
         {
-          //  log("SEND: " + Command);
+            //  log("SEND: " + Command);
             writer.Write(Command);
 
         }
         public string recieveCommand(BinaryReader reader)
         {
             var Command = reader.ReadString();
-          //  log("RECIEVE: " + Command);
+            //  log("RECIEVE: " + Command);
             return Command;
         }
         void sendFile(BinaryWriter writer, string path)
         {
-         //   log("SEND: " + path);
+            //   log("SEND: " + path);
             writer.Write(Encoding.Default.GetString(File.ReadAllBytes(path)));
         }
         void recieveFile(BinaryReader reader, string savePath)
@@ -220,7 +227,7 @@ namespace Экспертная_система
             string message = reader.ReadString(); ;
             var file = Encoding.Default.GetBytes(message);
             File.WriteAllBytes(savePath, file);
-           // log("RECIEVE: " + savePath);
+            // log("RECIEVE: " + savePath);
         }
 
 

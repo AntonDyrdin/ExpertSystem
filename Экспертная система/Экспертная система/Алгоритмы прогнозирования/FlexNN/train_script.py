@@ -300,7 +300,7 @@ head = head + '(predicted -> )' + allLines[0].split(';')[(int)(h("predicted_colu
 predictionsFile.write(head + '\n')
 
 
-if h("NN_struct/layer1/value") == "LSTM":
+if (h("NN_struct/layer1/value") == "LSTM")|(h("NN_struct/layer1/value") == "Conv1D"):
     for i in range(0,test_X.shape[0]):
         line = ''
         for k in range(0,test_X.shape[2]): 

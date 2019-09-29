@@ -13,7 +13,7 @@ namespace Экспертная_система
         public Socket handler;
 
         public string ACTION = "";
-        // string IP = "192.168.1.7";
+        //string IP = "192.168.1.2";
 
      //string IP = "localhost";
         public MetaTraderLink(MainForm mainForm)

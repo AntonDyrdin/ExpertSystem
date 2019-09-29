@@ -1,4 +1,4 @@
-prediction_algorithm_name = 'LSTM_2'
+prediction_algorithm_name = 'Easy'
 print("СКРИПТ ПОТОЧНОГО ПРОГНОЗИРОВАНИЯ " + prediction_algorithm_name + " ЗАПУЩЕН...")
 
 import random
@@ -27,7 +27,7 @@ import json
 def createParser():
     parser = argparse.ArgumentParser()
     #parser.add_argument('--json_file_path',type=str,default='D:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\LSTM 1\h.json')
-    parser.add_argument('--json_file_path',type=str,default='C:\\Users\\anton\\Рабочий стол\\MAIN\\Экспертная система\\Экспертная система\\Алгоритмы прогнозирования\\LSTM 1\\h.json')
+    parser.add_argument('--json_file_path',type=str)
     return parser
 
 parser = createParser()
@@ -65,8 +65,6 @@ window_size=(int)(h("window_size"))
 print('model loaded')
 print("save_path: "+save_path)
 print("window_size: "+(str)(window_size)) 
-AVG=(float)(h("AVG"))
-print("AVG: "+(str)(AVG))
 
 enough=False
 while enough==False: 
@@ -108,9 +106,5 @@ while enough==False:
 
 
         predicted = model.predict(X)
-        #print(predicted)
-        predicted=predicted-AVG+0.5
-        print("AVG: "+(str)(AVG))
-        print("session = "+(str)(session))
        # print(predicted)
-        print("prediction:",predicted)
+        print("prediction:",(str)(predicted[0,1] - predicted[0,0] + 0.5))

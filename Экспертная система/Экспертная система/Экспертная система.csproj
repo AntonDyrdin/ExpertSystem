@@ -46,7 +46,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AgentLink.cs" />
     <Compile Include="AgentManager.cs" />
+    <Compile Include="AgentManagerView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AgentManagerView.Designer.cs">
+      <DependentUpon>AgentManagerView.cs</DependentUpon>
+    </Compile>
     <Compile Include="Algorithm.cs" />
     <Compile Include="AlgorithmOptimization.cs" />
     <Compile Include="ExecutionProgress.cs">
@@ -81,6 +88,14 @@
     <Compile Include="ImgDataset.cs" />
     <Compile Include="ExpertOptimization.cs" />
     <Compile Include="Infrastructure.cs" />
+    <Compile Include="TextBoxes.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TextBoxes.Designer.cs">
+      <DependentUpon>TextBoxes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Алгоритмы прогнозирования\BidAsk\BidAsk.cs" />
+    <Compile Include="Алгоритмы прогнозирования\Easy\Easy.cs" />
     <Compile Include="Алгоритмы прогнозирования\FlexNN\FlexNN.cs" />
     <Compile Include="OptimizationView.cs">
       <SubType>Form</SubType>
@@ -92,6 +107,9 @@
     <Compile Include="Графическое отображение\ParameterVisualizer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="AgentManagerView.resx">
+      <DependentUpon>AgentManagerView.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ExecutionProgress.resx">
       <DependentUpon>ExecutionProgress.cs</DependentUpon>
     </EmbeddedResource>
@@ -116,6 +134,9 @@
     <EmbeddedResource Include="OptimizationView.resx">
       <DependentUpon>OptimizationView.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="TextBoxes.resx">
+      <DependentUpon>TextBoxes.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -125,6 +146,11 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="Алгоритмы прогнозирования\BidAsk\get_prediction.py" />
+    <None Include="Алгоритмы прогнозирования\BidAsk\train_script.py" />
+    <None Include="Алгоритмы прогнозирования\Easy\cyclic_prediction.py" />
+    <None Include="Алгоритмы прогнозирования\Easy\get_prediction.py" />
+    <None Include="Алгоритмы прогнозирования\Easy\train_script.py" />
     <None Include="Алгоритмы прогнозирования\FlexNN\get_prediction.py" />
     <None Include="Алгоритмы прогнозирования\FlexNN\train_script.py" />
   </ItemGroup>

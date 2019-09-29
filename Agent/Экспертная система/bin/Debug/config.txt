@@ -1,9 +1,0 @@
-﻿DESKTOP-V4VJU9V
-path_prefix:D:\Anton\Desktop\MAIN\
-python_path:C:\Anaconda3\python.exe
-log_path:D:\Anton\Desktop\MAIN\log\
-
-DESKTOP-B3G20T0
-path_prefix:C:\Users\anton\Рабочий стол\MAIN\
-python_path:C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\python.exe
-log_path:C:\Users\anton\Рабочий стол\MAIN\log\

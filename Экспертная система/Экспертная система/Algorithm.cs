@@ -17,8 +17,8 @@ namespace Экспертная_система
         public double accuracy;
         public string name;
         public string modelName;
-        public int modelLoadingDelay = 180 * 1000;
-        public int pred_script_timeout = 50000;
+        public int modelLoadingDelay = 5 * 1000;
+        public int pred_script_timeout = 5000;
         public int NNscructNodeId;
         public int layersCount = 0;
         public Algorithm(MainForm form1, string modelName)
@@ -100,6 +100,7 @@ namespace Экспертная_система
         private bool Continue = false;
         public void runGetPredictionScript()
         {
+            log("Запуск скрипта прогнозирования..");
             args = "--json_file_path " + '"' + getValueByName("json_file_path") + '"';
             var get_prediction_script_path = getValueByName("get_prediction_script_path");
 
@@ -116,6 +117,7 @@ namespace Экспертная_система
         public double getPrediction(string[] input)
         {
             int inc = 0;
+            string error = "";
             //загрузка скрипта поточного прогнозирования, если он не запущен
             while (Continue == false)
             {
@@ -126,7 +128,7 @@ namespace Экспертная_система
                 {
                     if (script_conclusion.IndexOf("model loaded") != -1)
                     {
-                        //  log("Этап загрузки модели в скрипте поточного прогнозирования пройден успешно");
+                        log("Этап загрузки модели в скрипте поточного прогнозирования пройден успешно");
                         Continue = true;
                     }
                 }
@@ -134,7 +136,7 @@ namespace Экспертная_система
                 inc++;
                 if (inc > modelLoadingDelay / 1)
                 {
-                    string error = predict_process.StandardError.ReadToEnd();
+                    error = predict_process.StandardError.ReadToEnd();
                     log("Завис поток прогнозирования на этапе запуска скрипта и загрузки модели", Color.Red);
                     log(script_conclusion);
                     log(error);
@@ -150,7 +152,8 @@ namespace Экспертная_система
                     string buffer = predict_process_read_stream.ReadLine();
                     if (script_conclusion.Contains("EXEPTION"))
                         log(script_conclusion);
-                    script_conclusion = script_conclusion + '\n' + buffer;
+                    if (buffer != "" & buffer != null)
+                        script_conclusion = script_conclusion + '\n' + buffer;
                     if (buffer != null)
                     {
                         if (buffer.IndexOf("next") != -1)
@@ -165,6 +168,7 @@ namespace Экспертная_система
                             log("Процесс поточного прогнозирования  остановился на этапе записи входного вектора в поток: ", Color.Red);
                             log(script_conclusion);
                             log(predict_process_error_stream.ReadToEnd());
+                            log(error);
                             return -1000;
                         }
 
@@ -180,7 +184,8 @@ namespace Экспертная_система
             while (Continue == false && inc * 1 < pred_script_timeout)
             {
                 var buffer = predict_process_read_stream.ReadLine();
-                script_conclusion = script_conclusion + buffer + '\n';
+                if (buffer != "" & buffer != null)
+                    script_conclusion = script_conclusion + buffer + '\n';
                 if (script_conclusion != null)
                 {
                     if (script_conclusion.IndexOf("prediction:") != -1)
@@ -188,7 +193,7 @@ namespace Экспертная_система
                         Continue = true;
 
                         //ПОЛНЫЙ ЛОГ ВЫПОЛНЕНИЯ СКРИПТА
-                        log(script_conclusion);
+                        //log(script_conclusion);
                         script_conclusion = script_conclusion.Substring(script_conclusion.IndexOf("prediction:") + 11);
 
                         //ТОЛЬКО ПРОГНОЗ
@@ -203,6 +208,7 @@ namespace Экспертная_система
                         log("Процесс поточного прогнозирования  остановился на этапе чтения Y из потока: ", Color.Red);
                         log(script_conclusion);
                         log(predict_process_error_stream.ReadToEnd());
+                        log(error);
                         return -1000;
                     }
                 }
@@ -214,6 +220,7 @@ namespace Экспертная_система
                 log("Завис поток прогнозирования на этапе получения Y ", Color.Red);
                 log(script_conclusion);
                 log(predict_process_error_stream.ReadToEnd());
+                log(error);
                 return -1000;
             }
 
@@ -248,9 +255,11 @@ namespace Экспертная_система
                 log(script_conclusion + predict_process_error_stream.ReadToEnd());
         }
 
-
+        public string trainingResponse;
         public async Task train()
         {
+            trainingResponse = "";
+
             h.setValueByName("state", "обучение..");
 
             if (h.getValueByName("input_file") == null)
@@ -260,12 +269,12 @@ namespace Экспертная_система
             File.WriteAllText(h.getValueByName("json_file_path"), h.toJSON(0), System.Text.Encoding.Default);
             args = "--json_file_path " + '"' + h.getValueByName("json_file_path") + '"';
 
-            string response = await Task.Run(() => form1.I.executePythonScript(getValueByName("train_script_path"), args));
+            trainingResponse = await Task.Run(() => form1.I.executePythonScript(getValueByName("train_script_path"), args));
 
             try
             {
-                response = response.Substring(response.IndexOf('{'));
-                Hyperparameters responseH = new Hyperparameters(response, form1);
+                trainingResponse = trainingResponse.Substring(trainingResponse.IndexOf('{'));
+                Hyperparameters responseH = new Hyperparameters(trainingResponse, form1);
                 //   var avg = responseH.getValueByName("AVG");
                 //   if (avg != null)
                 //       h.setValueByName("AVG", avg);
@@ -283,7 +292,15 @@ namespace Экспертная_система
                 //если данные имеются, то определить показатели точности прогнозирования
                 if (predictionsCSV != null)
                 {
-                    getAccAndStdDev(predictionsCSV);
+                    try
+                    {
+                        getAccAndStdDev(predictionsCSV);
+                    }
+                    catch
+                    {
+                        log("Не удалось прочитать файл с тестовым прогнозом", Color.Red);
+                        h.setValueByName("state", "Не удалось прочитать файл с тестовым прогнозом");
+                    }
                 }
                 else
                 {
@@ -305,52 +322,272 @@ namespace Экспертная_система
         }
 
 
+        /* public virtual void getAccAndStdDev(string[] predictionsCSV)
+         {
+             predictionsCSV = Expert.skipEmptyLines(predictionsCSV);
+           //  double sqrtSum = 0;
+             int rightCount = 0;
+             int leftCount = 0;
+             int inc = 0;
+             for (int i = 1; i < predictionsCSV.Length - 1; i++)
+             {
+                 var features = predictionsCSV[i].Split(';');
+
+                 double predictedValue = Convert.ToDouble(predictionsCSV[i].Split(';')[features.Length - 1].Replace('.', ','));
+                 double realValue = Convert.ToDouble(predictionsCSV[i + 1].Split(';')[Convert.ToInt16(h.getValueByName("predicted_column_index"))].Replace('.', ','));
+
+                 if (realValue > 0.5 && predictedValue > 0.5)
+                 { rightCount++; }
+                 else
+                       if (realValue < 0.5 && predictedValue < 0.5)
+                 { rightCount++; }
+                 else
+                     if (realValue > 0.5 && predictedValue < 0.5)
+                 { leftCount++; }
+                 else
+                 if (realValue < 0.5 && predictedValue > 0.5)
+                 { leftCount++; }
+               //  sqrtSum += (realValue - predictedValue) * (realValue - predictedValue);
+                 inc++;
+
+             }
+             accuracy = Convert.ToDouble(rightCount) / Convert.ToDouble(rightCount + leftCount) * 100;
+            // stdDev = Math.Sqrt(sqrtSum / inc);
+
+             if (double.IsNaN(accuracy))
+                 accuracy = 0;
+
+             log("accuracy = " + String.Format("{0:0.#####}", accuracy) + " %");
+             //  log("stdDev = " + stdDev.ToString());
+             // log("accuracy/stdDev = " + (accuracy / stdDev).ToString());
+             log("_____________________________________________");
+             h.setValueByName("accuracy", String.Format("{0:0.#####}", accuracy).Replace(',', '.'));
+            // h.setValueByName("stdDev", stdDev.ToString().Replace(',', '.'));
+             //    h.setValueByName("target_function", (accuracy).ToString().Replace(',', '.'));
+
+             h.setValueByName("processed_by", System.Net.Dns.GetHostName());
+         }*/
         public void getAccAndStdDev(string[] predictionsCSV)
         {
+
+
+            /*     form1.vis.addParameter("bid_ask", Color.Red, 1000);
+                 form1.vis.enableGrid = true;
+                 form1.vis.parameters[0].showLastNValues = true;
+                 form1.vis.parameters[0].window = 60;
+                 form1.vis.parameters[0].functions.Add(new Function("ask", Color.Red));
+                 form1.vis.parameters[0].functions.Add(new Function("bid", Color.Blue));*/
+
+
+
             predictionsCSV = Expert.skipEmptyLines(predictionsCSV);
-            double sqrtSum = 0;
+
             int rightCount = 0;
             int leftCount = 0;
             int inc = 0;
-            for (int i = 1; i < predictionsCSV.Length - 1; i++)
+
+            if (h.getValueByName("wait_for_rise") != null)
             {
-                var features = predictionsCSV[i].Split(';');
+                int wait_for_rise = int.Parse(h.getValueByName("wait_for_rise"));
 
-                double predictedValue = Convert.ToDouble(predictionsCSV[i].Split(';')[features.Length - 1].Replace('.', ','));
-                double realValue = Convert.ToDouble(predictionsCSV[i + 1].Split(';')[Convert.ToInt16(h.getValueByName("predicted_column_index"))].Replace('.', ','));
+                int real_count_001 = 0;
+                int real_count_010 = 0;
+                int real_count_100 = 0;
 
-                if (realValue > 0.5 && predictedValue > 0.5)
-                { rightCount++; }
-                else
-                      if (realValue < 0.5 && predictedValue < 0.5)
-                { rightCount++; }
-                else
-                    if (realValue > 0.5 && predictedValue < 0.5)
-                { leftCount++; }
-                else
-                if (realValue < 0.5 && predictedValue > 0.5)
-                { leftCount++; }
-                sqrtSum += (realValue - predictedValue) * (realValue - predictedValue);
-                inc++;
+                int catched_count_001 = 0;
+                int catched_count_010 = 0;
+                int catched_count_100 = 0;
 
+                double integr_ask = 0;
+                double integr_bid = 0;
+
+                for (int i = 2; i < predictionsCSV.Length - 1; i++)
+                {
+                    var features = predictionsCSV[i].Split(';');
+                    double which_class = 0.5;
+                    double delta_bid = 0;
+                    double delta_ask = 0;
+                    double spread = Convert.ToDouble(predictionsCSV[i - 1].Split(';')[2].Replace('.', ','));
+
+                    /*   integr_ask += Convert.ToDouble(predictionsCSV[i].Split(';')[1].Replace('.', ','));
+                       integr_bid += Convert.ToDouble(predictionsCSV[i].Split(';')[0].Replace('.', ','));
+                       form1.vis.addPoint(integr_ask, "ask");
+                       form1.vis.addPoint(integr_bid, "bid");*/
+
+
+                    for (int k = 0; k < wait_for_rise; k++)
+                    {
+                        if ((i + k) < (predictionsCSV.Length - 1))
+                        {
+                            delta_bid += Convert.ToDouble(predictionsCSV[i + k].Split(';')[0].Replace('.', ','));
+                            if (delta_bid > spread * 1.2)
+                            {
+
+                                which_class = 1;
+                                break;
+                            }
+                            delta_ask += Convert.ToDouble(predictionsCSV[i + k].Split(';')[1].Replace('.', ','));
+                            if (delta_ask < -spread)
+                            {
+
+                                which_class = 0;
+                                break;
+                            }
+                        }
+                    }
+
+                    double predictedValue = Convert.ToDouble(predictionsCSV[i - 1].Split(';')[3].Replace('.', ','));
+
+                    if (predictedValue == 0.5)
+                    {
+
+                        if (which_class == 0.5)
+                        {
+                            rightCount++;
+                            catched_count_100++;
+                        }
+                        else
+                        { leftCount++; }
+                    }
+
+                    if (predictedValue == 1)
+                    {
+                        //   form1.vis.markLast("↗‾‾‾‾‾‾‾‾", "ask");
+                        if (which_class == 1)
+                        {
+                            rightCount++;
+                            catched_count_001++;
+                        }
+                        else
+                        { leftCount++; }
+                    }
+
+                    if (predictedValue == 0)
+                    {
+                        // form1.vis.markLast("↘‾‾‾‾‾‾‾‾", "bid");
+
+                        if (which_class == 0)
+                        {
+                            rightCount++;
+                            catched_count_010++;
+                        }
+                        else
+                        { leftCount++; }
+                    }
+
+                    if (which_class == 0.5)
+                    {
+                        real_count_100++;
+                    }
+
+                    if (which_class == 1)
+                    {
+
+
+                        real_count_001++;
+                    }
+
+                    if (which_class == 0)
+                    {
+
+
+                        real_count_010++;
+                    }
+
+                    inc++;
+
+                    //  form1.vis.refresh();
+                }
+                log('\n' + "меток класса \"1\" : " + real_count_001.ToString() + "; найдено " + String.Format("{0:0.##}", (double)(catched_count_001) / real_count_001 * 100) + " %" +
+           '\n' + "меток класса \"0\":" + real_count_010.ToString() + "; найдено " + String.Format("{0:0.##}", (double)(catched_count_010) / real_count_010 * 100) + " %" +
+            '\n' + "меток класса \"0.5\":" + real_count_100.ToString() + "; найдено " + String.Format("{0:0.##}", (double)(catched_count_100) / real_count_100 * 100) + " %" +
+           '\n' + "accuracy = " + String.Format("{0:0.#####}", accuracy) + " %");
+            }
+            else
+            {
+                form1.vis.clear();
+                form1.vis.addParameter("real/predictions integ", Color.Red, 500);
+                form1.vis.enableGrid = false;
+                form1.vis.parameters[0].showLastNValues = true;
+                form1.vis.parameters[0].window = 100;
+
+                form1.vis.parameters[0].functions.Add(new Function("real integr", Color.Red));
+                form1.vis.parameters[0].functions.Add(new Function("prediction integr", Color.Cyan));
+
+                form1.vis.addParameter("real/predictions", Color.Red, 500);
+                form1.vis.parameters[1].functions.Add(new Function("real", Color.Red));
+                form1.vis.parameters[1].functions.Add(new Function("prediction", Color.Cyan));
+
+                double integr_real = 0;
+                double integr_prediction = 0;
+
+                double sqrtSum = 0;
+                form1.vis.addPoint(0, "prediction integr");
+                form1.vis.addPoint(0, "prediction");
+                for (int i = 1; i < predictionsCSV.Length - 1; i++)
+                {
+                    var features = predictionsCSV[i].Split(';');
+
+                    double predictedValue = Convert.ToDouble(predictionsCSV[i].Split(';')[1].Replace('.', ','));
+                    double realValue = Convert.ToDouble(predictionsCSV[i + 1].Split(';')[0].Replace('.', ','));
+
+                    integr_real += Math.Tan((realValue - 0.5) * Math.PI);
+                    form1.vis.addPoint(integr_real, "real integr");
+                    form1.vis.addPoint(realValue, "real");
+
+                    integr_prediction += Math.Tan((predictedValue - 0.5) * Math.PI);
+                    form1.vis.addPoint(integr_prediction, "prediction integr");
+                    form1.vis.addPoint(predictedValue, "prediction");
+
+                    if (realValue > 0.5 && predictedValue > 0.5)
+                    { rightCount++; }
+                    else
+                          if (realValue < 0.5 && predictedValue < 0.5)
+                    { rightCount++; }
+                    else
+                        if (realValue > 0.5 && predictedValue < 0.5)
+                    { leftCount++; }
+                    else
+                    if (realValue < 0.5 && predictedValue > 0.5)
+                    { leftCount++; }
+                    sqrtSum += (realValue - predictedValue) * (realValue - predictedValue);
+                    inc++;
+
+                }
+
+                stdDev = Math.Sqrt(sqrtSum / inc);
+                h.setValueByName("stdDev", stdDev.ToString().Replace(',', '.'));
+
+                /*   form1.vis.addCSV(h.getValueByName("predictions_file_path"),0, 500,  0);
+                   form1.vis.addCSV(h.getValueByName("predictions_file_path"), 1, 500, 1);
+
+                    form1.vis.parameters[1].showLastNValues = true;
+                     form1.vis.parameters[1].window = 100;
+                     form1.vis.parameters[2].showLastNValues = true;
+                     form1.vis.parameters[2].window = 100;*/
+                form1.vis.refresh();
+
+                accuracy = Convert.ToDouble(rightCount) / Convert.ToDouble(rightCount + leftCount) * 100;
+                log(String.Format("{0:0.#####}", accuracy) + " %");
             }
             accuracy = Convert.ToDouble(rightCount) / Convert.ToDouble(rightCount + leftCount) * 100;
-            stdDev = Math.Sqrt(sqrtSum / inc);
+
 
             if (double.IsNaN(accuracy))
                 accuracy = 0;
 
-            log("accuracy = " + accuracy.ToString() + " %");
+
+
+
             //  log("stdDev = " + stdDev.ToString());
             // log("accuracy/stdDev = " + (accuracy / stdDev).ToString());
             log("_____________________________________________");
-            h.setValueByName("accuracy", accuracy.ToString().Replace(',', '.'));
-            h.setValueByName("stdDev", stdDev.ToString().Replace(',', '.'));
+            h.setValueByName("accuracy", String.Format("{0:0.#####}", accuracy).Replace(',', '.'));
+
             //    h.setValueByName("target_function", (accuracy).ToString().Replace(',', '.'));
 
             h.setValueByName("processed_by", System.Net.Dns.GetHostName());
         }
-
         public abstract void Save();
         public abstract void Open(string jsonPath);
 
@@ -447,13 +684,16 @@ namespace Экспертная_система
                 this.caonstant = caonstant;
                 type = parameterType.Const;
             }
-            public parameter(string name,double min,double max,double step,double value)
+            public parameter(string name, double min, double max, double step, double value)
             {
                 this.name = name;
                 this.value = value;
+                this.min = min;
+                this.max = max;
+                this.step = step;
                 type = parameterType.Numerical;
             }
-            public parameter(string name,string category,string categories)
+            public parameter(string name, string category, string categories)
             {
                 this.name = name;
                 this.category = category;

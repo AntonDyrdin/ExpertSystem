@@ -136,20 +136,21 @@ namespace Экспертная_система
         //возвращает  действие, о котором было принято решение
         public string getDecision(double[] committeeResponse)
         {
-            return DMS.getAction(getStateStr()).type;
-            /* 
-             double decision = 0;
-             double sum = 0;
-             for (int i = 0; i < algorithms.Count; i++)
-             {
-                 sum += committeeResponse[i];
-             }
-             decision = sum / algorithms.Count;
-             if (decision > 0.5)
-                 return "buy";
-             if (decision < 0.5)
-                 return "sell";
-             return "nothing";  */
+
+            // return DMS.getAction(getStateStr()).type;
+
+            double decision = 0;
+            double sum = 0;
+            for (int i = 0; i < algorithms.Count; i++)
+            {
+                sum += committeeResponse[i];
+            }
+            decision = sum / algorithms.Count;
+            if (decision > 0.5)
+                return "buy";
+            if (decision < 0.5)
+                return "sell";
+            return "nothing";
         }
         public void trainAllAlgorithms(bool deleteLowAccModels)
         {
@@ -225,12 +226,12 @@ namespace Экспертная_система
             {
                 if (committeeResponse[i] == -1000)
                     committeeResponse[i] = -1;
-                else
-                    if (committeeResponse[i] > 0.5)
-                    committeeResponse[i] = 1;
-                else
-                    if (committeeResponse[i] < 0.5)
-                    committeeResponse[i] = 0;
+                /*   else
+                       if (committeeResponse[i] > 0.5)
+                       committeeResponse[i] = 1;
+                   else
+                       if (committeeResponse[i] < 0.5)
+                       committeeResponse[i] = 0;*/
             }
 
             // committeeResponseHistory.Add(committeeResponse);
@@ -303,7 +304,7 @@ namespace Экспертная_система
                      dateStr += '/';
                      dateStr += date1.Year.ToString().Substring(2, 2);*/
 
-                    dateStr = date1.ToString().Replace('.', ',') ;
+                    dateStr = date1.ToString().Replace('.', ',');
 
                     int[] windowSizes = new int[algorithms.Count];
                     for (int i = 0; i < algorithms.Count; i++)
@@ -360,7 +361,7 @@ namespace Экспертная_система
                         presentLine = input[input.Length - 1];
 
                         //обновление состояния
-                        DMS.setActualState(getStateStr());
+                        //     DMS.setActualState(getStateStr());
                         //Отправка запроса к системе принятия решений
                         action = getDecision(committeeResponse);
                         if (action == "error")
@@ -421,16 +422,16 @@ namespace Экспертная_система
                     deposit2History.Add(deposit2);
 
                     //обновление состояния
-                    DMS.setActualState(getStateStr());
+                    //        DMS.setActualState(getStateStr());
                     //вознаграждение системы принятия решений
                     double reward = 0;
-                    if (deposit1History.Count > 1)
-                    {
-                        reward = (closeValue * (deposit1History[deposit1History.Count - 1] - deposit1History[deposit1History.Count - 2])) + (deposit2History[deposit2History.Count - 1] - deposit2History[deposit2History.Count - 2]);
-                        // reward =  (deposit2History[deposit2History.Count - 1] - deposit2History[deposit2History.Count - 2]);
+                    //     if (deposit1History.Count > 1)
+                    //     {
+                    reward = (closeValue * (deposit1History[deposit1History.Count - 1] - deposit1History[deposit1History.Count - 2])) + (deposit2History[deposit2History.Count - 1] - deposit2History[deposit2History.Count - 2]);
+                    // reward =  (deposit2History[deposit2History.Count - 1] - deposit2History[deposit2History.Count - 2]);
 
-                    }
-                    DMS.setR(reward);
+                    // }
+                    //  DMS.setR(reward);
                     ////////////////////////////////////////
 
                     actionHistory.Add(action);
@@ -702,12 +703,10 @@ namespace Экспертная_система
             H.setValueByName("expert_target_function", deposit2.ToString().Replace(',', '.'));
             return "expert has been tested";
         }
-        public void Add(Algorithm algorithm)
+        public void AddAlgorithm(Algorithm algorithm)
         {
             Directory.CreateDirectory(path_prefix + expertName + "\\" + algorithm.modelName + "\\");
-            algorithm.h.setValueByName("save_folder", path_prefix + expertName + "\\" + algorithm.modelName + "\\");
-            algorithm.h.setValueByName("json_file_path", path_prefix + expertName + "\\" + algorithm.modelName + "\\h.json");
-            algorithm.h.setValueByName("predictions_file_path", path_prefix + expertName + "\\" + algorithm.modelName + "\\predictions.txt");
+            Algorithm.CopyFiles(algorithm.h, Path.GetDirectoryName(algorithm.h.getValueByName("json_file_path")), path_prefix + expertName + "\\" + algorithm.modelName + "\\");
 
             algorithms.Add(algorithm);
         }
@@ -730,14 +729,15 @@ namespace Экспертная_система
 
         public string[] prepareDataset(string[] allLines, string dropColumn, bool normalize)
         {
-            List<int> colDropInd;
+            List<int> colDropInd = new List<int>();
+            List<int> badSplittersInd = new List<int>();
 
             // int windowSie = Convert.ToInt16(algorithms[a].getValueByName("windowSize"));
             string[] featuresNames = allLines[0].Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
 
             //drop column
             var dropColumnNames = dropColumn.Split(';');
-            colDropInd = new List<int>();
+
             for (int c = 0; c < featuresNames.Length; c++)
             {
                 for (int cind = 0; cind < dropColumnNames.Length; cind++)
@@ -749,10 +749,11 @@ namespace Экспертная_система
                 }
             }
             var firstDataRow = allLines[1].Split(';');
+
             for (int c = 0; c < featuresNames.Length; c++)
             {
                 bool dropIt = false;
-                for (int d = 0; c < colDropInd.Count; c++)
+                for (int d = 0; d < colDropInd.Count; d++)
                 {
                     if (colDropInd[d] == c)
                     {
@@ -767,15 +768,46 @@ namespace Экспертная_система
                     {
                         var someDouble = Convert.ToDouble(firstDataRow[c]);
                     }
-                    //в случае ошибки - весь столбец дропается
+                    //в случае ошибки - попробовать заменить разделитель
                     catch
                     {
-                        //  log("столбец " + featuresNames[c] + " удалён");
-                        colDropInd.Add(c);
+                        try
+                        {
+                            if (firstDataRow[c].Contains("."))
+                                firstDataRow[c] = firstDataRow[c].Replace('.', ',');
+
+                            var someDouble = Convert.ToDouble(firstDataRow[c]);
+                            badSplittersInd.Add(c);
+                        }
+                        //в случае ошибки - весь столбец дропается
+                        catch
+                        {
+                            log("столбец " + featuresNames[c] + " удалён");
+                            colDropInd.Add(c);
+                        }
                     }
                 }
             }
 
+            //Замена разделителей дробной и целой части
+            if (badSplittersInd.Count > 0)
+                for (int i = 0; i < allLines.Length; i++)
+                {
+                    string[] features = allLines[i].Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+                    for (int c = 0; c < badSplittersInd.Count; c++)
+                    {
+                        features[badSplittersInd[c]] = features[badSplittersInd[c]].Replace('.', ',');
+                    }
+                    string s = "";
+                    for (int k = 0; k < features.Length; k++)
+                    {
+                        s += features[k];
+                        if (k != features.Length - 1)
+                            s += ';';
+                    }
+                    allLines[i] = s;
+                }
+            ///////////////////////////////////////////////////////////////////////////////////////////////
 
             dataset = new double[allLines.Length - 1, featuresNames.Length - colDropInd.Count];
 
@@ -825,14 +857,23 @@ namespace Экспертная_система
                                       if (!dropIt)
                                           try
                                           {
-                                              dataset[i - 1, k - shift] = Convert.ToDouble(features[k]);
+                                              dataset[i - 1, k - shift] = double.Parse(features[k]);
                                           }
-                                          catch (Exception e)
+                                          catch
                                           {
-                                              log("Ошибка формирования датасета.", Color.Red);
-                                              log(e.Message, Color.Red);
-                                              if (features[k].Contains("."))
-                                                  log("Разделитель дробной и целой части - точка, а должна быть запятая.", Color.Red);
+                                              try
+                                              {
+                                                  if (features[k].Contains("."))
+                                                      features[k] = features[k].Replace('.', ',');
+
+                                                  dataset[i - 1, k - shift] = double.Parse(features[k]);
+
+                                              }
+                                              catch (Exception e)
+                                              {
+                                                  log("Ошибка формирования датасета.", Color.Red);
+                                                  log(e.Message, Color.Red);
+                                              }
                                           }
                                   }
                               }
@@ -861,7 +902,7 @@ namespace Экспертная_система
                 /////////////////////////////////
                 //////     СГЛАЖИВАНИЕ    ///////
                 /////////////////////////////////
-                 dataset2 = levelOff2(dataset1);
+                dataset2 = levelOff2(dataset1);
             }
             else
             {
@@ -889,10 +930,7 @@ namespace Экспертная_система
             {
                 for (int k = 0; k < dataset2.GetLength(1); k++)
                 {
-                    if ((dataset2[i, k]).ToString().Replace(',', '.').Length > 8)
-                        toWrite[i + 1] += (dataset2[i, k]).ToString().Replace(',', '.').Substring(0, 8) + ';';
-                    else
-                        toWrite[i + 1] += (dataset2[i, k]).ToString().Replace(',', '.') + ';';
+                    toWrite[i + 1] += String.Format("{0:0.########}", dataset2[i, k]).Replace(',', '.') + ';';
                 }
                 toWrite[i + 1] = toWrite[i + 1].Remove(toWrite[i + 1].Length - 1, 1);
             }
@@ -946,7 +984,7 @@ namespace Экспертная_система
             var algorithmBranches = expert.H.getNodesByparentID(expert.committeeNodeID);
             foreach (Node algorithmBranch in algorithmBranches)
             {
-                Type algorithmType = typeof(Algorithm); 
+                Type algorithmType = typeof(Algorithm);
                 IEnumerable<Type> list = System.Reflection.Assembly.GetAssembly(algorithmType).GetTypes().Where(type => type.IsSubclassOf(algorithmType));  // using System.Linq
 
 
@@ -961,18 +999,6 @@ namespace Экспертная_система
 
                 var constr = algorithmType.GetConstructor(new Type[] { form1.GetType(), ("asd").GetType() });
                 var algInst = (Algorithm)constr.Invoke(new object[] { form1, algorithmType.ToString() });
-
-
-               /* if (algorithmBranch.name() == "LSTM_1")
-                    expert.algorithms.Add(new LSTM_1(form1, "LSTM_1"));
-                if (algorithmBranch.name() == "LSTM_2")
-                    expert.algorithms.Add(new LSTM_2(form1, "LSTM_2"));
-                if (algorithmBranch.name() == "ANN_1")
-                    expert.algorithms.Add(new ANN_1(form1, "ANN_1"));
-                if (algorithmBranch.name() == "CNN_1")
-                    expert.algorithms.Add(new CNN_1(form1, "CNN_1"));
-                if (algorithmBranch.name() == "FlexNN")
-                    expert.algorithms.Add(new FlexNN(form1, "FlexNN"));*/
 
                 expert.algorithms[expert.algorithms.Count - 1].h = new Hyperparameters(expert.H.toJSON(algorithmBranch.ID), form1);
                 expert.algorithms[expert.algorithms.Count - 1].modelName = expert.algorithms[expert.algorithms.Count - 1].h.getValueByName("model_name");
@@ -1041,8 +1067,6 @@ namespace Экспертная_система
               }
           }  */
 
-        public Hyperparameters h()
-        { return algorithms[0].h; }
 
         [NonSerializedAttribute]
         private MainForm form1;
@@ -1115,38 +1139,6 @@ namespace Экспертная_система
             return normalizedDataset2;
         }
 
-        private double[,] levelOff1(double[,] inputDataset)
-        {
-            double[,] levelOffDataset = new double[inputDataset.GetLength(0), inputDataset.GetLength(1)];
-            /////////////////////////////////
-            //////     СГЛАЖИВАНИЕ    ///////
-            /////////////////////////////////
-            for (int i = 0; i < inputDataset.GetLength(0); i++)
-            {
-                for (int k = 0; k < inputDataset.GetLength(1); k++)
-                {
-                    //приведение его к 0.5 - среднему делением на 2
-                    levelOffDataset[i, k] = levelOffDataset[i, k] / 2;
-                    //для увеличение стандартного отклонения сначала вычислим имеющееся i-ое отклонение, приведя к 0 - среднему
-                    levelOffDataset[i, k] = levelOffDataset[i, k] - 0.5;
-                    //а затем отмасштабируем
-                    //levelOffDataset[i, k] = levelOffDataset[i, k] * (1 / (Math.Abs(levelOffDataset[i, k] + 0.5)));
-                    //вернём к 0.5 - среднему
-                    levelOffDataset[i, k] = levelOffDataset[i, k] + 0.5;
-                    //и подровняем выбросы
-                    if (levelOffDataset[i, k] > 1)
-                    {
-                        levelOffDataset[i, k] = 1;
-                    }
-                    else if (levelOffDataset[i, k] < 0)
-                    {
-                        levelOffDataset[i, k] = 0;
-                    }
-                }
-            }
-            return levelOffDataset;
-        }
-
         private double[,] levelOff2(double[,] inputDataset)
         {
             double[,] levelOffDataset = new double[inputDataset.GetLength(0), inputDataset.GetLength(1)];
@@ -1157,20 +1149,19 @@ namespace Экспертная_система
             {
                 for (int k = 0; k < inputDataset.GetLength(1); k++)
                 {
-                    //масштабирование
-                    //  levelOffDataset[i, k] = levelOffDataset[i, k] * (1 / (Math.Abs(levelOffDataset[i, k] + 0.5)));
+                    levelOffDataset[i, k] = inputDataset[i, k];
 
-                    //0.5 - среднее
-                    levelOffDataset[i, k] = inputDataset[i, k] + 0.5;
-                    //выбросы
-                    if (levelOffDataset[i, k] > 1)
-                    {
-                        levelOffDataset[i, k] = 1;
-                    }
-                    else if (levelOffDataset[i, k] < 0)
-                    {
-                        levelOffDataset[i, k] = 0;
-                    }
+                    //масштабирование СИГМОИДА (-0.5;0.5)  y=x/((1+|x|)*2)
+                    // levelOffDataset[i, k] = inputDataset[i, k] / ((1+ Math.Abs(inputDataset[i, k]))*2);
+
+                    //масштабирование СИГМОИДА (-0.5;0.5)  y=tanh(x)/2
+                    // levelOffDataset[i, k] =  (( Math.Tanh(inputDataset[i, k])) / 2);
+
+                    //масштабирование СИГМОИДА (-0.5;0.5)  y=arctan(x)/pi
+                    levelOffDataset[i, k] = ((Math.Atan(inputDataset[i, k])) / Math.PI);
+
+                    //(-0;1) - 0.5 среднее
+                    levelOffDataset[i, k] = levelOffDataset[i, k] + 0.5;
                 }
             }
             return levelOffDataset;
@@ -1254,6 +1245,46 @@ namespace Экспертная_система
             }
 
             return res;
+        }
+
+        /// <summary>
+        /// Добавляет к датасету столбец со спредом <spread>
+        /// </summary>
+        public static void addSpread(string datasetFile, string rawFile)
+        {
+            var allLinesDatasetFile = File.ReadAllLines(datasetFile);
+
+            var allLinesRawFile = File.ReadAllLines(rawFile);
+
+            string[] featuresNames = allLinesRawFile[0].Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+
+            int indexOf_bid_top = 0;
+            int indexOf_ask_top = 0;
+
+            for (int i = 0; i < featuresNames.Length; i++)
+            {
+                if (featuresNames[i] == "<bid_top>")
+                    indexOf_bid_top = i;
+                if (featuresNames[i] == "<ask_top>")
+                    indexOf_ask_top = i;
+            }
+
+
+            allLinesDatasetFile[0] += ";<spread>";
+
+            double bid;
+            double ask;
+            for (int i = 1; i < allLinesDatasetFile.Length; i++)
+            {
+                string[] features = allLinesRawFile[i + 1].Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+
+                bid = double.Parse(features[indexOf_bid_top].Replace('.', ','));
+                ask = double.Parse(features[indexOf_ask_top].Replace('.', ','));
+
+                allLinesDatasetFile[i] += ';' + String.Format("{0:0.#####}", (ask - bid)).Replace(',', '.');
+            }
+
+            File.WriteAllLines(datasetFile, allLinesDatasetFile);
         }
     }
 }
