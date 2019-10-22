@@ -21,13 +21,27 @@ import os
 logPath = os.path.dirname(args.json_file_path) + "\\log.txt"
 logErrorPath = os.path.dirname(args.json_file_path) + "\\log_error.txt"
 import sys
+
+
+
 try:
     sys.stderr = open(logErrorPath, 'w')
     logFile = open(logPath,"w")
     logFile.write(logPath)
     logFile.close()
-except:
-    print("не удалось открыть файл логгирования ",logPath)
+except Exception as e:
+    print(str(e))
+    try:
+        logErrorPath = "log_error.txt"
+        logPath = "log.txt"
+        sys.stderr = open(logErrorPath, 'w')
+        logFile = open(logPath,"w")
+        logFile.write(logPath)
+        logFile.close()
+    except Exception as e:
+        print(str(e))
+        print("не удалось открыть файл логгирования ",logPath)
+
 def log(s):
     try:
         logFile = open(logPath,"a")
@@ -70,9 +84,9 @@ try:
 except:
     model = load_model(save_path.encode('ansi'))
 window_size = (int)(h("window_size/value"))
-print('model loaded')
-print("save_path: " + save_path)
-print("window_size: " + (str)(window_size)) 
+log('model loaded')
+log("save_path: " + save_path)
+log("window_size: " + (str)(window_size)) 
 
 inputFile = open(h("input_file/value"))
 #превращение входного файла в плоскую таблицу значений предикторов
@@ -85,31 +99,34 @@ if (h("NN_struct/layer1/value") == "LSTM") | (h("NN_struct/layer1/value") == "Co
 else:
     X = numpy.zeros((1, window_size), dtype=numpy.float32)
 
-print("X.shape: ",X.shape)
+log("X.shape: " + (str)(X.shape))
 
-cycles = 500
+cycles = 50
 
-predictionsFile = open('cyclic_prediction.txt', 'w')
+predictionsFile = open(os.path.dirname(args.json_file_path) + "\\cyclic_prediction.txt", 'w')
 head = lines[0].split(';')[predicted_column_index]
-
+  
 #log(h("predictions_file_path"))
 head = head = lines[0].split(';')[predicted_column_index].replace('\n','') + ';' + '(predicted -> )' + lines[0].split(';')[(int)(h("predicted_column_index/value"))].replace('\n','') + ';type'
-# if head[:-1]==';':                            6
+# if head[:-1]==';': 6
 #     head = head[0:-1]
 predictionsFile.write(head + '\n')
 
-start_point=(int)(len(lines)*(float)(h('split_point/value')   ))
+start_point = (int)(len(lines) * (float)(h('split_point/value')))
 
-data=[]
-for i in range(0,window_size):
+# до введения переменной steps_forward ращмер массива data совпадал с
+# window_size,
+# теперь массив data длиннее, чем window_size на (steps_forward-1)
+data = []
+steps_forward = (int)(h("steps_forward/value"))
+for i in range(0,window_size + (steps_forward - 1)):
+    data.append(lines[start_point + i + 1])
     line = ''
-    line = line + (str)(lines[start_point+i+1]).replace('\n','') + ';' + lines[start_point+i+1].split(';')[(int)(h("predicted_column_index/value"))].replace('\n','') + '; real (1st window)'
-    predictionsFile.write(line+ '\n')
-    data.append(lines[start_point+i+1])
+    line = line + (str)(lines[start_point + i + 1]).replace('\n','') + ';' + lines[start_point + steps_forward + i + 1].split(';')[(int)(h("predicted_column_index/value"))].replace('\n','') + '; real (1st window)'
+    predictionsFile.write(line + '\n')
 
 for c in range(0,cycles):
     for i in range(0,window_size):
-        
 
         if (h("NN_struct/layer1/value") == "LSTM") | (h("NN_struct/layer1/value") == "Conv1D"):
             for j in range(0,len(data[i].split(';'))):   
@@ -120,22 +137,18 @@ for c in range(0,cycles):
              X[0,i] = (float)(data[i].split(';')[predicted_column_index])
 
 
-    predicted = model.predict(X)
+    Y = model.predict(X)
+
+    data = numpy.delete(data, 0)
+    data = numpy.append(data,(str)(Y[0,0]))
+
     line = ''
-    line = line + (str)(lines[start_point+cycles + c+1]).replace('\n','') + ';'
-    line = line + (str)(predicted[0,0]) + '; '
-    line = line +  (str)(c)+' prediction'
+    line = line + (str)(lines[start_point + (window_size + (steps_forward - 1)) + 1 + c]).replace('\n','') + ';'
+    line = line + (str)(Y[0,0]) + '; '
+    line = line + (str)(c) + ' prediction'
     predictionsFile.write(line + '\n')
 
 
 
-    data=numpy.delete(data, 0)
-    data=numpy.append(data,(str)(predicted[0,0]))
-
-
-
-
-
-
-
 predictionsFile.close()
+log("____END____")

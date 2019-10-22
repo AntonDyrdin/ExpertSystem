@@ -108,20 +108,21 @@ dataset = dataset[train_start_point:,:]
 log("dataset.shape: " + (str)(dataset.shape))   
 
 split_point = (float)(h("split_point/value"))
+steps_forward = (int)(h("steps_forward/value"))
 
 # если первый слой рекуррентный, то построть трёхмерный массив - иначе плоскую матрицу
 if (h("NN_struct/layer1/value") == "LSTM") | (h("NN_struct/layer1/value") == "Conv1D"):
 
-    Dataset_X = numpy.zeros((dataset.shape[0] - window_size, window_size,dataset.shape[1]), dtype=numpy.float32)
+    Dataset_X = numpy.zeros((dataset.shape[0] - window_size - (steps_forward-1), window_size,dataset.shape[1]), dtype=numpy.float32)
 
-    Dataset_Y = numpy.zeros((dataset.shape[0] - window_size), dtype=numpy.float32)
+    Dataset_Y = numpy.zeros((dataset.shape[0] - window_size - (steps_forward-1)), dtype=numpy.float32)
     predicted_column_index = (int)(h("predicted_column_index/value"))
-    for i in range(0,dataset.shape[0] - window_size):
+    for i in range(0,dataset.shape[0] - window_size - (steps_forward-1)):
         for j in range(0,window_size):
             for k in range(0,dataset.shape[1]):
                 Dataset_X[i,j,k] = dataset[i + j][k]
 
-        Dataset_Y[i] = dataset[i + window_size,predicted_column_index]
+        Dataset_Y[i] = dataset[i + window_size + (steps_forward-1),predicted_column_index]
 
     #разбиение на обучающую и тестовую выборки
 
@@ -131,14 +132,14 @@ if (h("NN_struct/layer1/value") == "LSTM") | (h("NN_struct/layer1/value") == "Co
     test_y = Dataset_Y[round(Dataset_Y.shape[0] * (split_point)):]
     
 else:
-    Dataset_X = numpy.zeros((dataset.shape[0] - window_size, window_size), dtype=numpy.float32)
-    Dataset_Y = numpy.zeros((dataset.shape[0] - window_size,1), dtype=numpy.float32)
+    Dataset_X = numpy.zeros((dataset.shape[0] - window_size - (steps_forward-1), window_size), dtype=numpy.float32)
+    Dataset_Y = numpy.zeros((dataset.shape[0] - window_size - (steps_forward-1),1), dtype=numpy.float32)
     predicted_column_index = (int)(h("predicted_column_index/value"))
-    for i in range(0,dataset.shape[0] - window_size):
+    for i in range(0,dataset.shape[0] - window_size- (steps_forward-1)):
         for j in range(0,window_size):
                 Dataset_X[i,j] = dataset[i + j][predicted_column_index] 
 
-        Dataset_Y[i] = dataset[i + window_size,predicted_column_index]
+        Dataset_Y[i] = dataset[i + window_size + (steps_forward-1),predicted_column_index]
 
     train_X = Dataset_X[:round(Dataset_X.shape[0] * (split_point)), :]
     test_X = Dataset_X[round(Dataset_X.shape[0] * (split_point)):, :]

@@ -506,7 +506,7 @@ namespace Экспертная_система
             else
             {
                 form1.vis.clear();
-                form1.vis.addParameter("real/predictions integ", Color.Red, 500);
+                form1.vis.addParameter("real/predictions integ", Color.Red, 100);
                 form1.vis.enableGrid = false;
                 form1.vis.parameters[0].showLastNValues = true;
                 form1.vis.parameters[0].window = 100;
@@ -514,7 +514,8 @@ namespace Экспертная_система
                 form1.vis.parameters[0].functions.Add(new Function("real integr", Color.Red));
                 form1.vis.parameters[0].functions.Add(new Function("prediction integr", Color.Cyan));
 
-                form1.vis.addParameter("real/predictions", Color.Red, 500);
+                form1.vis.addParameter("real/predictions", Color.Red, 900);
+
                 form1.vis.parameters[1].functions.Add(new Function("real", Color.Red));
                 form1.vis.parameters[1].functions.Add(new Function("prediction", Color.Cyan));
 
@@ -522,8 +523,14 @@ namespace Экспертная_система
                 double integr_prediction = 0;
 
                 double sqrtSum = 0;
-                form1.vis.addPoint(0, "prediction integr");
-                form1.vis.addPoint(0, "prediction");
+
+                form1.vis.parameters[1].functions.Add(new Function("Графики должны совпадать", Color.DarkGray));
+                for (int k = 0; k < int.Parse(h.getValueByName("steps_forward"))-1; k++)
+                {
+                    form1.vis.addPoint(0, "prediction integr");
+                    form1.vis.addPoint(0, "prediction");
+                }
+
                 for (int i = 1; i < predictionsCSV.Length - 1; i++)
                 {
                     var features = predictionsCSV[i].Split(';');
@@ -538,6 +545,11 @@ namespace Экспертная_система
                     integr_prediction += Math.Tan((predictedValue - 0.5) * Math.PI);
                     form1.vis.addPoint(integr_prediction, "prediction integr");
                     form1.vis.addPoint(predictedValue, "prediction");
+
+
+                    if(i== int.Parse(h.getValueByName("window_size")+ int.Parse(h.getValueByName("steps_forward"))))
+                        form1.vis.markLast("|", "real");
+
 
                     if (realValue > 0.5 && predictedValue > 0.5)
                     { rightCount++; }
@@ -575,7 +587,6 @@ namespace Экспертная_система
 
             if (double.IsNaN(accuracy))
                 accuracy = 0;
-
 
 
 

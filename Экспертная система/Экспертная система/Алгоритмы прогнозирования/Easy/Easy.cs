@@ -34,19 +34,19 @@ namespace Экспертная_система
                    new parameter("activation", "sigmoid")
                });*/
 
-
+/*
            addLayer("LSTM", new parameter[] {
-                     new parameter("neurons_count", 2, 200, 5,50),
+                     new parameter("neurons_count", 2, 200, 5,3),
                      new parameter("activation", "sigmoid")
                  });
               addLayer("LSTM", new parameter[] {
                      new parameter("neurons_count", 2, 200, 5,20),
                      new parameter("activation", "sigmoid")
                  });
-            addLayer("Dropout", new parameter[] {
+        /*    addLayer("Dropout", new parameter[] {
                      new parameter("dropout","0.2"),
                  });
-
+                 */
             addLayer("Dense", new parameter[] {
                       new parameter("neurons_count", 2, 100, 5,11),
                         new parameter("activation","sigmoid")
@@ -66,14 +66,15 @@ namespace Экспертная_система
             //////////////////////
             //ПАРАМЕТРЫ ОБУЧЕНИЯ//
             //////////////////////
+            h.addVariable(0, "steps_forward", 1, 150, 1, 2);
             h.addVariable(0, "number_of_epochs", 1, 150, 1, 50);
             h.addVariable(0, "split_point", 0.7, 0.95, 0.05, 0.74);
             h.add("batch_size:50");
             // h.addVariable(0, "batch_size", 10, 100, 10, 50);
             h.add("name:loss,value:mean_squared_error");
             h.add("name:optimizer,value:adam");
-            h.addVariable(0, "learning_rate", 0.0001, 0.02, 0.05, 0.00559);
-            h.addVariable(0, "window_size", 2, 20, 2, 30);
+            h.addVariable(0, "learning_rate", 0.0001, 0.02, 0.05, 0.001);
+            h.addVariable(0, "window_size", 2, 20, 2, 20);
         }
         public override void Open(string jsonPath)
         {

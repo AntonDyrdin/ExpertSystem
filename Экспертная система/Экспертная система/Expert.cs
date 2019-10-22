@@ -711,7 +711,7 @@ namespace Экспертная_система
             algorithms.Add(algorithm);
         }
 
-        //метод делающий из временного ряда (*.csv) датасет, пригодный для передачи в train.py скрипт
+        //метод делающий из временного ряда *.csv датасет, пригодный для передачи в train_script.py 
         //возвращает путь к файлу датасета
         public string savePreparedDataset(string inputFile, string dropColumn, bool normalize)
         {
@@ -902,7 +902,8 @@ namespace Экспертная_система
                 /////////////////////////////////
                 //////     СГЛАЖИВАНИЕ    ///////
                 /////////////////////////////////
-                dataset2 = levelOff2(dataset1);
+                // dataset2 = levelOff2(dataset1);
+                dataset2 = dataset1;
             }
             else
             {
@@ -1082,37 +1083,7 @@ namespace Экспертная_система
 
         private double[,] normalize1(double[,] inputDataset)
         {
-
-            ////////////////////////////////////////////////
-            ///////////   НОРМАЛИЗАЦИЯ i/(i-1)   ///////////
-            ////////////////////////////////////////////////
-            //первая строка датасета удаляется из-за нормализации типа i/(i-1)
-            double[,] normalizedDataset2 = new double[inputDataset.GetLength(0) - 1, inputDataset.GetLength(1)];
-
-            //заполнение строки previousLine для первой итерации алгоритма   ____i/(i-1)__
-            double[] previousLine = new double[inputDataset.GetLength(1)];
-            for (int j = 0; j < inputDataset.GetLength(1); j++)
-                previousLine[j] = inputDataset[0, j];
-
-
-            //___________i/(i-1)__________________
-            for (int i = 0; i < inputDataset.GetLength(0) - 1; i++)
-            {
-                for (int k = 0; k < inputDataset.GetLength(1); k++)
-                {
-                    if (previousLine[k] != 0)
-                        normalizedDataset2[i, k] = Convert.ToDouble(inputDataset[i + 1, k]) / Convert.ToDouble(previousLine[k]);
-                    else
-                        normalizedDataset2[i, k] = 0;
-                }
-                for (int j = 0; j < inputDataset.GetLength(1); j++)
-                    previousLine[j] = inputDataset[i + 1, j];
-            }
-            return normalizedDataset2;
-        }
-
-        private double[,] normalize2(double[,] inputDataset)
-        {
+            // АКТУАЛЬНО ЕСЛИ ВАЖНО СПРОГНОЗИРОВАТЬ НАПРАВЛЕНИЕ ИЗМЕНЕНИЯ ВРЕМЕННОГО РЯДА (-/+)
 
             ////////////////////////////////////////////////
             ///////////   НОРМАЛИЗАЦИЯ i - (i-1) ///////////
@@ -1131,10 +1102,54 @@ namespace Экспертная_система
             {
                 for (int k = 0; k < inputDataset.GetLength(1); k++)
                 {
-                    normalizedDataset2[i, k] = Convert.ToDouble(inputDataset[i + 1, k]) - Convert.ToDouble(previousLine[k]);
+                    normalizedDataset2[i, k] = inputDataset[i + 1, k] - previousLine[k];
                 }
                 for (int j = 0; j < inputDataset.GetLength(1); j++)
                     previousLine[j] = inputDataset[i + 1, j];
+            }
+            return normalizedDataset2;
+        }
+
+        private double[,] normalize2(double[,] inputDataset)
+        {
+            // АКТУАЛЬНО ЕСЛИ ВАЖНО СПРОГНОЗИРОВАТЬ АБСОЛЮТНОЕ ЗНАЧЕНИЕ ВРЕМЕННОГО РЯДА
+
+            ////////////////////////////////////////////////
+            //////   НОРМАЛИЗАЦИЯ МАСШТАБИРОВАНИЕМ   ///////
+            ////////////////////////////////////////////////
+
+            double[] maxPredictorValue = new double[inputDataset.GetLength(1)];
+            double[] minPredictorValue = new double[inputDataset.GetLength(1)];
+
+            double[,] normalizedDataset2 = new double[inputDataset.GetLength(0), inputDataset.GetLength(1)];
+
+            for (int k = 0; k < inputDataset.GetLength(1); k++)
+            {
+                maxPredictorValue[k] = Double.MinValue;
+                minPredictorValue[k] = Double.MaxValue;
+            }
+            for (int i = 0; i < inputDataset.GetLength(0) - 1; i++)
+            {
+                for (int k = 0; k < inputDataset.GetLength(1); k++)
+                {
+                    if (inputDataset[i, k] > maxPredictorValue[k])
+                        maxPredictorValue[k] = inputDataset[i, k];
+
+                    if (inputDataset[i, k] < minPredictorValue[k])
+                        minPredictorValue[k] = inputDataset[i, k];
+                }
+            }
+            for (int k = 0; k < inputDataset.GetLength(1); k++)
+            {
+                maxPredictorValue[k] -= minPredictorValue[k];
+            }
+
+            for (int i = 0; i < inputDataset.GetLength(0) - 1; i++)
+            {
+                for (int k = 0; k < inputDataset.GetLength(1); k++)
+                {
+                    normalizedDataset2[i, k] = (inputDataset[i, k] - minPredictorValue[k]) / maxPredictorValue[k];
+                }
             }
             return normalizedDataset2;
         }

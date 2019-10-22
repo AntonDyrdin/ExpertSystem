@@ -48,10 +48,10 @@
   <ItemGroup>
     <Compile Include="AgentLink.cs" />
     <Compile Include="AgentManager.cs" />
-    <Compile Include="AgentManagerView.cs">
+    <Compile Include="Графическое отображение\AgentManagerView.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AgentManagerView.Designer.cs">
+    <Compile Include="Графическое отображение\AgentManagerView.Designer.cs">
       <DependentUpon>AgentManagerView.cs</DependentUpon>
     </Compile>
     <Compile Include="Algorithm.cs" />
@@ -97,17 +97,17 @@
     <Compile Include="Алгоритмы прогнозирования\BidAsk\BidAsk.cs" />
     <Compile Include="Алгоритмы прогнозирования\Easy\Easy.cs" />
     <Compile Include="Алгоритмы прогнозирования\FlexNN\FlexNN.cs" />
-    <Compile Include="OptimizationView.cs">
+    <Compile Include="Графическое отображение\OptimizationView.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="OptimizationView.Designer.cs">
+    <Compile Include="Графическое отображение\OptimizationView.Designer.cs">
       <DependentUpon>OptimizationView.cs</DependentUpon>
     </Compile>
     <Compile Include="Графическое отображение\MultiParameterVisualizer.cs" />
     <Compile Include="Графическое отображение\ParameterVisualizer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="AgentManagerView.resx">
+    <EmbeddedResource Include="Графическое отображение\AgentManagerView.resx">
       <DependentUpon>AgentManagerView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ExecutionProgress.resx">
@@ -131,7 +131,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="OptimizationView.resx">
+    <EmbeddedResource Include="Графическое отображение\OptimizationView.resx">
       <DependentUpon>OptimizationView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TextBoxes.resx">
