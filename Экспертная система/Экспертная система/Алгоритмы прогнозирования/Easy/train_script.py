@@ -46,12 +46,12 @@ def getTime():
 # попытка задать GPU, как устройство для ускорения вычислений
 from cntk.device import try_set_default_device, gpu
 import cntk.device as C
-log("Все вычислительные устройства: "+str(C.all_devices()))
+log("Все вычислительные устройства: " + str(C.all_devices()))
 try:
-    log("Попытка установить GPU как устройство по умолчанию: "+str(C.try_set_default_device(C.gpu(0))))
+    log("Попытка установить GPU как устройство по умолчанию: " + str(C.try_set_default_device(C.gpu(0))))
 except Exception as e:
     log(str(e))   
-#log(C.use_default_device())  
+#log(C.use_default_device())
 ###################################################
 
 #  загрузка библиотек
@@ -90,6 +90,10 @@ jsonObj = json.loads(jsontext)
 baseNodeName = next((v for i, v in enumerate(jsonObj.items()) if i == 0))[0]
 
 inputFile = open(h("input_file/value"))
+try:
+    log("CODE: "+h("code/value"))
+except:
+    log("CODE: null")
 #превращение входного файла в плоскую таблицу значений предикторов
 allLines = inputFile.readlines()
 dataset = numpy.zeros((len(allLines) - 1, len(allLines[0].split(';'))),dtype=numpy.float32)
@@ -102,7 +106,7 @@ for i in range(1,len(allLines)):
 
 # train_start_point определяет процент данных, которые будут отброшены
 train_start_point = (int)((float)(h("start_point/value")) * dataset.shape[0])
-log("start point "+(str)(train_start_point)    )
+log("start point " + (str)(train_start_point))
 dataset = dataset[train_start_point:,:]
 
 log("dataset.shape: " + (str)(dataset.shape))   
@@ -110,19 +114,21 @@ log("dataset.shape: " + (str)(dataset.shape))
 split_point = (float)(h("split_point/value"))
 steps_forward = (int)(h("steps_forward/value"))
 
-# если первый слой рекуррентный, то построть трёхмерный массив - иначе плоскую матрицу
+
+predicted_column_index = (int)(h("predicted_column_index/value"))
+# если первый слой рекуррентный, то построть трёхмерный массив - иначе плоскую
+# матрицу
 if (h("NN_struct/layer1/value") == "LSTM") | (h("NN_struct/layer1/value") == "Conv1D"):
 
-    Dataset_X = numpy.zeros((dataset.shape[0] - window_size - (steps_forward-1), window_size,dataset.shape[1]), dtype=numpy.float32)
+    Dataset_X = numpy.zeros((dataset.shape[0] - window_size - (steps_forward - 1), window_size,dataset.shape[1]), dtype=numpy.float32)
+    Dataset_Y = numpy.zeros((dataset.shape[0] - window_size - (steps_forward - 1)), dtype=numpy.float32)
 
-    Dataset_Y = numpy.zeros((dataset.shape[0] - window_size - (steps_forward-1)), dtype=numpy.float32)
-    predicted_column_index = (int)(h("predicted_column_index/value"))
-    for i in range(0,dataset.shape[0] - window_size - (steps_forward-1)):
+    for i in range(0,dataset.shape[0] - window_size - (steps_forward - 1)):
         for j in range(0,window_size):
             for k in range(0,dataset.shape[1]):
                 Dataset_X[i,j,k] = dataset[i + j][k]
 
-        Dataset_Y[i] = dataset[i + window_size + (steps_forward-1),predicted_column_index]
+        Dataset_Y[i] = dataset[i + window_size + (steps_forward - 1),predicted_column_index]
 
     #разбиение на обучающую и тестовую выборки
 
@@ -132,24 +138,40 @@ if (h("NN_struct/layer1/value") == "LSTM") | (h("NN_struct/layer1/value") == "Co
     test_y = Dataset_Y[round(Dataset_Y.shape[0] * (split_point)):]
     
 else:
-    Dataset_X = numpy.zeros((dataset.shape[0] - window_size - (steps_forward-1), window_size), dtype=numpy.float32)
-    Dataset_Y = numpy.zeros((dataset.shape[0] - window_size - (steps_forward-1),1), dtype=numpy.float32)
-    predicted_column_index = (int)(h("predicted_column_index/value"))
-    for i in range(0,dataset.shape[0] - window_size- (steps_forward-1)):
-        for j in range(0,window_size):
-                Dataset_X[i,j] = dataset[i + j][predicted_column_index] 
+    if(window_size == 1):
+        Dataset_X = numpy.zeros((dataset.shape[0] - 1 - (steps_forward - 1), dataset.shape[1]), dtype=numpy.float32)
+        Dataset_Y = numpy.zeros((dataset.shape[0] - 1 - (steps_forward - 1),1), dtype=numpy.float32)
 
-        Dataset_Y[i] = dataset[i + window_size + (steps_forward-1),predicted_column_index]
+        for i in range(0,dataset.shape[0] - 1 - (steps_forward - 1)):
+            for j in range(0,dataset.shape[1]):
+                    Dataset_X[i,j] = dataset[i][j] 
 
-    train_X = Dataset_X[:round(Dataset_X.shape[0] * (split_point)), :]
-    test_X = Dataset_X[round(Dataset_X.shape[0] * (split_point)):, :]
-    train_y = Dataset_Y[:round(Dataset_Y.shape[0] * (split_point))]
-    test_y = Dataset_Y[round(Dataset_Y.shape[0] * (split_point)):]
+            Dataset_Y[i] = dataset[i + 1 + (steps_forward - 1),predicted_column_index]
+
+        train_X = Dataset_X[:round(Dataset_X.shape[0] * (split_point)), :]
+        test_X = Dataset_X[round(Dataset_X.shape[0] * (split_point)):, :]
+        train_y = Dataset_Y[:round(Dataset_Y.shape[0] * (split_point))]
+        test_y = Dataset_Y[round(Dataset_Y.shape[0] * (split_point)):]
+
+    else:
+        Dataset_X = numpy.zeros((dataset.shape[0] - window_size - (steps_forward - 1), window_size), dtype=numpy.float32)
+        Dataset_Y = numpy.zeros((dataset.shape[0] - window_size - (steps_forward - 1),1), dtype=numpy.float32)
+
+        for i in range(0,dataset.shape[0] - window_size - (steps_forward - 1)):
+            for j in range(0,window_size):
+                    Dataset_X[i,j] = dataset[i + j][predicted_column_index] 
+
+            Dataset_Y[i] = dataset[i + window_size + (steps_forward - 1),predicted_column_index]
+
+        train_X = Dataset_X[:round(Dataset_X.shape[0] * (split_point)), :]
+        test_X = Dataset_X[round(Dataset_X.shape[0] * (split_point)):, :]
+        train_y = Dataset_Y[:round(Dataset_Y.shape[0] * (split_point))]
+        test_y = Dataset_Y[round(Dataset_Y.shape[0] * (split_point)):]
 ####################################################################################
-print("train_X ",train_X)
-print("test_X ",test_X)
-print("train_y ",train_y)
-print("test_y ",test_y)
+#print("train_X ",train_X)
+#print("test_X ",test_X)
+#print("train_y ",train_y)
+#print("test_y ",test_y)
 log("> время чтения данных  : " + (str)(getTime()))  
 log("train_X.shape" + (str)(train_X.shape))
 if (h("NN_struct/layer1/value") == "LSTM") | (h("NN_struct/layer1/value") == "Conv1D"):
@@ -281,13 +303,13 @@ predictionsFile = open(h("predictions_file_path/value"), 'w')
 head = allLines[0].split(';')[predicted_column_index]
 
 #log(h("predictions_file_path"))
-head = head = allLines[0].split(';')[predicted_column_index].replace('\n','')+';' + '(predicted -> )' + allLines[0].split(';')[(int)(h("predicted_column_index/value"))] 
+head = head = allLines[0].replace('\n','') + ';' + '(predicted -> )' + allLines[0].split(';')[(int)(h("predicted_column_index/value"))] 
 # if head[:-1]==';':
 #     head = head[0:-1]
 predictionsFile.write(head + '\n')
 
 
-if (h("NN_struct/layer1/value") == "LSTM")|(h("NN_struct/layer1/value") == "Conv1D"):
+if (h("NN_struct/layer1/value") == "LSTM") | (h("NN_struct/layer1/value") == "Conv1D"):
     for i in range(0,test_X.shape[0]):
         line = ''
         for k in range(0,test_X.shape[2]): 
@@ -297,7 +319,7 @@ if (h("NN_struct/layer1/value") == "LSTM")|(h("NN_struct/layer1/value") == "Conv
 else:
     for i in range(0,test_X.shape[0]):
         line = ''
-        line = line +  (str)(test_X[i,window_size - 1]) + ';'
+        line = line + (str)(test_X[i,window_size - 1]) + ';'
         line = line + (str)(predicted[i,0])
         predictionsFile.write(line + '\n')
 

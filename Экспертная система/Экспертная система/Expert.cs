@@ -156,7 +156,7 @@ namespace Экспертная_система
         {
             foreach (Algorithm algorithm in algorithms)
             {
-                algorithm.train().Wait();
+                algorithm.train();
             }
             copyHyperparametersFromAlgorithmsToExpert();
 

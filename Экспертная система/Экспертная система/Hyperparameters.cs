@@ -39,6 +39,7 @@ namespace Экспертная_система
         public List<Node> nodes = new List<Node>();
         public int Y = 0;
         public bool lightsOn = false;
+        public bool inProcess = false;
         public Hyperparameters Clone()
         {
             return new Hyperparameters(this.toJSON(0), form1);

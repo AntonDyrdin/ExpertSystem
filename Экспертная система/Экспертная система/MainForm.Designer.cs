@@ -67,6 +67,7 @@
             this.label10 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
+            this.showExecutionProgress = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.picBox)).BeginInit();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
@@ -523,6 +524,18 @@
             this.label12.TabIndex = 60;
             this.label12.Text = "10";
             // 
+            // showExecutionProgress
+            // 
+            this.showExecutionProgress.AutoSize = true;
+            this.showExecutionProgress.BackColor = System.Drawing.Color.Transparent;
+            this.showExecutionProgress.ForeColor = System.Drawing.Color.White;
+            this.showExecutionProgress.Location = new System.Drawing.Point(1265, 12);
+            this.showExecutionProgress.Name = "showExecutionProgress";
+            this.showExecutionProgress.Size = new System.Drawing.Size(143, 17);
+            this.showExecutionProgress.TabIndex = 59;
+            this.showExecutionProgress.Text = "show execution progress";
+            this.showExecutionProgress.UseVisualStyleBackColor = false;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -531,6 +544,7 @@
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(1904, 1011);
+            this.Controls.Add(this.showExecutionProgress);
             this.Controls.Add(this.logBox);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.label6);
@@ -614,6 +628,7 @@
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.Label label18;
+        public System.Windows.Forms.CheckBox showExecutionProgress;
     }
 }
 

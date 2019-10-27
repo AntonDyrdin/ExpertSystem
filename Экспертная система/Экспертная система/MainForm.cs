@@ -252,38 +252,51 @@ namespace Экспертная_система
             mainThread = System.Threading.Thread.CurrentThread;
 
             algorithm = new Easy(this, "Easy");
-            // algorithm.Open(@"E:\Anton\Desktop\MAIN\Optimization\Easy\Easy[0]\h.json");
-            //  sourceDataFile = pathPrefix + @"Временные ряды\LD2011_2014-cut MAVG.txt";
-            //  expert.H.add("input_file", expert.savePreparedDataset(sourceDataFile, "<symbol_time>;<server_time>;<TIME>;<DATE>;<local_time>;<TICKER>;<PER>;<DATEandTIME>;<DATE_TIME>;\"\"", true));
+             algorithm.Open(@"E:\Anton\Desktop\MAIN\Optimization\Easy\Easy[0]\h.json");
+            //   sourceDataFile = pathPrefix + @"Временные ряды\LD2011_2014-cut.txt";
+
+           //sourceDataFile = pathPrefix + @"Временные ряды\85123A_day_of_week.txt";
+           // expert.H.add("input_file", expert.savePreparedDataset(sourceDataFile, "<symbol_time>;<server_time>;<TIME>;<DATE>;<local_time>;<TICKER>;<PER>;<DATEandTIME>;<DATE_TIME>;\"\"", false));
 
             // vis.enableGrid = false;
             // vis.addCSV(pathPrefix + @"Временные ряды\LD2011_2014-cut MAVG-dataset.txt", 0, 1000, 0);
 
-
-      /*     algorithm.h.setValueByName("start_point", "0");
+         /*   algorithm.h.addVariable(0, "learning_rate", 0.0001, 0.05, 0.05, 0.013);
+            algorithm.h.addVariable(0, "window_size", 2, 30, 2, 19);
+            algorithm.h.addVariable(0, "number_of_epochs", 1, 50, 1, 10);
+            algorithm.h.setValueByName("split_point", "0.9");
+            algorithm.h.setValueByName("steps_forward", "1");
+            algorithm.h.setValueByName("start_point", "0");
             algorithm.h.setValueByName("normalize", "true");
-            algorithm.h.add("input_file", pathPrefix + @"Временные ряды\LD2011_2014-cut MAVG-dataset.txt");
+            algorithm.h.add("input_file", pathPrefix + @"Временные ряды\85123A-dataset.txt");
             algorithm.h.add("path_prefix", pathPrefix);
             algorithm.h.add("predicted_column_index:0");
-            algorithm.h.setValueByName("show_train_charts", "True");
-            algorithm.train().Wait();*/
-
-        //   I.executePythonScript(pathPrefix + @"\Экспертная система\Экспертная система\Алгоритмы прогнозирования\Easy\cyclic_prediction.py", "--json_file_path \"" + pathPrefix + @"\Экспертная система\Экспертная система\Алгоритмы прогнозирования\Easy\h.json" + '\"');
+            algorithm.h.setValueByName("show_train_charts", "True");*/
+           // algorithm.train().Wait();
+           
+       //  I.executePythonScript(pathPrefix + @"\Экспертная система\Экспертная система\Алгоритмы прогнозирования\Easy\cyclic_prediction.py", "--json_file_path \"" + pathPrefix + @"\Экспертная система\Экспертная система\Алгоритмы прогнозирования\Easy\h.json" + '\"');
 
             // algorithm.getAccAndStdDev(File.ReadAllLines(@"E:\Anton\Desktop\MAIN\Optimization\Easy\Easy[0]\predictions.txt"));
-        //   algorithm.getAccAndStdDev(File.ReadAllLines(pathPrefix + @"\Экспертная система\Экспертная система\Алгоритмы прогнозирования\Easy\cyclic_prediction.txt"));
+      //   algorithm.getAccAndStdDev(File.ReadAllLines(pathPrefix + @"\Экспертная система\Экспертная система\Алгоритмы прогнозирования\Easy\cyclic_prediction.txt"));
 
 
             vis.enableGrid = true;
             //  vis.addCSV(@"E:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\Easy\cyclic_prediction.txt", "\"MT_250\"", "\"MT_250\"", "r", 1000, 0, 0);
             //  vis.addCSV(@"E:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\Easy\cyclic_prediction.txt", "\"MT_250\"", "(predicted -> )\"MT_250\"", "pred", 1000, 0, 0);
 
-                vis.addCSV(@"E:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\Easy\predictions.txt", "realVSpredictions", "MT_250", "real", 1000, 0.95, 0);
-               vis.addCSV(@"E:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\Easy\predictions.txt", "realVSpredictions", "LAST_COLUMN", "predictions", 1000, 0.95, 0);
+            //        vis.addCSV(@"E:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\Easy\predictions.txt", "realVSpredictions", "MT_250", "real", 1000, 0.95, 0);
+            //    vis.addCSV(@"E:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\Easy\predictions.txt", "realVSpredictions", "LAST_COLUMN", "predictions", 1000, 0.95, 0);
 
 
-            // AO = new AlgorithmOptimization(algorithm, this, 8, 5, 1, 0.5, 100);
-            //  AO.run();
+             AO = new AlgorithmOptimization(algorithm, this,
+                 population_value: 32,
+                 mutation_rate: 10,
+                 architecture_variation_rate: 4,
+                 elite_ratio: 0.5,
+                 Iterarions: 200,
+                 AlgorithmOptimization.TargetFunctionType.STDDEV);
+
+              AO.run();
             //    algorithm.h.draw(0, picBox, 25, 300);
             // algorithm.Save();
             /*   algorithm = new BidAsk(this, "BidAsk");

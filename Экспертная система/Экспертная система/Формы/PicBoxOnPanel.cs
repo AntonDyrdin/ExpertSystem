@@ -12,11 +12,10 @@ namespace Экспертная_система
 {
     public partial class PicBoxOnPanel : Form
     {
-        public PicBoxOnPanel(Hyperparameters h)
+        public PicBoxOnPanel()
         {
             InitializeComponent();
-            Text = h.getValueByName("json_file_path");
-            h.draw(0, picBox, 25, 300);
+
         }
 
         private void PicBoxOnPanel_Load(object sender, EventArgs e)

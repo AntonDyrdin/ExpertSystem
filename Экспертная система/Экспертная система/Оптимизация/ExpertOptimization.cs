@@ -118,7 +118,7 @@ namespace Экспертная_система
                     expert.algorithms[j].h.setValueByName("json_file_path", new_save_folder + "h.json");
                     File.WriteAllText(new_save_folder + "h.json", expert.algorithms[j].h.toJSON(0), System.Text.Encoding.Default);
 
-                    expert.algorithms[j].train().Wait();
+                    expert.algorithms[j].train();
                 }
                 expert.copyHyperparametersFromAlgorithmsToExpert();
                 expert.H.setValueByName("report_path", form1.pathPrefix + "Optimization\\" + name + "\\" + expert.expertName + "[0]");

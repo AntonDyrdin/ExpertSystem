@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Windows.Forms;
 
 namespace Экспертная_система
@@ -44,10 +45,20 @@ namespace Экспертная_система
 
         private void dataGridView1_Click(object sender, EventArgs e)
         {
+            if (dataGridView1.SelectedCells[0].ColumnIndex == 4)
+            {
+                Algorithm algorithm = Algorithm.newInstance(AO.algorithm);
+                algorithm.Open(AO.population[dataGridView1.SelectedCells[0].RowIndex].getValueByName("json_file_path"));
+                algorithm.h.setValueByName("show_train_charts", "True"); 
+                algorithm.getAccAndStdDev(File.ReadAllLines(algorithm.h.getValueByName("predictions_file_path")));
+            }
+
             if (dataGridView1.SelectedCells[0].ColumnIndex == 0)
             {
-                PicBoxOnPanel picBoxOnPanel = new PicBoxOnPanel(AO.population[dataGridView1.SelectedCells[0].RowIndex]);
+                PicBoxOnPanel picBoxOnPanel = new PicBoxOnPanel();
                 picBoxOnPanel.Show();
+                picBoxOnPanel.Text = AO.population[dataGridView1.SelectedCells[0].RowIndex].getValueByName("json_file_path");
+                AO.population[dataGridView1.SelectedCells[0].RowIndex].draw(0, picBoxOnPanel.picBox, 25, 300);
             }
         }
 

@@ -79,7 +79,7 @@ namespace Экспертная_система
                         algorithm.h.setValueByName("path_prefix", pathPrefix);
 
                         log("START TRAINING");
-                        algorithm.train().Wait();
+                        algorithm.train();
 
                         if (algorithm.trainingResponse.Contains("успешно завершён"))
                         {

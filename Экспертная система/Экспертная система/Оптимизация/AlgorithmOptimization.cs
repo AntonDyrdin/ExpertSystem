@@ -9,11 +9,16 @@ namespace Экспертная_система
 {
     internal class AlgorithmOptimization
     {
+        public enum TargetFunctionType
+        {
+            ACCURACY,
+            STDDEV
+        }
         public string name;
         public Algorithm algorithm;
         public Hyperparameters[] population;
         public Hyperparameters A;
-        private MainForm form1;
+        public MainForm form1;
         public int mutation_rate;
         public int population_value;
         public double elite_ratio;
@@ -27,12 +32,12 @@ namespace Экспертная_система
         private bool showOnlyBestIndividsParameters = true;
         private int architecture_variation_rate;
 
-
+        TargetFunctionType target_function_type;
         public int screenshotIterationTimer = 5;
         public bool multiThreadTraining = true;
         public int multiThreadTrainingRATE = 4;
         private int test_count = 6;
-        public AlgorithmOptimization(Algorithm algorithm, MainForm form1, int population_value, int mutation_rate, int architecture_variation_rate, double elite_ratio, int Iterarions)
+        public AlgorithmOptimization(Algorithm algorithm, MainForm form1, int population_value, int mutation_rate, int architecture_variation_rate, double elite_ratio, int Iterarions, TargetFunctionType target_function_type)
         {
             r = new Random();
             this.Iterarions = Iterarions;
@@ -46,6 +51,8 @@ namespace Экспертная_система
             population = new Hyperparameters[population_value];
             variablesNames = new List<string>();
             variablesIDs = new List<int>[population_value];
+
+            this.target_function_type = target_function_type;
             for (int i = 0; i < population_value; i++)
                 variablesIDs[i] = new List<int>();
 
@@ -77,7 +84,7 @@ namespace Экспертная_система
             double B = 0;
 
             R = (max - val) / (max - min) * 255;
-            G = (Math.Abs(((max + min) / 2) - val)) / ((max + min) / 2) * 255;
+            G = (Math.Abs(max / 2 - val)) / (max / 2) * 255;
             B = (val - min) / (max - min) * 255;
 
             return Color.FromArgb(255, Convert.ToInt32(R), Convert.ToInt32(G), Convert.ToInt32(B));
@@ -134,8 +141,22 @@ namespace Экспертная_система
                 File.WriteAllText(new_save_folder + "h.json", algorithm.h.toJSON(0), System.Text.Encoding.Default);
                 algorithm.h.setValueByName("show_train_charts", "False");
 
-                algorithm.train().Wait();
-                algorithm.h.setValueByName("target_function", algorithm.h.getValueByName("accuracy"));
+                algorithm.train();
+
+                switch (target_function_type)
+                {
+                    case TargetFunctionType.ACCURACY:
+                        {
+                            algorithm.h.setValueByName("target_function", algorithm.h.getValueByName("accuracy"));
+                            break;
+                        }
+                    case TargetFunctionType.STDDEV:
+                        {
+                            algorithm.h.setValueByName("target_function", algorithm.h.getValueByName("stdDev"));
+                            break;
+                        }
+                }
+
                 for (int i = 0; i < population_value; i++)
                 {
                     population[i] = new Hyperparameters(algorithm.h.toJSON(0), form1);
@@ -161,10 +182,13 @@ namespace Экспертная_система
             }
             else
             {
+                rewriteVariableIDs();
+
                 //kill and concieve
                 kill_and_conceive();
 
                 rewriteVariableIDs();
+
                 //mutation
                 if (form1.mutationRate != 0)
                     mutation_rate = form1.mutationRate;
@@ -218,7 +242,6 @@ namespace Экспертная_система
                                 List<Algorithm> algorithms = new List<Algorithm>();
                                 for (int i = begin; i < end; i++)
                                 {
-                                    //если в методе Algorithm.newInstance возникает ошибка, значит новый алгоритм не добавлен в конструктор
                                     Algorithm alg = Algorithm.newInstance(algorithm);
                                     alg.h = population[i].Clone();
                                     algorithms.Add(alg);
@@ -226,20 +249,37 @@ namespace Экспертная_система
                                     population[i].setValueByName("state", "обучение..");
                                 }
 
-                                Task[] trainTasks = new Task[end - begin];
+                                List<Thread> trainThreads = new List<Thread>();
+
+
                                 foreach (Algorithm alg in algorithms)
                                 {
-                                    trainTasks[algorithms.IndexOf(alg)] = algorithms[algorithms.IndexOf(alg)].train();
+                                    Thread t = new Thread(new ThreadStart(alg.train));
+                                    trainThreads.Add(t);
+                                    t.Start();
+                                    // trainTasks[algorithms.IndexOf(alg)] = algorithms[algorithms.IndexOf(alg)].train();
                                 }
 
-                                foreach (var task in trainTasks)
-                                    task.Wait();
+                                foreach (var t in trainThreads)
+                                    t.Join();
 
                                 for (int i = begin; i < end; i++)
                                 {
                                     population[i] = algorithms[i - begin].h.Clone();
-                                    target_functions[i, tc] = Convert.ToDouble(population[i].getValueByName("accuracy").Replace('.', ','));
 
+                                    switch (target_function_type)
+                                    {
+                                        case TargetFunctionType.ACCURACY:
+                                            {
+                                                target_functions[i, tc] = Convert.ToDouble(population[i].getValueByName("accuracy").Replace('.', ','));
+                                                break;
+                                            }
+                                        case TargetFunctionType.STDDEV:
+                                            {
+                                                target_functions[i, tc] = Convert.ToDouble(population[i].getValueByName("stdDev").Replace('.', ','));
+                                                break;
+                                            }
+                                    }
                                 }
                                 log((end).ToString() + '/' + population_value.ToString() + " training comlete" + TimeSpan.FromSeconds((new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds()) - start1).ToString(), Color.LimeGreen);
                             }
@@ -256,7 +296,19 @@ namespace Экспертная_система
                             for (int i = 0; i < population_value; i++)
                             {
                                 population[i] = agentManager.tasks[i].h.Clone();
-                                target_functions[i, tc] = Convert.ToDouble(population[i].getValueByName("accuracy").Replace('.', ','));
+                                switch (target_function_type)
+                                {
+                                    case TargetFunctionType.ACCURACY:
+                                        {
+                                            target_functions[i, tc] = Convert.ToDouble(population[i].getValueByName("accuracy").Replace('.', ','));
+                                            break;
+                                        }
+                                    case TargetFunctionType.STDDEV:
+                                        {
+                                            target_functions[i, tc] = Convert.ToDouble(population[i].getValueByName("stdDev").Replace('.', ','));
+                                            break;
+                                        }
+                                }
                             }
                             agentManager.tasks.Clear();
                         }
@@ -349,27 +401,29 @@ namespace Экспертная_система
                     Algorithm.MoveFiles(oldH, tempFolder, oldPath);
                 }
 
-                    /*   for (int i = 0; i < population_value - 1; i++)
-                    {
-                        string newPath = form1.pathPrefix + "Optimization\\temp\\" + algorithm.name + "\\" + algorithm.name + "[" + i.ToString() + "]";
-                        string oldPath = form1.pathPrefix + "Optimization\\" + algorithm.name + "\\" + algorithm.name + "[" + i.ToString() + "]";
-                        Hyperparameters oldH = new Hyperparameters(newPath + "\\h.json", form1, true);
-                        Algorithm.MoveFiles(oldH, newPath, tempFolder);
-                    }
-                    for (int i = 0; i < population_value - 1; i++)
-                    {
-                        string oldPath = form1.pathPrefix + "Optimization\\temp\\" + algorithm.name + "\\" + algorithm.name + "[" + i.ToString() + "]";
-                        Hyperparameters oldH = new Hyperparameters(oldPath + "\\h.json", form1, true);
-                        string newPath = population[i].getValueByName("save_folder");
-                        //взять код из i-ого индивида в папке temp, а затем искать индекс того же идивида по коду в массиве population
-                        string code = oldH.getValueByName("code");
-                        for (int i = 0; i < population_value - 1; i++)
-                            Algorithm.MoveFiles(oldH, newPath, tempFolder);
-                    }*/
+                /*   for (int i = 0; i < population_value - 1; i++)
+                {
+                    string newPath = form1.pathPrefix + "Optimization\\temp\\" + algorithm.name + "\\" + algorithm.name + "[" + i.ToString() + "]";
+                    string oldPath = form1.pathPrefix + "Optimization\\" + algorithm.name + "\\" + algorithm.name + "[" + i.ToString() + "]";
+                    Hyperparameters oldH = new Hyperparameters(newPath + "\\h.json", form1, true);
+                    Algorithm.MoveFiles(oldH, newPath, tempFolder);
                 }
+                for (int i = 0; i < population_value - 1; i++)
+                {
+                    string oldPath = form1.pathPrefix + "Optimization\\temp\\" + algorithm.name + "\\" + algorithm.name + "[" + i.ToString() + "]";
+                    Hyperparameters oldH = new Hyperparameters(oldPath + "\\h.json", form1, true);
+                    string newPath = population[i].getValueByName("save_folder");
+                    //взять код из i-ого индивида в папке temp, а затем искать индекс того же идивида по коду в массиве population
+                    string code = oldH.getValueByName("code");
+                    for (int i = 0; i < population_value - 1; i++)
+                        Algorithm.MoveFiles(oldH, newPath, tempFolder);
+                }*/
+            }
 
             for (int i = 0; i < population_value; i++)
+            {
                 population[i].setValueByName("model_name", population[i].nodes[0].name() + "[" + i.ToString() + "]");
+            }
 
             log("Обновление отображаемых параметров", Color.Lime);
 
@@ -610,18 +664,7 @@ namespace Экспертная_система
                 population[individIndex].setValueByName("state", "изменена архитектура");
         }
 
-        private void rewriteVariableIDs()
-        {
-            // перезапись списка переменных
-            variablesNames.Clear();
-            for (int i = 0; i < population_value; i++)
-                variablesIDs[i].Clear();
 
-            for (int i = 0; i < population_value; i++)
-            {
-                recurciveVariableAdding(population[i], i, 0, population[i].getValueByName("code"));
-            }
-        }
 
         private void mutation()
         {
@@ -761,14 +804,42 @@ namespace Экспертная_система
             }
             else
             {
-                log("необходимо снизить elite_ratio, так как (population_value * elite_ratio) < 1 !", Color.Orange);
+                log("необходимо снизить elite_ratio, так как (population_value * elite_ratio) < 1 !", Color.Red);
+                throw new Exception();
             }
         }
 
         private Hyperparameters get_child(Hyperparameters parent1, Hyperparameters parent2, Hyperparameters old, int indexOld)
         {
+            //      При переходе на вариативную архитектуру встала проблема несовместимости параметров родителей.
+            //  До тех пор, пока не найдено решение по совмещению параметров разных архитектур,
+            //  перекомбинация параметров архитектуры отключена!
+
             Hyperparameters child = old.Clone();
 
+            foreach (int variableID in variablesIDs[indexOld])
+            {
+                //перекомбинируются только параметры с parentID == 0
+                if (child.nodes[variableID].parentID == 0)
+                {
+                    //родитель гена выбирается случайно
+                    int parent_of_gene = r.Next(0, 2);
+
+                    // если имена параметров совпадают - производится перекомбинация
+                    // возможны ошибки при одинаковых именах параметров в разных местах одной архитектуры
+
+                    if (parent_of_gene == 0)
+                    {
+                        string value = parent1.getValueByName(child.nodes[variableID].name());
+                        child.nodes[variableID].setAttribute("value", value);
+                    }
+                    else
+                    {
+                        string value = parent2.getValueByName(child.nodes[variableID].name());
+                        child.nodes[variableID].setAttribute("value", value);
+                    }
+                }
+            }
             int parent_of_architechture = r.Next(0, 2);
 
             child.deleteBranch(child.getNodeByName("NN_struct")[0].ID);
@@ -782,44 +853,13 @@ namespace Экспертная_система
                 child.addBranch(new Hyperparameters(parent2.toJSON(parent2.getNodeByName("NN_struct")[0].ID), form1), "NN_struct", 0);
             }
 
-            //      При переходе на вариативную архитектуру встала проблема несовместимости параметров родителей.
-            //  До тех пор, пока не найдено решение по совмещению параметров разных архитектур,
-            //  перекомбинация параметров архитектуры отключена!
+
             string path = child.getValueByName("json_file_path");
-            child.Save(path);
 
-
-            foreach (int variableID in variablesIDs[indexOld])
-            {
-                //родитель гена выбирается случайно
-                int parent_of_gene = r.Next(0, 2);
-
-                // если имена параметров совпадают - производится перекомбинация
-                // возможны ошибки при одинаковых именах параметров в разных местах одной архитектуры
-
-                if (parent_of_gene == 0)
-                {
-                    if (child.nodes.Count > variableID & parent1.nodes.Count > variableID)
-                        if (child.nodes[variableID].getAttributeValue("name") == parent1.nodes[variableID].getAttributeValue("name"))
-                        {
-                            child.nodes[variableID].setAttribute("value", parent1.nodes[variableID].getValue());
-                        }
-                }
-                else
-                {
-                    if (child.nodes.Count > variableID & parent2.nodes.Count > variableID)
-                        if (child.nodes[variableID].getAttributeValue("name") == parent2.nodes[variableID].getAttributeValue("name"))
-                        {
-                            child.nodes[variableID].setAttribute("value", parent2.nodes[variableID].getValue());
-                        }
-                }
-
-            }
-            // string path = child.getValueByName("json_file_path");
-            child.Save(path);
 
             child.setValueByName("state", "создан");
             child.setValueByName("parents", parent1.getValueByName("model_name") + " code: " + parent1.getValueByName("code") + " и " + parent2.getValueByName("model_name") + " code: " + parent2.getValueByName("code"));
+            //      child.Save(path);
             return child;
         }
 
@@ -850,7 +890,18 @@ namespace Экспертная_система
             newthread.Start();
             log("OPTIMIZATION STARTED", Color.Cyan);
         }
+        private void rewriteVariableIDs()
+        {
+            // перезапись списка переменных
+            variablesNames.Clear();
+            for (int i = 0; i < population_value; i++)
+                variablesIDs[i].Clear();
 
+            for (int i = 0; i < population_value; i++)
+            {
+                recurciveVariableAdding(population[i], i, 0, population[i].getValueByName("code"));
+            }
+        }
         private void recurciveVariableAdding(Hyperparameters h, int index, int ID, string modelName)
         {
             List<Node> branches = h.getNodesByparentID(ID);

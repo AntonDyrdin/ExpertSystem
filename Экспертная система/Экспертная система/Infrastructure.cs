@@ -430,17 +430,26 @@ namespace Экспертная_система
             start.FileName = form1.I.h.getValueByName("python_path");
             start.Arguments = '"' + scriptFile + '"' + " " + args;
             start.ErrorDialog = true;
+
+            if (!form1.showExecutionProgress.Checked)
+            {
+                start.UseShellExecute = false;
+                start.CreateNoWindow = true;
+            }
             //start.RedirectStandardError = true;
-            //start.UseShellExecute = false;
-            // start.CreateNoWindow = true;
+
             //start.RedirectStandardOutput = true;
             Process process = Process.Start(start);
-            string pid = process.Id.ToString();
-            form1.I.newProcessToShow(process);
+           
+
+            if (form1.showExecutionProgress.Checked)
+            {
+                form1.I.newProcessToShow(process);
+            }
+
             // newLogBox(process.Id);
             while (!process.HasExited)
             {
-
                 System.Threading.Thread.Sleep(100);
             }
 

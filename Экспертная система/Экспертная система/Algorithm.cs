@@ -256,7 +256,8 @@ namespace Экспертная_система
         }
 
         public string trainingResponse;
-        public async Task train()
+
+        public void train()
         {
             trainingResponse = "";
 
@@ -269,7 +270,7 @@ namespace Экспертная_система
             File.WriteAllText(h.getValueByName("json_file_path"), h.toJSON(0), System.Text.Encoding.Default);
             args = "--json_file_path " + '"' + h.getValueByName("json_file_path") + '"';
 
-            trainingResponse = await Task.Run(() => form1.I.executePythonScript(getValueByName("train_script_path"), args));
+            trainingResponse =  Task.Run(() => form1.I.executePythonScript(getValueByName("train_script_path"), args)).Result;
 
             try
             {
@@ -370,6 +371,7 @@ namespace Экспертная_система
         public void getAccAndStdDev(string[] predictionsCSV)
         {
 
+            bool showCharts = bool.Parse(h.getValueByName("show_train_charts"));
 
             /*     form1.vis.addParameter("bid_ask", Color.Red, 1000);
                  form1.vis.enableGrid = true;
@@ -505,51 +507,57 @@ namespace Экспертная_система
             }
             else
             {
-                form1.vis.clear();
-                form1.vis.addParameter("real/predictions integ", Color.Red, 100);
-                form1.vis.enableGrid = false;
-                form1.vis.parameters[0].showLastNValues = true;
-                form1.vis.parameters[0].window = 100;
-
-                form1.vis.parameters[0].functions.Add(new Function("real integr", Color.Red));
-                form1.vis.parameters[0].functions.Add(new Function("prediction integr", Color.Cyan));
-
-                form1.vis.addParameter("real/predictions", Color.Red, 900);
-
-                form1.vis.parameters[1].functions.Add(new Function("real", Color.Red));
-                form1.vis.parameters[1].functions.Add(new Function("prediction", Color.Cyan));
-
                 double integr_real = 0;
                 double integr_prediction = 0;
 
                 double sqrtSum = 0;
 
-                form1.vis.parameters[1].functions.Add(new Function("Графики должны совпадать", Color.DarkGray));
-                for (int k = 0; k < int.Parse(h.getValueByName("steps_forward"))-1; k++)
+                if (showCharts)
                 {
-                    form1.vis.addPoint(0, "prediction integr");
-                    form1.vis.addPoint(0, "prediction");
+                    form1.vis.clear();
+                    form1.vis.addParameter("real/predictions integ", Color.Red, 100);
+                    form1.vis.enableGrid = false;
+                    form1.vis.parameters[0].showLastNValues = true;
+                    form1.vis.parameters[0].window = 100;
+
+                    form1.vis.parameters[0].functions.Add(new Function("real integr", Color.Red));
+                    form1.vis.parameters[0].functions.Add(new Function("prediction integr", Color.Cyan));
+
+                    form1.vis.addParameter("real/predictions", Color.Red, 900);
+
+                    form1.vis.parameters[1].functions.Add(new Function("real", Color.Red));
+                    form1.vis.parameters[1].functions.Add(new Function("prediction", Color.Cyan));
+
+                    form1.vis.parameters[1].functions.Add(new Function("Графики должны совпадать", Color.DarkGray));
+                    for (int k = 0; k < int.Parse(h.getValueByName("steps_forward")) - 1; k++)
+                    {
+                        form1.vis.addPoint(0, "prediction integr");
+                        form1.vis.addPoint(0, "prediction");
+                    }
                 }
+                int predicted_column_index = Convert.ToInt16(h.getValueByName("predicted_column_index"));
 
                 for (int i = 1; i < predictionsCSV.Length - 1; i++)
                 {
                     var features = predictionsCSV[i].Split(';');
 
-                    double predictedValue = Convert.ToDouble(predictionsCSV[i].Split(';')[1].Replace('.', ','));
-                    double realValue = Convert.ToDouble(predictionsCSV[i + 1].Split(';')[0].Replace('.', ','));
+                    double predictedValue = Convert.ToDouble(predictionsCSV[i].Split(';')[features.Length - 1].Replace('.', ','));
+                    double realValue = Convert.ToDouble(predictionsCSV[i + 1].Split(';')[predicted_column_index].Replace('.', ','));
 
-                    integr_real += Math.Tan((realValue - 0.5) * Math.PI);
-                    form1.vis.addPoint(integr_real, "real integr");
-                    form1.vis.addPoint(realValue, "real");
+                    if (showCharts)
+                    {
+                        integr_real += Math.Tan((realValue - 0.5) * Math.PI);
+                        form1.vis.addPoint(integr_real, "real integr");
+                        form1.vis.addPoint(realValue, "real");
 
-                    integr_prediction += Math.Tan((predictedValue - 0.5) * Math.PI);
-                    form1.vis.addPoint(integr_prediction, "prediction integr");
-                    form1.vis.addPoint(predictedValue, "prediction");
+                        integr_prediction += Math.Tan((predictedValue - 0.5) * Math.PI);
+                        form1.vis.addPoint(integr_prediction, "prediction integr");
+                        form1.vis.addPoint(predictedValue, "prediction");
 
 
-                    if(i== int.Parse(h.getValueByName("window_size")+ int.Parse(h.getValueByName("steps_forward"))))
-                        form1.vis.markLast("|", "real");
-
+                        if (i == int.Parse(h.getValueByName("window_size") + int.Parse(h.getValueByName("steps_forward"))))
+                            form1.vis.markLast("|", "real");
+                    }
 
                     if (realValue > 0.5 && predictedValue > 0.5)
                     { rightCount++; }
@@ -567,7 +575,7 @@ namespace Экспертная_система
 
                 }
 
-                stdDev = Math.Sqrt(sqrtSum / inc);
+                stdDev = 1 - Math.Sqrt(sqrtSum / inc);
                 h.setValueByName("stdDev", stdDev.ToString().Replace(',', '.'));
 
                 /*   form1.vis.addCSV(h.getValueByName("predictions_file_path"),0, 500,  0);
@@ -577,10 +585,13 @@ namespace Экспертная_система
                      form1.vis.parameters[1].window = 100;
                      form1.vis.parameters[2].showLastNValues = true;
                      form1.vis.parameters[2].window = 100;*/
-                form1.vis.refresh();
+                if(showCharts)
+                    form1.vis.refresh();
 
                 accuracy = Convert.ToDouble(rightCount) / Convert.ToDouble(rightCount + leftCount) * 100;
-                log(String.Format("{0:0.#####}", accuracy) + " %");
+
+                //log(String.Format("{0:0.#####}", accuracy) + " %");
+                log(String.Format("{0:0.#####}", stdDev));
             }
             accuracy = Convert.ToDouble(rightCount) / Convert.ToDouble(rightCount + leftCount) * 100;
 
@@ -650,6 +661,7 @@ namespace Экспертная_система
                     }
                     catch
                     {
+                        throw;
                         goto repeat1;
                     }
                 }

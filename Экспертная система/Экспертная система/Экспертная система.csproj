@@ -46,37 +46,37 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AgentLink.cs" />
-    <Compile Include="AgentManager.cs" />
-    <Compile Include="Графическое отображение\AgentManagerView.cs">
+    <Compile Include="Параллельные вычисления\AgentLink.cs" />
+    <Compile Include="Параллельные вычисления\AgentManager.cs" />
+    <Compile Include="Формы\AgentManagerView.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Графическое отображение\AgentManagerView.Designer.cs">
+    <Compile Include="Формы\AgentManagerView.Designer.cs">
       <DependentUpon>AgentManagerView.cs</DependentUpon>
     </Compile>
     <Compile Include="Algorithm.cs" />
-    <Compile Include="AlgorithmOptimization.cs" />
-    <Compile Include="ExecutionProgress.cs">
+    <Compile Include="Оптимизация\AlgorithmOptimization.cs" />
+    <Compile Include="Формы\ExecutionProgress.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ExecutionProgress.Designer.cs">
+    <Compile Include="Формы\ExecutionProgress.Designer.cs">
       <DependentUpon>ExecutionProgress.cs</DependentUpon>
     </Compile>
-    <Compile Include="ExmoApi.cs" />
-    <Compile Include="MetaTraderLink.cs" />
-    <Compile Include="ModeSelector.cs">
+    <Compile Include="Торговые платформы\ExmoApi.cs" />
+    <Compile Include="Торговые платформы\MetaTraderLink.cs" />
+    <Compile Include="Формы\ModeSelector.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ModeSelector.Designer.cs">
+    <Compile Include="Формы\ModeSelector.Designer.cs">
       <DependentUpon>ModeSelector.cs</DependentUpon>
     </Compile>
-    <Compile Include="PicBoxOnPanel.cs">
+    <Compile Include="Формы\PicBoxOnPanel.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="PicBoxOnPanel.Designer.cs">
+    <Compile Include="Формы\PicBoxOnPanel.Designer.cs">
       <DependentUpon>PicBoxOnPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="DecisionMakingSystem.cs" />
+    <Compile Include="Вспомогатльные программы\DecisionMakingSystem.cs" />
     <Compile Include="Expert.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
@@ -85,41 +85,41 @@
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Hyperparameters.cs" />
-    <Compile Include="ImgDataset.cs" />
-    <Compile Include="ExpertOptimization.cs" />
+    <Compile Include="Вспомогатльные программы\ImgDataset.cs" />
+    <Compile Include="Оптимизация\ExpertOptimization.cs" />
     <Compile Include="Infrastructure.cs" />
-    <Compile Include="TextBoxes.cs">
+    <Compile Include="Формы\TextBoxes.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="TextBoxes.Designer.cs">
+    <Compile Include="Формы\TextBoxes.Designer.cs">
       <DependentUpon>TextBoxes.cs</DependentUpon>
     </Compile>
     <Compile Include="Алгоритмы прогнозирования\BidAsk\BidAsk.cs" />
     <Compile Include="Алгоритмы прогнозирования\Easy\Easy.cs" />
     <Compile Include="Алгоритмы прогнозирования\FlexNN\FlexNN.cs" />
-    <Compile Include="Графическое отображение\OptimizationView.cs">
+    <Compile Include="Формы\OptimizationView.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Графическое отображение\OptimizationView.Designer.cs">
+    <Compile Include="Формы\OptimizationView.Designer.cs">
       <DependentUpon>OptimizationView.cs</DependentUpon>
     </Compile>
     <Compile Include="Графическое отображение\MultiParameterVisualizer.cs" />
     <Compile Include="Графическое отображение\ParameterVisualizer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Графическое отображение\AgentManagerView.resx">
+    <EmbeddedResource Include="Формы\AgentManagerView.resx">
       <DependentUpon>AgentManagerView.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ExecutionProgress.resx">
+    <EmbeddedResource Include="Формы\ExecutionProgress.resx">
       <DependentUpon>ExecutionProgress.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ModeSelector.resx">
+    <EmbeddedResource Include="Формы\ModeSelector.resx">
       <DependentUpon>ModeSelector.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="PicBoxOnPanel.resx">
+    <EmbeddedResource Include="Формы\PicBoxOnPanel.resx">
       <DependentUpon>PicBoxOnPanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -131,10 +131,10 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="Графическое отображение\OptimizationView.resx">
+    <EmbeddedResource Include="Формы\OptimizationView.resx">
       <DependentUpon>OptimizationView.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="TextBoxes.resx">
+    <EmbeddedResource Include="Формы\TextBoxes.resx">
       <DependentUpon>TextBoxes.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
@@ -157,5 +157,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
