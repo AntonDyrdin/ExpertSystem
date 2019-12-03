@@ -38,6 +38,8 @@ namespace Экспертная_система
         {
             bool isWorkDone = false;
             bool anyTasks = false;
+
+            status = "working";
             while (!isWorkDone)
             {
                 anyTasks = false;
@@ -55,6 +57,7 @@ namespace Экспертная_система
                             {
                                 if (agent.status == "free")
                                 {
+                                   // log(agent.hostName + " - " + task.h.getValueByName("code"));
                                     agent.task = task;
                                     agent.status = "busy";
                                     task.status = "working";
@@ -65,7 +68,7 @@ namespace Экспертная_система
                     }
                 else
                     isWorkDone = true;
-                System.Threading.Thread.Sleep(1000);
+                System.Threading.Thread.Sleep(100);
             }
             status = "done";
         }
@@ -92,6 +95,7 @@ namespace Экспертная_система
                     // создаем новый поток для обслуживания нового клиента
                     Thread clientThread = new Thread(new ThreadStart(clientObject.Process));
                     clientThread.Start();
+
                 }
             }
             catch (Exception ex)
@@ -146,9 +150,12 @@ namespace Экспертная_система
                     {
                         if (task.type == "train")
                         {
+                            //log(hostName + ": " + task.h.getValueByName("code")+" .1");
                             status = "busy";
                             //объявление агенту типа задачи
                             sendCommand(writer, "train");
+
+                            task.h.Save();
 
                             sendFile(writer, task.h.getValueByName("json_file_path"));
                             System.Threading.Thread.Sleep(10);
@@ -166,27 +173,33 @@ namespace Экспертная_система
                                 System.Threading.Thread.Sleep(10);
                                 recieveFile(reader, task.h.getValueByName("save_folder") + "weights.h5");
                                 System.Threading.Thread.Sleep(10);
+
+                               // log(hostName + ": " + task.h.getValueByName("code") + " .2");
+
+
                                 Hyperparameters hTemp = new Hyperparameters(File.ReadAllText(task.h.getValueByName("json_file_path"), Encoding.Default), form1);
+                                
                                 hTemp.setValueByName("json_file_path", task.h.getValueByName("json_file_path"));
                                 hTemp.setValueByName("predictions_file_path", task.h.getValueByName("predictions_file_path"));
                                 hTemp.setValueByName("save_folder", task.h.getValueByName("save_folder"));
                                 hTemp.setValueByName("train_script_path", task.h.getValueByName("train_script_path"));
                                 hTemp.setValueByName("get_prediction_script_path", task.h.getValueByName("get_prediction_script_path"));
                                 hTemp.setValueByName("input_file", task.h.getValueByName("input_file"));
-                                File.WriteAllText(hTemp.getValueByName("json_file_path"), hTemp.toJSON(0), Encoding.Default);
-                                task.h = new Hyperparameters(hTemp.toJSON(0), form1);
 
+
+                                task.h = hTemp.Clone();
+                                task.h.Save();
+
+                                log(hostName+": " + task.h.getValueByName("code") + " trained;   accuracy = " + task.h.getValueByName("stdDev"));
                                 task.status = "done";
-                                status = "free";
-
-                                log(task.h.getValueByName("model_name") + " trained;   accuracy = " + task.h.getValueByName("accuracy") + " %");
-
+                        
                             }
                             else
                             {
-                                status = "free";
+
                                 task.status = "error";
                             }
+                            status = "free";
                         }
                     }
                 }
@@ -224,6 +237,7 @@ namespace Экспертная_система
         }
         void recieveFile(BinaryReader reader, string savePath)
         {
+            File.Delete(savePath);
             string message = reader.ReadString(); ;
             var file = Encoding.Default.GetBytes(message);
             File.WriteAllBytes(savePath, file);

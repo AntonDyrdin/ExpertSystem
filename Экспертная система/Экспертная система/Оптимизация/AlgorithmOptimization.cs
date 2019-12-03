@@ -25,7 +25,7 @@ namespace Экспертная_система
         private MultiParameterVisualizer variablesVisualizer;
         private List<string> variablesNames;
         private List<int>[] variablesIDs;
-        private int Iterarions = 0;
+        private int iterarions = 0;
         private Random r;
         private AgentManager agentManager;
         private bool showIndividsParameters = true;
@@ -37,10 +37,11 @@ namespace Экспертная_система
         public bool multiThreadTraining = true;
         public int multiThreadTrainingRATE = 4;
         private int test_count = 6;
-        public AlgorithmOptimization(Algorithm algorithm, MainForm form1, int population_value, int mutation_rate, int architecture_variation_rate, double elite_ratio, int Iterarions, TargetFunctionType target_function_type)
+        public AlgorithmOptimization(Algorithm algorithm, MainForm form1, int population_value, int mutation_rate, int architecture_variation_rate, double elite_ratio, int iterarions, int test_count, TargetFunctionType target_function_type)
         {
             r = new Random();
-            this.Iterarions = Iterarions;
+            this.iterarions = iterarions;
+            this.test_count = test_count;
             this.form1 = form1;
             this.algorithm = algorithm;
             this.elite_ratio = elite_ratio;
@@ -100,7 +101,7 @@ namespace Экспертная_система
                 AOV.Show();
             }));
 
-            while (opt_inc < Iterarions)
+            while (opt_inc < iterarions)
             {
                 var now = new DateTimeOffset(DateTime.Now);
                 var start = now.ToUnixTimeSeconds();
@@ -286,6 +287,7 @@ namespace Экспертная_система
                         }
                         else
                         {
+                            // ПАРАЛЛЕЛЬНОЕ ВЫЧИСЛЕНИЕ
                             for (int i = 0; i < population_value; i++)
                             {
                                 agentManager.tasks.Add(new AgentTask("train", population[i].Clone()));
@@ -296,6 +298,7 @@ namespace Экспертная_система
                             for (int i = 0; i < population_value; i++)
                             {
                                 population[i] = agentManager.tasks[i].h.Clone();
+
                                 switch (target_function_type)
                                 {
                                     case TargetFunctionType.ACCURACY:
@@ -438,6 +441,22 @@ namespace Экспертная_система
 
             variablesVisualizer.refresh();
 
+            List<string> codes = new List<string>();
+            for (int i = 0; i < population_value; i++)
+            {
+                string code = population[i].getValueByName("code");
+                
+                for (int j = 0; j < codes.Count; j++)
+                {
+                    if (code == codes[j])
+                    {
+                        log("DUPLICATE OF " + code, Color.Red);
+
+                        Thread.CurrentThread.Abort(); 
+                    }   
+                }
+                codes.Add(code);
+            }
         }
 
         private string[] layerTypes = new string[]

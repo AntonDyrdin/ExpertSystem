@@ -61,7 +61,7 @@ namespace Экспертная_система
                     }
                     if (command == "train")
                     {
-                        recieveFile(reader, workFolder + "json.txt");
+                        recieveFile(reader, workFolder + "h.json");
                         System.Threading.Thread.Sleep(10);
                         recieveFile(reader, workFolder + "train_script.py");
                         System.Threading.Thread.Sleep(10);
@@ -69,9 +69,9 @@ namespace Экспертная_система
                         System.Threading.Thread.Sleep(10);
 
                         algorithm = new DefaultAlgorithmImpl(form1, "Default");
-                        algorithm.Open(workFolder + "json.txt");
+                        algorithm.Open(workFolder + "h.json");
                         algorithm.mainFolder = workFolder;
-                        algorithm.h.setValueByName("json_file_path", workFolder + "json.txt");
+                        algorithm.h.setValueByName("json_file_path", workFolder + "h.json");
                         algorithm.h.setValueByName("predictions_file_path", workFolder + "predictions.txt");
                         algorithm.h.setValueByName("save_folder", workFolder);
                         algorithm.h.setValueByName("train_script_path", workFolder + "train_script.py");

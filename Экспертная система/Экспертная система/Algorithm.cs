@@ -270,7 +270,7 @@ namespace Экспертная_система
             File.WriteAllText(h.getValueByName("json_file_path"), h.toJSON(0), System.Text.Encoding.Default);
             args = "--json_file_path " + '"' + h.getValueByName("json_file_path") + '"';
 
-            trainingResponse =  Task.Run(() => form1.I.executePythonScript(getValueByName("train_script_path"), args)).Result;
+            trainingResponse = Task.Run(() => form1.I.executePythonScript(getValueByName("train_script_path"), args)).Result;
 
             try
             {
@@ -537,13 +537,25 @@ namespace Экспертная_система
                 }
                 int predicted_column_index = Convert.ToInt16(h.getValueByName("predicted_column_index"));
 
+                bool is_cyclic_prediction = false;
+                var features = predictionsCSV[1].Split(';');
+                if (predictionsCSV[1].Split(';')[features.Length - 1].Contains("real"))
+                { is_cyclic_prediction = true; }
+
                 for (int i = 1; i < predictionsCSV.Length - 1; i++)
                 {
-                    var features = predictionsCSV[i].Split(';');
-
-                    double predictedValue = Convert.ToDouble(predictionsCSV[i].Split(';')[features.Length - 1].Replace('.', ','));
-                    double realValue = Convert.ToDouble(predictionsCSV[i + 1].Split(';')[predicted_column_index].Replace('.', ','));
-
+                    double predictedValue;
+                    double realValue;
+                    if (is_cyclic_prediction)
+                    {
+                         predictedValue = Convert.ToDouble(predictionsCSV[i].Split(';')[features.Length - 2].Replace('.', ','));
+                         realValue = Convert.ToDouble(predictionsCSV[i + 1].Split(';')[predicted_column_index].Replace('.', ','));
+                    }
+                    else
+                    {
+                         predictedValue = Convert.ToDouble(predictionsCSV[i].Split(';')[features.Length - 1].Replace('.', ','));
+                         realValue = Convert.ToDouble(predictionsCSV[i + 1].Split(';')[predicted_column_index].Replace('.', ','));
+                    }
                     if (showCharts)
                     {
                         integr_real += Math.Tan((realValue - 0.5) * Math.PI);
@@ -585,7 +597,7 @@ namespace Экспертная_система
                      form1.vis.parameters[1].window = 100;
                      form1.vis.parameters[2].showLastNValues = true;
                      form1.vis.parameters[2].window = 100;*/
-                if(showCharts)
+                if (showCharts)
                     form1.vis.refresh();
 
                 accuracy = Convert.ToDouble(rightCount) / Convert.ToDouble(rightCount + leftCount) * 100;

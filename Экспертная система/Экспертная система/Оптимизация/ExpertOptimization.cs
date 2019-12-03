@@ -126,7 +126,7 @@ namespace Экспертная_система
                 expert.Save(form1.pathPrefix + "Optimization\\" + name + "\\" + expert.expertName + "[0]");
 
 
-                expert.test(date1, date2, rawDatasetFilePath);
+                expert.test_trading(date1, date2, rawDatasetFilePath);
 
                 //отрисовка истрии баланса
                 for (int i = 0; i < expert.deposit1History.Count; i++)
@@ -283,7 +283,7 @@ namespace Экспертная_система
                     for (int i = 0; i < population_value; i++)
                     {
                         expert = Expert.Open(form1.pathPrefix + "Optimization\\" + name + "\\" + name + "[" + i.ToString() + "]", name, form1);
-                        expert.test(date1, date2, rawDatasetFilePath);
+                        expert.test_trading(date1, date2, rawDatasetFilePath);
                         log("test[" + i.ToString() + "]: " + expert.H.getValueByName("expert_target_function"), Color.Purple);
                         population[i] = expert.H.Clone();
                         File.WriteAllText(form1.pathPrefix + "Optimization\\" + name + "\\" + name + "[" + i.ToString() + "]" + "\\h.json", population[i].toJSON(0), System.Text.Encoding.Default);

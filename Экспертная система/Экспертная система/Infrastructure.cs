@@ -172,10 +172,10 @@ namespace Экспертная_система
             }
             else
             { form1.WindowState = FormWindowState.Minimized; }
-
-            form1.TrackBar2_Scroll(null, null);
-            form1.TrackBar3_Scroll(null, null);
-            form1.TrackBar4_Scroll(null, null);
+            form1.Text = mode;
+           // form1.TrackBar2_Scroll(null, null);
+           // form1.TrackBar3_Scroll(null, null);
+           // form1.TrackBar4_Scroll(null, null);
         }
         public void showModeSelector()
         {

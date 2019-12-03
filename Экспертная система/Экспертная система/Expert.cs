@@ -4,6 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Threading;
 
 namespace Экспертная_система
 {
@@ -15,7 +16,7 @@ namespace Экспертная_система
         public double[,] dataset1;
         public double[,] dataset2;
         public double[,] dataset3;
-        private string period = "minute";
+        private string period = "day";
         //критерий оптимальности
         public double target_function;
         public Hyperparameters H;
@@ -50,6 +51,8 @@ namespace Экспертная_система
         public string presentLine;
         public List<string> report;
         public DecisionMakingSystem DMS;
+
+        public List<double> lastKnownValueHistory;
 
         private bool multiThreadPrediction = false;
 
@@ -152,6 +155,22 @@ namespace Экспертная_система
                 return "sell";
             return "nothing";
         }
+
+        public double getPrediction(string[] input)
+        {
+
+            // return DMS.getAction(getStateStr()).type;
+            var committeeResponse = getCommitteePrediction(input);
+
+            double prediction = 0;
+            double sum = 0;
+            for (int i = 0; i < algorithms.Count; i++)
+            {
+                sum += committeeResponse[i];
+            }
+            prediction = sum / algorithms.Count;
+            return prediction;
+        }
         public void trainAllAlgorithms(bool deleteLowAccModels)
         {
             foreach (Algorithm algorithm in algorithms)
@@ -192,7 +211,7 @@ namespace Экспертная_система
         }
 
 
-        public double[] getPrediction(string[] input)
+        public double[] getCommitteePrediction(string[] input)
         {
             committeeResponse = new double[algorithms.Count];
             if (multiThreadPrediction)
@@ -237,8 +256,139 @@ namespace Экспертная_система
             // committeeResponseHistory.Add(committeeResponse);
             return committeeResponse;
         }
+        public string test_prediction(DateTime date1, string rawDatasetFilePath)
+        {
 
-        public string test(DateTime date1, DateTime date2, string rawDatasetFilePath)
+            committeeResponseHistory = new List<double[]>();
+            lastKnownValueHistory = new List<double>();
+
+            report = new List<string>();
+            presentLine = "";
+            double lastKnownValue = 0;
+
+            string reportHead = "<DATE>;<lastKnownValue>;";
+            foreach (Algorithm algorithm in algorithms)
+                reportHead += "<" + algorithm.modelName + ">;";
+
+            report.Add(reportHead);
+
+            //ЗАПУСК СКРИПТОВ ПОТОЧНОГО ПРОГНОЗИРОВНИЯ
+            List<Thread> trainThreads = new List<Thread>();
+            foreach (Algorithm alg in algorithms)
+            {
+                Thread t = new Thread(new ThreadStart(alg.runGetPredictionScript));
+                trainThreads.Add(t);
+                t.Start();
+                // trainTasks[algorithms.IndexOf(alg)] = algorithms[algorithms.IndexOf(alg)].train();
+            }
+
+            //ОЖИДАНИЕ ЗАВЕРШЕНИЯ ЗАПУСКА
+            foreach (var t in trainThreads)
+                t.Join();
+
+            var currentDate = date1;
+
+            bool thisIsTheEnd = false;
+            while (!thisIsTheEnd)
+            {
+                string reportLine = "";
+                string lastKnownValueStr;
+
+                bool dateExist = false;
+
+                int[] windowSizes = new int[algorithms.Count];
+                for (int i = 0; i < algorithms.Count; i++)
+                    windowSizes[i] = Convert.ToInt32(algorithms[i].getValueByName("window_size"));
+                int windowSize = 0;
+                for (int i = 0; i < windowSizes.Length; i++)
+                {
+                    if (windowSizes[i] > windowSize)
+                        windowSize = windowSizes[i];
+                }
+                //+1 для заголовка;+1 для нормализации i/(i-1)
+                string[] input = new string[windowSize + 1 + 1];
+                var allLines = skipEmptyLines(File.ReadAllLines(rawDatasetFilePath));
+                //копирование заголовка
+                input[0] = allLines[0];
+
+
+                for (int i = 1; i < allLines.Length; i++)
+                {
+                    if (DateTime.Parse(allLines[i].Split(';')[0]) == currentDate)
+                    {
+                        dateExist = true;
+                        for (int j = 0; j < windowSize + 1; j++)
+                        {
+                            //j+1, так как первая строка - заголовок
+                            input[j + 1] = allLines[i - windowSize + j];
+                            // ПРИ ОШИБКЕ В ЭТОЙ СТРОКИ - ПРОВЕРИТЬ НЕ ВЫХОДИТ ЛИ ЗА ГРАНИЦЫ ФАЙЛА ДАТА date1-window_size
+                        }
+
+                        if (i == allLines.Length - 1)
+                            thisIsTheEnd = true;
+                    }
+                }
+                string rawInputLine = input[input.Length - 1];
+
+
+                if (dateExist)
+                {
+                    // ГЕНЕРАЦИЯ МАТРИЦЫ INPUT
+                    input = prepareDataset(input, H.getValueByName("drop_columns"), Convert.ToBoolean(H.getValueByName("normalize")));
+                    // ВЫЗОВ getPrediction(input)
+                    var prediction = getPrediction(input);
+
+
+                    int predictedColumnIndexInNormalizedDataset = Convert.ToInt32(H.getValueByName("predicted_column_index"));
+                    lastKnownValue = double.Parse(input[input.Length - 2].Split(';')[predictedColumnIndexInNormalizedDataset].Replace('.',','));
+                }
+                else
+                {
+                    log("дата " + currentDate.ToString() + " не найдена в файле " + rawDatasetFilePath);
+                }
+                committeeResponseHistory.Add(committeeResponse);
+                lastKnownValueHistory.Add(lastKnownValue);
+
+                //print committee response
+                string comRespStr = "committee response: ";
+                for (int i = 0; i < committeeResponse.Length; i++)
+                    comRespStr += " [" + committeeResponse[i] + "]; ";
+                string committeeResponseReportLine = "";
+                for (int i = 0; i < committeeResponse.Length; i++)
+                    committeeResponseReportLine += committeeResponse[i] + ";";
+
+                log(comRespStr);
+                //  log("date: " + date1.ToString());
+                //    log("deposit1: " + deposit1.ToString());
+                //    log("deposit2: " + deposit2.ToString());
+                //  log("action: " + action);
+                //    log("reward: " + reward.ToString());
+                //  log("closeValue: " + closeValue.ToString());
+                //   log("presentLine: " + presentLine);
+
+                reportLine += currentDate.ToString() + ';' + lastKnownValue.ToString() + ';' + committeeResponseReportLine;
+                report.Add(reportLine);
+
+                if (period == "day")
+                    currentDate = currentDate.AddDays(1);
+                if (period == "hour")
+                    currentDate = currentDate.AddHours(1);
+                if (period == "minute")
+                    currentDate = currentDate.AddMinutes(1);
+            }
+
+            // запись отчёта
+            reportPath = H.getValueByName("report_path");
+            if (reportPath == "" || reportPath == null)
+            {
+                reportPath = path_prefix + expertName;
+            }
+            File.WriteAllLines(reportPath + "\\report.csv", report);
+
+            return "expert has been tested";
+        }
+
+        public string test_trading(DateTime date1, DateTime date2, string rawDatasetFilePath)
         {
             deposit1 = deposit1StartValue;
             deposit2 = deposit2StartValue;
@@ -344,7 +494,7 @@ namespace Экспертная_система
                         // ГЕНЕРАЦИЯ МАТРИЦЫ INPUT
                         input = prepareDataset(input, algorithms[0].getValueByName("drop_columns"), Convert.ToBoolean(H.getValueByName("normalize")));
                         // ВЫЗОВ getPrediction(input)
-                        var committeeResponse = getPrediction(input);
+                        var committeeResponse = getCommitteePrediction(input);
 
 
                         int closeIndexInNormalizedDataset = Convert.ToInt32(H.getValueByName("predicted_column_index"));
@@ -566,7 +716,7 @@ namespace Экспертная_система
                         // ГЕНЕРАЦИЯ МАТРИЦЫ INPUT
                         input = prepareDataset(input, algorithms[0].getValueByName("drop_columns"), Convert.ToBoolean(H.getValueByName("normalize")));
                         // ВЫЗОВ getPrediction(input)
-                        var committeeResponse = getPrediction(input);
+                        var committeeResponse = getCommitteePrediction(input);
 
 
                         int closeIndexInNormalizedDataset = Convert.ToInt32(H.getValueByName("predicted_column_index"));
@@ -705,10 +855,12 @@ namespace Экспертная_система
         }
         public void AddAlgorithm(Algorithm algorithm)
         {
+
             Directory.CreateDirectory(path_prefix + expertName + "\\" + algorithm.modelName + "\\");
             Algorithm.CopyFiles(algorithm.h, Path.GetDirectoryName(algorithm.h.getValueByName("json_file_path")), path_prefix + expertName + "\\" + algorithm.modelName + "\\");
 
             algorithms.Add(algorithm);
+
         }
 
         //метод делающий из временного ряда *.csv датасет, пригодный для передачи в train_script.py 
@@ -735,16 +887,18 @@ namespace Экспертная_система
             // int windowSie = Convert.ToInt16(algorithms[a].getValueByName("windowSize"));
             string[] featuresNames = allLines[0].Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
 
-            //drop column
-            var dropColumnNames = dropColumn.Split(';');
+            if (dropColumn != null)
+            {     //drop column
+                var dropColumnNames = dropColumn.Split(';');
 
-            for (int c = 0; c < featuresNames.Length; c++)
-            {
-                for (int cind = 0; cind < dropColumnNames.Length; cind++)
+                for (int c = 0; c < featuresNames.Length; c++)
                 {
-                    if (featuresNames[c] == dropColumnNames[cind])
+                    for (int cind = 0; cind < dropColumnNames.Length; cind++)
                     {
-                        colDropInd.Add(c);
+                        if (featuresNames[c] == dropColumnNames[cind])
+                        {
+                            colDropInd.Add(c);
+                        }
                     }
                 }
             }
@@ -1148,7 +1302,10 @@ namespace Экспертная_система
             {
                 for (int k = 0; k < inputDataset.GetLength(1); k++)
                 {
-                    normalizedDataset2[i, k] = (inputDataset[i, k] - minPredictorValue[k]) / maxPredictorValue[k];
+                    if (maxPredictorValue[k] != 0)
+                        normalizedDataset2[i, k] = (inputDataset[i, k] - minPredictorValue[k]) / maxPredictorValue[k];
+                    else
+                        normalizedDataset2[i, k] = 0;
                 }
             }
             return normalizedDataset2;

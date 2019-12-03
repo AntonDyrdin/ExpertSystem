@@ -62,6 +62,10 @@ namespace Экспертная_система
             }
             return nodes[curID];
         }
+        public void Save()
+        {
+            System.IO.File.WriteAllText(getValueByName("json_file_path"), toJSON(0), System.Text.Encoding.Default);
+        }
         public void Save(string filePath)
         {
             System.IO.File.WriteAllText(filePath, toJSON(0), System.Text.Encoding.Default);

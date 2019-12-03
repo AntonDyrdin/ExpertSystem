@@ -1,4 +1,4 @@
-﻿STATION
+STATION
 path_prefix:E:\Anton\Desktop\MAIN\
 python_path:C:\Program Files\Python36\python.exe
 log_path:E:\Anton\Desktop\MAIN\log\

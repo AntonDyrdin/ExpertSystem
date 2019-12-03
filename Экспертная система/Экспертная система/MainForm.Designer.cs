@@ -528,6 +528,8 @@
             // 
             this.showExecutionProgress.AutoSize = true;
             this.showExecutionProgress.BackColor = System.Drawing.Color.Transparent;
+            this.showExecutionProgress.Checked = true;
+            this.showExecutionProgress.CheckState = System.Windows.Forms.CheckState.Checked;
             this.showExecutionProgress.ForeColor = System.Drawing.Color.White;
             this.showExecutionProgress.Location = new System.Drawing.Point(1265, 12);
             this.showExecutionProgress.Name = "showExecutionProgress";

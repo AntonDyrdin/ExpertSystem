@@ -13,7 +13,7 @@ namespace DatasetScript
             string s = "";
 
             newLines.Add(allLines[0]);
-            int window = 10;
+           /* int window = 10;
             double avg = 0;
             for (int i = 1; i < allLines.Length-window; i++)
             {
@@ -30,17 +30,14 @@ namespace DatasetScript
                 avg = sum / window;
                 s += String.Format("{0:0.########}", avg).Replace(',', '.') + ';';
                 newLines.Add(s);
-            }
-            /*  for (int i = 0; i < 10000 ;i++)
+            }*/
+              for (int i = 0; i < allLines.Length; i++)
               {
                   s = "";
-                  string[] features= allLines[i].Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
-                  for (int j = 250; j < 254; j++)
-                  {
-                    s+=  String.Format("{0:0.########}", features[j]).Replace(',', '.') + ';';
-                  }
+                  s = allLines[i].Replace(',','.');
+                  
                   newLines.Add(s);
-              }*/
+              }
             /*  foreach (string line in allLines)
               {
                   if (line != "")
@@ -50,7 +47,7 @@ namespace DatasetScript
                      // System.Console.WriteLine(newline);
                   }
               }*/
-            File.WriteAllLines(args[0].Replace(".txt", " MAVG.txt"), newLines);
+            File.WriteAllLines(args[0], newLines);
         }
     }
 }
