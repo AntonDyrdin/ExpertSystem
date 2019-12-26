@@ -260,9 +260,14 @@ namespace Экспертная_система
                     int inc = 0;
                     while (fMWH == (IntPtr)0x00000000 & inc < waitFor)
                     {
-                        fMWH = SetParent(process.MainWindowHandle, executionProgressForm.panel1.Handle);
-                        System.Threading.Thread.Sleep(10);
-                        inc++;
+                        try
+                        {
+                            fMWH = SetParent(process.MainWindowHandle, executionProgressForm.panel1.Handle);
+                            System.Threading.Thread.Sleep(10);
+                            inc++;
+                        }
+                        catch
+                        { }
                     }
                 }));
             }

@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Оптимизация\MyAlgorithmOptimization.cs" />
     <Compile Include="Параллельные вычисления\AgentLink.cs" />
     <Compile Include="Параллельные вычисления\AgentManager.cs" />
     <Compile Include="Формы\AgentManagerView.cs">
@@ -55,7 +56,7 @@
       <DependentUpon>AgentManagerView.cs</DependentUpon>
     </Compile>
     <Compile Include="Algorithm.cs" />
-    <Compile Include="Оптимизация\AlgorithmOptimization.cs" />
+    <Compile Include="Оптимизация\GeneticAlgorithmOptimization.cs" />
     <Compile Include="Формы\ExecutionProgress.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -86,7 +87,7 @@
     </Compile>
     <Compile Include="Hyperparameters.cs" />
     <Compile Include="Вспомогатльные программы\ImgDataset.cs" />
-    <Compile Include="Оптимизация\ExpertOptimization.cs" />
+    <Compile Include="Оптимизация\GeneticExpertOptimization.cs" />
     <Compile Include="Infrastructure.cs" />
     <Compile Include="Формы\TextBoxes.cs">
       <SubType>Form</SubType>

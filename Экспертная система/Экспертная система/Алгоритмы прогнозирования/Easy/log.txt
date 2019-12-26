@@ -1,36 +1,42 @@
-E:\\Anton\\Desktop\\MAIN\\Экспертная система\\Экспертная система\\Алгоритмы прогнозирования\\Easy\log.txtE:\\Anton\\Desktop\\MAIN\\Экспертная система\\Экспертная система\\Алгоритмы прогнозирования\\Easy\log.txt
+E:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\Easy\log.txtE:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\Easy\log.txt
 СКРИПТ ОБУЧЕНИЯ Easy ЗАПУЩЕН...
 Все вычислительные устройства: (GPU[0] GeForce GTX 1050 Ti, CPU)
 Попытка установить GPU как устройство по умолчанию: True
-Все вычислительные устройства: (GPU[0] GeForce GTX 1050 Ti, CPU)
-Попытка установить GPU как устройство по умолчанию: True
-> время загрузки библиотек : 3.324 сек.
+> время загрузки библиотек : 2.246 сек.
 CODE: null
 start point 0
 dataset.shape: (738, 1)
-> время чтения данных  : 0.020 сек.
-> время загрузки библиотек : 3.362 сек.
-train_X.shape(662, 2, 1)
+> время чтения данных  : 0.028 сек.
+train_X.shape(507, 14, 1)
 [[0.6896552 ]
- [0.62068963]]
-CODE: null
-train_y.shape(662,)
-start point 0
-0.7586207
-dataset.shape: (738, 1)
-add LSTM layer 90 neurons, input_shape=( 2, 1), return_sequences=True
-> время чтения данных  : 0.036 сек.
-train_X.shape(662, 2, 1)
-[[0.6896552 ]
- [0.62068963]]
-train_y.shape(662,)
-0.7586207
-add LSTM layer 90 neurons, input_shape=( 2, 1), return_sequences=True
-add LSTM layer 60 neurons, return_sequences=False
-add LSTM layer 60 neurons, return_sequences=False
-add Dense layer 30 neurons, activation: sigmoid
-add Dense layer 30 neurons, activation: sigmoid
-add Dense layer 1 neurons, activation: sigmoid
+ [0.62068963]
+ [0.7586207 ]
+ [0.4827586 ]
+ [0.20689654]
+ [0.6896552 ]
+ [0.7586207 ]
+ [0.7586207 ]
+ [0.55172414]
+ [0.7586207 ]
+ [0.44827586]
+ [0.        ]
+ [0.7241379 ]
+ [0.6896552 ]]
+train_y.shape(507,)
+0.62068963
+add LSTM layer 85 neurons, input_shape=( 14, 1), return_sequences=True
+add LSTM layer 50 neurons, return_sequences=False
+add Dense layer 85 neurons, activation: sigmoid
 add Dense layer 1 neurons, activation: sigmoid
 компиляция НС...
-компиляция НС...
+> время компиляции НС  : 0.775 сек.
+обучение НС...
+> время обучения  НС  : 14.11 сек.
+сохранение модели: E:\Anton\Desktop\MAIN\Optimization\Easy\Easy[0]\weights.h5
+> время сохранения НС  : 0.040 сек.
+создание тестового прогноза
+(217, 1)
+> время создания и записи тестового прогноза  : 0.082 сек.
+__________________________________
+______________END________________
+{RESPONSE:{response:{value:скрипт Easy успешно завершён}}}

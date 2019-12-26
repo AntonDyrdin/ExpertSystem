@@ -1,0 +1,9 @@
+E:\Anton\Desktop\MAIN\PlotlyNET\bin\Debug\PlotlyNET.exe.config
+E:\Anton\Desktop\MAIN\PlotlyNET\bin\Debug\PlotlyNET.exe
+E:\Anton\Desktop\MAIN\PlotlyNET\bin\Debug\PlotlyNET.pdb
+E:\Anton\Desktop\MAIN\PlotlyNET\obj\Debug\PlotlyNET.csprojAssemblyReference.cache
+E:\Anton\Desktop\MAIN\PlotlyNET\obj\Debug\PlotlyNET.Form1.resources
+E:\Anton\Desktop\MAIN\PlotlyNET\obj\Debug\PlotlyNET.Properties.Resources.resources
+E:\Anton\Desktop\MAIN\PlotlyNET\obj\Debug\PlotlyNET.csproj.GenerateResource.cache
+E:\Anton\Desktop\MAIN\PlotlyNET\obj\Debug\PlotlyNET.exe
+E:\Anton\Desktop\MAIN\PlotlyNET\obj\Debug\PlotlyNET.pdb

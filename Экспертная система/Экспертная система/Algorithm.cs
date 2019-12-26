@@ -41,7 +41,7 @@ namespace Экспертная_система
             foreach (parameter param in parameters)
                 if (param.type == parameterType.Const)
                 {
-                    h.addByParentId(layerParentID, param.name + ':' + param.caonstant);
+                    h.addByParentId(layerParentID, param.name + ':' + param.constant);
                 }
                 else
                     if (param.type == parameterType.Numerical)
@@ -713,10 +713,10 @@ namespace Экспертная_система
         }
         public class parameter
         {
-            public parameter(string name, string caonstant)
+            public parameter(string name, string constant)
             {
                 this.name = name;
-                this.caonstant = caonstant;
+                this.constant = constant;
                 type = parameterType.Const;
             }
             public parameter(string name, double min, double max, double step, double value)
@@ -741,7 +741,7 @@ namespace Экспертная_система
             public double max;
             public double step;
             public double value;
-            public string caonstant;
+            public string constant;
             public string category;
             public string categories;
         }

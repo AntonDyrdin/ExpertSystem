@@ -486,7 +486,18 @@ namespace Экспертная_система
                 lastCount = count;
             }
         }
+        public static Color valueToColor(double min, double max, double val)
+        {
+            double R = 0;
+            double G = 0;
+            double B = 0;
 
+            R = (max - val) / (max - min) * 255;
+            G = (Math.Abs(max / 2 - val)) / (max / 2) * 255;
+            B = (val - min) / (max - min) * 255;
+
+            return Color.FromArgb(255, Convert.ToInt32(R), Convert.ToInt32(G), Convert.ToInt32(B));
+        }
     }
     public class Function
     {

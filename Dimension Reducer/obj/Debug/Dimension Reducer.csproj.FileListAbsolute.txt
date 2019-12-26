@@ -1,0 +1,9 @@
+E:\Anton\Desktop\MAIN\Dimension Reducer\obj\Debug\Dimension Reducer.csprojAssemblyReference.cache
+E:\Anton\Desktop\MAIN\Dimension Reducer\obj\Debug\Dimension_Reducer.Form1.resources
+E:\Anton\Desktop\MAIN\Dimension Reducer\obj\Debug\Dimension_Reducer.Properties.Resources.resources
+E:\Anton\Desktop\MAIN\Dimension Reducer\obj\Debug\Dimension Reducer.csproj.GenerateResource.cache
+E:\Anton\Desktop\MAIN\Dimension Reducer\bin\Debug\Dimension Reducer.exe.config
+E:\Anton\Desktop\MAIN\Dimension Reducer\bin\Debug\Dimension Reducer.exe
+E:\Anton\Desktop\MAIN\Dimension Reducer\bin\Debug\Dimension Reducer.pdb
+E:\Anton\Desktop\MAIN\Dimension Reducer\obj\Debug\Dimension Reducer.exe
+E:\Anton\Desktop\MAIN\Dimension Reducer\obj\Debug\Dimension Reducer.pdb

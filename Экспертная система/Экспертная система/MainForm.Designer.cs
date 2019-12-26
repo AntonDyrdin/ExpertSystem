@@ -68,6 +68,7 @@
             this.label11 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
             this.showExecutionProgress = new System.Windows.Forms.CheckBox();
+            this.wipeLog = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.picBox)).BeginInit();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
@@ -88,7 +89,7 @@
             this.picBox.InitialImage = null;
             this.picBox.Location = new System.Drawing.Point(3, 3);
             this.picBox.Name = "picBox";
-            this.picBox.Size = new System.Drawing.Size(1238, 1024);
+            this.picBox.Size = new System.Drawing.Size(1238, 992);
             this.picBox.TabIndex = 37;
             this.picBox.TabStop = false;
             this.picBox.Click += new System.EventHandler(this.picBox_Click);
@@ -101,7 +102,7 @@
             this.panel1.Location = new System.Drawing.Point(2, 2);
             this.panel1.Margin = new System.Windows.Forms.Padding(2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1247, 1036);
+            this.panel1.Size = new System.Drawing.Size(1247, 1000);
             this.panel1.TabIndex = 38;
             // 
             // trackBar1
@@ -179,12 +180,13 @@
             // 
             // trackBar2
             // 
+            this.trackBar2.LargeChange = 1;
             this.trackBar2.Location = new System.Drawing.Point(1450, 106);
             this.trackBar2.Minimum = 1;
             this.trackBar2.Name = "trackBar2";
             this.trackBar2.Size = new System.Drawing.Size(402, 45);
             this.trackBar2.TabIndex = 43;
-            this.trackBar2.Value = 4;
+            this.trackBar2.Value = 1;
             this.trackBar2.Scroll += new System.EventHandler(this.TrackBar2_Scroll);
             // 
             // label1
@@ -266,6 +268,7 @@
             // 
             // trackBar4
             // 
+            this.trackBar4.LargeChange = 1;
             this.trackBar4.Location = new System.Drawing.Point(1450, 56);
             this.trackBar4.Margin = new System.Windows.Forms.Padding(2);
             this.trackBar4.Maximum = 6;
@@ -284,10 +287,10 @@
             this.logBox.DetectUrls = false;
             this.logBox.Font = new System.Drawing.Font("Century Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.logBox.ForeColor = System.Drawing.Color.White;
-            this.logBox.Location = new System.Drawing.Point(1262, 186);
+            this.logBox.Location = new System.Drawing.Point(1249, 138);
             this.logBox.Name = "logBox";
             this.logBox.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.logBox.Size = new System.Drawing.Size(621, 811);
+            this.logBox.Size = new System.Drawing.Size(661, 859);
             this.logBox.TabIndex = 52;
             this.logBox.Text = "";
             this.logBox.MouseEnter += new System.EventHandler(this.LogBox_MouseEnter);
@@ -538,6 +541,19 @@
             this.showExecutionProgress.Text = "show execution progress";
             this.showExecutionProgress.UseVisualStyleBackColor = false;
             // 
+            // wipeLog
+            // 
+            this.wipeLog.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(73)))), ((int)(((byte)(106)))));
+            this.wipeLog.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.wipeLog.ForeColor = System.Drawing.SystemColors.AppWorkspace;
+            this.wipeLog.Location = new System.Drawing.Point(1805, 138);
+            this.wipeLog.Name = "wipeLog";
+            this.wipeLog.Size = new System.Drawing.Size(105, 33);
+            this.wipeLog.TabIndex = 60;
+            this.wipeLog.Text = "Wipe";
+            this.wipeLog.UseVisualStyleBackColor = false;
+            this.wipeLog.Click += new System.EventHandler(this.wipeLog_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -546,6 +562,7 @@
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(1904, 1011);
+            this.Controls.Add(this.wipeLog);
             this.Controls.Add(this.showExecutionProgress);
             this.Controls.Add(this.logBox);
             this.Controls.Add(this.groupBox1);
@@ -631,6 +648,7 @@
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.Label label18;
         public System.Windows.Forms.CheckBox showExecutionProgress;
+        private System.Windows.Forms.Button wipeLog;
     }
 }
 

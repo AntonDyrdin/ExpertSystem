@@ -2,11 +2,11 @@ E:\\Anton\\Desktop\\MAIN\\Grid search\\Easy\\Easy[5]\log.txtE:\\Anton\\Desktop\\
 СКРИПТ ОБУЧЕНИЯ Easy ЗАПУЩЕН...
 Все вычислительные устройства: (GPU[0] GeForce GTX 1050 Ti, CPU)
 Попытка установить GPU как устройство по умолчанию: True
-> время загрузки библиотек : 7.669 сек.
+> время загрузки библиотек : 3.988 сек.
 CODE: 5
 start point 0
 dataset.shape: (738, 1)
-> время чтения данных  : 0.152 сек.
+> время чтения данных  : 0.023 сек.
 train_X.shape(652, 14, 1)
 [[0.6896552 ]
  [0.62068963]
@@ -24,10 +24,19 @@ train_X.shape(652, 14, 1)
  [0.6896552 ]]
 train_y.shape(652,)
 0.62068963
-add LSTM layer 3 neurons, input_shape=( 14, 1), return_sequences=True
-add LSTM layer 8 neurons, return_sequences=False
-add Dense layer 28 neurons, activation: sigmoid
+add LSTM layer 88 neurons, input_shape=( 14, 1), return_sequences=True
+add LSTM layer 88 neurons, return_sequences=False
+add Dense layer 73 neurons, activation: sigmoid
 add Dense layer 1 neurons, activation: sigmoid
 компиляция НС...
-> время компиляции НС  : 1.923 сек.
+> время компиляции НС  : 1.393 сек.
 обучение НС...
+> время обучения  НС  : 63.13 сек.
+сохранение модели: E:\Anton\Desktop\MAIN\Grid search\Easy\Easy[5]\weights.h5
+> время сохранения НС  : 0.272 сек.
+создание тестового прогноза
+(72, 1)
+> время создания и записи тестового прогноза  : 0.345 сек.
+__________________________________
+______________END________________
+{RESPONSE:{response:{value:скрипт Easy успешно завершён}}}

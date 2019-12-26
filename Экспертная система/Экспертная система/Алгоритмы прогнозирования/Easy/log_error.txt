@@ -1,5 +1,1 @@
 Using CNTK backend
-Traceback (most recent call last):
-  File "E:\\Anton\\Desktop\\MAIN\\Экспертная система\\Экспертная система\\Алгоритмы прогнозирования\\Easy\\train_script.py", line 276, in <module>
-    optimizer = optimizers.Adam(lr=(float)(h("learning_rate/value")), beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
-ValueError: could not convert string to float: '0,0151'
