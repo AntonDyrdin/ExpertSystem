@@ -36,10 +36,11 @@ namespace Экспертная_система
             h.addVariable(0, "learning_rate", 0.0001, 0.2, 0.05, 0.0005);
             h.addVariable(0, "window_size", 2, 200, 2, 30);
         }
-        public override void Open(string jsonPath)
+        public override Algorithm Open(string jsonPath)
         {
             this.h = new Hyperparameters(File.ReadAllText(jsonPath, System.Text.Encoding.Default), form1);
             modelName = getValueByName("model_name");
+            return this;
         }
         public override void Save()
         {

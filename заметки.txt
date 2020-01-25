@@ -27,3 +27,16 @@ n>1 сеть перестанет цепляться за последнее значение Ts(i), но тогда это ещё боль
 1) реализовать советника MT5 на основе алгортма SARSA и использовании максимального количества предикторов и параметров состояния.
 
 2) запустить оптимизацию на мультидатасете и минутных/часовых таймфреймах.
+
+Одномерная свёртка:
+modelC.add(Conv1D(50, 5, input_shape = (xTrain.shape[1], xTrain.shape[2]), activation="linear"))
+modelC.add(Flatten())
+modelC.add(Dense(10, activation="linear"))
+modelC.add(Dense(yTrain.shape[1], activation="linear"))
+modelC.compile(loss="mse", optimizer=Adam(lr=1e-4))
+history = modelC.fit(xTrain, 
+                    yTrain, 
+                    epochs=20, 
+                    batch_size=20, 
+                    verbose=1,
+                    validation_data=(xVal, yVal))

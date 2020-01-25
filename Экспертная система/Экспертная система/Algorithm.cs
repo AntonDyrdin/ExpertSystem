@@ -33,6 +33,7 @@ namespace Экспертная_система
             this.form1 = form1;
         }
 
+
         public void addLayer(string layerType, parameter[] parameters)
         {
             layersCount++;
@@ -507,33 +508,20 @@ namespace Экспертная_система
             }
             else
             {
-                double integr_real = 0;
-                double integr_prediction = 0;
 
                 double sqrtSum = 0;
 
                 if (showCharts)
                 {
                     form1.vis.clear();
-                    form1.vis.addParameter("real/predictions integ", Color.Red, 100);
-                    form1.vis.enableGrid = false;
-                    form1.vis.parameters[0].showLastNValues = true;
-                    form1.vis.parameters[0].window = 100;
-
-                    form1.vis.parameters[0].functions.Add(new Function("real integr", Color.Red));
-                    form1.vis.parameters[0].functions.Add(new Function("prediction integr", Color.Cyan));
+                    form1.vis.enableGrid = true;
 
                     form1.vis.addParameter("real/predictions", Color.Red, 900);
 
-                    form1.vis.parameters[1].functions.Add(new Function("real", Color.Red));
-                    form1.vis.parameters[1].functions.Add(new Function("prediction", Color.Cyan));
+                    form1.vis.parameters[0].functions.Add(new Function("real", Color.Red));
+                    form1.vis.parameters[0].functions.Add(new Function("prediction", Color.Cyan));
 
-                    form1.vis.parameters[1].functions.Add(new Function("Графики должны совпадать", Color.DarkGray));
-                    for (int k = 0; k < int.Parse(h.getValueByName("steps_forward")) - 1; k++)
-                    {
-                        form1.vis.addPoint(0, "prediction integr");
-                        form1.vis.addPoint(0, "prediction");
-                    }
+                    form1.vis.parameters[0].functions.Add(new Function("Графики должны совпадать", Color.DarkGray));
                 }
                 int predicted_column_index = Convert.ToInt16(h.getValueByName("predicted_column_index"));
 
@@ -558,12 +546,8 @@ namespace Экспертная_система
                     }
                     if (showCharts)
                     {
-                        integr_real += Math.Tan((realValue - 0.5) * Math.PI);
-                        form1.vis.addPoint(integr_real, "real integr");
                         form1.vis.addPoint(realValue, "real");
 
-                        integr_prediction += Math.Tan((predictedValue - 0.5) * Math.PI);
-                        form1.vis.addPoint(integr_prediction, "prediction integr");
                         form1.vis.addPoint(predictedValue, "prediction");
 
 
@@ -623,7 +607,7 @@ namespace Экспертная_система
             h.setValueByName("processed_by", System.Net.Dns.GetHostName());
         }
         public abstract void Save();
-        public abstract void Open(string jsonPath);
+        public abstract Algorithm Open(string jsonPath);
 
         public static void CopyFiles(Hyperparameters h, string source, string destination)
         {

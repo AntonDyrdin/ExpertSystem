@@ -87,8 +87,8 @@ namespace Экспертная_система
                 {
                     startAgentManager();
                     form1.log("");
-                  //  agentManagerView = new AgentManagerView(agentManager);
-                 //   agentManagerView.Show();
+                    //  agentManagerView = new AgentManagerView(agentManager);
+                    //   agentManagerView.Show();
                 }
                 form1.pathPrefix = h.getValueByName("path_prefix");
 
@@ -112,8 +112,8 @@ namespace Экспертная_система
                         if (mode == "Агент")
                         {
                             form1.mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { form1.agent(); });
-                          //  executionProgressForm = new ExecutionProgress();
-                          //  executionProgressForm.Show();
+                            //  executionProgressForm = new ExecutionProgress();
+                            //  executionProgressForm.Show();
                         }
 
                     }
@@ -121,8 +121,8 @@ namespace Экспертная_система
                     {
                         form1.mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { form1.expertOptimization(); });
 
-                      //  executionProgressForm = new ExecutionProgress();
-                      //  executionProgressForm.Show();
+                        //  executionProgressForm = new ExecutionProgress();
+                        //  executionProgressForm.Show();
                     }
                     if (mode == "Оптимизация алгоритма")
                     {
@@ -146,7 +146,7 @@ namespace Экспертная_система
                     {
                         form1.mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { form1.buildAndTest(); });
 
-                       executionProgressForm = new ExecutionProgress();
+                        executionProgressForm = new ExecutionProgress();
                         executionProgressForm.Show();
                     }
                     if (mode == "Создание и обучение эксперта")
@@ -173,9 +173,9 @@ namespace Экспертная_система
             else
             { form1.WindowState = FormWindowState.Minimized; }
             form1.Text = mode;
-           // form1.TrackBar2_Scroll(null, null);
-           // form1.TrackBar3_Scroll(null, null);
-           // form1.TrackBar4_Scroll(null, null);
+            // form1.TrackBar2_Scroll(null, null);
+            // form1.TrackBar3_Scroll(null, null);
+            // form1.TrackBar4_Scroll(null, null);
         }
         public void showModeSelector()
         {
@@ -263,11 +263,11 @@ namespace Экспертная_система
                         try
                         {
                             fMWH = SetParent(process.MainWindowHandle, executionProgressForm.panel1.Handle);
-                            System.Threading.Thread.Sleep(10);
-                            inc++;
                         }
                         catch
-                        { }
+                        { break; }
+                        System.Threading.Thread.Sleep(10);
+                        inc++;
                     }
                 }));
             }
@@ -297,14 +297,18 @@ namespace Экспертная_система
                 if (executingProcesses.Count > 1)
                     for (int i = 0; i < executingProcesses.Count; i++)
                     {
-                        if (i % 2 == 0)
+                        try
                         {
-                            MoveWindow(executingProcesses[i].MainWindowHandle, 0, height / executingProcesses.Count * 2 * (i / 2), width / 2, height / executingProcesses.Count * 2, true);
+                            if (i % 2 == 0)
+                            {
+                                MoveWindow(executingProcesses[i].MainWindowHandle, 0, height / executingProcesses.Count * 2 * (i / 2), width / 2, height / executingProcesses.Count * 2, true);
+                            }
+                            else
+                            {
+                                MoveWindow(executingProcesses[i].MainWindowHandle, width / 2, height / executingProcesses.Count * 2 * (i / 2), width / 2, height / executingProcesses.Count * 2, true);
+                            }
                         }
-                        else
-                        {
-                            MoveWindow(executingProcesses[i].MainWindowHandle, width / 2, height / executingProcesses.Count * 2 * (i / 2), width / 2, height / executingProcesses.Count * 2, true);
-                        }
+                        catch { }
                     }
             }
         }
@@ -445,7 +449,11 @@ namespace Экспертная_система
 
             //start.RedirectStandardOutput = true;
             Process process = Process.Start(start);
-           
+            if (process == null)
+            {
+                MessageBox.Show(start.FileName + " не является интерпретатором Python");
+                throw new Exception("wrong path to python.exe");
+            }
 
             if (form1.showExecutionProgress.Checked)
             {
@@ -459,9 +467,9 @@ namespace Экспертная_система
             }
 
 
-            string logPath = args.Replace("--json_file_path ","");
+            string logPath = args.Replace("--json_file_path ", "");
 
-            logPath= logPath.Replace("\"", "");
+            logPath = logPath.Replace("\"", "");
 
             string response = File.ReadAllText(Path.GetDirectoryName(logPath) + "\\log.txt", System.Text.Encoding.Default);
             string error = File.ReadAllText(Path.GetDirectoryName(logPath) + "\\log_error.txt", System.Text.Encoding.Default);
@@ -490,12 +498,16 @@ namespace Экспертная_система
             //  StreamReader errorReader = process.StandardError;
             ///////////////////////////////////////////////////////////////
             ///////// ВЫВОД В КОНСОЛЬ РЕЗУЛЬТАТА ВЫПОЛНЕНИЯ СКРИПТА ///////
-            form1.log(error, Color.Red);                                            ///    
-           // var error = "";                                             ///
-            //error = errorReader.ReadToEnd();                            ///
-            //form1.log(error);                                           ///
+            form1.log(error, Color.Red);                                 ///    
+           // var error = "";                                            ///
+            //error = errorReader.ReadToEnd();                           ///
+            //form1.log(error);                                          ///
             ///////////////////////////////////////////////////////////////
-
+            if (error.Contains("No module named"))
+            {
+                MessageBox.Show(error);
+                throw new Exception(error);
+            }
 
             return response;
         }
@@ -520,7 +532,16 @@ namespace Экспертная_система
         private void newLog()
         {
             logPath = h.getValueByName("log_path") + DateTime.Now.ToString().Replace(':', '-') + '-' + DateTime.Now.Millisecond.ToString() + ".txt";
-            var logs = System.IO.Directory.GetFiles(h.getValueByName("log_path"));
+            string[] logs;
+            try
+            {
+                logs = System.IO.Directory.GetFiles(h.getValueByName("log_path"));
+            }
+            catch (System.IO.DirectoryNotFoundException e)
+            {
+                System.IO.Directory.CreateDirectory(h.getValueByName("log_path"));
+                logs = new string[0];
+            }
 
             if (logs.Length > maxlogFilesCount)
             {

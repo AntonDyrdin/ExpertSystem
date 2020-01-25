@@ -516,3 +516,88 @@ namespace Экспертная_система
         }
     }
 }
+
+
+
+/*  Hyperparameters[] Q = new Hyperparameters[8];
+                for (int i = 0; i < Q.Length; i++)
+                    Q[i] = algorithm.h.Clone();
+
+                string name = algorithm.name;
+
+                for (int i = 0; i < Q.Length; i++)
+                {
+                    Q[i].setValueByName("code", i.ToString());
+                    Q[i].setValueByName("model_name", Q[i].nodes[0].name() + "[" + i.ToString() + "]");
+                    string new_save_folder = pathPrefix + "Grid search\\" + name + "\\" + name + "[" + i.ToString() + "]" + "\\";
+                    Algorithm.CopyFiles(Q[i], algorithm.h.getValueByName("save_folder"), new_save_folder);
+                }
+
+                int neurons_count_min = 3;
+                int neurons_count_max = 90;
+                int neurons_count_step = 5;
+
+                int inc = 0;
+                string file_name = "grid_search_3_layers"+DateTime.Now.Millisecond.ToString()+".txt";
+
+
+                File.WriteAllText(file_name, "neurons_count_1;neurons_count_2;neurons_count_3" + '\n');
+                for (int neurons_count_1 = neurons_count_min; neurons_count_1 < neurons_count_max; neurons_count_1 += neurons_count_step)
+                    for (int neurons_count_2 = neurons_count_min; neurons_count_2 < neurons_count_max; neurons_count_2 += neurons_count_step)
+                    {
+                        for (int neurons_count_3 = neurons_count_min; neurons_count_3 < neurons_count_max; neurons_count_3 += neurons_count_step)
+                        {
+                            if (inc < Q.Length)
+                            {
+                                Q[inc].getNodeByName("neurons_count")[0].setValue(neurons_count_1.ToString());
+                                Q[inc].getNodeByName("neurons_count")[1].setValue(neurons_count_2.ToString());
+                                Q[inc].getNodeByName("neurons_count")[2].setValue(neurons_count_3.ToString());
+
+                                log(neurons_count_1.ToString() + ';' + neurons_count_2.ToString() + ';' + neurons_count_3.ToString() + ';');
+                                inc++;
+                            }
+                            else
+                            {
+                                List<Algorithm> algorithms = new List<Algorithm>();
+                                for (int i = 0; i < Q.Length; i++)
+                                {
+                                    Algorithm alg = Algorithm.newInstance(algorithm);
+                                    alg.h = Q[i].Clone();
+                                    algorithms.Add(alg);
+                                }
+
+                                List<Thread> trainThreads = new List<Thread>();
+
+                                foreach (Algorithm alg in algorithms)
+                                {
+                                    Thread t = new Thread(new ThreadStart(alg.train));
+                                    trainThreads.Add(t);
+                                    t.Start();
+                                }
+
+                                foreach (var t in trainThreads)
+                                    t.Join();
+
+                                string[] lines = new string[Q.Length];
+                                for (int i = 0; i < Q.Length; i++)
+                                {
+                                    Q[i] = algorithms[i].h.Clone();
+                                    log(Q[i].getValueByName("stdDev").Replace('.', ','), Color.Pink);
+                                    lines[i] = Q[i].getNodeByName("neurons_count")[0].getValue() + ';' + Q[i].getNodeByName("neurons_count")[1].getValue() + ';' + Q[i].getNodeByName("neurons_count")[2].getValue() + ';' + Q[i].getValueByName("stdDev").Replace('.', ',');
+                                }
+                                File.AppendAllLines(file_name, lines);
+
+                                inc = 0;
+                            }
+                        }
+                     /*   var xl_lines = File.ReadAllLines(file_name2);
+                        for (int i = 0; i < Q.Length; i++)
+                        {
+                            for (int l = 1; l < xl_lines.Length; l++)
+                            {
+                                if (int.Parse(xl_lines[l].Split(';')[0]) == )
+
+
+                                    }
+                        }*/
+//  }

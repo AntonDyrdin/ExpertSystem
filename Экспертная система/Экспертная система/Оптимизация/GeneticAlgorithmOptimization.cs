@@ -364,7 +364,7 @@ namespace Экспертная_система
                         double j_value = Convert.ToDouble(population[j].getValueByName("target_function").Replace('.', ','));
                         if (i_value < j_value || (double.IsNaN(i_value) && (!double.IsNaN(j_value))))
                         {
-                            log(" [" + i.ToString() + "] <- [" + j.ToString() + "]: " + i_value + "<" + j_value, Color.Orchid);
+                            //log(" [" + i.ToString() + "] <- [" + j.ToString() + "]: " + i_value + "<" + j_value, Color.Orchid);
 
                             string path_to_i = form1.pathPrefix + "Optimization\\" + algorithm.name + "\\" + algorithm.name + "[" + i.ToString() + "]";
                             string path_to_j = form1.pathPrefix + "Optimization\\" + algorithm.name + "\\" + algorithm.name + "[" + j.ToString() + "]";

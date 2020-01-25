@@ -1,4 +1,6 @@
-﻿prediction_algorithm_name = 'Easy'
+﻿# ЦИКЛИЧНОЕ ПРОГНОЗИРОВАНИЕ ВОЗИОЖНО ТОЛЬКО, ЕСЛИ ДАТАСЕТ СОДЕРЖИТ ТОЛЬКО ОДИН ПРЕДИКТОР (ОН ЖЕ ПРОГНОЗИРУЕМАЯ ВЕЛИЧИНА),
+# ИНАЧЕ 
+prediction_algorithm_name = 'Easy'
 
 import time
 import sys
@@ -11,7 +13,7 @@ import json
 import argparse
 def createParser():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--json_file_path',type=str,default='E:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\Easy\h.json')
+    parser.add_argument('--json_file_path',type=str,default='E:\Anton\Desktop\MAIN\Optimization\Easy\Easy[0]\h.json')
     return parser
 parser = createParser()
 args = parser.parse_args()
@@ -91,7 +93,7 @@ log("window_size: " + (str)(window_size))
 inputFile = open(h("input_file/value"))
 #превращение входного файла в плоскую таблицу значений предикторов
 lines = inputFile.readlines()
-
+# predicted_column_index ВСЕГДА БУДЕТ РАВЕН 0 (см. заголовок скрипта)
 predicted_column_index = (int)(h("predicted_column_index/value"))
 
 if (h("NN_struct/layer1/value") == "LSTM") | (h("NN_struct/layer1/value") == "Conv1D"):
@@ -101,25 +103,33 @@ else:
 
 log("X.shape: " + (str)(X.shape))
 
+############
 cycles = 50
+############
 
 predictionsFile = open(os.path.dirname(args.json_file_path) + "\\cyclic_prediction.txt", 'w')
 head = lines[0].split(';')[predicted_column_index]
   
 #log(h("predictions_file_path"))
+# predicted_column_index ВСЕГДА БУДЕТ РАВЕН 0 (см. заголовок скрипта)
 head = head = lines[0].split(';')[predicted_column_index].replace('\n','') + ';' + '(predicted -> )' + lines[0].split(';')[(int)(h("predicted_column_index/value"))].replace('\n','') + ';type'
 # if head[:-1]==';': 6
 #     head = head[0:-1]
 predictionsFile.write(head + '\n')
 
-start_point = (int)(len(lines) * (float)(h('split_point/value')))
+start_point = (int)(len(lines) * (float)(h('split_point/value'))) + 10
 
-# до введения переменной steps_forward ращмер массива data совпадал с
+# до введения переменной steps_forward размер массива data совпадал с
 # window_size,
 # теперь массив data длиннее, чем window_size на (steps_forward-1)
 data = []
-steps_forward = (int)(h("steps_forward/value"))
+try:
+    steps_forward = (int)(h("steps_forward/value"))
+except:
+    steps_forward = 1
+
 for i in range(0,window_size + (steps_forward - 1)):
+    # заполнение первого окна
     data.append(lines[start_point + i + 1])
     line = ''
     line = line + (str)(lines[start_point + i + 1]).replace('\n','') + ';' + lines[start_point + steps_forward + i + 1].split(';')[(int)(h("predicted_column_index/value"))].replace('\n','') + '; real (1st window)'
@@ -127,13 +137,14 @@ for i in range(0,window_size + (steps_forward - 1)):
 
 for c in range(0,cycles):
     for i in range(0,window_size):
-
+    
         if (h("NN_struct/layer1/value") == "LSTM") | (h("NN_struct/layer1/value") == "Conv1D"):
             for j in range(0,len(data[i].split(';'))):   
                 featureStringValue = data[i].split(';')[j]
                 if featureStringValue != '\n':     
                     X[0,i ,j] = (float)(data[i].split(';')[j])
         else:
+            # predicted_column_index ВСЕГДА БУДЕТ РАВЕН 0 (см. заголовок скрипта) 
              X[0,i] = (float)(data[i].split(';')[predicted_column_index])
 
 

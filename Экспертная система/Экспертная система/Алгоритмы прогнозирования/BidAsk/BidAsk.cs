@@ -67,10 +67,11 @@ namespace Экспертная_система
             h.addVariable(0, "window_size", 2, 120, 2, 60);
         }
 
-        public override void Open(string jsonPath)
+        public override Algorithm Open(string jsonPath)
         {
             this.h = new Hyperparameters(File.ReadAllText(jsonPath, System.Text.Encoding.Default), form1);
             modelName = getValueByName("model_name");
+            return this;
         }
         public override void Save()
         {

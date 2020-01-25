@@ -194,7 +194,7 @@ namespace Экспертная_система
 
                             if (minY == maxY)
                             {
-                                drawLine(function.color, functionDepth,
+                                drawLine(function.color, function.functionDepth,
                                 xZeroGap + dx * (step - 1), Ymin + (Ymax / 2),
                                 xZeroGap + dx * step, Ymin + (Ymax / 2));
                                 if (function.points[i].mark != function.points[i - 1].mark || step == 2)
@@ -202,7 +202,7 @@ namespace Экспертная_система
                             }
                             else
                             {
-                                drawLine(function.color, functionDepth,
+                                drawLine(function.color, function.functionDepth,
                                   xZeroGap + dx * (step - 1), Ymin + Ymax - (((Ymax - yUpGap) * (function.points[i - 1].y - minY)) / (maxY - minY) + yDownGap),
                                   xZeroGap + dx * step, Ymin + Ymax - (((Ymax - yUpGap) * (function.points[i].y - minY)) / (maxY - minY) + yDownGap));
 
@@ -257,7 +257,7 @@ namespace Экспертная_система
                         {
                             if (minY == maxY)
                             {
-                                drawLine(function.color, functionDepth,
+                                drawLine(function.color, function.functionDepth,
                                 xZeroGap + dx * (i - 1), Ymin + (Ymax / 2),
                                 xZeroGap + dx * i, Ymin + (Ymax / 2));
                                 if (function.points[i].mark != function.points[i - 1].mark || i == 2)
@@ -265,7 +265,7 @@ namespace Экспертная_система
                             }
                             else
                             {
-                                drawLine(function.color, functionDepth,
+                                drawLine(function.color, function.functionDepth,
                                   xZeroGap + dx * (i - 1), Ymin + Ymax - (((Ymax - yUpGap) * (function.points[i - 1].y - minY)) / (maxY - minY) + yDownGap),
                                   xZeroGap + dx * i, Ymin + Ymax - (((Ymax - yUpGap) * (function.points[i].y - minY)) / (maxY - minY) + yDownGap));
 
@@ -507,6 +507,14 @@ namespace Экспертная_система
             this.color = color;
             points = new List<point>();
         }
+        public Function(string label, Color color, int functionDepth)
+        {
+            this.functionDepth = functionDepth;
+            this.label = label;
+            this.color = color;
+            points = new List<point>();
+        }
+        public int functionDepth;
         public string label;
         public Color color;
         public List<point> points;

@@ -28,21 +28,23 @@ namespace Экспертная_система
 
 
            addLayer("LSTM", new parameter[] {
-                     new parameter("neurons_count", 2, 90, 5,85),
+                     new parameter("neurons_count", 2, 100, 5,85),
                      new parameter("activation", "sigmoid")
                  });
-              addLayer("LSTM", new parameter[] {
-                     new parameter("neurons_count", 2, 60, 5,50),
-                     new parameter("activation", "sigmoid")
-                 });
+
+            addLayer("Dropout", new parameter[] {
+                         new parameter("dropout","0.1"),
+                     });
             addLayer("Dense", new parameter[] {
-                      new parameter("neurons_count",  2, 100, 5,85),
+                      new parameter("neurons_count",  2, 90, 5,16),
                         new parameter("activation","sigmoid")
                    });
-            /*    addLayer("Dropout", new parameter[] {
-                         new parameter("dropout","0.2"),
-                     });
+            addLayer("Dense", new parameter[] {
+                      new parameter("neurons_count",  2, 90, 5,85),
+                        new parameter("activation","sigmoid")
+                   });
 
+            /*
               addLayer("Dense", new parameter[] {
                         new parameter("neurons_count", 2, 100, 5,85),
                           new parameter("activation","sigmoid")
@@ -69,7 +71,7 @@ namespace Экспертная_система
             h.add("name:optimizer,value:adam");
 
         }
-        public override void Open(string jsonPath)
+        public override Algorithm Open(string jsonPath)
         {
             this.h = new Hyperparameters(File.ReadAllText(jsonPath, System.Text.Encoding.Default), form1);
 
@@ -82,7 +84,9 @@ namespace Экспертная_система
             h.setValueByName("save_folder", localFolder);
 
             h.setValueByName("model_name", modelName);
+           
             //modelName = getValueByName("model_name");
+             return this;
         }
         public override void Save()
         {

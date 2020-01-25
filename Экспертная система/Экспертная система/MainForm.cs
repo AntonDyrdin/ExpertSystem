@@ -250,157 +250,86 @@ namespace Экспертная_система
         {
             expert = new Expert("Эксперт 1", this);
             mainThread = System.Threading.Thread.CurrentThread;
+            /////////////////////////////////////////////////////////////
+            // АНСАМБЛИРОВАНИЕ
+           /*  
+           Ensemble ensemble = new Ensemble(this);
+           ensemble.algorithms.Add((new Easy(this, "Easy[0]").Open(@"E:\Anton\Desktop\MAIN\Optimization\Easy\Easy[0]\h.json")));
+           ensemble.algorithms.Add((new Easy(this, "Easy[1]").Open(@"E:\Anton\Desktop\MAIN\Optimization\Easy\Easy[1]\h.json")));
+           ensemble.algorithms.Add((new Easy(this, "Easy[3]").Open(@"E:\Anton\Desktop\MAIN\Optimization\Easy\Easy[3]\h.json")));
+           ensemble.algorithms.Add((new Easy(this, "Easy[2]").Open(@"E:\Anton\Desktop\MAIN\Optimization\Easy\Easy[2]\h.json")));
+          // ensemble.algorithms.Add((new Easy(this, "Easy[5]").Open(@"E:\Anton\Desktop\MAIN\Optimization\Easy\Easy[5]\h.json")));
 
-            algorithm = new Easy(this, "Easy");
-            // algorithm.Open(@"E:\Anton\Desktop\MAIN\Optimization\Easy\Easy[0]\h.json");
-            //   sourceDataFile = pathPrefix + @"Временные ряды\LD2011_2014-cut.txt";
+           ensemble.cyclicPrediction();
+           */
+            /////////////////////////////////////////////////////////////
 
-            //sourceDataFile = pathPrefix + @"Временные ряды\85123A_day_of_week.txt";
-            // expert.H.add("input_file", expert.savePreparedDataset(sourceDataFile, "<symbol_time>;<server_time>;<TIME>;<DATE>;<local_time>;<TICKER>;<PER>;<DATEandTIME>;<DATE_TIME>;\"\"", false));
+           // sourceDataFile = pathPrefix + @"Временные ряды\LD2011_2014-250 столбец.txt";
+
+           // expert.H.add("input_file", expert.savePreparedDataset(sourceDataFile, "<symbol_time>;<server_time>;<TIME>;<DATE>;<local_time>;<TICKER>;<PER>;<DATEandTIME>;<DATE_TIME>;\"\"", true));
 
             // vis.enableGrid = false;
             // vis.addCSV(pathPrefix + @"Временные ряды\LD2011_2014-cut MAVG-dataset.txt", 0, 1000, 0);
-
+          /*  algorithm = new Easy(this, "Easy");
             algorithm.h.addVariable(0, "learning_rate", 0.001, 0.02, 0.003, 0.0101);
-            algorithm.h.addVariable(0, "window_size", 13, 31, 3, 14);
-            algorithm.h.addVariable(0, "number_of_epochs", 10, 80, 5, 50);
+            algorithm.h.addVariable(0, "window_size", 30, 100, 3, 14);
+            algorithm.h.addVariable(0, "number_of_epochs", 1, 50, 5, 50);
             // algorithm.h.setValueByName( "learning_rate", "0.0101");
             // algorithm.h.setValueByName( "window_size","14");
             // algorithm.h.setValueByName("number_of_epochs", "5");
-            algorithm.h.setValueByName("split_point", "0.7");
+            algorithm.h.setValueByName("split_point", "0.9");
             algorithm.h.setValueByName("steps_forward", "1");
             algorithm.h.setValueByName("start_point", "0");
             algorithm.h.setValueByName("normalize", "true");
-            algorithm.h.add("input_file", pathPrefix + @"Временные ряды\85123A-dataset.txt");
+            algorithm.h.add("input_file", pathPrefix + @"Временные ряды\LD2011_2014-250 столбец-dataset.txt");
             algorithm.h.add("path_prefix", pathPrefix);
             algorithm.h.add("predicted_column_index:0");
             algorithm.h.setValueByName("show_train_charts", "False");
 
 
-          //  MyAlgorithmOptimization MAO = new MyAlgorithmOptimization(this, algorithm);
-           // MAO.run();
-            /*  Hyperparameters[] Q = new Hyperparameters[8];
-              for (int i = 0; i < Q.Length; i++)
-                  Q[i] = algorithm.h.Clone();
+            //  MyAlgorithmOptimization MAO = new MyAlgorithmOptimization(this, algorithm);
+            // MAO.run();
 
-              string name = algorithm.name;
-
-              for (int i = 0; i < Q.Length; i++)
-              {
-                  Q[i].setValueByName("code", i.ToString());
-                  Q[i].setValueByName("model_name", Q[i].nodes[0].name() + "[" + i.ToString() + "]");
-                  string new_save_folder = pathPrefix + "Grid search\\" + name + "\\" + name + "[" + i.ToString() + "]" + "\\";
-                  Algorithm.CopyFiles(Q[i], algorithm.h.getValueByName("save_folder"), new_save_folder);
-              }
-
-              int neurons_count_min = 3;
-              int neurons_count_max = 90;
-              int neurons_count_step = 5;
-
-              int inc = 0;
-              string file_name = "grid_search_3_layers"+DateTime.Now.Millisecond.ToString()+".txt";
-
-
-              File.WriteAllText(file_name, "neurons_count_1;neurons_count_2;neurons_count_3" + '\n');
-              for (int neurons_count_1 = neurons_count_min; neurons_count_1 < neurons_count_max; neurons_count_1 += neurons_count_step)
-                  for (int neurons_count_2 = neurons_count_min; neurons_count_2 < neurons_count_max; neurons_count_2 += neurons_count_step)
-                  {
-                      for (int neurons_count_3 = neurons_count_min; neurons_count_3 < neurons_count_max; neurons_count_3 += neurons_count_step)
-                      {
-                          if (inc < Q.Length)
-                          {
-                              Q[inc].getNodeByName("neurons_count")[0].setValue(neurons_count_1.ToString());
-                              Q[inc].getNodeByName("neurons_count")[1].setValue(neurons_count_2.ToString());
-                              Q[inc].getNodeByName("neurons_count")[2].setValue(neurons_count_3.ToString());
-
-                              log(neurons_count_1.ToString() + ';' + neurons_count_2.ToString() + ';' + neurons_count_3.ToString() + ';');
-                              inc++;
-                          }
-                          else
-                          {
-                              List<Algorithm> algorithms = new List<Algorithm>();
-                              for (int i = 0; i < Q.Length; i++)
-                              {
-                                  Algorithm alg = Algorithm.newInstance(algorithm);
-                                  alg.h = Q[i].Clone();
-                                  algorithms.Add(alg);
-                              }
-
-                              List<Thread> trainThreads = new List<Thread>();
-
-                              foreach (Algorithm alg in algorithms)
-                              {
-                                  Thread t = new Thread(new ThreadStart(alg.train));
-                                  trainThreads.Add(t);
-                                  t.Start();
-                              }
-
-                              foreach (var t in trainThreads)
-                                  t.Join();
-
-                              string[] lines = new string[Q.Length];
-                              for (int i = 0; i < Q.Length; i++)
-                              {
-                                  Q[i] = algorithms[i].h.Clone();
-                                  log(Q[i].getValueByName("stdDev").Replace('.', ','), Color.Pink);
-                                  lines[i] = Q[i].getNodeByName("neurons_count")[0].getValue() + ';' + Q[i].getNodeByName("neurons_count")[1].getValue() + ';' + Q[i].getNodeByName("neurons_count")[2].getValue() + ';' + Q[i].getValueByName("stdDev").Replace('.', ',');
-                              }
-                              File.AppendAllLines(file_name, lines);
-
-                              inc = 0;
-                          }
-                      }
-                   /*   var xl_lines = File.ReadAllLines(file_name2);
-                      for (int i = 0; i < Q.Length; i++)
-                      {
-                          for (int l = 1; l < xl_lines.Length; l++)
-                          {
-                              if (int.Parse(xl_lines[l].Split(';')[0]) == )
-
-
-                                  }
-                      }*/
-            //  }
             // algorithm.train().Wait();
 
-            //  I.executePythonScript(pathPrefix + @"\Optimization\Easy\Easy[0]\cyclic_prediction.py", "--json_file_path \"" + pathPrefix + @"\Optimization\Easy\Easy[0]\h.json" + '\"');
+            //  I.executePythonScript(pathPrefix + @"\Экспертная система\Экспертная система\Алгоритмы прогнозирования\Easy\cyclic_prediction.py", "--json_file_path \"" + pathPrefix + @"\Optimization\Easy\Easy[0]\h.json" + '\"');
 
             //   I.executePythonScript(pathPrefix + @"\Экспертная система\Экспертная система\Алгоритмы прогнозирования\Easy\cyclic_prediction.py", "--json_file_path \"" + pathPrefix + @"\Экспертная система\Экспертная система\Алгоритмы прогнозирования\Easy\h.json" + '\"');
-            /*   algorithm.h.setValueByName("show_train_charts", "True");
-               algorithm.getAccAndStdDev(File.ReadAllLines(@"E:\Anton\Desktop\MAIN\Optimization\Easy\Easy[0]\predictions.txt"));
-               //  algorithm.getAccAndStdDev(File.ReadAllLines(pathPrefix + @"\Optimization\Easy\Easy[0]\cyclic_prediction.txt"));
+            //    algorithm.h.setValueByName("show_train_charts", "True");
+            // algorithm.getAccAndStdDev(File.ReadAllLines(@"E:\Anton\Desktop\MAIN\Optimization\Easy\Easy[0]\predictions.txt"));
+            //      algorithm.getAccAndStdDev(File.ReadAllLines(pathPrefix + @"\Optimization\Easy\Easy[0]\cyclic_prediction.txt"));
 
 
-               vis.enableGrid = true;
-               //  vis.addCSV(@"E:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\Easy\cyclic_prediction.txt", "\"MT_250\"", "\"MT_250\"", "r", 1000, 0, 0);
-               //  vis.addCSV(@"E:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\Easy\cyclic_prediction.txt", "\"MT_250\"", "(predicted -> )\"MT_250\"", "pred", 1000, 0, 0);
+            //     vis.enableGrid = true;
+            //  vis.addCSV(@"E:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\Easy\cyclic_prediction.txt", "\"MT_250\"", "\"MT_250\"", "r", 1000, 0, 0);
+            //  vis.addCSV(@"E:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\Easy\cyclic_prediction.txt", "\"MT_250\"", "(predicted -> )\"MT_250\"", "pred", 1000, 0, 0);
 
-               //        vis.addCSV(@"E:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\Easy\predictions.txt", "realVSpredictions", "MT_250", "real", 1000, 0.95, 0);
-               //    vis.addCSV(@"E:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\Easy\predictions.txt", "realVSpredictions", "LAST_COLUMN", "predictions", 1000, 0.95, 0);
-               */
+            //        vis.addCSV(@"E:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\Easy\predictions.txt", "realVSpredictions", "MT_250", "real", 1000, 0.95, 0);
+            //    vis.addCSV(@"E:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\Easy\predictions.txt", "realVSpredictions", "LAST_COLUMN", "predictions", 1000, 0.95, 0);
 
-                 AO = new AlgorithmOptimization(algorithm, this,
-                     population_value: 128,
-                     mutation_rate: 64,
-                     architecture_variation_rate: 0,
-                     elite_ratio: 0.25,
-                     iterarions: 500,
-                     test_count: 1,
-                     AlgorithmOptimization.TargetFunctionType.STDDEV);
 
-                  AO.run();
-                //    algorithm.h.draw(0, picBox, 25, 300);
-                // algorithm.Save();
-                /*   algorithm = new BidAsk(this, "BidAsk");
-                  algorithm.getAccAndStdDev(File.ReadAllLines(@"E:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\BidAsk\predictions.txt"));
-                 //  algorithm.Open(@"E:\Anton\Desktop\MAIN\Optimization\BidAsk\BidAsk[0]\h.json");
+            AO = new AlgorithmOptimization(algorithm, this,
+                population_value: 4,
+                mutation_rate: 128,
+                architecture_variation_rate: 0,
+                elite_ratio: 0.25,
+                iterarions: 500,
+                test_count: 1,
+                AlgorithmOptimization.TargetFunctionType.STDDEV);
 
-                   //<DATE_TIME>;<bid_top>;<bid_quantity>;<bid_amount>;<ask_top>;<ask_quantity>;<ask_amount>
+            AO.run();
+            //    algorithm.h.draw(0, picBox, 25, 300);
+            // algorithm.Save();
+            /*   algorithm = new BidAsk(this, "BidAsk");
+              algorithm.getAccAndStdDev(File.ReadAllLines(@"E:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\BidAsk\predictions.txt"));
+             //  algorithm.Open(@"E:\Anton\Desktop\MAIN\Optimization\BidAsk\BidAsk[0]\h.json");
 
-                 /*  sourceDataFile = pathPrefix + @"Временные ряды\BTC_USD_exmo.txt";
-                    expert.H.add("input_file", expert.savePreparedDataset(sourceDataFile, "<symbol_time>;<server_time>;<TIME>;<DATE>;<local_time>;<TICKER>;<PER>;<DATEandTIME>;<DATE_TIME>", true));
+               //<DATE_TIME>;<bid_top>;<bid_quantity>;<bid_amount>;<ask_top>;<ask_quantity>;<ask_amount>
 
-                    Expert.addSpread(pathPrefix + @"Временные ряды\BTC_USD_exmo-dataset.txt", sourceDataFile);*/
+             /*  sourceDataFile = pathPrefix + @"Временные ряды\BTC_USD_exmo.txt";
+                expert.H.add("input_file", expert.savePreparedDataset(sourceDataFile, "<symbol_time>;<server_time>;<TIME>;<DATE>;<local_time>;<TICKER>;<PER>;<DATEandTIME>;<DATE_TIME>", true));
+
+                Expert.addSpread(pathPrefix + @"Временные ряды\BTC_USD_exmo-dataset.txt", sourceDataFile);*/
 
             /*  algorithm.h.setValueByName("bid_column_index", "0");
                   algorithm.h.setValueByName("ask_column_index", "3");
@@ -961,7 +890,7 @@ namespace Экспертная_система
                 if (expert != null)
                     if (expert.algorithms.Count > 0)
                         if (expert.algorithms[0] != null)
-                         expert.algorithms[0].h.lightsOn = true; 
+                            expert.algorithms[0].h.lightsOn = true;
                 picBox.BackColor = Color.White;
                 logBox.BackColor = Color.White;
                 logBox.ForeColor = Color.Black;
