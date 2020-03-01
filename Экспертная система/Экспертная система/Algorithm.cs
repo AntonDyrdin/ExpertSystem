@@ -510,6 +510,7 @@ namespace Экспертная_система
             {
 
                 double sqrtSum = 0;
+                int steps_forward = int.Parse(h.getValueByName("steps_forward"));
 
                 if (showCharts)
                 {
@@ -530,29 +531,24 @@ namespace Экспертная_система
                 if (predictionsCSV[1].Split(';')[features.Length - 1].Contains("real"))
                 { is_cyclic_prediction = true; }
 
-                for (int i = 1; i < predictionsCSV.Length - 1; i++)
+                for (int i = 1; i < predictionsCSV.Length - steps_forward; i++)
                 {
                     double predictedValue;
                     double realValue;
                     if (is_cyclic_prediction)
                     {
-                         predictedValue = Convert.ToDouble(predictionsCSV[i].Split(';')[features.Length - 2].Replace('.', ','));
-                         realValue = Convert.ToDouble(predictionsCSV[i + 1].Split(';')[predicted_column_index].Replace('.', ','));
+                        predictedValue = Convert.ToDouble(predictionsCSV[i].Split(';')[features.Length - 2].Replace('.', ','));
+                        realValue = Convert.ToDouble(predictionsCSV[i + steps_forward].Split(';')[predicted_column_index].Replace('.', ','));
                     }
                     else
                     {
-                         predictedValue = Convert.ToDouble(predictionsCSV[i].Split(';')[features.Length - 1].Replace('.', ','));
-                         realValue = Convert.ToDouble(predictionsCSV[i + 1].Split(';')[predicted_column_index].Replace('.', ','));
+                        predictedValue = Convert.ToDouble(predictionsCSV[i].Split(';')[features.Length - 1].Replace('.', ','));
+                        realValue = Convert.ToDouble(predictionsCSV[i + steps_forward].Split(';')[predicted_column_index].Replace('.', ','));
                     }
                     if (showCharts)
                     {
                         form1.vis.addPoint(realValue, "real");
-
                         form1.vis.addPoint(predictedValue, "prediction");
-
-
-                        if (i == int.Parse(h.getValueByName("window_size") + int.Parse(h.getValueByName("steps_forward"))))
-                            form1.vis.markLast("|", "real");
                     }
 
                     if (realValue > 0.5 && predictedValue > 0.5)

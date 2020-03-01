@@ -132,7 +132,11 @@ for i in range(0,window_size + (steps_forward - 1)):
     # заполнение первого окна
     data.append(lines[start_point + i + 1])
     line = ''
-    line = line + (str)(lines[start_point + i + 1]).replace('\n','') + ';' + lines[start_point + steps_forward + i + 1].split(';')[(int)(h("predicted_column_index/value"))].replace('\n','') + '; real (1st window)'
+    if i < window_size:
+        line = line + (str)(lines[start_point + i + 1]).replace('\n','') + ';' + lines[start_point + i + steps_forward + 1].split(';')[(int)(h("predicted_column_index/value"))].replace('\n','') + '; real (1st window) ['+(str)(i)+']'
+    else:
+        line = line + (str)(lines[start_point + i + 1]).replace('\n','') + ';' + lines[start_point + i + steps_forward + 1].split(';')[(int)(h("predicted_column_index/value"))].replace('\n','') + '; real (steps_forward) ['+(str)(i - window_size + 1)+']'
+  
     predictionsFile.write(line + '\n')
 
 for c in range(0,cycles):
@@ -147,13 +151,17 @@ for c in range(0,cycles):
             # predicted_column_index ВСЕГДА БУДЕТ РАВЕН 0 (см. заголовок скрипта) 
              X[0,i] = (float)(data[i].split(';')[predicted_column_index])
 
-
+    line = ''
+    #for i in range(0, window_size):   
+    #    line = line + (str)( X[0, i, 0]) + ';'
+        
     Y = model.predict(X)
 
     data = numpy.delete(data, 0)
     data = numpy.append(data,(str)(Y[0,0]))
 
-    line = ''
+
+    #  [start_point + (window_size + (steps_forward - 1)) + 1 + c] - протестированный код
     line = line + (str)(lines[start_point + (window_size + (steps_forward - 1)) + 1 + c]).replace('\n','') + ';'
     line = line + (str)(Y[0,0]) + '; '
     line = line + (str)(c) + ' prediction'

@@ -91,7 +91,7 @@ baseNodeName = next((v for i, v in enumerate(jsonObj.items()) if i == 0))[0]
 
 inputFile = open(h("input_file/value"))
 try:
-    log("CODE: "+h("code/value"))
+    log("CODE: " + h("code/value"))
 except:
     log("CODE: null")
 #превращение входного файла в плоскую таблицу значений предикторов
@@ -135,7 +135,20 @@ if (h("NN_struct/layer1/value") == "LSTM") | (h("NN_struct/layer1/value") == "Co
     train_X = Dataset_X[:round(Dataset_X.shape[0] * (split_point)), :,:]
     test_X = Dataset_X[round(Dataset_X.shape[0] * (split_point)):, :,:]
     train_y = Dataset_Y[:round(Dataset_Y.shape[0] * (split_point))]
-    test_y = Dataset_Y[round(Dataset_Y.shape[0] * (split_point)):]
+    test_y = Dataset_Y[round(Dataset_Y.shape[0] * (split_point)):] 
+
+    batch_size = (int)(h("batch_size/value"))
+
+    # обрезание выборок, чтобы количество примеров в них было кратно batch_size
+    train_X_round_batch = (train_X.shape[0] // batch_size) * batch_size
+    test_X_round_batch = (test_X.shape[0] // batch_size) * batch_size
+    train_y_round_batch = (train_y.shape[0] // batch_size) * batch_size
+    test_y_round_batch = (test_y.shape[0] // batch_size) * batch_size
+
+    train_X = Dataset_X[:train_X_round_batch, :,:]
+    test_X = Dataset_X[:test_X_round_batch, :,:]
+    train_y = Dataset_Y[:train_y_round_batch]
+    test_y = Dataset_Y[:test_y_round_batch]
     
 else:
     if(window_size == 1):
@@ -167,6 +180,7 @@ else:
         test_X = Dataset_X[round(Dataset_X.shape[0] * (split_point)):, :]
         train_y = Dataset_Y[:round(Dataset_Y.shape[0] * (split_point))]
         test_y = Dataset_Y[round(Dataset_Y.shape[0] * (split_point)):]
+
 ####################################################################################
 #print("train_X ",train_X)
 #print("test_X ",test_X)
@@ -202,21 +216,21 @@ for i in range(0,len(LAYERS)):
                     # True
                     if(h("NN_struct/layer" + (str)(i + 2) + "/value") == "LSTM"):
                         log("add LSTM layer " + h("NN_struct/" + LAYERS[i] + "/neurons_count/value") + " neurons, input_shape=( " + (str)(train_X.shape[1]) + ", " + (str)(train_X.shape[2]) + "), return_sequences=True")
-                        model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=True, input_shape=(train_X.shape[1], train_X.shape[2])))
+                        model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=True, stateful=True, batch_input_shape=(batch_size, train_X.shape[1], train_X.shape[2])))
                     else:
                             if(LAYERS.index(LAYERS[i]) < len(LAYERS) - 2):
                                 if(h("NN_struct/layer" + (str)(i + 3) + "/value") == "LSTM"):
                                     log("add LSTM layer " + h("NN_struct/" + LAYERS[i] + "/neurons_count/value") + " neurons, input_shape=( " + (str)(train_X.shape[1]) + ", " + (str)(train_X.shape[2]) + "), return_sequences=True")
-                                    model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=True, input_shape=(train_X.shape[1], train_X.shape[2])))
+                                    model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=True, stateful=True, batch_input_shape=(batch_size, train_X.shape[1], train_X.shape[2])))
                                 else:
                                     log("add LSTM layer " + h("NN_struct/" + LAYERS[i] + "/neurons_count/value") + " neurons, input_shape=( " + (str)(train_X.shape[1]) + ", " + (str)(train_X.shape[2]) + "), return_sequences=False")
-                                    model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=False, input_shape=(train_X.shape[1], train_X.shape[2])))
+                                    model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=False, stateful=True, input_shape=(train_X.shape[1], train_X.shape[2])))
                             else:
                                 log("add LSTM layer " + h("NN_struct/" + LAYERS[i] + "/neurons_count/value") + " neurons, input_shape=( " + (str)(train_X.shape[1]) + ", " + (str)(train_X.shape[2]) + "), return_sequences=False")
-                                model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=False, input_shape=(train_X.shape[1], train_X.shape[2])))
+                                model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=False, stateful=True, input_shape=(train_X.shape[1], train_X.shape[2])))
                else:
                     log("add LSTM layer " + h("NN_struct/" + LAYERS[i] + "/neurons_count/value") + " neurons, input_shape=( " + (str)(train_X.shape[1]) + ", " + (str)(train_X.shape[2]) + "), return_sequences=False")
-                    model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=False, input_shape=(train_X.shape[1], train_X.shape[2])))
+                    model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=False, stateful=True, input_shape=(train_X.shape[1], train_X.shape[2])))
         if(h("NN_struct/" + LAYERS[i] + "/value") == "Conv1D"):
             log("add Conv1D layer " + h("NN_struct/" + LAYERS[i] + "/neurons_count/value") + " neurons, input_shape=( " + (str)(window_size) + ", " + (str)(train_X.shape[1]) + "), kernel_size=" + h("NN_struct/" + LAYERS[i] + "/kernel_size/value") + ", activation - relu")
             model.add(Conv1D((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),(int)(h("NN_struct/" + LAYERS[i] + "/kernel_size/value")),activation='relu',input_shape=(window_size,dataset.shape[1])))
@@ -231,25 +245,25 @@ for i in range(0,len(LAYERS)):
                 # если следующий слой тоже рекуррентный - return_sequens = True
                 if(h("NN_struct/layer" + (str)(i + 2) + "/value") == "LSTM"):
                     log("add LSTM layer " + h("NN_struct/" + LAYERS[i] + "/neurons_count/value") + " neurons, return_sequences=True")
-                    model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=True))
+                    model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=True, stateful=True))
                 else:
                         if(LAYERS.index(LAYERS[i]) < len(LAYERS) - 2):
                             if(h("NN_struct/layer" + (str)(i + 3) + "/value") == "LSTM"):
                                 log("add LSTM layer " + h("NN_struct/" + LAYERS[i] + "/neurons_count/value") + " neurons, return_sequences=True")
-                                model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=True))
+                                model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=True, stateful=True))
                             else:
                                 log("add LSTM layer " + h("NN_struct/" + LAYERS[i] + "/neurons_count/value") + " neurons, return_sequences=False")
-                                model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=False))
+                                model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=False, stateful=True))
                         else:
                             log("add LSTM layer " + h("NN_struct/" + LAYERS[i] + "/neurons_count/value") + " neurons, return_sequences=False")
-                            model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=False))
+                            model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=False, stateful=True))
             else:
                 log("add LSTM layer " + h("NN_struct/" + LAYERS[i] + "/neurons_count/value") + " neurons, return_sequences=False")
-                model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=False))
+                model.add(LSTM((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),return_sequences=False, stateful=True))
 
         if(h("NN_struct/" + LAYERS[i] + "/value") == "Conv1D"):
-            log("add Conv1D layer " + h("NN_struct/" + LAYERS[i] + "/neurons_count/value") + " neurons, kernel_size=" + h("NN_struct/" + LAYERS[i] + "/kernel_size/value") + ", activation - relu")
-            model.add(Conv1D((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),(int)(h("NN_struct/" + LAYERS[i] + "/kernel_size/value")),activation='relu'))
+            log("add Conv1D layer " + h("NN_struct/" + LAYERS[i] + "/neurons_count/value") + " neurons, kernel_size=" + h("NN_struct/" + LAYERS[i] + "/kernel_size/value") + ", activation - " + h("NN_struct/" + LAYERS[i] + "/activation/value"))
+            model.add(Conv1D((int)(h("NN_struct/" + LAYERS[i] + "/neurons_count/value")),(int)(h("NN_struct/" + LAYERS[i] + "/kernel_size/value")), activation=h("NN_struct/" + LAYERS[i] + "/activation/value")))
 
         if(h("NN_struct/" + LAYERS[i] + "/value") == "MaxPooling1D"):
             log("add MaxPooling1D layer, pool_size=" + h("NN_struct/" + LAYERS[i] + "/pool_size/value"))
@@ -278,11 +292,15 @@ optimizer = optimizers.Adam(lr=(float)(h("learning_rate/value")), beta_1=0.9, be
 model.compile(loss=h("loss/value"),optimizer=optimizer ,metrics=['accuracy'])
 log("> время компиляции НС  : " + getTime())    
 
-
-    
+############# сохранение визуализации модели ################################
+#log("Cохранение визуализации модели")
+#os.environ["PATH"] += os.pathsep + 'C:/Program Files (x86)/Graphviz2.38/bin/'
+#from keras.utils import plot_model
+#plot_model(model, to_file=h("save_folder/value") + 'model.png', show_shapes='true')
+#############################################################################
 log("обучение НС...")
         
-history = model.fit(train_X, train_y, epochs=(int)(h("number_of_epochs/value")), batch_size=(int)(h("batch_size/value")), validation_data=(test_X, test_y), shuffle=True) 
+history = model.fit(train_X, train_y, epochs = (int)(h("number_of_epochs/value")), batch_size =batch_size, validation_data = (test_X, test_y), shuffle = False) 
 log("> время обучения  НС  : " + getTime()) 
     
 if h("save_folder/value") != "none":
@@ -294,9 +312,16 @@ if h("save_folder/value") != "none":
         save_path = save_path.encode('ansi')
         model.save(save_path)
     log("> время сохранения НС  : " + getTime()) 
+
+if h("show_train_charts/value") == "True":
+    import matplotlib.pyplot as pyplot
+    pyplot.plot(history.history['loss'], label='train')
+    pyplot.plot(history.history['val_loss'], label='test')
+    pyplot.legend()
+    pyplot.show()
     
 log("создание тестового прогноза")
-predicted = model.predict(test_X)
+predicted = model.predict(test_X, batch_size=batch_size)
 log(predicted.shape)
 
 predictionsFile = open(h("predictions_file_path/value"), 'w')
@@ -319,23 +344,15 @@ if (h("NN_struct/layer1/value") == "LSTM") | (h("NN_struct/layer1/value") == "Co
 else:
     for i in range(0,test_X.shape[0]):
         line = ''
-        line = line + (str)(test_X[i,window_size - 1]) + ';'
-        line = line + (str)(predicted[i,0])
+        line = line + (str)(test_X[i,window_size - 1]) + ';' + (str)(predicted[i,0])
         predictionsFile.write(line + '\n')
 
 predictionsFile.close()
 log("> время создания и записи тестового прогноза  : " + getTime()) 
 log("__________________________________")    
 log("______________END________________")     
-
-
-if h("show_train_charts/value") == "True":
-    import matplotlib.pyplot as pyplot
-    pyplot.plot(history.history['loss'], label='train')
-    pyplot.plot(history.history['val_loss'], label='test')
-    pyplot.legend()
-    pyplot.show()
   
+
 RESPONSE = "{RESPONSE:{"
 RESPONSE = RESPONSE + "response:{value:скрипт " + prediction_algorithm_name + " успешно завершён"
 RESPONSE = RESPONSE + "}}}"

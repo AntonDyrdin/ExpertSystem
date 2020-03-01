@@ -288,7 +288,10 @@ namespace Экспертная_система
 
             var currentDate = date1;
 
+            // поиск нужной стркои в датасете будет начат с 1
+            int lastDatasetPoint = 1;
             bool thisIsTheEnd = false;
+            var allLines = skipEmptyLines(File.ReadAllLines(rawDatasetFilePath));
             while (!thisIsTheEnd)
             {
                 string reportLine = "";
@@ -307,12 +310,12 @@ namespace Экспертная_система
                 }
                 //+1 для заголовка;+1 для нормализации i/(i-1)
                 string[] input = new string[windowSize + 1 + 1];
-                var allLines = skipEmptyLines(File.ReadAllLines(rawDatasetFilePath));
+
                 //копирование заголовка
                 input[0] = allLines[0];
 
-
-                for (int i = 1; i < allLines.Length; i++)
+                // чтобы каждый раз не искать нужную строку в датасете с начала, храним последнюю строку в lastDatasetPoint
+                for (int i = lastDatasetPoint; i < allLines.Length; i++)
                 {
                     if (DateTime.Parse(allLines[i].Split(';')[0]) == currentDate)
                     {
@@ -325,7 +328,12 @@ namespace Экспертная_система
                         }
 
                         if (i == allLines.Length - 1)
+                        {
                             thisIsTheEnd = true;
+                            break;
+                        }
+                        lastDatasetPoint = i;
+                        break;
                     }
                 }
                 string rawInputLine = input[input.Length - 1];
@@ -340,7 +348,7 @@ namespace Экспертная_система
 
 
                     int predictedColumnIndexInNormalizedDataset = Convert.ToInt32(H.getValueByName("predicted_column_index"));
-                    lastKnownValue = double.Parse(input[input.Length - 2].Split(';')[predictedColumnIndexInNormalizedDataset].Replace('.',','));
+                    lastKnownValue = double.Parse(input[input.Length - 2].Split(';')[predictedColumnIndexInNormalizedDataset].Replace('.', ','));
                 }
                 else
                 {
@@ -350,14 +358,14 @@ namespace Экспертная_система
                 lastKnownValueHistory.Add(lastKnownValue);
 
                 //print committee response
-                string comRespStr = "committee response: ";
+                string comRespStr = currentDate.ToShortDateString() + "| committee response: ";
                 for (int i = 0; i < committeeResponse.Length; i++)
                     comRespStr += " [" + committeeResponse[i] + "]; ";
                 string committeeResponseReportLine = "";
                 for (int i = 0; i < committeeResponse.Length; i++)
                     committeeResponseReportLine += committeeResponse[i] + ";";
 
-                log(comRespStr);
+                //log(comRespStr);
                 //  log("date: " + date1.ToString());
                 //    log("deposit1: " + deposit1.ToString());
                 //    log("deposit2: " + deposit2.ToString());
@@ -1275,39 +1283,49 @@ namespace Экспертная_система
             double[] maxPredictorValue = new double[inputDataset.GetLength(1)];
             double[] minPredictorValue = new double[inputDataset.GetLength(1)];
 
-            double[,] normalizedDataset2 = new double[inputDataset.GetLength(0), inputDataset.GetLength(1)];
 
-            for (int k = 0; k < inputDataset.GetLength(1); k++)
-            {
-                maxPredictorValue[k] = Double.MinValue;
-                minPredictorValue[k] = Double.MaxValue;
-            }
-            for (int i = 0; i < inputDataset.GetLength(0) - 1; i++)
+            // движущееся окно добавит жизни в нормализованный по абсолютному значению график
+            // при большом объёме датасета отличие его максимальных значений предикторов от их минимальных значений
+            // слишком велико по сравнию с изменениями на конкретном шаге. Из-за этого после нормализации график становится приплюснутым - 
+            // имеет пару больших короткиъ выбросов, а основная его часть крутится вокруг одного значения
+            int moving_window = 150;
+
+            double[,] normalizedDataset2 = new double[inputDataset.GetLength(0) - moving_window, inputDataset.GetLength(1)];
+
+            for (int i = moving_window; i < inputDataset.GetLength(0); i++)
             {
                 for (int k = 0; k < inputDataset.GetLength(1); k++)
                 {
-                    if (inputDataset[i, k] > maxPredictorValue[k])
-                        maxPredictorValue[k] = inputDataset[i, k];
-
-                    if (inputDataset[i, k] < minPredictorValue[k])
-                        minPredictorValue[k] = inputDataset[i, k];
+                    maxPredictorValue[k] = Double.MinValue;
+                    minPredictorValue[k] = Double.MaxValue;
                 }
-            }
-            for (int k = 0; k < inputDataset.GetLength(1); k++)
-            {
-                maxPredictorValue[k] -= minPredictorValue[k];
-            }
 
-            for (int i = 0; i < inputDataset.GetLength(0) - 1; i++)
-            {
+                for (int m = -moving_window; m < 0; m++)
+                {
+                    for (int k = 0; k < inputDataset.GetLength(1); k++)
+                    {
+                        if (inputDataset[m + i, k] > maxPredictorValue[k])
+                            maxPredictorValue[k] = inputDataset[m + i, k];
+
+                        if (inputDataset[m + i, k] < minPredictorValue[k])
+                            minPredictorValue[k] = inputDataset[m + i, k];
+                    }
+                }
+
+                for (int k = 0; k < inputDataset.GetLength(1); k++)
+                {
+                    maxPredictorValue[k] -= minPredictorValue[k];
+                }
+
                 for (int k = 0; k < inputDataset.GetLength(1); k++)
                 {
                     if (maxPredictorValue[k] != 0)
-                        normalizedDataset2[i, k] = (inputDataset[i, k] - minPredictorValue[k]) / maxPredictorValue[k];
+                        normalizedDataset2[i - moving_window, k] = (inputDataset[i-1, k] - minPredictorValue[k]) / maxPredictorValue[k];
                     else
-                        normalizedDataset2[i, k] = 0;
+                        normalizedDataset2[i - moving_window, k] = 0;
                 }
             }
+
             return normalizedDataset2;
         }
 

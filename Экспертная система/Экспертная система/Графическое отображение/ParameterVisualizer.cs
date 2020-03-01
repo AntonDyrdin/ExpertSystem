@@ -26,7 +26,7 @@ namespace Экспертная_система
         public double yUpGap;
         public double yDownGap;
         public bool multy;
-        public bool enableGrid= false;
+        public bool enableGrid = false;
         public bool showLastNValues = false;
         public int window = 100;
         public System.Timers.Timer needToRefresh;
@@ -132,7 +132,8 @@ namespace Экспертная_система
                 {
                     if (showLastNValues & functions[i].points.Count > window)
                     {
-                        maxPointsCount = window;
+                        if (maxPointsCount < functions[i].points.Count)
+                            maxPointsCount = functions[i].points.Count;
                         maxPointsCountI = i;
                         break;
                     }
@@ -152,7 +153,7 @@ namespace Экспертная_система
                     int start = 0;
                     if (showLastNValues & function.points.Count > window)
                     {
-                        start = function.points.Count - window ;
+                        start = maxPointsCount - window;
                     }
                     for (int i = start; i < function.points.Count; i++)
                     {
@@ -180,7 +181,7 @@ namespace Экспертная_система
                         int start = 1;
                         if (showLastNValues & function.points.Count > window)
                         {
-                            start = function.points.Count - window + 1;
+                            start = maxPointsCount - window + 1;
                             /*  foreach (Function function in functions)
                               {
                                   if (function.points.Count > window)
@@ -190,7 +191,7 @@ namespace Экспертная_система
                         int step = 0;
                         for (int i = start; i < function.points.Count; i++)
                         {
-                            step = i - start+1;
+                            step = i - start + 1;
 
                             if (minY == maxY)
                             {
@@ -206,9 +207,9 @@ namespace Экспертная_система
                                   xZeroGap + dx * (step - 1), Ymin + Ymax - (((Ymax - yUpGap) * (function.points[i - 1].y - minY)) / (maxY - minY) + yDownGap),
                                   xZeroGap + dx * step, Ymin + Ymax - (((Ymax - yUpGap) * (function.points[i].y - minY)) / (maxY - minY) + yDownGap));
 
-                             //   if (function.points[i].mark != function.points[i - 1].mark || step == 2)
-                                    drawStringVertical(function.points[i].mark, mainFontDepth,
-                                    xZeroGap + dx * step, Ymin + Ymax - (((Ymax - yUpGap) * (function.points[i].y - minY)) / (maxY - minY) + yDownGap));
+                                //   if (function.points[i].mark != function.points[i - 1].mark || step == 2)
+                                drawStringVertical(function.points[i].mark, mainFontDepth,
+                                xZeroGap + dx * step, Ymin + Ymax - (((Ymax - yUpGap) * (function.points[i].y - minY)) / (maxY - minY) + yDownGap));
                             }
                         }
                     }

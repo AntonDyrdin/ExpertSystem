@@ -38,7 +38,7 @@ namespace Экспертная_система
         {
             I = new Infrastructure(this);
 
-            //   I.showModeSelector();
+            // I.showModeSelector();
             I.runSelectedMode();
         }
         public void TEST()
@@ -250,48 +250,51 @@ namespace Экспертная_система
         {
             expert = new Expert("Эксперт 1", this);
             mainThread = System.Threading.Thread.CurrentThread;
-            /////////////////////////////////////////////////////////////
-            // АНСАМБЛИРОВАНИЕ
-           /*  
-           Ensemble ensemble = new Ensemble(this);
-           ensemble.algorithms.Add((new Easy(this, "Easy[0]").Open(@"E:\Anton\Desktop\MAIN\Optimization\Easy\Easy[0]\h.json")));
-           ensemble.algorithms.Add((new Easy(this, "Easy[1]").Open(@"E:\Anton\Desktop\MAIN\Optimization\Easy\Easy[1]\h.json")));
-           ensemble.algorithms.Add((new Easy(this, "Easy[3]").Open(@"E:\Anton\Desktop\MAIN\Optimization\Easy\Easy[3]\h.json")));
-           ensemble.algorithms.Add((new Easy(this, "Easy[2]").Open(@"E:\Anton\Desktop\MAIN\Optimization\Easy\Easy[2]\h.json")));
-          // ensemble.algorithms.Add((new Easy(this, "Easy[5]").Open(@"E:\Anton\Desktop\MAIN\Optimization\Easy\Easy[5]\h.json")));
 
-           ensemble.cyclicPrediction();
-           */
-            /////////////////////////////////////////////////////////////
+            sourceDataFile = pathPrefix + @"Временные ряды\BTC_USD_exmo.txt";
 
-           // sourceDataFile = pathPrefix + @"Временные ряды\LD2011_2014-250 столбец.txt";
+            var dataset_file = expert.savePreparedDataset(sourceDataFile, "<symbol_time>;<server_time>;<TIME>;<DATE>;<local_time>;<TICKER>;<PER>;<DATEandTIME>;<DATE_TIME>;\"\"", true);
 
-           // expert.H.add("input_file", expert.savePreparedDataset(sourceDataFile, "<symbol_time>;<server_time>;<TIME>;<DATE>;<local_time>;<TICKER>;<PER>;<DATEandTIME>;<DATE_TIME>;\"\"", true));
-
-            // vis.enableGrid = false;
-            // vis.addCSV(pathPrefix + @"Временные ряды\LD2011_2014-cut MAVG-dataset.txt", 0, 1000, 0);
-          /*  algorithm = new Easy(this, "Easy");
-            algorithm.h.addVariable(0, "learning_rate", 0.001, 0.02, 0.003, 0.0101);
-            algorithm.h.addVariable(0, "window_size", 30, 100, 3, 14);
-            algorithm.h.addVariable(0, "number_of_epochs", 1, 50, 5, 50);
-            // algorithm.h.setValueByName( "learning_rate", "0.0101");
+            algorithm = new Easy(this, "Easy");
+           // algorithm.h.addVariable(0, "learning_rate", 0.00001, 0.002, 0.003, 0.0017);
+            algorithm.h.addVariable(0, "window_size", 10, 300, 3, 50);
+            algorithm.h.addVariable(0, "number_of_epochs", 1, 80, 5, 47);
+             algorithm.h.setValueByName( "learning_rate", "0.0017");
             // algorithm.h.setValueByName( "window_size","14");
             // algorithm.h.setValueByName("number_of_epochs", "5");
             algorithm.h.setValueByName("split_point", "0.9");
-            algorithm.h.setValueByName("steps_forward", "1");
+            algorithm.h.setValueByName("steps_forward", "10");
             algorithm.h.setValueByName("start_point", "0");
             algorithm.h.setValueByName("normalize", "true");
-            algorithm.h.add("input_file", pathPrefix + @"Временные ряды\LD2011_2014-250 столбец-dataset.txt");
+            //algorithm.h.add("input_file", dataset_file);
+            algorithm.h.add("input_file", pathPrefix + @"Временные ряды\BTC_USD_exmo-dataset.txt");
             algorithm.h.add("path_prefix", pathPrefix);
             algorithm.h.add("predicted_column_index:0");
-            algorithm.h.setValueByName("show_train_charts", "False");
+            algorithm.h.setValueByName("show_train_charts", "True");
 
-
-            //  MyAlgorithmOptimization MAO = new MyAlgorithmOptimization(this, algorithm);
+           //  MyAlgorithmOptimization MAO = new MyAlgorithmOptimization(this, algorithm);
             // MAO.run();
 
-            // algorithm.train().Wait();
+           // algorithm.train();
 
+            
+
+            /////////////////////////////////////////////////////////////
+            // АНСАМБЛИРОВАНИЕ
+            
+         /*   Ensemble ensemble = new Ensemble(this);
+            //ensemble.algorithms.Add((new Easy(this, "Easy[0]").Open(@"E:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\Easy\h.json")));
+              ensemble.algorithms.Add((new Easy(this, "Easy[0]").Open(@"E:\Anton\Desktop\MAIN\Optimization\Easy\Easy[0]\h.json")));
+           //  ensemble.algorithms.Add((new Easy(this, "Easy[1]").Open(@"E:\Anton\Desktop\MAIN\Optimization\Easy\Easy[1]\h.json")));
+            //  ensemble.algorithms.Add((new Easy(this, "Easy[3]").Open(@"E:\Anton\Desktop\MAIN\Optimization\Easy\Easy[3]\h.json")));
+            //  ensemble.algorithms.Add((new Easy(this, "Easy[2]").Open(@"E:\Anton\Desktop\MAIN\Optimization\Easy\Easy[2]\h.json")));
+            //  ensemble.algorithms.Add((new Easy(this, "Easy[5]").Open(@"E:\Anton\Desktop\MAIN\Optimization\Easy\Easy[5]\h.json")));
+
+            // ensemble.cyclicPrediction(true);
+            ensemble.stepByStepPrediction();*/
+            /////////////////////////////////////////////////////////////
+            ///
+            ///
             //  I.executePythonScript(pathPrefix + @"\Экспертная система\Экспертная система\Алгоритмы прогнозирования\Easy\cyclic_prediction.py", "--json_file_path \"" + pathPrefix + @"\Optimization\Easy\Easy[0]\h.json" + '\"');
 
             //   I.executePythonScript(pathPrefix + @"\Экспертная система\Экспертная система\Алгоритмы прогнозирования\Easy\cyclic_prediction.py", "--json_file_path \"" + pathPrefix + @"\Экспертная система\Экспертная система\Алгоритмы прогнозирования\Easy\h.json" + '\"');
@@ -306,30 +309,30 @@ namespace Экспертная_система
 
             //        vis.addCSV(@"E:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\Easy\predictions.txt", "realVSpredictions", "MT_250", "real", 1000, 0.95, 0);
             //    vis.addCSV(@"E:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\Easy\predictions.txt", "realVSpredictions", "LAST_COLUMN", "predictions", 1000, 0.95, 0);
+            
+            
+               AO = new AlgorithmOptimization(algorithm, this,
+                    population_value: 16,
+                    mutation_rate: 16,
+                    architecture_variation_rate: 0,
+                    elite_ratio: 0.25,
+                    iterarions: 500,
+                    test_count: 1,
+                    AlgorithmOptimization.TargetFunctionType.STDDEV);
 
+               AO.run();
+               //    algorithm.h.draw(0, picBox, 25, 300);
+               // algorithm.Save();
+               /*   algorithm = new BidAsk(this, "BidAsk");
+                 algorithm.getAccAndStdDev(File.ReadAllLines(@"E:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\BidAsk\predictions.txt"));
+                //  algorithm.Open(@"E:\Anton\Desktop\MAIN\Optimization\BidAsk\BidAsk[0]\h.json");
 
-            AO = new AlgorithmOptimization(algorithm, this,
-                population_value: 4,
-                mutation_rate: 128,
-                architecture_variation_rate: 0,
-                elite_ratio: 0.25,
-                iterarions: 500,
-                test_count: 1,
-                AlgorithmOptimization.TargetFunctionType.STDDEV);
+                  //<DATE_TIME>;<bid_top>;<bid_quantity>;<bid_amount>;<ask_top>;<ask_quantity>;<ask_amount>
 
-            AO.run();
-            //    algorithm.h.draw(0, picBox, 25, 300);
-            // algorithm.Save();
-            /*   algorithm = new BidAsk(this, "BidAsk");
-              algorithm.getAccAndStdDev(File.ReadAllLines(@"E:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\BidAsk\predictions.txt"));
-             //  algorithm.Open(@"E:\Anton\Desktop\MAIN\Optimization\BidAsk\BidAsk[0]\h.json");
+                /*  sourceDataFile = pathPrefix + @"Временные ряды\BTC_USD_exmo.txt";
+                   expert.H.add("input_file", expert.savePreparedDataset(sourceDataFile, "<symbol_time>;<server_time>;<TIME>;<DATE>;<local_time>;<TICKER>;<PER>;<DATEandTIME>;<DATE_TIME>", true));
 
-               //<DATE_TIME>;<bid_top>;<bid_quantity>;<bid_amount>;<ask_top>;<ask_quantity>;<ask_amount>
-
-             /*  sourceDataFile = pathPrefix + @"Временные ряды\BTC_USD_exmo.txt";
-                expert.H.add("input_file", expert.savePreparedDataset(sourceDataFile, "<symbol_time>;<server_time>;<TIME>;<DATE>;<local_time>;<TICKER>;<PER>;<DATEandTIME>;<DATE_TIME>", true));
-
-                Expert.addSpread(pathPrefix + @"Временные ряды\BTC_USD_exmo-dataset.txt", sourceDataFile);*/
+                   Expert.addSpread(pathPrefix + @"Временные ряды\BTC_USD_exmo-dataset.txt", sourceDataFile);*/
 
             /*  algorithm.h.setValueByName("bid_column_index", "0");
                   algorithm.h.setValueByName("ask_column_index", "3");
@@ -731,25 +734,8 @@ namespace Экспертная_система
 
             expert = new Expert("Эксперт Easy 1", this);
 
-            /* var alg1 =  new Easy(this, "Easy[0]");
-             alg1.Open(@"E:\Anton\Desktop\MAIN\Optimization\Easy[0] lstm, amazon\h.json");
-             expert.AddAlgorithm(alg1);
 
-             var alg2 = new Easy(this, "Easy[1]");
-             alg2.Open(@"E:\Anton\Desktop\MAIN\Optimization\Easy[1] lstm, amazon\h.json");
-             expert.AddAlgorithm(alg2);*/
-
-            var alg3 = new Easy(this, "Easy[3]");
-            alg3.Open(@"E:\Anton\Desktop\MAIN\Optimization\Easy[0] полносвязная сеть, amazon retails\h.json");
-            expert.AddAlgorithm(alg3);
-
-            var alg4 = new Easy(this, "Easy[4]");
-            alg4.Open(@"E:\Anton\Desktop\MAIN\Optimization\Easy[1]  полносвязная сеть, amazon retails\h.json");
-            expert.AddAlgorithm(alg4);
-            /* var alg2 = new FlexNN(this, "FlexNN[0]");
-              alg2.Open(@"E:\Anton\Desktop\MAIN\Optimization\Easy[0] полносвязная сеть, amazon retails\h.json");
-              expert.AddAlgorithm(alg2);*/
-
+            expert.AddAlgorithm((new Easy(this, "Easy[0]").Open(@"E:\Anton\Desktop\MAIN\Экспертная система\Экспертная система\Алгоритмы прогнозирования\Easy\h.json")));
 
             // expert.Add(new CNN_1(this, "CNN_1[0]"));
             // expert.algorithms[0].Open(@"E:\Anton\Desktop\MAIN\Эксперт 1\CNN_1[0]\h.json");
@@ -784,47 +770,10 @@ namespace Экспертная_система
             expert.H.add("drop_columns:<DATE>");
             expert.H.setValueByName("normalize", "true");
             expert.Save();
-            sourceDataFile = pathPrefix + @"Временные ряды\85123A.txt";
+            sourceDataFile = pathPrefix + @"Временные ряды\LD2011_2014-250 столбец-dataset+date.txt";
             expert.test_prediction(new DateTime(2011, 10, 01), sourceDataFile);
         }
 
-
-        public void buildAndTrain()
-        {
-            mainThread = System.Threading.Thread.CurrentThread;
-
-            expert = new Expert("Эксперт 1", this);
-
-            //    expert.Add(new ANN_1(this, "ANN_1[1]"));
-
-            expert.algorithms[0].setAttributeByName("number_of_epochs", 50);
-            /*  expert.algorithms[0].setAttributeByName("window_size", 30); 
-              expert.algorithms[0].setAttributeByName("batch_size", 200);
-              expert.algorithms[0].setAttributeByName("split_point", "0.99");    */
-            /* for(int i=0;i<20;i++)
-             expert.Add(new ANN_1(this, "ANN_1_["+i.ToString()+"]"));
-
-             for (int i = 0; i < 20; i++)
-                 expert.Add(new LSTM_1(this, "LSTM_1_[" + i.ToString() + "]"));*/
-
-
-
-            sourceDataFile = pathPrefix + @"Временные ряды\EURRUB.txt";
-            expert.H.add("normalize:true");
-            expert.H.add("input_file", expert.savePreparedDataset(sourceDataFile, "none", Convert.ToBoolean(expert.H.getValueByName("normalize"))));
-            expert.H.add("path_prefix", pathPrefix);
-            expert.H.add("drop_columns:none");
-            expert.H.add("predicted_column_index:3");
-            expert.H.add("name:show_train_charts,value:False");
-
-            expert.copyExpertParametersToAlgorithms();
-            expert.copyHyperparametersFromAlgorithmsToExpert();
-            expert.trainAllAlgorithms(false);
-            expert.copyExpertParametersToAlgorithms();
-            expert.copyHyperparametersFromAlgorithmsToExpert();
-            expert.H.draw(0, picBox, 15, 150);
-            expert.Save();
-        }
         private void Hyperparameters_Click(object sender, EventArgs e)
         {
             I.agentManagerView = new AgentManagerView(I.agentManager);
@@ -878,8 +827,6 @@ namespace Экспертная_система
         {
             I.showModeSelector();
         }
-
-
 
         public void picBox_Click(object sender, EventArgs e) { }
         private void picBox_DoubleClick(object sender, EventArgs e) { }

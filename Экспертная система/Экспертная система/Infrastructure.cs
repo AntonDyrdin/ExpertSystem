@@ -149,13 +149,6 @@ namespace Экспертная_система
                         executionProgressForm = new ExecutionProgress();
                         executionProgressForm.Show();
                     }
-                    if (mode == "Создание и обучение эксперта")
-                    {
-                        form1.mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { form1.buildAndTrain(); });
-
-                        executionProgressForm = new ExecutionProgress();
-                        executionProgressForm.Show();
-                    }
                     if (mode == "SARSA")
                     {
                         form1.mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { form1.SARSA(); });
