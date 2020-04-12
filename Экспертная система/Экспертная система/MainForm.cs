@@ -93,7 +93,7 @@ namespace Экспертная_система
 
             List<string> rawInput = new List<string>();
 
-            report = new Report("<bid_top>;<bid_quantity>;<bid_amount>;<ask_top>;<ask_quantity>;<ask_amount>");
+            report = new Report("<bid_top>;<bid_quantity>;<bid_amount>;<ask_top>;<ask_quantity>;<ask_amount>", pathPrefix);
 
             rawInput.Add("<DATE_TIME>;<bid_top>;<bid_quantity>;<bid_amount>;<ask_top>;<ask_quantity>;<ask_amount>");
 
@@ -422,8 +422,10 @@ namespace Экспертная_система
             public string last_line;
             public List<string> buffer;
             int last_write_minute;
-            public Report(string predictors_header)
+            string path_prefix;
+            public Report(string predictors_header, string path_prefix)
             {
+                this.path_prefix = path_prefix;
                 this.predictors_header = predictors_header;
                 buffer = new List<string>();
             }
@@ -432,7 +434,7 @@ namespace Экспертная_система
             {
                 if (first_line)
                 {
-                    report_file_name = "BTC_USD журнал тестирования" + DateTime.Now.ToString().Replace(':', '-') + ".txt";
+                    report_file_name = path_prefix + "\\trading_logBTC_USD журнал тестирования" + DateTime.Now.ToString().Replace(':', '-') + ".txt";
                     header = "<DATE_TIME>" + predictors_header + ";" +
                         "<action>;" +
                         "<BTC_balance>;" +
@@ -449,13 +451,13 @@ namespace Экспертная_система
 
                 buffer.Add(last_line);
 
-                if(DateTime.Now.Minute != last_write_minute)
+                if (DateTime.Now.Minute != last_write_minute)
                 {
                     File.AppendAllLines(report_file_name, buffer.ToArray());
                     buffer.Clear();
                     last_write_minute = DateTime.Now.Minute;
                 }
-                
+
             }
         }
         public class ReportLine
