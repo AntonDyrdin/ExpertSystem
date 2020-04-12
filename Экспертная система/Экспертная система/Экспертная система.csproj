@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
@@ -46,7 +49,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Алгоритмы прогнозирования\Autoencoder\Autoencoder.cs" />
     <Compile Include="Алгоритмы прогнозирования\Ensemble.cs" />
+    <Compile Include="Алгоритмы прогнозирования\ReturnToAvarage\ReturnToAvarage.cs" />
     <Compile Include="Оптимизация\MyAlgorithmOptimization.cs" />
     <Compile Include="Параллельные вычисления\AgentLink.cs" />
     <Compile Include="Параллельные вычисления\AgentManager.cs" />
@@ -139,6 +144,7 @@
     <EmbeddedResource Include="Формы\TextBoxes.resx">
       <DependentUpon>TextBoxes.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -158,6 +164,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Алгоритмы прогнозирования\Autoencoder\get_prediction.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Алгоритмы прогнозирования\Autoencoder\train_script.py" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

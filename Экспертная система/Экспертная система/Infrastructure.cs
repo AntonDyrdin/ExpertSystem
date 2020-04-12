@@ -14,8 +14,6 @@ namespace Экспертная_система
     {
         public string logPath;
         public Hyperparameters h;
-        public AgentManager agentManager;
-        public AgentManagerView agentManagerView;
         public int maxlogFilesCount = 10;
         private MainForm form1;
 
@@ -25,6 +23,13 @@ namespace Экспертная_система
         public Infrastructure(MainForm form1)
         {
             this.form1 = form1;
+            if(form1.ENV == form1.REAL)
+            {
+                if(MessageBox.Show("Торговля на реальном счёте!", "Внимание!", MessageBoxButtons.YesNo) != DialogResult.Yes)
+                {
+                    Application.Exit();
+                }
+            }
             h = new Hyperparameters(form1, "Infrastructure");
 
             form1.logBox.Text += (Environment.MachineName);
@@ -83,13 +88,7 @@ namespace Экспертная_система
                 form1.vis = new MultiParameterVisualizer(form1.picBox, form1);
 
                 mode = h.getValueByName("mode");
-                if (mode != "Агент")
-                {
-                    startAgentManager();
-                    form1.log("");
-                    //  agentManagerView = new AgentManagerView(agentManager);
-                    //   agentManagerView.Show();
-                }
+
                 form1.pathPrefix = h.getValueByName("path_prefix");
 
                 form1.log("");
@@ -97,6 +96,10 @@ namespace Экспертная_система
             }
             else
             { }
+
+            form1.logBox.Font = new Font(form1.logBox.Font.FontFamily, 10);
+            form1.logBox.Text = File.ReadAllText("pic.txt");
+            form1.logBox.Text = form1.logBox.Text.Replace("\n\n", "\n");
         }
         private string mode;
 
@@ -107,60 +110,14 @@ namespace Экспертная_система
                 if (mode != null)
                 {
                     form1.log(mode);
-                    if (mode == "Агент")
-                    {
-                        if (mode == "Агент")
-                        {
-                            form1.mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { form1.agent(); });
-                            //  executionProgressForm = new ExecutionProgress();
-                            //  executionProgressForm.Show();
-                        }
 
-                    }
-                    if (mode == "Оптимизация эксперта")
-                    {
-                        form1.mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { form1.expertOptimization(); });
+                    form1.mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { form1.main_thread(); });
 
-                        //  executionProgressForm = new ExecutionProgress();
-                        //  executionProgressForm.Show();
-                    }
-                    if (mode == "Оптимизация алгоритма")
-                    {
-                        form1.mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { form1.algorithmOptimization(); });
+                    //executionProgressForm = new ExecutionProgress();
+                    //executionProgressForm.Show();
 
-                        executionProgressForm = new ExecutionProgress();
-                        executionProgressForm.Show();
-                    }
-                    if (mode == "Тестирование эксперта")
-                    {
-                        form1.mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { form1.TEST(); });
-
-                        executionProgressForm = new ExecutionProgress();
-                        executionProgressForm.Show();
-
-                        form1.showInpOutp = new TextBoxes();
-                        form1.showInpOutp.Show();
-
-                    }
-                    if (mode == "Создание и тестирова эксперта")
-                    {
-                        form1.mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { form1.buildAndTest(); });
-
-                        executionProgressForm = new ExecutionProgress();
-                        executionProgressForm.Show();
-                    }
-                    if (mode == "SARSA")
-                    {
-                        form1.mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { form1.SARSA(); });
-                    }
-                    if (mode == "скрипт")
-                    {
-                        form1.mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { form1.script(); });
-                    }
-                    if (mode == "exmo as indicator")
-                    {
-                        form1.mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { form1.exmoAsIndicator(); });
-                    }
+                    //form1.showInpOutp = new TextBoxes();
+                    //form1.showInpOutp.Show();
                 }
             }
             else
@@ -306,18 +263,6 @@ namespace Экспертная_система
             }
         }
 
-        internal void deleteLogBox(int processID)
-        {
-            for (int i = 0; i < form1.panel1.Controls.Count; i++)
-            {
-                if (form1.panel1.Controls[i].Name == processID.ToString())
-                {
-                    form1.panel1.Controls[i].Dispose();
-                    form1.panel1.Controls.Remove(form1.panel1.Controls[i]);
-                    break;
-                }
-            }
-        }
 
         internal void newLogBox(int processID)
         {
@@ -420,10 +365,6 @@ namespace Экспертная_система
         [DllImport("user32.dll")]
         private static extern bool SetProcessDPIAware();
 
-        public void startAgentManager()
-        {
-            agentManager = new AgentManager(this.form1);
-        }
         public string executePythonScript(string scriptFile, string args)
         {
 
@@ -433,11 +374,7 @@ namespace Экспертная_система
             start.Arguments = '"' + scriptFile + '"' + " " + args;
             start.ErrorDialog = true;
 
-            if (!form1.showExecutionProgress.Checked)
-            {
-                start.UseShellExecute = false;
-                start.CreateNoWindow = true;
-            }
+
             //start.RedirectStandardError = true;
 
             //start.RedirectStandardOutput = true;
@@ -448,10 +385,7 @@ namespace Экспертная_система
                 throw new Exception("wrong path to python.exe");
             }
 
-            if (form1.showExecutionProgress.Checked)
-            {
-                form1.I.newProcessToShow(process);
-            }
+            form1.I.newProcessToShow(process);
 
             // newLogBox(process.Id);
             while (!process.HasExited)
@@ -464,31 +398,19 @@ namespace Экспертная_система
 
             logPath = logPath.Replace("\"", "");
 
-            string response = File.ReadAllText(Path.GetDirectoryName(logPath) + "\\log.txt", System.Text.Encoding.Default);
-            string error = File.ReadAllText(Path.GetDirectoryName(logPath) + "\\log_error.txt", System.Text.Encoding.Default);
-            /*   StreamReader standardOutputReader = process.StandardOutput;
+            string response = "Результат выполнения скрипта не известен";
+            string error = "";
 
-               string response = "";
+            try
+            {
+                response = File.ReadAllText(Path.GetDirectoryName(logPath) + "\\log.txt", System.Text.Encoding.Default);
+                error = File.ReadAllText(Path.GetDirectoryName(logPath) + "\\log_error.txt", System.Text.Encoding.Default);
+            }
+            catch (System.IO.IOException e)
+            {
+                form1.log(e.Message, Color.Red);
+            }
 
-               int blockSize = 1;
-               char[] buffer = new char[blockSize];
-               int size = 0;
-               string line = "";
-               size = standardOutputReader.Read(buffer, 0, blockSize);
-               line += new string(buffer);
-               while (size > 0)
-               {
-                   size = standardOutputReader.Read(buffer, 0, blockSize);
-                   line += new string(buffer);
-                   if (line.Contains("\n"))
-                   {
-                       response += line;
-                       processLog(pid, line);
-                       line = "";
-                   }
-               }
-               */
-            //  StreamReader errorReader = process.StandardError;
             ///////////////////////////////////////////////////////////////
             ///////// ВЫВОД В КОНСОЛЬ РЕЗУЛЬТАТА ВЫПОЛНЕНИЯ СКРИПТА ///////
             form1.log(error, Color.Red);                                 ///    

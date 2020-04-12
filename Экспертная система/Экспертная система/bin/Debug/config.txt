@@ -2,7 +2,7 @@ STATION
 path_prefix:E:\Anton\Desktop\MAIN\
 python_path:C:\Program Files\Python36\python.exe
 log_path:E:\Anton\Desktop\MAIN\log\
-mode:Оптимизация алгоритма
+mode:Тестирование эксперта
 
 DESKTOP-B3G20T0
 path_prefix:C:\Users\anton\Рабочий стол\MAIN\

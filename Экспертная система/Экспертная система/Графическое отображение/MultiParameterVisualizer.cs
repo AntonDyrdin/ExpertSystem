@@ -14,7 +14,7 @@ namespace Экспертная_система
         public MainForm form1;
         public int hmin;
         public int Ymax;
-        public int Xmax;
+        private int Xmax;
         private double mainFontDepth;
         public bool enableGrid = true;
         public bool enableRefresh = false;
@@ -210,6 +210,14 @@ namespace Экспертная_система
             // parameters[parameters.Count - 1].multy = false;
         }
 
+        public void setWindow(int window)
+        {
+            for(int i = 0; i < parameters.Count; i++)
+            {
+                parameters[i].window = window;
+            }
+        }
+
         public void addCSV(string file, string name, string columnName, string chartName, int H, double splitPoint, int shift)
         {
 
@@ -389,6 +397,14 @@ namespace Экспертная_система
         }
         public void refresh()
         {
+            if(pictureBox.Width != Xmax)
+            {
+                Xmax = pictureBox.Width;
+                for (int i = 0; i < parameters.Count; i++)
+                {
+                    parameters[i].Xmax = Xmax;
+                }
+            }
             if (!enableGrid)
                 for (int i = 0; i < parameters.Count; i++)
                 {

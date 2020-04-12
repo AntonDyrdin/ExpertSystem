@@ -47,15 +47,15 @@ namespace Экспертная_система
             //  addLayer("Flatten", new parameter[] {});
 
              addLayer("LSTM", new parameter[] {
-                        new parameter("neurons_count", 10, 150, 5,98),
+                        new parameter("neurons_count",  90, 150, 5,134),
                         new parameter("activation", "sigmoid")
                     });
              addLayer("LSTM", new parameter[] {
-                       new parameter("neurons_count",10, 150, 5,112),
+                       new parameter("neurons_count",  70, 150, 5,116),
                        new parameter("activation", "sigmoid")
                    });
              addLayer("LSTM", new parameter[] {
-                       new parameter("neurons_count", 1, 50, 5,24),
+                       new parameter("neurons_count", 1, 100, 5,1),
                        new parameter("activation", "sigmoid")
                    });
             /* addLayer("Dropout", new parameter[] {

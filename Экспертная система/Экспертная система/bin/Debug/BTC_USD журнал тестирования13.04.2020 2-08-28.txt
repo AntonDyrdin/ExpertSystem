@@ -1,0 +1,2 @@
+<DATE_TIME><bid_top>;<bid_quantity>;<bid_amount>;<ask_top>;<ask_quantity>;<ask_amount>;<action>;<BTC_balance>;<USD_balance>;
+13.04.2020 2:08:28;13.04.2020 2:08:28;7270;12053.69565764;1032244.66786261;7280.43999998;243.48578019;3133926.55585956;;0;100

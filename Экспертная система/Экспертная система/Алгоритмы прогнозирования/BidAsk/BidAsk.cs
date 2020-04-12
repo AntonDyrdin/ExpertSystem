@@ -56,15 +56,15 @@ namespace Экспертная_система
             //////////////////////
             //ПАРАМЕТРЫ ОБУЧЕНИЯ//
             //////////////////////
-            h.addVariable(0, "number_of_epochs", 1, 50, 1, 2);
+            h.addVariable(0, "number_of_epochs", 1, 50, 2);
             h.add("wait_for_rise:20");
-            h.addVariable(0,"split_point", 0.7, 0.95, 0.05, 0.9);
+            h.addVariable(0,"split_point", 0.7, 0.95, 0.9);
             h.add("batch_size:50");
             // h.addVariable(0, "batch_size", 10, 100, 10, 50);
             h.add("name:loss,value:binary_crossentropy");
             h.add("name:optimizer,value:adam");
-            h.addVariable(0, "learning_rate", 0.0001, 0.02, 0.05, 0.001);
-            h.addVariable(0, "window_size", 2, 120, 2, 60);
+            h.addVariable(0, "learning_rate", 0.0001, 0.02, 0.001);
+            h.addVariable(0, "window_size", 2, 120, 60);
         }
 
         public override Algorithm Open(string jsonPath)

@@ -57,7 +57,7 @@ namespace Экспертная_система
             for (int i = 0; i < population_value; i++)
                 variablesIDs[i] = new List<int>();
 
-            this.agentManager = form1.I.agentManager;
+            //this.agentManager = form1.I.agentManager;
 
             name = algorithm.name;
 
@@ -179,9 +179,6 @@ namespace Экспертная_система
 
                 rewriteVariableIDs();
 
-                //mutation
-                if (form1.mutationRate != 0)
-                    mutation_rate = form1.mutationRate;
                 for (int i = 0; i < mutation_rate; i++)
                 {
                     mutation();
@@ -192,8 +189,8 @@ namespace Экспертная_система
 
                 rewriteVariableIDs();
 
-                if (form1.test_count != 0)
-                    test_count = form1.test_count;
+               // if (form1.test_count != 0)
+                //    test_count = form1.test_count;
                 //   ВВЕДЕНО МНОГОКРАТНОЕ ТЕСТИРОВНИЕ ИНДИВИДОВ ВСЕХ КАТЕГОРИЙ ДЛЯ ПОВЫШЕНИЯ ПОВТОРЯЕМОСТИ РЕЗУЛЬТАТОВ
 
                 //   target_functions - матрица результатов тестирования,
@@ -209,8 +206,8 @@ namespace Экспертная_система
                     var start2 = now2.ToUnixTimeSeconds();
                     if (multiThreadTraining)
                     {
-                        if (form1.multiThreadTrainingRATE != 0)
-                            multiThreadTrainingRATE = form1.multiThreadTrainingRATE;
+                    //    if (form1.multiThreadTrainingRATE != 0)
+                     //       multiThreadTrainingRATE = form1.multiThreadTrainingRATE;
                         log("multiThreadTrainingRATE = " + multiThreadTrainingRATE.ToString(), Color.Yellow);
                         if (multiThreadTrainingRATE > population_value)
                             multiThreadTrainingRATE = population_value;
@@ -261,12 +258,12 @@ namespace Экспертная_система
                                     {
                                         case TargetFunctionType.ACCURACY:
                                             {
-                                                target_functions[i, tc] = Convert.ToDouble(population[i].getValueByName("accuracy").Replace('.', ','));
+                                                target_functions[i, tc] = Convert.ToDouble(population[i].getValueByName("accuracy"));
                                                 break;
                                             }
                                         case TargetFunctionType.STDDEV:
                                             {
-                                                target_functions[i, tc] = Convert.ToDouble(population[i].getValueByName("stdDev").Replace('.', ','));
+                                                target_functions[i, tc] = Convert.ToDouble(population[i].getValueByName("stdDev"));
                                                 break;
                                             }
                                     }
@@ -292,12 +289,12 @@ namespace Экспертная_система
                                 {
                                     case TargetFunctionType.ACCURACY:
                                         {
-                                            target_functions[i, tc] = Convert.ToDouble(population[i].getValueByName("accuracy").Replace('.', ','));
+                                            target_functions[i, tc] = Convert.ToDouble(population[i].getValueByName("accuracy"));
                                             break;
                                         }
                                     case TargetFunctionType.STDDEV:
                                         {
-                                            target_functions[i, tc] = Convert.ToDouble(population[i].getValueByName("stdDev").Replace('.', ','));
+                                            target_functions[i, tc] = Convert.ToDouble(population[i].getValueByName("stdDev"));
                                             break;
                                         }
                                 }
@@ -313,7 +310,7 @@ namespace Экспертная_система
                                algorithm.h = population[i].Clone();
                                algorithm.train().Wait();
                                population[i] = algorithm.h.Clone();
-                               target_functions[i, tc] = Convert.ToDouble(population[i].getValueByName("accuracy").Replace('.', ','));
+                               target_functions[i, tc] = Convert.ToDouble(population[i].getValueByName("accuracy"));
                            }*/
                     }
                     for (int i = 0; i < population_value; i++)
@@ -360,8 +357,8 @@ namespace Экспертная_система
                 {
                     for (int j = i + 1; j < population_value; j++)
                     {
-                        double i_value = Convert.ToDouble(population[i].getValueByName("target_function").Replace('.', ','));
-                        double j_value = Convert.ToDouble(population[j].getValueByName("target_function").Replace('.', ','));
+                        double i_value = Convert.ToDouble(population[i].getValueByName("target_function"));
+                        double j_value = Convert.ToDouble(population[j].getValueByName("target_function"));
                         if (i_value < j_value || (double.IsNaN(i_value) && (!double.IsNaN(j_value))))
                         {
                             //log(" [" + i.ToString() + "] <- [" + j.ToString() + "]: " + i_value + "<" + j_value, Color.Orchid);
@@ -427,8 +424,8 @@ namespace Экспертная_система
             variableChangeMonitoring();
 
             for (int i = 0; i < population_value; i++)
-                variablesVisualizer.addPoint(Convert.ToDouble(population[i].getValueByName("target_function").Replace('.', ',')), " [" + population[i].getValueByName("code") + "]");
-            variablesVisualizer.addPoint(Convert.ToDouble(population[0].getValueByName("target_function").Replace('.', ',')), "best individ");
+                variablesVisualizer.addPoint(Convert.ToDouble(population[i].getValueByName("target_function")), " [" + population[i].getValueByName("code") + "]");
+            variablesVisualizer.addPoint(Convert.ToDouble(population[0].getValueByName("target_function")), "best individ");
 
             variablesVisualizer.refresh();
 
@@ -436,25 +433,25 @@ namespace Экспертная_система
             for (int i = 0; i < population_value; i++)
             {
                 string code = population[i].getValueByName("code");
-                
+
                 for (int j = 0; j < codes.Count; j++)
                 {
                     if (code == codes[j])
                     {
                         log("DUPLICATE OF " + code, Color.Red);
 
-                        Thread.CurrentThread.Abort(); 
-                    }   
+                        Thread.CurrentThread.Abort();
+                    }
                 }
                 codes.Add(code);
             }
         }
         string report_file_name;
         bool reportWasInitialized = false;
-        void addTargetFunctionPointToReport(Hyperparameters h,string tf)
+        void addTargetFunctionPointToReport(Hyperparameters h, string tf)
         {
             if (reportWasInitialized == false)
-            { 
+            {
                 report_file_name = form1.pathPrefix + "/GeneticAlgorithmOptimization/Optimization report " + DateTime.Now.ToString().Replace(':', '-') + ".txt";
 
                 string reportHeader = "";
@@ -578,7 +575,7 @@ namespace Экспертная_система
                         goto invalidArchitecure;
                     }
                     newLayerNodeID = population[individIndex].addByParentId(NNstructNode.ID, "name:layer" + (insertPosition + 1).ToString() + ",value:Dense");
-                    population[individIndex].addVariable(newLayerNodeID, "neurons_count", 2, 10, 1, 9);
+                    population[individIndex].addVariable(newLayerNodeID, "neurons_count", 2, 10, 9);
                     population[individIndex].addVariable(newLayerNodeID, "activation", "sigmoid", "sigmoid,linear");
                     isInvalidArchitecure = false;
                 }
@@ -594,7 +591,7 @@ namespace Экспертная_система
                         }
                     }
                     newLayerNodeID = population[individIndex].addByParentId(NNstructNode.ID, "name:layer" + (insertPosition + 1).ToString() + ",value:LSTM");
-                    population[individIndex].addVariable(newLayerNodeID, "neurons_count", 2, 10, 1, 9);
+                    population[individIndex].addVariable(newLayerNodeID, "neurons_count", 2, 10, 9);
                     population[individIndex].addVariable(newLayerNodeID, "activation", "sigmoid", "sigmoid,linear");
                     isInvalidArchitecure = false;
                 }
@@ -612,8 +609,8 @@ namespace Экспертная_система
                     }
 
                     newLayerNodeID = population[individIndex].addByParentId(NNstructNode.ID, "name:layer" + (insertPosition + 1).ToString() + ",value:Conv1D");
-                    population[individIndex].addVariable(newLayerNodeID, "neurons_count", 1, 128, 1, 16);
-                    population[individIndex].addVariable(newLayerNodeID, "kernel_size", 3, 3, 1, 3);
+                    population[individIndex].addVariable(newLayerNodeID, "neurons_count", 1, 128, 16);
+                    population[individIndex].addVariable(newLayerNodeID, "kernel_size", 3, 3, 3);
 
                     isInvalidArchitecure = false;
                 }
@@ -636,7 +633,7 @@ namespace Экспертная_система
                     }
 
                     newLayerNodeID = population[individIndex].addByParentId(NNstructNode.ID, "name:layer" + (insertPosition + 1).ToString() + ",value:Dropout");
-                    population[individIndex].addVariable(newLayerNodeID, "dropout", 0.01, 0.8, 0.01, 0.1);
+                    population[individIndex].addVariable(newLayerNodeID, "dropout", 0.01, 0.8, 0.1);
                     isInvalidArchitecure = false;
                 }
                 if (newLayerType == "MaxPooling1D")
@@ -672,7 +669,7 @@ namespace Экспертная_система
                     }
 
                     newLayerNodeID = population[individIndex].addByParentId(NNstructNode.ID, "name:layer" + (insertPosition + 1).ToString() + ",value:MaxPooling1D");
-                    population[individIndex].addVariable(newLayerNodeID, "pool_size", 1, 10, 1, 3);
+                    population[individIndex].addVariable(newLayerNodeID, "pool_size", 1, 10, 3);
                     isInvalidArchitecure = false;
                 }
             invalidArchitecure:
@@ -764,16 +761,16 @@ namespace Экспертная_система
                     double newValue = 0;
                     if (upOrDown == 0)
                     {
-                        newValue = Convert.ToDouble(population[individIndex].nodes[variableIndex].getValue().Replace('.', ',')) + Convert.ToDouble(population[individIndex].nodes[variableIndex].getAttributeValue("step").Replace('.', ','));
+                        newValue = Convert.ToDouble(population[individIndex].nodes[variableIndex].getValue()) + Convert.ToDouble(population[individIndex].nodes[variableIndex].getAttributeValue("step"));
 
-                        if (newValue <= Convert.ToDouble(population[individIndex].nodes[variableIndex].getAttributeValue("max").Replace('.', ',')))
+                        if (newValue <= Convert.ToDouble(population[individIndex].nodes[variableIndex].getAttributeValue("max")))
                         {
                             population[individIndex].nodes[variableIndex].setAttribute("value", newValue.ToString().Replace(',', '.'));
                             log("individIndex = " + individIndex.ToString() + "; variableIndex = " + variableIndex.ToString() + " (" + population[individIndex].nodes[variableIndex].name() + ")" + "; newValue = " + newValue.ToString(), Color.White);
                         }
                         else
                         {
-                            newValue = Convert.ToDouble(population[individIndex].nodes[variableIndex].getValue().Replace('.', ',')) - Convert.ToDouble(population[individIndex].nodes[variableIndex].getAttributeValue("step").Replace('.', ','));
+                            newValue = Convert.ToDouble(population[individIndex].nodes[variableIndex].getValue()) - Convert.ToDouble(population[individIndex].nodes[variableIndex].getAttributeValue("step"));
                             population[individIndex].nodes[variableIndex].setAttribute("value", newValue.ToString().Replace(',', '.'));
                             log("individIndex = " + individIndex.ToString() + "; variableIndex = " + variableIndex.ToString() + " (" + population[individIndex].nodes[variableIndex].name() + ")" + "; newValue = " + newValue.ToString(), Color.White);
 
@@ -781,15 +778,15 @@ namespace Экспертная_система
                     }
                     else
                     {
-                        newValue = Convert.ToDouble(population[individIndex].nodes[variableIndex].getValue().Replace('.', ',')) - Convert.ToDouble(population[individIndex].nodes[variableIndex].getAttributeValue("step").Replace('.', ','));
-                        if (newValue >= Convert.ToDouble(population[individIndex].nodes[variableIndex].getAttributeValue("min").Replace('.', ',')))
+                        newValue = Convert.ToDouble(population[individIndex].nodes[variableIndex].getValue()) - Convert.ToDouble(population[individIndex].nodes[variableIndex].getAttributeValue("step"));
+                        if (newValue >= Convert.ToDouble(population[individIndex].nodes[variableIndex].getAttributeValue("min")))
                         {
                             population[individIndex].nodes[variableIndex].setAttribute("value", newValue.ToString().Replace(',', '.'));
                             log("individIndex = " + individIndex.ToString() + "; variableIndex = " + variableIndex.ToString() + " (" + population[individIndex].nodes[variableIndex].name() + ")" + "; newValue = " + newValue.ToString(), Color.White);
                         }
                         else
                         {
-                            newValue = Convert.ToDouble(population[individIndex].nodes[variableIndex].getValue().Replace('.', ',')) + Convert.ToDouble(population[individIndex].nodes[variableIndex].getAttributeValue("step").Replace('.', ','));
+                            newValue = Convert.ToDouble(population[individIndex].nodes[variableIndex].getValue()) + Convert.ToDouble(population[individIndex].nodes[variableIndex].getAttributeValue("step"));
                             population[individIndex].nodes[variableIndex].setAttribute("value", newValue.ToString().Replace(',', '.'));
                             log("individIndex = " + individIndex.ToString() + "; variableIndex = " + variableIndex.ToString() + " (" + population[individIndex].nodes[variableIndex].name() + ")" + "; newValue = " + newValue.ToString(), Color.White);
                         }
@@ -813,7 +810,7 @@ namespace Экспертная_система
                 {
                     double newValue = r.NextDouble();
 
-                    while (newValue < Convert.ToDouble(population[individIndex].nodes[variableIndex].getAttributeValue("min").Replace('.', ',')) | newValue > Convert.ToDouble(population[individIndex].nodes[variableIndex].getAttributeValue("max").Replace('.', ',')))
+                    while (newValue < Convert.ToDouble(population[individIndex].nodes[variableIndex].getAttributeValue("min")) | newValue > Convert.ToDouble(population[individIndex].nodes[variableIndex].getAttributeValue("max")))
                     {
                         newValue = r.NextDouble();
                     }
@@ -985,7 +982,7 @@ namespace Экспертная_система
                     foreach (int variableID in variablesIDs[0])
                     {
                         string variableName = "0 " + population[0].getNodeById(variableID).name() + " id=" + variableID.ToString();
-                        string value = population[0].nodes[variableID].getValue().Replace('.', ',');
+                        string value = population[0].nodes[variableID].getValue();
                         variablesVisualizer.addPoint(value, variableName);
                     }
                 }
@@ -995,7 +992,7 @@ namespace Экспертная_система
                         foreach (int variableID in variablesIDs[i])
                         {
                             string variableName = population[i].getValueByName("code") + " " + population[i].getNodeById(variableID).name() + " id=" + variableID.ToString();
-                            string value = population[i].nodes[variableID].getValue().Replace('.', ',');
+                            string value = population[i].nodes[variableID].getValue();
                             variablesVisualizer.addPoint(value, variableName);
                         }
                 }

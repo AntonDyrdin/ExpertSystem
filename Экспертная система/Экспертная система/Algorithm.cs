@@ -47,7 +47,7 @@ namespace Экспертная_система
                 else
                     if (param.type == parameterType.Numerical)
                 {
-                    h.addVariable(layerParentID, param.name, param.min, param.max, param.step, param.value);
+                    h.addVariable(layerParentID, param.name, param.min, param.max, param.value);
                 }
                 else
                     if (param.type == parameterType.Categorical)
@@ -99,7 +99,7 @@ namespace Экспертная_система
         private StreamReader predict_process_read_stream;
         private string script_conclusion = "";
         private bool Continue = false;
-        public void runGetPredictionScript()
+        public virtual void  runGetPredictionScript()
         {
             log("Запуск скрипта прогнозирования..");
             args = "--json_file_path " + '"' + getValueByName("json_file_path") + '"';
@@ -112,10 +112,10 @@ namespace Экспертная_система
             predict_process_read_stream = predict_process.StandardOutput;
         }
 
-        //возвращает прогноз для одного окна
-        //inputVector - матрица входных данных, в которой нулевой столбец [i,0] - прогнозируемая величина, а остальные столбцы - предикторы.
-        //каждая строка - значения предикторов в j-ый временной интервал
-        public double getPrediction(string[] input)
+        /** возвращает прогноз для одного окна
+        inputVector - матрица входных данных, в которой нулевой столбец [i,0] - прогнозируемая величина, а остальные столбцы - предикторы.
+        каждая строка - значения предикторов в i-ый временной интервал*/
+        public virtual double getPrediction(string[] input)
         {
             int inc = 0;
             string error = "";
@@ -232,7 +232,7 @@ namespace Экспертная_система
             {
                 try
                 {
-                    output[j] = output[j].Replace('.', ',');
+                    output[j] = output[j];
 
                     Y = Convert.ToDouble(output[j]);
                     break;
@@ -335,8 +335,8 @@ namespace Экспертная_система
              {
                  var features = predictionsCSV[i].Split(';');
 
-                 double predictedValue = Convert.ToDouble(predictionsCSV[i].Split(';')[features.Length - 1].Replace('.', ','));
-                 double realValue = Convert.ToDouble(predictionsCSV[i + 1].Split(';')[Convert.ToInt16(h.getValueByName("predicted_column_index"))].Replace('.', ','));
+                 double predictedValue = Convert.ToDouble(predictionsCSV[i].Split(';')[features.Length - 1]);
+                 double realValue = Convert.ToDouble(predictionsCSV[i + 1].Split(';')[Convert.ToInt16(h.getValueByName("predicted_column_index"))]);
 
                  if (realValue > 0.5 && predictedValue > 0.5)
                  { rightCount++; }
@@ -410,10 +410,10 @@ namespace Экспертная_система
                     double which_class = 0.5;
                     double delta_bid = 0;
                     double delta_ask = 0;
-                    double spread = Convert.ToDouble(predictionsCSV[i - 1].Split(';')[2].Replace('.', ','));
+                    double spread = Convert.ToDouble(predictionsCSV[i - 1].Split(';')[2]);
 
-                    /*   integr_ask += Convert.ToDouble(predictionsCSV[i].Split(';')[1].Replace('.', ','));
-                       integr_bid += Convert.ToDouble(predictionsCSV[i].Split(';')[0].Replace('.', ','));
+                    /*   integr_ask += Convert.ToDouble(predictionsCSV[i].Split(';')[1]);
+                       integr_bid += Convert.ToDouble(predictionsCSV[i].Split(';')[0]);
                        form1.vis.addPoint(integr_ask, "ask");
                        form1.vis.addPoint(integr_bid, "bid");*/
 
@@ -422,14 +422,14 @@ namespace Экспертная_система
                     {
                         if ((i + k) < (predictionsCSV.Length - 1))
                         {
-                            delta_bid += Convert.ToDouble(predictionsCSV[i + k].Split(';')[0].Replace('.', ','));
+                            delta_bid += Convert.ToDouble(predictionsCSV[i + k].Split(';')[0]);
                             if (delta_bid > spread * 1.2)
                             {
 
                                 which_class = 1;
                                 break;
                             }
-                            delta_ask += Convert.ToDouble(predictionsCSV[i + k].Split(';')[1].Replace('.', ','));
+                            delta_ask += Convert.ToDouble(predictionsCSV[i + k].Split(';')[1]);
                             if (delta_ask < -spread)
                             {
 
@@ -439,7 +439,7 @@ namespace Экспертная_система
                         }
                     }
 
-                    double predictedValue = Convert.ToDouble(predictionsCSV[i - 1].Split(';')[3].Replace('.', ','));
+                    double predictedValue = Convert.ToDouble(predictionsCSV[i - 1].Split(';')[3]);
 
                     if (predictedValue == 0.5)
                     {
@@ -537,13 +537,13 @@ namespace Экспертная_система
                     double realValue;
                     if (is_cyclic_prediction)
                     {
-                        predictedValue = Convert.ToDouble(predictionsCSV[i].Split(';')[features.Length - 2].Replace('.', ','));
-                        realValue = Convert.ToDouble(predictionsCSV[i + steps_forward].Split(';')[predicted_column_index].Replace('.', ','));
+                        predictedValue = Convert.ToDouble(predictionsCSV[i].Split(';')[features.Length - 2]);
+                        realValue = Convert.ToDouble(predictionsCSV[i + steps_forward].Split(';')[predicted_column_index]);
                     }
                     else
                     {
-                        predictedValue = Convert.ToDouble(predictionsCSV[i].Split(';')[features.Length - 1].Replace('.', ','));
-                        realValue = Convert.ToDouble(predictionsCSV[i + steps_forward].Split(';')[predicted_column_index].Replace('.', ','));
+                        predictedValue = Convert.ToDouble(predictionsCSV[i].Split(';')[features.Length - 1]);
+                        realValue = Convert.ToDouble(predictionsCSV[i + steps_forward].Split(';')[predicted_column_index]);
                     }
                     if (showCharts)
                     {

@@ -78,8 +78,8 @@ namespace Экспертная_система
 
             Node node = getNode(nodeRequest);
 
-            return node.getAttributeValue(reqStr[reqStr.Length-1]);
-          }
+            return node.getAttributeValue(reqStr[reqStr.Length - 1]);
+        }
         public void replaceStringInAllValues(string oldString, string newString)
         {
             for (int i = 0; i < nodes.Count; i++)
@@ -152,14 +152,28 @@ namespace Экспертная_система
             newNodeIdWillBe++;
         }
         ////////////////// ADD //////////////////////////////
-        public void addVariable(int parentID, string name, double min, double max, double step, double value)
+        public void addVariable(string name, double min, double max, double value)
+        {
+            Node newNode = new Node(newNodeIdWillBe, 0);
+            newNode.addAttribute("name", name);
+            newNode.addAttribute("value", value.ToString().Replace(',', '.'));
+            newNode.addAttribute("min", min.ToString().Replace(',', '.'));
+            newNode.addAttribute("max", max.ToString().Replace(',', '.'));
+            // newNode.addAttribute("step", step.ToString().Replace(',', '.'));
+            newNode.addAttribute("variable", "numerical");
+
+            nodes.Add(newNode);
+
+            newNodeIdWillBe++;
+        }
+        public void addVariable(int parentID, string name, double min, double max, double value)
         {
             Node newNode = new Node(newNodeIdWillBe, parentID);
             newNode.addAttribute("name", name);
             newNode.addAttribute("value", value.ToString().Replace(',', '.'));
             newNode.addAttribute("min", min.ToString().Replace(',', '.'));
             newNode.addAttribute("max", max.ToString().Replace(',', '.'));
-            newNode.addAttribute("step", step.ToString().Replace(',', '.'));
+            // newNode.addAttribute("step", step.ToString().Replace(',', '.'));
             newNode.addAttribute("variable", "numerical");
 
             nodes.Add(newNode);
@@ -304,7 +318,7 @@ namespace Экспертная_система
                     node = nodes[i];
             if (node == null)
             {
-                log("аттрибут " + name + " не найден", System.Drawing.Color.Red);
+                log("Аттрибут " + name + " не найден", System.Drawing.Color.Yellow);
                 return null;
             }
             return node.getAttributeValue("value");
@@ -317,7 +331,7 @@ namespace Экспертная_система
                     retNodes.Add(nodes[i]);
             if (retNodes == null)
             {
-                log("узел " + name + " не найден", System.Drawing.Color.Red);
+                log("Узел " + name + " не найден", System.Drawing.Color.Red);
                 return null;
             }
             return retNodes;
@@ -326,8 +340,7 @@ namespace Экспертная_система
         ////////////////// SET //////////////////////////////
         public void setValueByName(string name, int value)
         {
-            foreach (Node node in getNodeByName(name))
-                node.setAttribute("value", value.ToString());
+            setValueByName(name, value.ToString());
         }
         public void setValueByName(string name, string value)
         {
@@ -353,7 +366,7 @@ namespace Экспертная_система
             currentH = 0;
             mainDepth = Convert.ToInt16(h * 0.4);
             this.columnWidth = columnWidth;
-           // this.form1 = form1;
+            // this.form1 = form1;
             incGetNodeByID = 0;
             totalAttributesNumber = recurciveAttributeCountSearch(rootId);
             picBox = target_pictureBox;

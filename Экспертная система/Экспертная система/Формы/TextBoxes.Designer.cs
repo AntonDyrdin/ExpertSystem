@@ -40,7 +40,7 @@
             this.richTextBox1.ForeColor = System.Drawing.Color.White;
             this.richTextBox1.Location = new System.Drawing.Point(2, 2);
             this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(890, 410);
+            this.richTextBox1.Size = new System.Drawing.Size(753, 410);
             this.richTextBox1.TabIndex = 0;
             this.richTextBox1.Text = "";
             // 
@@ -49,9 +49,9 @@
             this.richTextBox2.BackColor = System.Drawing.Color.Black;
             this.richTextBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.richTextBox2.ForeColor = System.Drawing.Color.White;
-            this.richTextBox2.Location = new System.Drawing.Point(898, 2);
+            this.richTextBox2.Location = new System.Drawing.Point(761, 2);
             this.richTextBox2.Name = "richTextBox2";
-            this.richTextBox2.Size = new System.Drawing.Size(531, 410);
+            this.richTextBox2.Size = new System.Drawing.Size(668, 410);
             this.richTextBox2.TabIndex = 1;
             this.richTextBox2.Text = "";
             // 

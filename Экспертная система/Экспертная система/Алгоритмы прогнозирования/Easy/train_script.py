@@ -145,10 +145,10 @@ if (h("NN_struct/layer1/value") == "LSTM") | (h("NN_struct/layer1/value") == "Co
     train_y_round_batch = (train_y.shape[0] // batch_size) * batch_size
     test_y_round_batch = (test_y.shape[0] // batch_size) * batch_size
 
-    train_X = Dataset_X[:train_X_round_batch, :,:]
-    test_X = Dataset_X[:test_X_round_batch, :,:]
-    train_y = Dataset_Y[:train_y_round_batch]
-    test_y = Dataset_Y[:test_y_round_batch]
+    train_X = train_X[:train_X_round_batch, :,:]
+    test_X = test_X[:test_X_round_batch, :,:]
+    train_y = train_y[:train_y_round_batch]
+    test_y = test_y[:test_y_round_batch]
     
 else:
     if(window_size == 1):

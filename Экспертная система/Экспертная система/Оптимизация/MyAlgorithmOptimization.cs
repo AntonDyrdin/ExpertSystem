@@ -155,8 +155,8 @@ namespace Экспертная_система
                             string newMax = "";
                             if (P.nodes[i].getAttributeValue("max").Contains('.') || P.nodes[i].getAttributeValue("max").Contains(','))
                             {
-                                double min_double = double.Parse(P.nodes[i].getAttributeValue("min").Replace('.', ','));
-                                double max_double = double.Parse(P.nodes[i].getAttributeValue("max").Replace('.', ','));
+                                double min_double = double.Parse(P.nodes[i].getAttributeValue("min"));
+                                double max_double = double.Parse(P.nodes[i].getAttributeValue("max"));
                                 // сужение интервала
                                 if (min_double + ((max_double - min_double) / 4) > 0)
                                 {
@@ -201,9 +201,9 @@ namespace Экспертная_система
                             string newMax = "";
                             if (P.nodes[i].getAttributeValue("max").Contains('.') || P.nodes[i].getAttributeValue("max").Contains(','))
                             {
-                                double min_double = double.Parse(P.nodes[i].getAttributeValue("min").Replace('.', ','));
-                                double max_double = double.Parse(P.nodes[i].getAttributeValue("max").Replace('.', ','));
-                                double value = double.Parse(maxQ.h.nodes[i].getValue().Replace('.', ','));
+                                double min_double = double.Parse(P.nodes[i].getAttributeValue("min"));
+                                double max_double = double.Parse(P.nodes[i].getAttributeValue("max"));
+                                double value = double.Parse(maxQ.h.nodes[i].getValue());
                                 // перемещение центра
                                 if ((value - ((max_double - min_double) / 2)) > 0)
                                 {
@@ -244,11 +244,11 @@ namespace Экспертная_система
         int poolLoading = 0;
         public void hyperCubeRecursiveCalculation(int variableNodeId, string value)
         {
-            if (form1.multiThreadTrainingRATE != threads && form1.multiThreadTrainingRATE != 0)
+         /*   if (form1.multiThreadTrainingRATE != threads && form1.multiThreadTrainingRATE != 0)
             {
                 threads = form1.multiThreadTrainingRATE;
                 initPool();
-            }
+            }*/
             if (threads > Math.Pow(3.0, Convert.ToDouble(variablesCount)))
             {
                 threads = Convert.ToInt32(Math.Pow(3.0, Convert.ToDouble(variablesCount)));
@@ -327,8 +327,8 @@ namespace Экспертная_система
                 poolLoading++;
                 if(poolLoading == pool.Length)
                 {
-                    if (form1.test_count != 0)
-                        test_count = form1.test_count;
+                  //  if (form1.test_count != 0)
+                   //     test_count = form1.test_count;
                     double[,] target_functions = new double[pool.Length, test_count];
 
                     for (int tc = 0; tc < test_count; tc++)
@@ -365,12 +365,12 @@ namespace Экспертная_система
                             {
                                 case TargetFunctionType.ACCURACY:
                                     {
-                                        target_functions[i, tc] = Convert.ToDouble(pool[i].getValueByName("accuracy").Replace('.', ','));
+                                        target_functions[i, tc] = Convert.ToDouble(pool[i].getValueByName("accuracy"));
                                         break;
                                     }
                                 case TargetFunctionType.STDDEV:
                                     {
-                                        target_functions[i, tc] = Convert.ToDouble(pool[i].getValueByName("stdDev").Replace('.', ','));
+                                        target_functions[i, tc] = Convert.ToDouble(pool[i].getValueByName("stdDev"));
                                         break;
                                     }
                             }
@@ -401,7 +401,7 @@ namespace Экспертная_система
                         pool[i].setValueByName("target_function_AVG", (AVG).ToString().Replace(',', '.'));
                         pool[i].setValueByName("target_function_StdDev", (StdDev).ToString().Replace(',', '.'));
 
-                        double Q = double.Parse(pool[i].getValueByName("target_function").Replace('.', ','));
+                        double Q = double.Parse(pool[i].getValueByName("target_function"));
 
                         TargetFunctionPoint newPoint = new TargetFunctionPoint(pool[i].Clone(), Q);
                         currentHypercube.Add(newPoint);
@@ -465,8 +465,8 @@ namespace Экспертная_система
             string center = "";
             if (variable.getAttributeValue("max").Contains('.') || variable.getAttributeValue("max").Contains(','))
             {
-                double min_double = double.Parse(variable.getAttributeValue("min").Replace('.', ','));
-                double max_double = double.Parse(variable.getAttributeValue("max").Replace('.', ','));
+                double min_double = double.Parse(variable.getAttributeValue("min"));
+                double max_double = double.Parse(variable.getAttributeValue("max"));
                 center = ((max_double - min_double) / 2).ToString();
             }
             else
@@ -582,8 +582,8 @@ namespace Экспертная_система
                                 for (int i = 0; i < Q.Length; i++)
                                 {
                                     Q[i] = algorithms[i].h.Clone();
-                                    log(Q[i].getValueByName("stdDev").Replace('.', ','), Color.Pink);
-                                    lines[i] = Q[i].getNodeByName("neurons_count")[0].getValue() + ';' + Q[i].getNodeByName("neurons_count")[1].getValue() + ';' + Q[i].getNodeByName("neurons_count")[2].getValue() + ';' + Q[i].getValueByName("stdDev").Replace('.', ',');
+                                    log(Q[i].getValueByName("stdDev"), Color.Pink);
+                                    lines[i] = Q[i].getNodeByName("neurons_count")[0].getValue() + ';' + Q[i].getNodeByName("neurons_count")[1].getValue() + ';' + Q[i].getNodeByName("neurons_count")[2].getValue() + ';' + Q[i].getValueByName("stdDev");
                                 }
                                 File.AppendAllLines(file_name, lines);
 

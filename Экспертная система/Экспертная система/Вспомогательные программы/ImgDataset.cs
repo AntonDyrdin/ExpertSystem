@@ -65,7 +65,7 @@ namespace Экспертная_система
                 var features = csvLines[i].Split(';');
                 for (int j = 0; j < features.Length; j++)
                 {
-                    int AbsVal = Convert.ToInt16(Convert.ToDouble(features[j].Replace('.', ',')) * 255);
+                    int AbsVal = Convert.ToInt16(Convert.ToDouble(features[j]) * 255);
 
                     if (AbsVal > 255)
                         AbsVal = 255;
@@ -103,15 +103,15 @@ namespace Экспертная_система
 
                 }
 
-            // int Xshift = Convert.ToInt16((allLines.Length - 1) * Convert.ToDouble(split_point.Replace('.', ',')));
+            // int Xshift = Convert.ToInt16((allLines.Length - 1) * Convert.ToDouble(split_point));
 
             for (int i = 1; i < allLines.Length-1; i++)
             {
 
                 //реальное значение находится в будущем, поэтому [i+1]
-                int realValue = Convert.ToInt16(Convert.ToDouble(allLines[i + 1].Split(';')[predColIndINT].Replace('.', ',')) * 255);
+                int realValue = Convert.ToInt16(Convert.ToDouble(allLines[i + 1].Split(';')[predColIndINT]) * 255);
                 //прогноз получен сейчас, поэтому [i]
-                int predictedValue = Convert.ToInt16(Convert.ToDouble(allLines[i].Split(';')[indCol].Replace('.', ',')) * 255);
+                int predictedValue = Convert.ToInt16(Convert.ToDouble(allLines[i].Split(';')[indCol]) * 255);
 
                 if (predictedValue > 255)
                     predictedValue = 255;

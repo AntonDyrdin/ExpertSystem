@@ -1,6 +1,0 @@
-E:\Anton\Desktop\MAIN\PlusDate _script\PlusDate _script\bin\Debug\PlusDate _script.exe.config
-E:\Anton\Desktop\MAIN\PlusDate _script\PlusDate _script\bin\Debug\PlusDate _script.exe
-E:\Anton\Desktop\MAIN\PlusDate _script\PlusDate _script\bin\Debug\PlusDate _script.pdb
-E:\Anton\Desktop\MAIN\PlusDate _script\PlusDate _script\obj\Debug\PlusDate _script.csprojAssemblyReference.cache
-E:\Anton\Desktop\MAIN\PlusDate _script\PlusDate _script\obj\Debug\PlusDate _script.exe
-E:\Anton\Desktop\MAIN\PlusDate _script\PlusDate _script\obj\Debug\PlusDate _script.pdb
