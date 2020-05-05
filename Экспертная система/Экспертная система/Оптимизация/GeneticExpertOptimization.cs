@@ -324,7 +324,7 @@ namespace Экспертная_система
                 {
                     int newValue = r.Next(Convert.ToInt32(population[individIndex].nodes[variableIndex].getAttributeValue("min")), Convert.ToInt32(population[individIndex].nodes[variableIndex].getAttributeValue("max")) + 1);
                     population[individIndex].nodes[variableIndex].setAttribute("value", newValue.ToString());
-                    log("individIndex = " + individIndex.ToString() + "; variableIndex = " + variableIndex.ToString() + " (" + population[individIndex].nodes[variableIndex].name() + ")" + "; newValue = " + newValue.ToString(), Color.White);
+                    log("["+ individIndex.ToString() +"]"+ population[individIndex].nodes[variableIndex].name() + " = " + newValue.ToString(), Color.White);
 
                 }
                 else

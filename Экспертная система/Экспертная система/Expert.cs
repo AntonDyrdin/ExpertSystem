@@ -323,6 +323,10 @@ namespace Экспертная_система
         public double MAVG_bid = 0;
         public string getDecision(string[] input)
         {
+            if (MAVG_bid_history == null)
+            {
+                MAVG_bid_history = new List<double>();
+            }
             if (w1 == 0)
             {
                 w1 = int.Parse(H.getValueByName("w1"));

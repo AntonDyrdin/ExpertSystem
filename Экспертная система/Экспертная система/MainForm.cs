@@ -60,7 +60,7 @@ namespace Экспертная_система
         {
             ENV = DEV;
             I = new Infrastructure(this);
-            mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { optimization_thread(); });
+            mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { main_thread(); });
         }
         public void main_thread()
         {
@@ -92,10 +92,10 @@ namespace Экспертная_система
 
             vis.parameters[0].functions.Add(new Function("MAVG_bid", Color.Green));
 
-            int w1 = 200;
-            int w2 = 9;
-            int take_pofit = 163; // > 0.002 * 2 * bid_top
-            int drawdown = 50;
+            int w1 = 78;
+            int w2 = 2;
+            int take_pofit = 50; // > 0.002 * 2 * bid_top
+            int drawdown = 81;
             expert = new Expert("Test Expert MAVG", this);
             expert.H.setValueByName("w1", w1);
             expert.H.setValueByName("w2", w2);
@@ -295,57 +295,57 @@ namespace Экспертная_система
 
             expert = new Expert("Test Expert MAVG", this);
 
-            expert.H.addVariable("w1", 30, 300, 200);
-            expert.H.addVariable("w2", 2, 25, 9);
-            expert.H.addVariable("take_pofit", 36, 200, 163);
-            expert.H.addVariable("drawdown", 1, 100, 50);
+            expert.H.addVariable("w1", 30, 300, 78);
+            expert.H.addVariable("w2", 2, 25, 2);
+            expert.H.setValueByName("take_pofit", 50);
+            expert.H.addVariable("drawdown", 1, 100, 81);
             expert.H.setValueByName("lot", "0.001");
 
             expert.H.setValueByName("purchase_limit_amount", 100);
-            expert.H.setValueByName("purchase_limit_interval", 60 * 12);
+            expert.H.addVariable("purchase_limit_interval", 1,12*60,6*60);
 
-            expert.testExmo(date1: new DateTime(2020, 04, 27, 14, 58,0),
-                date2: new DateTime(2020, 5, 2, 1, 50,0),
-                rawDatasetFilePath: "Журнал торговли27.04.2020 14-58-51.csv");
+            /* expert.testExmo(date1: new DateTime(2020, 04, 27, 14, 58,0),
+                 date2: new DateTime(2020, 5, 2, 1, 50,0),
+                 rawDatasetFilePath: "Журнал торговли27.04.2020 14-58-51.txt");
 
 
-            vis.addParameter("bid", Color.White, 460);
-            vis.parameters[0].functions.Add(new Function("bid_top", Color.Cyan));
-            vis.parameters[0].functions.Add(new Function("MAVG_bid", Color.Green));
-            vis.addParameter("BTC", Color.LightPink, 150);
-            vis.addCSV("Журнал торговли27.04.2020 14-58-51.csv", "test", "<bid_top>", "<bid_top>", 460, 0, 0, 50);
-            vis.addCSV("Журнал торговли27.04.2020 14-58-51.csv", "test", "<MAVG_bid>", "<MAVG_bid>", 460, 0, 0, 50);
-            vis.addCSV("Журнал торговли27.04.2020 14-58-51.csv", "<BTC_balance>", "<BTC_balance>", 150, 0, 0, 50);
-            vis.addParameter("EXIT", Color.Purple, 200);
+             vis.addParameter("bid", Color.White, 460);
+             vis.parameters[0].functions.Add(new Function("bid_top", Color.Cyan));
+             vis.parameters[0].functions.Add(new Function("MAVG_bid", Color.Green));
+             vis.addParameter("BTC", Color.LightPink, 150);
+             vis.addCSV("Журнал торговли27.04.2020 14-58-51.txt", "test", "<bid_top>", "<bid_top>", 460, 0, 0, 50);
+             vis.addCSV("Журнал торговли27.04.2020 14-58-51.txt", "test", "<MAVG_bid>", "<MAVG_bid>", 460, 0, 0, 50);
+             vis.addCSV("Журнал торговли27.04.2020 14-58-51.txt", "<BTC_balance>", "<BTC_balance>", 150, 0, 0, 50);
+             vis.addParameter("EXIT", Color.Purple, 200);
 
-            for (int i = 0; i < expert.deposit1History.Count; i++)
-            {
-                vis.addPoint(expert.deposit1History[i], "BTC");
-                vis.addPoint(expert.MAVG_bid_history[i], "MAVG_bid");
-                vis.addPoint(expert.closeValueHistory[i], "bid_top");
-                //if (expert.actionHistory[i] != "" && expert.actionHistory[i] != "date doesn't exist")
-                //  vis.markLast("‾"+ expert.actionHistory[i], "bid_top");
-                if (expert.actionHistory[i] == "buy")
-                  vis.markLast("‾", "bid_top");
-                vis.addPoint(expert.deposit1History[i] * expert.closeValueHistory[i] + expert.deposit2History[i], "EXIT");
-            }
+             for (int i = 0; i < expert.deposit1History.Count; i++)
+             {
+                 vis.addPoint(expert.deposit1History[i], "BTC");
+                 vis.addPoint(expert.MAVG_bid_history[i], "MAVG_bid");
+                 vis.addPoint(expert.closeValueHistory[i], "bid_top");
+                 //if (expert.actionHistory[i] != "" && expert.actionHistory[i] != "date doesn't exist")
+                 //  vis.markLast("‾"+ expert.actionHistory[i], "bid_top");
+                 if (expert.actionHistory[i] == "buy")
+                   vis.markLast("‾", "bid_top");
+                 vis.addPoint(expert.deposit1History[i] * expert.closeValueHistory[i] + expert.deposit2History[i], "EXIT");
+             }
 
-            vis.addCSV("Журнал торговли27.04.2020 14-58-51.csv", "<EXIT>", "<EXIT>", 200, 0, 0, 40);
-            log((expert.deposit2).ToString());
+             vis.addCSV("Журнал торговли27.04.2020 14-58-51.txt", "<EXIT>", "<EXIT>", 200, 0, 0, 40);
+             log((expert.deposit2).ToString());
 
-            vis.refresh();
-            
-            /* optimization = new ExpertOptimization(expert, this,
-                 population_value: 8,
-                 test_count: 1,
-                 mutation_rate: 8,
-                 elite_ratio: 0.25,
-                 Iterarions: 300,
-                 date1: new DateTime(2020, 04, 11),
-                 date2: new DateTime(2020, 04, 25),
-                 rawDatasetFilePath: pair + "_exmo.txt");
+             vis.refresh();
+             */
+            optimization = new ExpertOptimization(expert, this,
+                population_value: 8,
+                test_count: 1,
+                mutation_rate: 8,
+                elite_ratio: 0.25,
+                Iterarions: 300,
+                date1: new DateTime(2020, 04, 29, 14, 58, 0),
+                date2: new DateTime(2020, 05, 5, 1, 0, 0),
+                rawDatasetFilePath: pair + "_exmo.txt");
 
-             optimization.run();*/
+            optimization.run();
         }
         void refresh_deposits()
         {
@@ -502,7 +502,8 @@ namespace Экспертная_система
         public VoidDelegate voidDelegate;
         private void RedClick(object sender, EventArgs e) { mainThread.Abort(); }
         public void Form1_FormClosing(object sender, FormClosingEventArgs e)
-        {if (report != null)
+        {
+            if (report != null)
             {
                 File.AppendAllLines(report.report_file_name, report.buffer.ToArray());
                 report.buffer.Clear();
