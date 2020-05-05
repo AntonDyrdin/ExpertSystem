@@ -57,10 +57,10 @@
             this.picBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.picBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.picBox.InitialImage = null;
-            this.picBox.Location = new System.Drawing.Point(0, -3);
+            this.picBox.Location = new System.Drawing.Point(0, -9);
             this.picBox.Margin = new System.Windows.Forms.Padding(0);
             this.picBox.Name = "picBox";
-            this.picBox.Size = new System.Drawing.Size(1200, 993);
+            this.picBox.Size = new System.Drawing.Size(1947, 1493);
             this.picBox.TabIndex = 37;
             this.picBox.TabStop = false;
             this.picBox.Click += new System.EventHandler(this.picBox_Click);
@@ -70,9 +70,10 @@
             // 
             this.b1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.b1.ForeColor = System.Drawing.Color.Cyan;
-            this.b1.Location = new System.Drawing.Point(505, 3);
+            this.b1.Location = new System.Drawing.Point(758, 4);
+            this.b1.Margin = new System.Windows.Forms.Padding(4);
             this.b1.Name = "b1";
-            this.b1.Size = new System.Drawing.Size(80, 40);
+            this.b1.Size = new System.Drawing.Size(120, 60);
             this.b1.TabIndex = 39;
             this.b1.Text = "Запрет на покупку";
             this.b1.UseVisualStyleBackColor = true;
@@ -82,9 +83,10 @@
             // 
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button1.ForeColor = System.Drawing.Color.Red;
-            this.button1.Location = new System.Drawing.Point(591, 3);
+            this.button1.Location = new System.Drawing.Point(886, 4);
+            this.button1.Margin = new System.Windows.Forms.Padding(4);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(80, 40);
+            this.button1.Size = new System.Drawing.Size(120, 60);
             this.button1.TabIndex = 42;
             this.button1.Text = "СТОП";
             this.button1.UseVisualStyleBackColor = true;
@@ -97,10 +99,11 @@
             this.logBox.DetectUrls = false;
             this.logBox.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.logBox.ForeColor = System.Drawing.Color.White;
-            this.logBox.Location = new System.Drawing.Point(3, 135);
+            this.logBox.Location = new System.Drawing.Point(8, 203);
+            this.logBox.Margin = new System.Windows.Forms.Padding(4);
             this.logBox.Name = "logBox";
             this.logBox.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.logBox.Size = new System.Drawing.Size(668, 996);
+            this.logBox.Size = new System.Drawing.Size(370, 1300);
             this.logBox.TabIndex = 52;
             this.logBox.Text = "";
             this.logBox.MouseEnter += new System.EventHandler(this.LogBox_MouseEnter);
@@ -111,9 +114,10 @@
             this.wipeLog.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(73)))), ((int)(((byte)(106)))));
             this.wipeLog.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.wipeLog.ForeColor = System.Drawing.SystemColors.AppWorkspace;
-            this.wipeLog.Location = new System.Drawing.Point(591, 46);
+            this.wipeLog.Location = new System.Drawing.Point(886, 69);
+            this.wipeLog.Margin = new System.Windows.Forms.Padding(4);
             this.wipeLog.Name = "wipeLog";
-            this.wipeLog.Size = new System.Drawing.Size(80, 33);
+            this.wipeLog.Size = new System.Drawing.Size(120, 50);
             this.wipeLog.TabIndex = 60;
             this.wipeLog.Text = "Wipe";
             this.wipeLog.UseVisualStyleBackColor = false;
@@ -122,13 +126,17 @@
             // splitContainer1
             // 
             this.splitContainer1.BackColor = System.Drawing.Color.Transparent;
-            this.splitContainer1.Location = new System.Drawing.Point(12, 12);
+            this.splitContainer1.Location = new System.Drawing.Point(18, 18);
+            this.splitContainer1.Margin = new System.Windows.Forms.Padding(4);
+
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
             // 
             this.splitContainer1.Panel1.AutoScroll = true;
             this.splitContainer1.Panel1.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("splitContainer1.Panel1.BackgroundImage")));
+            this.splitContainer1.Panel1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+
             this.splitContainer1.Panel1.Controls.Add(this.picBox);
             // 
             // splitContainer1.Panel2
@@ -146,9 +154,10 @@
             this.splitContainer1.Panel2.Controls.Add(this.button1);
             this.splitContainer1.Panel2.Controls.Add(this.wipeLog);
             this.splitContainer1.Panel2.Controls.Add(this.b1);
-            this.splitContainer1.Size = new System.Drawing.Size(1920, 1050);
-            this.splitContainer1.SplitterDistance = 1200;
-            this.splitContainer1.SplitterWidth = 20;
+            this.splitContainer1.Size = new System.Drawing.Size(2880, 1500);
+            this.splitContainer1.SplitterDistance = 1832;
+            this.splitContainer1.SplitterWidth = 30;
+
             this.splitContainer1.TabIndex = 61;
             this.splitContainer1.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainer1_SplitterMoved);
             // 
@@ -157,9 +166,11 @@
             this.sell_button.BackColor = System.Drawing.Color.Black;
             this.sell_button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.sell_button.ForeColor = System.Drawing.Color.Red;
-            this.sell_button.Location = new System.Drawing.Point(133, 32);
+            this.sell_button.Location = new System.Drawing.Point(200, 48);
+            this.sell_button.Margin = new System.Windows.Forms.Padding(4);
             this.sell_button.Name = "sell_button";
-            this.sell_button.Size = new System.Drawing.Size(54, 22);
+            this.sell_button.Size = new System.Drawing.Size(81, 33);
+
             this.sell_button.TabIndex = 69;
             this.sell_button.Text = "SELL";
             this.sell_button.UseVisualStyleBackColor = false;
@@ -170,9 +181,11 @@
             this.bye_button.BackColor = System.Drawing.Color.Black;
             this.bye_button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.bye_button.ForeColor = System.Drawing.Color.Blue;
-            this.bye_button.Location = new System.Drawing.Point(40, 32);
+            this.bye_button.Location = new System.Drawing.Point(60, 48);
+            this.bye_button.Margin = new System.Windows.Forms.Padding(4);
             this.bye_button.Name = "bye_button";
-            this.bye_button.Size = new System.Drawing.Size(54, 22);
+            this.bye_button.Size = new System.Drawing.Size(81, 33);
+
             this.bye_button.TabIndex = 68;
             this.bye_button.Text = "BUY";
             this.bye_button.UseVisualStyleBackColor = false;
@@ -183,9 +196,11 @@
             this.sum_name.AutoSize = true;
             this.sum_name.BackColor = System.Drawing.Color.Transparent;
             this.sum_name.Font = new System.Drawing.Font("Century Gothic", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.sum_name.Location = new System.Drawing.Point(186, 13);
+            this.sum_name.Location = new System.Drawing.Point(279, 20);
+            this.sum_name.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.sum_name.Name = "sum_name";
-            this.sum_name.Size = new System.Drawing.Size(51, 16);
+            this.sum_name.Size = new System.Drawing.Size(74, 21);
+
             this.sum_name.TabIndex = 67;
             this.sum_name.Text = "Сумма";
             // 
@@ -194,9 +209,11 @@
             this.deposit_2_name.AutoSize = true;
             this.deposit_2_name.BackColor = System.Drawing.Color.Transparent;
             this.deposit_2_name.Font = new System.Drawing.Font("Century Gothic", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.deposit_2_name.Location = new System.Drawing.Point(94, 13);
+            this.deposit_2_name.Location = new System.Drawing.Point(141, 20);
+            this.deposit_2_name.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.deposit_2_name.Name = "deposit_2_name";
-            this.deposit_2_name.Size = new System.Drawing.Size(33, 16);
+            this.deposit_2_name.Size = new System.Drawing.Size(48, 21);
+
             this.deposit_2_name.TabIndex = 66;
             this.deposit_2_name.Text = "USD:";
             // 
@@ -205,10 +222,10 @@
             this.deposit_1_name.AutoSize = true;
             this.deposit_1_name.BackColor = System.Drawing.Color.Transparent;
             this.deposit_1_name.Font = new System.Drawing.Font("Century Gothic", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.deposit_1_name.Location = new System.Drawing.Point(3, 13);
+            this.deposit_1_name.Location = new System.Drawing.Point(4, 20);
             this.deposit_1_name.Margin = new System.Windows.Forms.Padding(0);
             this.deposit_1_name.Name = "deposit_1_name";
-            this.deposit_1_name.Size = new System.Drawing.Size(31, 16);
+            this.deposit_1_name.Size = new System.Drawing.Size(47, 21);
             this.deposit_1_name.TabIndex = 65;
             this.deposit_1_name.Text = "BTC:";
             // 
@@ -216,51 +233,55 @@
             // 
             this.sum_of_deposits.BackColor = System.Drawing.Color.Black;
             this.sum_of_deposits.ForeColor = System.Drawing.Color.White;
-            this.sum_of_deposits.Location = new System.Drawing.Point(238, 10);
+            this.sum_of_deposits.Location = new System.Drawing.Point(357, 15);
+            this.sum_of_deposits.Margin = new System.Windows.Forms.Padding(4);
             this.sum_of_deposits.Name = "sum_of_deposits";
-            this.sum_of_deposits.Size = new System.Drawing.Size(54, 20);
+            this.sum_of_deposits.Size = new System.Drawing.Size(79, 26);
             this.sum_of_deposits.TabIndex = 64;
             // 
             // deposit_2_value
             // 
             this.deposit_2_value.BackColor = System.Drawing.Color.Black;
             this.deposit_2_value.ForeColor = System.Drawing.Color.White;
-            this.deposit_2_value.Location = new System.Drawing.Point(133, 10);
+            this.deposit_2_value.Location = new System.Drawing.Point(200, 15);
+            this.deposit_2_value.Margin = new System.Windows.Forms.Padding(4);
             this.deposit_2_value.Name = "deposit_2_value";
-            this.deposit_2_value.Size = new System.Drawing.Size(54, 20);
+            this.deposit_2_value.Size = new System.Drawing.Size(79, 26);
             this.deposit_2_value.TabIndex = 63;
             // 
             // deposit_1_value
             // 
             this.deposit_1_value.BackColor = System.Drawing.Color.Black;
             this.deposit_1_value.ForeColor = System.Drawing.Color.White;
-            this.deposit_1_value.Location = new System.Drawing.Point(40, 10);
+            this.deposit_1_value.Location = new System.Drawing.Point(60, 15);
+            this.deposit_1_value.Margin = new System.Windows.Forms.Padding(4);
             this.deposit_1_value.Name = "deposit_1_value";
-            this.deposit_1_value.Size = new System.Drawing.Size(54, 20);
+            this.deposit_1_value.Size = new System.Drawing.Size(79, 26);
             this.deposit_1_value.TabIndex = 62;
             // 
             // displayedWindow
             // 
-            this.displayedWindow.Location = new System.Drawing.Point(3, 84);
+            this.displayedWindow.Location = new System.Drawing.Point(4, 126);
+            this.displayedWindow.Margin = new System.Windows.Forms.Padding(4);
             this.displayedWindow.Maximum = 200;
             this.displayedWindow.Minimum = 3;
             this.displayedWindow.Name = "displayedWindow";
-            this.displayedWindow.Size = new System.Drawing.Size(668, 45);
+            this.displayedWindow.Size = new System.Drawing.Size(1002, 69);
             this.displayedWindow.TabIndex = 61;
             this.displayedWindow.Value = 10;
             this.displayedWindow.Scroll += new System.EventHandler(this.displayedWindow_Scroll);
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.BackColor = System.Drawing.Color.Black;
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.ClientSize = new System.Drawing.Size(1904, 1011);
+            this.ClientSize = new System.Drawing.Size(1924, 1050);
             this.Controls.Add(this.splitContainer1);
-            this.DoubleBuffered = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Экспертная система";

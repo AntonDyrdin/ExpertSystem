@@ -11,6 +11,11 @@ namespace Экспертная_система
     [Serializable]
     public class Expert
     {
+        public int ENV;
+        public int DEV = 0;
+        public int TEST = 0;
+        public int REAL = 1;
+
         public string expertName;
         public double[,] dataset;
         public double[,] dataset1;
@@ -39,20 +44,28 @@ namespace Экспертная_система
         //стоит на ВТОРОМ месте в валютной паре
         //по команде BUY значение этого депозита должно уменьшаться  пропорционально цене базовой вылюты
         //по команде SELL значение этого депозита должно расти   пропорционально цене базовой вылюты
-        public const double deposit2StartValue = 500;
+        public const double deposit2StartValue = 100;
         public double deposit2 = deposit2StartValue;
 
         public double lot;
-        double w1;
-        double w2;
+
+        int w1;
+        int w2;
         double take_pofit;
         double drawdown;
+
+        public double purchase_limit_amount;
+        public double purchase_limit_amount_left;
+        public int purchase_limit_interval;
+        bool purchase_limit_timer_enabled = false;
+        DateTime purchase_limit_timer_start;
 
         public List<double> deposit1History;
         public List<double> deposit2History;
         public List<double> closeValueHistory;
         public List<string> actionHistory;
         public List<double[]> committeeResponseHistory;
+        public List<double> MAVG_bid_history;
         public double[] committeeResponse;
         public string presentLine;
         public List<string> report;
@@ -68,650 +81,37 @@ namespace Экспертная_система
         private bool multiThreadPrediction = false;
 
         double Purchase = 0;
-        public void buildNew(string expertName, MainForm form1)
-        {
-            this.form1 = form1;
-            path_prefix = form1.pathPrefix;
-            H = new Hyperparameters(form1, expertName);
-            algorithms = new List<Algorithm>();
-            Directory.CreateDirectory(form1.pathPrefix + expertName);
-            committeeNodeID = H.add("name:committee,value: ");
-            this.expertName = expertName;
-            report = new List<string>();
-            H.setValueByName("report_path", path_prefix + expertName + '\\');
-            DMS = new DecisionMakingSystem(form1);
-            /* H.addVariable(0, "epsilon", 0.001, 0.99, 0.01, 0.05);
-             H.addVariable(0, "alpha", 0.001, 0.99, 0.01, 0.9);
-             H.addVariable(0, "gamma", 0.001, 0.99, 0.01, 0.5);*/
-        }
-        public Expert(string expertName, MainForm form1)
-        {
-            foreach (string expertFolder in Directory.GetDirectories(form1.pathPrefix))
-            {
-                if (Path.GetFileName(expertFolder) == expertName)
-                {  //В ДАННОМ КОНСТРУКТОРЕ, ПРИ СОЗДАНИИ НОВОГО ЭКЗЕМПЛЯРА КЛАССА Expert, ПАПКА С ТАКИМ ЖЕ ИМЕНЕМ БУДЕТ УДАЛЕНА
-                    Directory.Delete(expertFolder, true);
-                }
-            }
-
-            buildNew(expertName, form1);
-        }
-        public Expert(string expertName, MainForm form1, bool DoNotDeleteExpertFolder)
-        {
-            buildNew(expertName, form1);
-        }
-
-        public string getStateStr()
-        {
-            string stateInString = "";
-            for (int i = 0; i < committeeResponse.Length; i++)
-            {
-                if (committeeResponse[i] == -1)
-                {
-                    stateInString = "error";
-                    break;
-                }
-                stateInString += "A[" + i.ToString() + "]:" + committeeResponse[i].ToString() + ',';
-            }
-            stateInString = stateInString.Remove(stateInString.Length - 1, 1);
-
-            if (deposit1 == 0)
-                stateInString += ",DEP1:0";
-            else
-                stateInString += ",DEP1:1";
-
-            if (closeValueHistory.Count == 0)
-            {
-                stateInString += ",DEP2:1";
-            }
-            else
-            {
-                if (deposit2 < closeValueHistory[closeValueHistory.Count - 1])
-                    stateInString += ",DEP2:0";
-                else
-                    stateInString += ",DEP2:1";
-            }
-
-            if (closeValueHistory.Count == 0)
-            {
-                stateInString += ",HigherThenPurchase:0";
-            }
-            else
-            {
-                if (closeValueHistory[closeValueHistory.Count - 1] > Purchase)
-                    stateInString += ",HigherThenPurchase:1";
-                else
-                    stateInString += ",HigherThenPurchase:0";
-            }
-
-            return stateInString;
-        }
-
-        //возвращает  действие, о котором было принято решение
-        public string getDecision(string[] input)
-        {
-            if(w1 == 0)
-            {
-                w1 = double.Parse(H.getValueByName("w1"));
-                w2 = double.Parse(H.getValueByName("w2"));
-                take_pofit = double.Parse(H.getValueByName("take_pofit"));
-                drawdown = double.Parse(H.getValueByName("drawdown"));
-            }
-            if (input.Length != w1 + w2 + 1)
-            {
-                throw new Exception("input.Length != w1+w2+1");
-            }
-
-            double MAVG_bid = 0;
-            for (int i = 0; i < w1; i++)
-            {
-                MAVG_bid += double.Parse(input[1 + i].Split(';')[1]);
-            }
-            MAVG_bid = MAVG_bid / w1;
-
-            double current_ask = double.Parse(input[input.Length - 1].Split(';')[4]);
-            // log("drawdown: " + (MAVG_bid - current_ask).ToString());
-            //  log("MAVG_bid: " + MAVG_bid.ToString());
-            if (MAVG_bid - current_ask > drawdown)
-            {
-                return "buy";
-            }
-            return "";
-        }
-
-        public string getDecision_sell_05_buy(double[] committeeResponse)
-        {
-            // return DMS.getAction(getStateStr()).type;
-            double decision = 0;
-            double sum = 0;
-            for (int i = 0; i < algorithms.Count; i++)
-            {
-                sum += committeeResponse[i];
-            }
-            decision = sum / algorithms.Count;
-            if (decision > 0.5)
-                return "buy";
-            if (decision < 0.5)
-                return "sell";
-            return "nothing";
-        }
-
-        public string getDecision_current_VS_pred(double[] committeeResponse)
-        {
-            double prediction = 0;
-            double sum = 0;
-            double count = 0;
-            for (int i = 0; i < algorithms.Count; i++)
-            {
-                if (committeeResponse[i] >= 0)
-                {
-                    sum += committeeResponse[i];
-                    count++;
-                }
-                else
-                {
-
-                }
-            }
-            if (committeeResponse.Length == 1 && committeeResponse[0] < 0)
-            {
-                return "error";
-            }
-            prediction = sum / algorithms.Count;
-            if (prediction - lastKnownValue > 0.1)
-                return "buy";
-            if (prediction - lastKnownValue < -0.1)
-                return "sell";
-            return "nothing";
-        }
-        public double[] getCommitteePrediction(string[] input)
-        {
-            lastKnownValueStr = input[input.Length - 1];
-            lastKnownValue = double.Parse(lastKnownValueStr.Split(';')[int.Parse(algorithms[0].getValueByName("predicted_column_index"))]);
-
-            committeeResponse = new double[algorithms.Count];
-            if (multiThreadPrediction)
-            {
-                Task<double>[] getPredTasks = new Task<double>[algorithms.Count];
-                for (int i = 0; i < algorithms.Count; i++)
-                {
-                    var algorithm = algorithms[i];
-                    getPredTasks[i] = Task.Run(() => algorithm.getPrediction(input));
-                }
-
-                foreach (var task in getPredTasks)
-                    task.Wait();
-
-                for (int i = 0; i < algorithms.Count; i++)
-                {
-                    committeeResponse[i] = getPredTasks[i].Result;
-                }
-            }
-            else
-            {
-                for (int i = 0; i < algorithms.Count; i++)
-                {
-                    committeeResponse[i] = algorithms[i].getPrediction(input);
-                }
-            }
-
-            for (int i = 0; i < algorithms.Count; i++)
-            {
-                if (committeeResponse[i] == -1000)
-                    committeeResponse[i] = -1;
-            }
-
-            // committeeResponseHistory.Add(committeeResponse);
-            return committeeResponse;
-        }
-        public double getPrediction(string[] input)
-        {
-
-            // return DMS.getAction(getStateStr()).type;
-            var committeeResponse = getCommitteePrediction(input);
-
-            double prediction = 0;
-            double sum = 0;
-            for (int i = 0; i < algorithms.Count; i++)
-            {
-                sum += committeeResponse[i];
-            }
-            prediction = sum / algorithms.Count;
-            return prediction;
-        }
-        public void trainAllAlgorithms(bool deleteLowAccModels)
-        {
-            foreach (Algorithm algorithm in algorithms)
-            {
-                algorithm.train();
-            }
-            copyHyperparametersFromAlgorithmsToExpert();
-
-            if (deleteLowAccModels)
-            {
-                //УДАЛЕНИЕ АЛГОРИТМОВ С НИЗКИМИ ПОКАЗАТЕЛЯМИ ТОЧНОСТИ
-                deleteAlgorithmsWithLowAccuracy(50);
-            }
-        }
-
-        public void deleteAlgorithmsWithLowAccuracy(double acceptableLevel)
-        {
-            log("Удаление моделей с низкими показателями точности прогноза.");
-            log("Допустимый уровень точности: " + acceptableLevel + " %");
-            for (int i = 0; i < algorithms.Count; i++)
-                if (algorithms[i].accuracy < acceptableLevel)
-                {
-                    committeeNodeID = H.getNodeByName("committee")[0].ID;
-                    var algorithmBranches = H.getNodesByparentID(committeeNodeID);
-                    H.deleteBranch(algorithmBranches[i].ID);
-                    log("     Удалена модель " + algorithms[i].modelName + "accuracy = " + algorithms[i].accuracy.ToString());
-                    algorithms.RemoveAt(i);
-
-                    i--;
-                }
-                else
-                {
-                    algorithms[i].h.setValueByName("accuracy", algorithms[i].accuracy.ToString().Replace(',', '.'));
-                }
-            log("Состав комитета после удаления:");
-            for (int i = 0; i < algorithms.Count; i++)
-                log("       " + algorithms[i].modelName + "accuracy = " + algorithms[i].accuracy.ToString());
-        }
-
-        public string test_prediction(DateTime date1, string rawDatasetFilePath)
-        {
-
-            committeeResponseHistory = new List<double[]>();
-            lastKnownValueHistory = new List<double>();
-
-            report = new List<string>();
-            presentLine = "";
-            double lastKnownValue = 0;
-
-            string reportHead = "<DATE>;<lastKnownValue>;";
-            foreach (Algorithm algorithm in algorithms)
-                reportHead += "<" + algorithm.modelName + ">;";
-
-            report.Add(reportHead);
-
-            //ЗАПУСК СКРИПТОВ ПОТОЧНОГО ПРОГНОЗИРОВНИЯ
-            List<Thread> trainThreads = new List<Thread>();
-            foreach (Algorithm alg in algorithms)
-            {
-                Thread t = new Thread(new ThreadStart(alg.runGetPredictionScript));
-                trainThreads.Add(t);
-                t.Start();
-                // trainTasks[algorithms.IndexOf(alg)] = algorithms[algorithms.IndexOf(alg)].train();
-            }
-
-            //ОЖИДАНИЕ ЗАВЕРШЕНИЯ ЗАПУСКА
-            foreach (var t in trainThreads)
-                t.Join();
-
-            var currentDate = date1;
-
-            // поиск нужной стркои в датасете будет начат с 1
-            int lastDatasetPoint = 1;
-            bool thisIsTheEnd = false;
-            var allLines = skipEmptyLines(File.ReadAllLines(rawDatasetFilePath));
-            while (!thisIsTheEnd)
-            {
-                string reportLine = "";
-                string lastKnownValueStr;
-
-                bool dateExist = false;
-
-                int[] windowSizes = new int[algorithms.Count];
-                for (int i = 0; i < algorithms.Count; i++)
-                    windowSizes[i] = Convert.ToInt32(algorithms[i].getValueByName("window_size"));
-                int windowSize = 0;
-                for (int i = 0; i < windowSizes.Length; i++)
-                {
-                    if (windowSizes[i] > windowSize)
-                        windowSize = windowSizes[i];
-                }
-                //+1 для заголовка;+1 для нормализации i/(i-1)
-                string[] input = new string[windowSize + 1 + 1];
-
-                //копирование заголовка
-                input[0] = allLines[0];
-
-                // чтобы каждый раз не искать нужную строку в датасете с начала, храним последнюю строку в lastDatasetPoint
-                for (int i = lastDatasetPoint; i < allLines.Length; i++)
-                {
-                    if (DateTime.Parse(allLines[i].Split(';')[0]) == currentDate)
-                    {
-                        dateExist = true;
-                        for (int j = 0; j < windowSize + 1; j++)
-                        {
-                            //j+1, так как первая строка - заголовок
-                            input[j + 1] = allLines[i - windowSize + j];
-                            // ПРИ ОШИБКЕ В ЭТОЙ СТРОКИ - ПРОВЕРИТЬ НЕ ВЫХОДИТ ЛИ ЗА ГРАНИЦЫ ФАЙЛА ДАТА date1-window_size
-                        }
-
-                        if (i == allLines.Length - 1)
-                        {
-                            thisIsTheEnd = true;
-                            break;
-                        }
-                        lastDatasetPoint = i;
-                        break;
-                    }
-                }
-                string rawInputLine = input[input.Length - 1];
-
-
-                if (dateExist)
-                {
-                    // ГЕНЕРАЦИЯ МАТРИЦЫ INPUT
-                    input = prepareDataset(input, H.getValueByName("drop_columns"), Convert.ToBoolean(H.getValueByName("normalize")));
-                    // ВЫЗОВ getPrediction(input)
-                    var prediction = getPrediction(input);
-
-
-                    int predictedColumnIndexInNormalizedDataset = Convert.ToInt32(H.getValueByName("predicted_column_index"));
-                    lastKnownValue = double.Parse(input[input.Length - 2].Split(';')[predictedColumnIndexInNormalizedDataset]);
-                }
-                else
-                {
-                    log("дата " + currentDate.ToString() + " не найдена в файле " + rawDatasetFilePath);
-                }
-                committeeResponseHistory.Add(committeeResponse);
-                lastKnownValueHistory.Add(lastKnownValue);
-
-                //print committee response
-                string comRespStr = currentDate.ToShortDateString() + "| committee response: ";
-                for (int i = 0; i < committeeResponse.Length; i++)
-                    comRespStr += " [" + committeeResponse[i] + "]; ";
-                string committeeResponseReportLine = "";
-                for (int i = 0; i < committeeResponse.Length; i++)
-                    committeeResponseReportLine += committeeResponse[i] + ";";
-
-                //log(comRespStr);
-                //  log("date: " + date1.ToString());
-                //    log("deposit1: " + deposit1.ToString());
-                //    log("deposit2: " + deposit2.ToString());
-                //  log("action: " + action);
-                //    log("reward: " + reward.ToString());
-                //  log("closeValue: " + closeValue.ToString());
-                //   log("presentLine: " + presentLine);
-
-                reportLine += currentDate.ToString() + ';' + lastKnownValue.ToString() + ';' + committeeResponseReportLine;
-                report.Add(reportLine);
-
-                if (period == "day")
-                    currentDate = currentDate.AddDays(1);
-                if (period == "hour")
-                    currentDate = currentDate.AddHours(1);
-                if (period == "minute")
-                    currentDate = currentDate.AddMinutes(1);
-            }
-
-            // запись отчёта
-            reportPath = H.getValueByName("report_path");
-            if (reportPath == "" || reportPath == null)
-            {
-                reportPath = path_prefix + expertName;
-            }
-            File.WriteAllLines(reportPath + "\\report.csv", report);
-
-            return "expert has been tested";
-        }
-
-        public string test_trading(DateTime date1, DateTime date2, string rawDatasetFilePath)
-        {
-            deposit1 = deposit1StartValue;
-            deposit2 = deposit2StartValue;
-
-            DMS.defaultActions.Clear();
-            DMS.parameters.Clear();
-            DMS.S.Clear();
-
-            DMS.epsilon = Convert.ToDouble(H.getValueByName("epsilon"));
-            DMS.alpha = Convert.ToDouble(H.getValueByName("alpha"));
-            DMS.gamma = Convert.ToDouble(H.getValueByName("gamma"));
-
-            ////////////////////////////////////////////////
-            /////// ПАРАМЕТРЫ СОСТОЯНИЯ СПР ////////////////
-            for (int i = 0; i < algorithms.Count; i++)
-                DMS.addParameter("A[" + i.ToString() + "]", "0,1");
-            // состояние депозитов 1 - баланс положительный, 0 - баланс нулевой
-            DMS.addParameter("DEP1", "0,1");
-            DMS.addParameter("DEP2", "0,1");
-            //превышение цены покупки
-            DMS.addParameter("HigherThenPurchase", "0,1");
-
-            DMS.defaultActions.Add(new DMSAction("buy"));
-            DMS.defaultActions.Add(new DMSAction("sell"));
-            DMS.defaultActions.Add(new DMSAction("nothing"));
-            DMS.generateStates();
-
-
-            committeeResponseHistory = new List<double[]>();
-            closeValueHistory = new List<double>();
-            deposit1History = new List<double>();
-            deposit2History = new List<double>();
-            actionHistory = new List<string>();
-            report = new List<string>();
-            presentLine = "";
-            double closeValue = 0;
-            string action = "";
-            string reportHead = "<presentDate>;<deposit1>;<deposit2>;<action>;<reward>;<closeValue>;";
-            foreach (Algorithm algorithm in algorithms)
-                reportHead += "<" + algorithm.modelName + ">;";
-            report.Add(reportHead);
-            if (date1 < date2)
-            {
-                //ЗАПУСК СКРИПТОВ ПОТОЧНОГО ПРОГНОЗИРОВНИЯ
-                Task[] RunTasks = new Task[algorithms.Count];
-                foreach (Algorithm algorithm in algorithms)
-                    RunTasks[algorithms.IndexOf(algorithm)] = Task.Run(() => algorithm.runGetPredictionScript());
-
-                //ОЖИДАНИЕ ЗАВЕРШЕНИЯ ЗАПУСКА
-                foreach (var task in RunTasks)
-                    task.Wait();
-
-                while (date1 < date2)
-                {
-                    string reportLine = "";
-                    string closeValueStr;
-
-                    bool dateExist = false;
-                    string dateStr = "";
-                    /* if (date1.Day < 10) dateStr += "0" + date1.Day.ToString(); else dateStr += date1.Day.ToString();
-                     dateStr += '/';
-                     if (date1.Month < 10) dateStr += "0" + date1.Month.ToString(); else dateStr += date1.Month.ToString();
-                     dateStr += '/';
-                     dateStr += date1.Year.ToString().Substring(2, 2);*/
-
-                    dateStr = date1.ToString();
-
-                    int[] windowSizes = new int[algorithms.Count];
-                    for (int i = 0; i < algorithms.Count; i++)
-                        windowSizes[i] = Convert.ToInt32(algorithms[i].getValueByName("window_size"));
-                    int windowSize = 0;
-                    for (int i = 0; i < windowSizes.Length; i++)
-                    {
-                        if (windowSizes[i] > windowSize)
-                            windowSize = windowSizes[i];
-                    }
-                    //+1 для заголовка;+1 для нормализации i/(i-1)
-                    string[] input = new string[windowSize + 1 + 1];
-                    var allLines = skipEmptyLines(File.ReadAllLines(rawDatasetFilePath));
-                    //копирование заголовка
-                    input[0] = allLines[0];
-
-
-                    for (int i = 1; i < allLines.Length; i++)
-                    {
-                        if (allLines[i].Contains(dateStr))
-                        {
-                            dateExist = true;
-                            for (int j = 0; j < windowSize + 1; j++)
-                            {
-                                //j+1, так как первая строка - заголовок
-                                input[j + 1] = allLines[i - windowSize + j];
-                                // ПРИ ОШИБКЕ В ЭТОЙ СТРОКИ - ПРОВЕРИТЬ НЕ ВЫХОДИТ ЛИ ЗА ГРАНИЦЫ ФАЙЛА ДАТА date1-window_size
-                            }
-
-                        }
-                    }
-                    string rawInputLine = input[input.Length - 1];
-
-
-                    if (dateExist)
-                    {
-                        // ГЕНЕРАЦИЯ МАТРИЦЫ INPUT
-                        input = prepareDataset(input, algorithms[0].getValueByName("drop_columns"), Convert.ToBoolean(H.getValueByName("normalize")));
-                        // ВЫЗОВ getPrediction(input)
-                        var committeeResponse = getCommitteePrediction(input);
-
-
-                        int closeIndexInNormalizedDataset = Convert.ToInt32(H.getValueByName("predicted_column_index"));
-                        string featureName = input[0].Split(';')[closeIndexInNormalizedDataset];
-                        int closeIndexInRawDataset = -1;
-                        for (int i = 0; i < allLines[0].Split(';').Length; i++)
-                            if (allLines[0].Split(';')[i] == featureName)
-                                closeIndexInRawDataset = i;
-                        closeValueStr = rawInputLine.Split(';')[closeIndexInRawDataset];
-                        closeValue = Convert.ToDouble(closeValueStr);
-
-                        if (!report[0].Contains(input[0]))
-                            report[0] += input[0];
-                        presentLine = input[input.Length - 1];
-
-                        //обновление состояния
-                        //     DMS.setActualState(getStateStr());
-                        //Отправка запроса к системе принятия решений
-                        action = getDecision_sell_05_buy(committeeResponse);
-                        if (action == "error")
-                        {
-                            deposit1 = 0;
-                            deposit2 = 0;
-                            break;
-                        }
-                        if (action == "buy")
-                        {
-                            if (closeValue != 0)
-                            {
-                                if (deposit2 > closeValue)
-                                {
-                                    deposit1 = deposit1 + 1;
-                                    deposit2 = deposit2 - closeValue;
-                                    Purchase = closeValue;
-                                }
-                                else
-                                {
-                                    //    log("Основной депозит исчерпан! Не возможно купить базовую валюту.");
-                                }
-                            }
-                            else
-                            {
-                                log("closeValue почему-то равно нулю!");
-                            }
-                        }
-                        if (action == "sell")
-                        {
-                            if (closeValue != 0)
-                            {
-                                if (deposit1 >= 1)
-                                {
-                                    deposit1 = deposit1 - 1;
-                                    deposit2 = deposit2 + closeValue;
-                                }
-                                else
-                                {
-                                    //      log("Депозит базовой валюты исчерпан (состояние выхода с рынка). Не возможно продать базовую валюту.");
-                                }
-                            }
-                            else
-                            {
-                                log("closeValue почему-то равно нулю!", Color.Red);
-                            }
-                        }
-
-                    }
-                    else
-                    {
-                        action = "dateDoesn'tExist";
-                        //   log("дата " + dateStr + " не найдена в файле " + rawDatasetFilePath);
-                    }
-                    committeeResponseHistory.Add(committeeResponse);
-                    closeValueHistory.Add(closeValue);
-                    deposit1History.Add(deposit1);
-                    deposit2History.Add(deposit2);
-
-                    //обновление состояния
-                    //        DMS.setActualState(getStateStr());
-                    //вознаграждение системы принятия решений
-                    double reward = 0;
-                    if (deposit1History.Count > 1)
-                    {
-                        reward = (closeValue * (deposit1History[deposit1History.Count - 1] - deposit1History[deposit1History.Count - 2])) + (deposit2History[deposit2History.Count - 1] - deposit2History[deposit2History.Count - 2]);
-                        // reward =  (deposit2History[deposit2History.Count - 1] - deposit2History[deposit2History.Count - 2]);
-
-                    }
-                    //  DMS.setR(reward);
-                    ////////////////////////////////////////
-
-                    actionHistory.Add(action);
-                    //print committee response
-                    string comRespStr = "committee response: ";
-                    for (int i = 0; i < committeeResponse.Length; i++)
-                        comRespStr += " [" + committeeResponse[i] + "]; ";
-                    string committeeResponseReportLine = "";
-                    for (int i = 0; i < committeeResponse.Length; i++)
-                        committeeResponseReportLine += committeeResponse[i] + ";";
-                    //    log(comRespStr);
-                    //  log("date: " + date1.ToString());
-                    //    log("deposit1: " + deposit1.ToString());
-                    //    log("deposit2: " + deposit2.ToString());
-                    //  log("action: " + action);
-                    //    log("reward: " + reward.ToString());
-                    //  log("closeValue: " + closeValue.ToString());
-                    //   log("presentLine: " + presentLine);
-
-                    reportLine += date1.ToString() + ';' + deposit1.ToString() + ';' + deposit2.ToString() + ';' + action + ';' + reward.ToString() + ';' + closeValue.ToString() + ';' + committeeResponseReportLine + presentLine;
-                    report.Add(reportLine);
-
-                    if (period == "day")
-                        date1 = date1.AddDays(1);
-                    if (period == "hour")
-                        date1 = date1.AddHours(1);
-                    if (period == "minute")
-                        date1 = date1.AddHours(1);
-                }
-            }
-            else
-                log("date1>=date2 !");
-            //выход с рынка
-            deposit2 = deposit2 + (closeValue * deposit1);
-            deposit1 = 0;
-            action = "exit";
-            string reportLineExit = date1.ToString() + ';' + deposit1.ToString() + ';' + deposit2.ToString() + ';' + action + ';' + closeValue.ToString() + ';';
-            report.Add(reportLineExit);
-
-            // запись отчёта
-            reportPath = H.getValueByName("report_path");
-            if (reportPath == "" || reportPath == null)
-            {
-                reportPath = path_prefix + expertName;
-            }
-            File.WriteAllLines(reportPath + "\\report.csv", report);
-
-
-            H.setValueByName("expert_target_function", deposit2.ToString().Replace(',', '.'));
-            return "expert has been tested";
-        }
         public string testExmo(DateTime date1, DateTime date2, string rawDatasetFilePath)
         {
-            w1 = double.Parse(H.getValueByName("w1"));
-            w2 = double.Parse(H.getValueByName("w2"));
+            ENV = TEST;
+            ////////////////////////////////////////////////
+            /////// ПАРАМЕТРЫ СОСТОЯНИЯ СПР ////////////////
+            /*  for (int i = 0; i < algorithms.Count; i++)
+                  DMS.addParameter("A[" + i.ToString() + "]", "0,1");
+              // состояние депозитов 1 - баланс положительный, 0 - баланс нулевой
+              DMS.addParameter("DEP1", "0,1");
+              DMS.addParameter("DEP2", "0,1");
+              //превышение цены покупки
+              DMS.addParameter("HigherThenPurchase", "0,1");
+
+              DMS.defaultActions.Add(new DMSAction("buy"));
+              DMS.defaultActions.Add(new DMSAction("sell"));
+              DMS.defaultActions.Add(new DMSAction("nothing"));
+              DMS.generateStates();*/
+
+            w1 = int.Parse(H.getValueByName("w1"));
+            w2 = int.Parse(H.getValueByName("w2"));
             take_pofit = double.Parse(H.getValueByName("take_pofit"));
             drawdown = double.Parse(H.getValueByName("drawdown"));
 
             deposit1 = deposit1StartValue;
             deposit2 = deposit2StartValue;
+
+            purchase_limit_amount = int.Parse(H.getValueByName("purchase_limit_amount"));
+            purchase_limit_amount_left = purchase_limit_amount;
+            purchase_limit_interval = int.Parse(H.getValueByName("purchase_limit_interval"));
+            purchase_limit_timer_enabled = false;
+            purchase_limit_timer_start = date1;
 
             lot = double.Parse(H.getValueByName("lot"));
             int windowSize = int.Parse(H.getValueByName("w1")) + int.Parse(H.getValueByName("w2"));
@@ -719,6 +119,7 @@ namespace Экспертная_система
 
             Array a = new double[3];
 
+            MAVG_bid_history = new List<double>();
             committeeResponseHistory = new List<double[]>();
             closeValueHistory = new List<double>();
             deposit1History = new List<double>();
@@ -736,9 +137,14 @@ namespace Экспертная_система
             var allLines = File.ReadAllLines(rawDatasetFilePath);
 
             int last_line_index = 1;
+
+            List<string> input = new List<string>();
+
+            //копирование заголовка
+            input.Add(allLines[0]);
+
             if (date1 < date2)
             {
-
                 while (date1 < date2)
                 {
                     string reportLine = "";
@@ -746,12 +152,6 @@ namespace Экспертная_система
                     bool dateExist = false;
                     string dateStr;
                     dateStr = date1.ToString("dd.MM.yyyy H:mm");
-
-                    //+1 для заголовка;
-                    string[] input = new string[windowSize + 1];
-
-                    //копирование заголовка
-                    input[0] = allLines[0];
 
                     for (int i = last_line_index; i < allLines.Length; i++)
                     {
@@ -765,20 +165,27 @@ namespace Экспертная_система
                         {
                             dateExist = true;
                             last_line_index = i;
-                            for (int j = 0; j < windowSize; j++)
+
+                            if (input.Count == 1)
                             {
-                                //j+1, так как первая строка - заголовок
-                                input[j + 1] = allLines[i - windowSize + j + 1];
+                                for (int k = 0; k < w1 + w2; k++)
+                                    input.Add(allLines[i - w1 + w2 + k]);
                             }
+                            else
+                            {
+                                input.Add(allLines[i]);
+                                input.RemoveAt(0);
+                            }
+                            break;
                         }
                     }
 
                     if (dateExist)
                     {
-                        double ask_top = double.Parse(input[input.Length - 1].Split(';')[4]);
-                        double bid_top = double.Parse(input[input.Length - 1].Split(';')[1]);
+                        double ask_top = double.Parse(input[input.Count - 1].Split(';')[4]);
+                        double bid_top = double.Parse(input[input.Count - 1].Split(';')[1]);
                         closeValue = bid_top;
-                        action = getDecision(input);
+                        action = getDecision(input.ToArray());
                         if (action == "error")
                         {
                             log("action = error", Color.Red);
@@ -787,69 +194,51 @@ namespace Экспертная_система
                         {
                             if (deposit2 > ask_top * lot)
                             {
-                                deposit1 = deposit1 + lot - (lot * 0.002);
-                                deposit2 = deposit2 - (ask_top * lot);
-                                positions.Add(ask_top);
-                                /*  log("BUY", Color.Blue);
-                                  log(ask_top.ToString());
-                                  log("   USD:" + deposit2.ToString());
-                                  log("   BTC:" + deposit1.ToString());*/
+                                buy(ask_top, date1);
 
+                                positions.Add(ask_top);
                             }
                             else
                             {
-                                //      log("Баланс USD: " + deposit2.ToString() + " Невозможно купить " + (bid_top * lot).ToString() + " BTC");
                                 action += " (fail USD balance is too low)";
                             }
                         }
+
                         for (int i = 0; i < positions.Count; i++)
                         {
                             if (bid_top - positions[i] > take_pofit)
                             {
-                                reward = bid_top - positions[i];
-
                                 action = "sell";
-                                positions.RemoveAt(i);
-                                break;
-                            }
-                        }
 
-                        if (action == "sell")
-                        {
-                            if (bid_top != 0)
-                            {
-                                if (deposit1 >= lot)
+                                if (deposit1 >= 0)
                                 {
-                                    deposit1 = deposit1 - lot;
-                                    deposit2 = deposit2 + (bid_top * lot) - ((bid_top * lot) * 0.002);
-                                    /* log("SELL", Color.Red);
-                                     log(bid_top.ToString());
-                                     log("   USD:" + deposit2.ToString());
-                                     log("   BTC:" + deposit1.ToString());*/
-
+                                    sell(bid_top);
                                 }
                                 else
                                 {
-                                    //    log("Баланс BTC: " + deposit1.ToString() + " Невозможно продать " + (lot).ToString() + " BTC");
                                     action += " (fail BTC balance is too low)";
                                 }
-                            }
-                            else
-                            {
-                                log("bid_top почему-то равно нулю!", Color.Red);
-                                action += " (fail)";
+
+                                positions.RemoveAt(i);
+                                i--;
+
+                                if (positions.Count == 0)
+                                {
+                                    break;
+                                }
                             }
                         }
+
+                        committeeResponseHistory.Add(committeeResponse);
+                        closeValueHistory.Add(closeValue);
+                        deposit1History.Add(deposit1);
+                        deposit2History.Add(deposit2);
                     }
                     else
                     {
                         action = "date doesn't exist";
                         //   log("дата " + dateStr + " не найдена в файле " + rawDatasetFilePath);
                     }
-                    committeeResponseHistory.Add(committeeResponse);
-                    closeValueHistory.Add(closeValue);
-                    deposit1History.Add(deposit1);
-                    deposit2History.Add(deposit2);
 
                     actionHistory.Add(action);
 
@@ -894,14 +283,124 @@ namespace Экспертная_система
             H.setValueByName("expert_target_function", deposit2.ToString().Replace(',', '.'));
             return "expert has been tested";
         }
-        public void AddAlgorithm(Algorithm algorithm)
+
+        public void buildNew(string expertName, MainForm form1)
         {
+            this.form1 = form1;
+            path_prefix = form1.pathPrefix;
+            H = new Hyperparameters(form1, expertName);
+            algorithms = new List<Algorithm>();
+            Directory.CreateDirectory(form1.pathPrefix + expertName);
+            committeeNodeID = H.add("name:committee,value: ");
+            this.expertName = expertName;
+            report = new List<string>();
+            H.setValueByName("report_path", path_prefix + expertName + '\\');
+            DMS = new DecisionMakingSystem(form1);
+            /* H.addVariable(0, "epsilon", 0.001, 0.99, 0.01, 0.05);
+             H.addVariable(0, "alpha", 0.001, 0.99, 0.01, 0.9);
+             H.addVariable(0, "gamma", 0.001, 0.99, 0.01, 0.5);*/
+        }
+        public Expert(string expertName, MainForm form1)
+        {
+            foreach (string expertFolder in Directory.GetDirectories(form1.pathPrefix))
+            {
+                if (Path.GetFileName(expertFolder) == expertName)
+                {  //В ДАННОМ КОНСТРУКТОРЕ, ПРИ СОЗДАНИИ НОВОГО ЭКЗЕМПЛЯРА КЛАССА Expert, ПАПКА С ТАКИМ ЖЕ ИМЕНЕМ БУДЕТ УДАЛЕНА
+                    Directory.Delete(expertFolder, true);
+                }
+            }
 
-            Directory.CreateDirectory(path_prefix + expertName + "\\" + algorithm.modelName + "\\");
-            Algorithm.CopyFiles(algorithm.h, Path.GetDirectoryName(algorithm.h.getValueByName("json_file_path")), path_prefix + expertName + "\\" + algorithm.modelName + "\\");
+            buildNew(expertName, form1);
+        }
+        public Expert(string expertName, MainForm form1, bool DoNotDeleteExpertFolder)
+        {
+            buildNew(expertName, form1);
+        }
 
-            algorithms.Add(algorithm);
 
+
+        //возвращает  действие, о котором было принято решение
+        public double MAVG_bid = 0;
+        public string getDecision(string[] input)
+        {
+            if (w1 == 0)
+            {
+                w1 = int.Parse(H.getValueByName("w1"));
+                w2 = int.Parse(H.getValueByName("w2"));
+                take_pofit = double.Parse(H.getValueByName("take_pofit"));
+                drawdown = double.Parse(H.getValueByName("drawdown"));
+            }
+            if (input.Length != w1 + w2 + 1)
+            {
+                throw new Exception("input.Length != w1+w2+1");
+            }
+
+            MAVG_bid = 0;
+            for (int i = 0; i < w1; i++)
+            {
+                MAVG_bid += double.Parse(input[1 + i].Split(';')[1]);
+            }
+            MAVG_bid = MAVG_bid / w1;
+            MAVG_bid_history.Add(MAVG_bid);
+            double current_ask = double.Parse(input[input.Length - 1].Split(';')[4]);
+            // log("drawdown: " + (MAVG_bid - current_ask).ToString());
+            //  log("MAVG_bid: " + MAVG_bid.ToString());
+
+            if (MAVG_bid - current_ask > drawdown)
+            {
+                return "buy";
+            }
+            return "";
+        }
+
+        void buy_test(double ask_top)
+        {
+            if (deposit2 > 0)
+            {
+                deposit1 = deposit1 + lot - (lot * 0.002);
+                deposit2 = deposit2 - (ask_top * lot);
+                purchase_limit_amount_left -= ask_top * lot;
+            }
+        }
+        void sell_test(double bid_top)
+        {
+            if (deposit1 > 0)
+            {
+                deposit1 = deposit1 - lot;
+                deposit2 = deposit2 + (bid_top * lot) - ((bid_top * lot) * 0.002);
+            }
+        }
+
+        void buy(double ask_top, DateTime current_time)
+        {
+            if (purchase_limit_amount_left - (ask_top * lot) > 0)
+            {
+                if (ENV == REAL)
+                { }
+                else
+                    buy_test(ask_top);
+            }
+            else
+            {
+                if (purchase_limit_timer_enabled == false)
+                {
+                    purchase_limit_timer_start = current_time;
+                    purchase_limit_timer_enabled = true;
+                }
+
+                if (purchase_limit_timer_start.AddMinutes(purchase_limit_interval) < current_time)
+                {
+                    purchase_limit_amount_left = purchase_limit_amount;
+                    purchase_limit_timer_enabled = false;
+                }
+            }
+        }
+        void sell(double bid_top)
+        {
+            if (ENV == REAL)
+            { }
+            else
+                sell_test(bid_top);
         }
 
         //метод делающий из временного ряда *.csv датасет, пригодный для передачи в train_script.py 
@@ -1508,6 +1007,52 @@ namespace Экспертная_система
             }
 
             File.WriteAllLines(datasetFile, allLinesDatasetFile);
+        }
+
+        public string getStateStr()
+        {
+            string stateInString = "";
+            for (int i = 0; i < committeeResponse.Length; i++)
+            {
+                if (committeeResponse[i] == -1)
+                {
+                    stateInString = "error";
+                    break;
+                }
+                stateInString += "A[" + i.ToString() + "]:" + committeeResponse[i].ToString() + ',';
+            }
+            stateInString = stateInString.Remove(stateInString.Length - 1, 1);
+
+            if (deposit1 == 0)
+                stateInString += ",DEP1:0";
+            else
+                stateInString += ",DEP1:1";
+
+            if (closeValueHistory.Count == 0)
+            {
+                stateInString += ",DEP2:1";
+            }
+            else
+            {
+                if (deposit2 < closeValueHistory[closeValueHistory.Count - 1])
+                    stateInString += ",DEP2:0";
+                else
+                    stateInString += ",DEP2:1";
+            }
+
+            if (closeValueHistory.Count == 0)
+            {
+                stateInString += ",HigherThenPurchase:0";
+            }
+            else
+            {
+                if (closeValueHistory[closeValueHistory.Count - 1] > Purchase)
+                    stateInString += ",HigherThenPurchase:1";
+                else
+                    stateInString += ",HigherThenPurchase:0";
+            }
+
+            return stateInString;
         }
     }
 }

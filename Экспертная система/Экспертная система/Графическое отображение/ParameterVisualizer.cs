@@ -199,7 +199,7 @@ namespace Экспертная_система
                                 xZeroGap + dx * (step - 1), Ymin + (Ymax / 2),
                                 xZeroGap + dx * step, Ymin + (Ymax / 2));
                                 if (function.points[i].mark != function.points[i - 1].mark || step == 2)
-                                    drawStringVertical(function.points[i].mark, mainFontDepth, xZeroGap + dx * step, Ymin + (Ymax / 2));
+                                    drawStringVertical(function.points[i].mark, mainFontDepth/2, xZeroGap + dx * step, Ymin + (Ymax / 2));
                             }
                             else
                             {
@@ -208,7 +208,7 @@ namespace Экспертная_система
                                   xZeroGap + dx * step, Ymin + Ymax - (((Ymax - yUpGap) * (function.points[i].y - minY)) / (maxY - minY) + yDownGap));
 
                                 //   if (function.points[i].mark != function.points[i - 1].mark || step == 2)
-                                drawString(function.points[i].mark, mainFontDepth,
+                                drawString(function.points[i].mark, mainFontDepth/2,
                                 xZeroGap + dx * step, Ymin + Ymax - (((Ymax - yUpGap) * (function.points[i].y - minY)) / (maxY - minY) + yDownGap));
                             }
                         }
@@ -262,7 +262,7 @@ namespace Экспертная_система
                                 xZeroGap + dx * (i - 1), Ymin + (Ymax / 2),
                                 xZeroGap + dx * i, Ymin + (Ymax / 2));
                                 if (function.points[i].mark != function.points[i - 1].mark || i == 2)
-                                    drawStringVertical(function.points[i].mark, mainFontDepth, xZeroGap + dx * i, Ymin + (Ymax / 2));
+                                    drawStringVertical(function.points[i].mark, mainFontDepth/2, xZeroGap + dx * i, Ymin + (Ymax / 2));
                             }
                             else
                             {
@@ -270,8 +270,8 @@ namespace Экспертная_система
                                   xZeroGap + dx * (i - 1), Ymin + Ymax - (((Ymax - yUpGap) * (function.points[i - 1].y - minY)) / (maxY - minY) + yDownGap),
                                   xZeroGap + dx * i, Ymin + Ymax - (((Ymax - yUpGap) * (function.points[i].y - minY)) / (maxY - minY) + yDownGap));
 
-                                if (function.points[i].mark != function.points[i - 1].mark || i == 2)
-                                    drawStringVertical(function.points[i].mark, mainFontDepth,
+                                //if (function.points[i].mark != function.points[i - 1].mark || i == 2)
+                                    drawString(function.points[i].mark, mainFontDepth/2,
                                     xZeroGap + dx * i, Ymin + Ymax - (((Ymax - yUpGap) * (function.points[i].y - minY)) / (maxY - minY) + yDownGap));
                             }
 
@@ -332,7 +332,7 @@ namespace Экспертная_система
                            Xmax, Ymin + Ymax - (((Ymax - yUpGap) * (i - minY)) / (maxY - minY) + yDownGap));
 
                 }
-                if (minY <= 0)
+                if (minY <= 0 && Ymin + Ymax - (((Ymax - yUpGap) * (0 - minY)) / (maxY - minY) + yDownGap) - mainFontDepth > Ymin)
                 {
                     drawLine(Color.White, 1,
                              xZeroGap, Ymin + Ymax - (((Ymax - yUpGap) * (0 - minY)) / (maxY - minY) + yDownGap),
@@ -458,15 +458,18 @@ namespace Экспертная_система
             }
             else
             {
-
-                if (y1 > picBox.Height)
-                    picBox.Height = Convert.ToInt16(y1);
-                else
-                if (y2 > picBox.Height)
-                    picBox.Height = Convert.ToInt16(y2);
-                else
-                    g.DrawLine(new Pen(col, Convert.ToInt16(depth)), Convert.ToInt16(Math.Round(x1)), Convert.ToInt16(Math.Round(y1)), Convert.ToInt16(Math.Round(x2)), Convert.ToInt16(Math.Round(y2)));
-            }
+                try
+                {
+                    if (y1 > picBox.Height)
+                        picBox.Height = Convert.ToInt16(y1);
+                    else
+                    if (y2 > picBox.Height)
+                        picBox.Height = Convert.ToInt16(y2);
+                    else
+                        g.DrawLine(new Pen(col, Convert.ToInt16(depth)), Convert.ToInt16(Math.Round(x1)), Convert.ToInt16(Math.Round(y1)), Convert.ToInt16(Math.Round(x2)), Convert.ToInt16(Math.Round(y2)));
+                }
+                catch { }
+                }
         }
 
         private int lastCount;

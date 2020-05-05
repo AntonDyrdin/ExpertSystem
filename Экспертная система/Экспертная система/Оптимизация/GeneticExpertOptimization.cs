@@ -30,7 +30,7 @@ namespace Экспертная_система
         public int screenshotIterationTimer = 5;
         private bool multiThreadTraining = true;
 
-        public int multiThreadTrainingRATE = 4;
+        public int multiThreadTrainingRATE = 8;
         public ExpertOptimization(Expert expert, MainForm form1, int population_value, int test_count, int mutation_rate, double elite_ratio, int Iterarions, DateTime date1, DateTime date2, string rawDatasetFilePath)
         {
             r = new Random();

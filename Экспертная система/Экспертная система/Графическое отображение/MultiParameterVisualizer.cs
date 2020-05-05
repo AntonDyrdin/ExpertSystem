@@ -64,7 +64,7 @@ namespace Экспертная_система
                 {
                     if (function.label == name)
                     {
-                        visualizer.functions[visualizer.functions.IndexOf(function)].points[visualizer.functions[visualizer.functions.IndexOf(function)].points.Count-1].mark=value;
+                        visualizer.functions[visualizer.functions.IndexOf(function)].points[visualizer.functions[visualizer.functions.IndexOf(function)].points.Count - 1].mark = value;
                         goto endOfAddPoint;
                     }
                 }
@@ -81,7 +81,7 @@ namespace Экспертная_система
         {
             try
             {
-                var doubleValue = Convert.ToDouble(value.Replace('.', ','));
+                var doubleValue = Convert.ToDouble(value);
                 addPoint(doubleValue, name);
             }
             catch
@@ -116,6 +116,10 @@ namespace Экспертная_система
             endOfAddPoint:
                 is_new = false;
             }
+        }
+        public void addPoint(string name, double value)
+        {
+            addPoint(value, name);
         }
         public void addPoint(double value, string name)
         {
@@ -212,18 +216,18 @@ namespace Экспертная_система
 
         public void setWindow(int window)
         {
-            for(int i = 0; i < parameters.Count; i++)
+            for (int i = 0; i < parameters.Count; i++)
             {
                 parameters[i].window = window;
             }
         }
 
-        public void addCSV(string file, string name, string columnName, string chartName, int H, double splitPoint, int shift)
+        public void addCSV(string file, string name, string columnName, string chartName, int H, double splitPoint, int shift, int jump)
         {
 
             var allLines = File.ReadAllLines(file);
             allLines = Expert.skipEmptyLines(allLines);
-            int indCol = 0;
+            int indCol = -1;
             if (columnName == "LAST_COLUMN")
             {
                 indCol = allLines[0].Split(';').Length - 1;
@@ -248,8 +252,13 @@ namespace Экспертная_система
                     }
                 }
             }
+            if (indCol == -1)
+            {
+                throw new Exception("Столбец \"" + columnName + "\" не найден");
+            }
             bool is_new = true;
             int parameterInd = 0;
+            int last_minute = 0;
             for (int i = 0; i < parameters.Count; i++)
             {
                 if (parameters[i].label == name)
@@ -260,6 +269,7 @@ namespace Экспертная_система
 
             }
             int start = 1 + Convert.ToInt32(splitPoint * (allLines.Length - 1));
+
             if (is_new)
             {
                 addParameter(name, Color.White, H);
@@ -267,15 +277,32 @@ namespace Экспертная_система
                 if (shift > 0)
                 {
                     for (int i = 0; i < shift; i++)
-                        addPoint(Convert.ToDouble(allLines[start].Split(';')[indCol].Replace('.', ',')), chartName);
+                        if (indCol < allLines[start].Split(';').Length)
+                            addPoint(Convert.ToDouble(allLines[start].Split(';')[indCol]), chartName);
 
-                    for (int i = start; i < allLines.Length - shift; i++)
-                        addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol].Replace('.', ',')), chartName);
+                    for (int i = start; i < allLines.Length - shift; i = i + jump)
+                        if (indCol < allLines[i].Split(';').Length)
+                        {
+                            var current_minute = DateTime.Parse(allLines[i].Split(';')[0]).Minute;
+                            if (current_minute != last_minute)
+                            {
+                                addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol]), chartName);
+                                last_minute = current_minute;
+                            }
+                        }
                 }
                 else
                 {
-                    for (int i = start + (-shift); i < allLines.Length; i++)
-                        addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol].Replace('.', ',')), chartName);
+                    for (int i = start + (-shift); i < allLines.Length; i = i + jump)
+                        if (indCol < allLines[i].Split(';').Length)
+                        {
+                            var current_minute = DateTime.Parse(allLines[i].Split(';')[0]).Minute;
+                            if (current_minute != last_minute)
+                            {
+                                addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol]), chartName);
+                                last_minute = current_minute;
+                            }
+                        }
                 }
             }
             else
@@ -283,29 +310,49 @@ namespace Экспертная_система
                 if (shift > 0)
                 {
                     for (int i = 0; i < shift; i++)
-                        parameters[parameterInd].addPoint(Convert.ToDouble(allLines[start].Split(';')[indCol].Replace('.', ',')), chartName);
+                        if (indCol < allLines[i].Split(';').Length)
+                            parameters[parameterInd].addPoint(Convert.ToDouble(allLines[start].Split(';')[indCol]), chartName);
 
-                    for (int i = start; i < allLines.Length - shift; i++)
+                    for (int i = start; i < allLines.Length - shift; i = i + jump)
                     {
-                        var val = allLines[i].Split(';')[indCol];
-                        parameters[parameterInd].addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol].Replace('.', ',')), chartName);
-
+                        if (indCol < allLines[i].Split(';').Length)
+                        {
+                            var val = allLines[i].Split(';')[indCol];
+                            var current_minute = DateTime.Parse(allLines[i].Split(';')[0]).Minute;
+                            if (current_minute != last_minute)
+                            {
+                                parameters[parameterInd].addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol]), chartName);
+                                last_minute = current_minute;
+                            }
+                        }
                     }
                 }
                 else
                 {
-                    for (int i = start + (-shift); i < allLines.Length; i++)
-                        parameters[parameterInd].addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol].Replace('.', ',')), chartName);
+                    for (int i = start + (-shift); i < allLines.Length; i = i + jump)
+                        if (indCol < allLines[i].Split(';').Length)
+                        {
+                            var current_minute = DateTime.Parse(allLines[i].Split(';')[0]).Minute;
+                            if (current_minute != last_minute)
+                            {
+                                parameters[parameterInd].addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol]), chartName);
+                                last_minute = current_minute;
+                            }
+                        }
                 }
             }
 
         }
         public void addCSV(string file, string name, string columnName, int H, double splitPoint, int shift)
         {
+            addCSV(file, name, columnName, H, splitPoint, shift, 1);
+        }
+        public void addCSV(string file, string name, string columnName, int H, double splitPoint, int shift, int jump)
+        {
 
             var allLines = File.ReadAllLines(file);
             allLines = Expert.skipEmptyLines(allLines);
-            int indCol = 0;
+            int indCol = -1;
             if (columnName == "LAST_COLUMN")
             { indCol = allLines[0].Split(';').Length - 1; }
             else
@@ -327,8 +374,13 @@ namespace Экспертная_система
                     }
                 }
             }
+            if (indCol == -1)
+            {
+                throw new Exception("Столбец \"" + columnName + "\" не найден");
+            }
+
             bool is_new = true;
-            int parameterInd = 0;
+            int parameterInd = -1;
             for (int i = 0; i < parameters.Count; i++)
             {
                 if (parameters[i].label == name)
@@ -337,22 +389,41 @@ namespace Экспертная_система
                     parameterInd = i;
                 }
             }
+
             int start = 1 + Convert.ToInt32(splitPoint * (allLines.Length - 1));
+            int last_minute = 0;
             if (is_new)
             {
                 addParameter(name, Color.White, H);
                 if (shift > 0)
                 {
                     for (int i = 0; i < shift; i++)
-                        addPoint(Convert.ToDouble(allLines[start].Split(';')[indCol].Replace('.', ',')), name);
+                        if (indCol < allLines[start].Split(';').Length)
+                            addPoint(Convert.ToDouble(allLines[start].Split(';')[indCol]), name);
 
-                    for (int i = start; i < allLines.Length - shift; i++)
-                        addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol].Replace('.', ',')), name);
+                    for (int i = start; i < allLines.Length - shift; i = i + jump)
+                        if (indCol < allLines[i].Split(';').Length)
+                        {
+                            var current_minute = DateTime.Parse(allLines[i].Split(';')[0]).Minute;
+                            if (current_minute != last_minute)
+                            {
+                                addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol]), name);
+                                last_minute = current_minute;
+                            }
+                        }
                 }
                 else
                 {
-                    for (int i = start + (-shift); i < allLines.Length; i++)
-                        addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol].Replace('.', ',')), name);
+                    for (int i = start + (-shift); i < allLines.Length; i = i + jump)
+                        if (indCol < allLines[i].Split(';').Length)
+                        {
+                            var current_minute = DateTime.Parse(allLines[i].Split(';')[0]).Minute;
+                            if (current_minute != last_minute)
+                            {
+                                addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol]), name);
+                                last_minute = current_minute;
+                            }
+                        }
                 }
             }
             else
@@ -360,17 +431,34 @@ namespace Экспертная_система
                 if (shift > 0)
                 {
                     for (int i = 0; i < shift; i++)
-                        parameters[parameterInd].addPoint(Convert.ToDouble(allLines[start].Split(';')[indCol].Replace('.', ',')), name);
+                        if (indCol < allLines[start].Split(';').Length)
+                            parameters[parameterInd].addPoint(Convert.ToDouble(allLines[start].Split(';')[indCol]), name);
 
-                    for (int i = start; i < allLines.Length - shift; i++)
-                        parameters[parameterInd].addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol].Replace('.', ',')), name);
+                    for (int i = start; i < allLines.Length - shift; i = i + jump)
+                        if (indCol < allLines[i].Split(';').Length)
+                        {
+                            var current_minute = DateTime.Parse(allLines[i].Split(';')[0]).Minute;
+                            if (current_minute != last_minute)
+                            {
+                                parameters[parameterInd].addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol]), name);
+                                last_minute = current_minute;
+                            }
+                        }
                 }
                 else
                 {
-                    for (int i = start + (-shift); i < allLines.Length; i++)
+                    for (int i = start + (-shift); i < allLines.Length; i = i + jump)
                     {
-                        var what = allLines[i].Split(';')[indCol].Replace('.', ',');
-                        parameters[parameterInd].addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol].Replace('.', ',')), name);
+                        if (indCol < allLines[i].Split(';').Length)
+                        {
+                            var what = allLines[i].Split(';')[indCol];
+                            var current_minute = DateTime.Parse(allLines[i].Split(';')[0]).Minute;
+                            if (current_minute != last_minute)
+                            {
+                                parameters[parameterInd].addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol]), name);
+                                last_minute = current_minute;
+                            }
+                        }
                     }
                 }
             }
@@ -386,18 +474,18 @@ namespace Экспертная_система
 
             for (int i = 0; i < shift; i++)
             {
-                    addPoint(Convert.ToDouble(allLines[1].Split(';')[indCol].Replace('.', ',')), columnName);
+                addPoint(Convert.ToDouble(allLines[1].Split(';')[indCol]), columnName);
             }
 
             for (int i = 1; i < allLines.Length - shift; i++)
             {
                 string str1 = allLines[i].Split(';')[indCol];
-                addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol].Replace('.', ',')), columnName);
+                addPoint(Convert.ToDouble(allLines[i].Split(';')[indCol]), columnName);
             }
         }
         public void refresh()
         {
-            if(pictureBox.Width != Xmax)
+            if (pictureBox.Width != Xmax)
             {
                 Xmax = pictureBox.Width;
                 for (int i = 0; i < parameters.Count; i++)

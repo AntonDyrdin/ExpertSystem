@@ -14,7 +14,8 @@ namespace Экспертная_система
     {
         public string logPath;
         public Hyperparameters h;
-        public int maxlogFilesCount = 10;
+
+        public int maxlogFilesCount = 20;
         private MainForm form1;
 
         public ModeSelector modeSelector;
@@ -23,9 +24,9 @@ namespace Экспертная_система
         public Infrastructure(MainForm form1)
         {
             this.form1 = form1;
-            if(form1.ENV == form1.REAL)
+            if (form1.ENV == form1.REAL)
             {
-                if(MessageBox.Show("Торговля на реальном счёте!", "Внимание!", MessageBoxButtons.YesNo) != DialogResult.Yes)
+                if (MessageBox.Show("Торговля на реальном счёте!", "Внимание!", MessageBoxButtons.YesNo) != DialogResult.Yes)
                 {
                     Application.Exit();
                 }
@@ -35,7 +36,7 @@ namespace Экспертная_система
             form1.logBox.Text += (Environment.MachineName);
             if (Environment.MachineName == "DESKTOP-B3G20T0")
             {
-                form1.logBox.Font = new System.Drawing.Font(form1.logBox.Font.FontFamily, 8);
+                form1.logBox.Font = new System.Drawing.Font(form1.logBox.Font.FontFamily, 10);
             }
             form1.collectLogWhileItFreezed = new List<logItem>();
 
@@ -97,9 +98,9 @@ namespace Экспертная_система
             else
             { }
 
-            form1.logBox.Font = new Font(form1.logBox.Font.FontFamily, 10);
-            form1.logBox.Text = File.ReadAllText("pic.txt");
-            form1.logBox.Text = form1.logBox.Text.Replace("\n\n", "\n");
+            // form1.logBox.Font = new Font(form1.logBox.Font.FontFamily, 10);
+            //form1.logBox.Text = File.ReadAllText("pic.txt");
+            //form1.logBox.Text = form1.logBox.Text.Replace("\n\n", "\n");
         }
         private string mode;
 
@@ -107,25 +108,18 @@ namespace Экспертная_система
         {
             if (modeSelector == null)
             {
-                if (mode != null)
-                {
-                    form1.log(mode);
 
-                    form1.mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { form1.main_thread(); });
+                form1.mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { form1.main_thread(); });
+                //form1.mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { form1.optimization_thread(); });
+                
+            //executionProgressForm = new ExecutionProgress();
+                //executionProgressForm.Show();
 
-                    //executionProgressForm = new ExecutionProgress();
-                    //executionProgressForm.Show();
-
-                    //form1.showInpOutp = new TextBoxes();
-                    //form1.showInpOutp.Show();
-                }
+                //form1.showInpOutp = new TextBoxes();
+                //form1.showInpOutp.Show();
             }
             else
             { form1.WindowState = FormWindowState.Minimized; }
-            form1.Text = mode;
-            // form1.TrackBar2_Scroll(null, null);
-            // form1.TrackBar3_Scroll(null, null);
-            // form1.TrackBar4_Scroll(null, null);
         }
         public void showModeSelector()
         {
