@@ -44,6 +44,10 @@
             this.deposit_2_value = new System.Windows.Forms.TextBox();
             this.deposit_1_value = new System.Windows.Forms.TextBox();
             this.displayedWindow = new System.Windows.Forms.TrackBar();
+            this.current_bid = new System.Windows.Forms.TextBox();
+            this.current_ask = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.picBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -126,9 +130,8 @@
             // splitContainer1
             // 
             this.splitContainer1.BackColor = System.Drawing.Color.Transparent;
-            this.splitContainer1.Location = new System.Drawing.Point(18, 18);
+            this.splitContainer1.Location = new System.Drawing.Point(3, 4);
             this.splitContainer1.Margin = new System.Windows.Forms.Padding(4);
-
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
@@ -136,11 +139,14 @@
             this.splitContainer1.Panel1.AutoScroll = true;
             this.splitContainer1.Panel1.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("splitContainer1.Panel1.BackgroundImage")));
             this.splitContainer1.Panel1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-
             this.splitContainer1.Panel1.Controls.Add(this.picBox);
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this.label2);
+            this.splitContainer1.Panel2.Controls.Add(this.label1);
+            this.splitContainer1.Panel2.Controls.Add(this.current_ask);
+            this.splitContainer1.Panel2.Controls.Add(this.current_bid);
             this.splitContainer1.Panel2.Controls.Add(this.sell_button);
             this.splitContainer1.Panel2.Controls.Add(this.bye_button);
             this.splitContainer1.Panel2.Controls.Add(this.sum_name);
@@ -155,9 +161,8 @@
             this.splitContainer1.Panel2.Controls.Add(this.wipeLog);
             this.splitContainer1.Panel2.Controls.Add(this.b1);
             this.splitContainer1.Size = new System.Drawing.Size(2880, 1500);
-            this.splitContainer1.SplitterDistance = 1832;
+            this.splitContainer1.SplitterDistance = 1000;
             this.splitContainer1.SplitterWidth = 30;
-
             this.splitContainer1.TabIndex = 61;
             this.splitContainer1.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainer1_SplitterMoved);
             // 
@@ -170,7 +175,6 @@
             this.sell_button.Margin = new System.Windows.Forms.Padding(4);
             this.sell_button.Name = "sell_button";
             this.sell_button.Size = new System.Drawing.Size(81, 33);
-
             this.sell_button.TabIndex = 69;
             this.sell_button.Text = "SELL";
             this.sell_button.UseVisualStyleBackColor = false;
@@ -185,7 +189,6 @@
             this.bye_button.Margin = new System.Windows.Forms.Padding(4);
             this.bye_button.Name = "bye_button";
             this.bye_button.Size = new System.Drawing.Size(81, 33);
-
             this.bye_button.TabIndex = 68;
             this.bye_button.Text = "BUY";
             this.bye_button.UseVisualStyleBackColor = false;
@@ -200,7 +203,6 @@
             this.sum_name.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.sum_name.Name = "sum_name";
             this.sum_name.Size = new System.Drawing.Size(74, 21);
-
             this.sum_name.TabIndex = 67;
             this.sum_name.Text = "Сумма";
             // 
@@ -213,7 +215,6 @@
             this.deposit_2_name.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.deposit_2_name.Name = "deposit_2_name";
             this.deposit_2_name.Size = new System.Drawing.Size(48, 21);
-
             this.deposit_2_name.TabIndex = 66;
             this.deposit_2_name.Text = "USD:";
             // 
@@ -263,13 +264,57 @@
             // 
             this.displayedWindow.Location = new System.Drawing.Point(4, 126);
             this.displayedWindow.Margin = new System.Windows.Forms.Padding(4);
-            this.displayedWindow.Maximum = 200;
-            this.displayedWindow.Minimum = 3;
+            this.displayedWindow.Maximum = 400;
+            this.displayedWindow.Minimum = 10;
             this.displayedWindow.Name = "displayedWindow";
             this.displayedWindow.Size = new System.Drawing.Size(1002, 69);
             this.displayedWindow.TabIndex = 61;
             this.displayedWindow.Value = 10;
             this.displayedWindow.Scroll += new System.EventHandler(this.displayedWindow_Scroll);
+            // 
+            // current_bid
+            // 
+            this.current_bid.BackColor = System.Drawing.Color.Black;
+            this.current_bid.ForeColor = System.Drawing.Color.White;
+            this.current_bid.Location = new System.Drawing.Point(60, 90);
+            this.current_bid.Margin = new System.Windows.Forms.Padding(4);
+            this.current_bid.Name = "current_bid";
+            this.current_bid.Size = new System.Drawing.Size(79, 26);
+            this.current_bid.TabIndex = 63;
+            // 
+            // current_ask
+            // 
+            this.current_ask.BackColor = System.Drawing.Color.Black;
+            this.current_ask.ForeColor = System.Drawing.Color.White;
+            this.current_ask.Location = new System.Drawing.Point(202, 89);
+            this.current_ask.Margin = new System.Windows.Forms.Padding(4);
+            this.current_ask.Name = "current_ask";
+            this.current_ask.Size = new System.Drawing.Size(79, 26);
+            this.current_ask.TabIndex = 64;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.BackColor = System.Drawing.Color.Transparent;
+            this.label1.Font = new System.Drawing.Font("Century Gothic", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label1.Location = new System.Drawing.Point(11, 91);
+            this.label1.Margin = new System.Windows.Forms.Padding(0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(42, 21);
+            this.label1.TabIndex = 66;
+            this.label1.Text = "bid:";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.BackColor = System.Drawing.Color.Transparent;
+            this.label2.Font = new System.Drawing.Font("Century Gothic", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label2.Location = new System.Drawing.Point(151, 91);
+            this.label2.Margin = new System.Windows.Forms.Padding(0);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(43, 21);
+            this.label2.TabIndex = 66;
+            this.label2.Text = "ask:";
             // 
             // MainForm
             // 
@@ -316,6 +361,10 @@
         private System.Windows.Forms.TextBox deposit_1_value;
         private System.Windows.Forms.Button sell_button;
         private System.Windows.Forms.Button bye_button;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox current_ask;
+        private System.Windows.Forms.TextBox current_bid;
     }
 }
 

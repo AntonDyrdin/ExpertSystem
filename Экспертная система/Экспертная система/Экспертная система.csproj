@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Trader.cs" />
     <Compile Include="Алгоритмы прогнозирования\Autoencoder\Autoencoder.cs" />
     <Compile Include="Алгоритмы прогнозирования\Ensemble.cs" />
     <Compile Include="Алгоритмы прогнозирования\ReturnToAvarage\ReturnToAvarage.cs" />
@@ -76,6 +77,12 @@
     </Compile>
     <Compile Include="Формы\ModeSelector.Designer.cs">
       <DependentUpon>ModeSelector.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Формы\Positions.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Формы\Positions.Designer.cs">
+      <DependentUpon>Positions.cs</DependentUpon>
     </Compile>
     <Compile Include="Формы\PicBoxOnPanel.cs">
       <SubType>Form</SubType>
@@ -125,6 +132,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Формы\ModeSelector.resx">
       <DependentUpon>ModeSelector.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Формы\Positions.resx">
+      <DependentUpon>Positions.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Формы\PicBoxOnPanel.resx">
       <DependentUpon>PicBoxOnPanel.cs</DependentUpon>

@@ -17,6 +17,9 @@ namespace Экспертная_система
         public int REAL = 1;
 
         public string expertName;
+
+        public Trader t;
+
         public double[,] dataset;
         public double[,] dataset1;
         public double[,] dataset2;
@@ -51,7 +54,7 @@ namespace Экспертная_система
 
         int w1;
         int w2;
-        double take_pofit;
+        double take_profit;
         double drawdown;
 
         public double purchase_limit_amount;
@@ -101,11 +104,10 @@ namespace Экспертная_система
 
             w1 = int.Parse(H.getValueByName("w1"));
             w2 = int.Parse(H.getValueByName("w2"));
-            take_pofit = double.Parse(H.getValueByName("take_pofit"));
+            take_profit = double.Parse(H.getValueByName("take_profit"));
             drawdown = double.Parse(H.getValueByName("drawdown"));
 
-            deposit1 = deposit1StartValue;
-            deposit2 = deposit2StartValue;
+
 
             purchase_limit_amount = int.Parse(H.getValueByName("purchase_limit_amount"));
             purchase_limit_amount_left = purchase_limit_amount;
@@ -139,7 +141,7 @@ namespace Экспертная_система
             int last_line_index = 1;
 
             List<string> input = new List<string>();
-
+            t = new Trader(form1, H);
             //копирование заголовка
             input.Add(allLines[0]);
 
@@ -194,7 +196,7 @@ namespace Экспертная_система
                         {
                             if (deposit2 > ask_top * lot)
                             {
-                                buy(ask_top, date1);
+                                t.createBuyOrder(ask_top, date1);
 
                                 positions.Add(ask_top);
                             }
@@ -203,36 +205,12 @@ namespace Экспертная_система
                                 action += " (fail USD balance is too low)";
                             }
                         }
-
-                        for (int i = 0; i < positions.Count; i++)
-                        {
-                            if (bid_top - positions[i] > take_pofit)
-                            {
-                                action = "sell";
-
-                                if (deposit1 >= 0)
-                                {
-                                    sell(bid_top);
-                                }
-                                else
-                                {
-                                    action += " (fail BTC balance is too low)";
-                                }
-
-                                positions.RemoveAt(i);
-                                i--;
-
-                                if (positions.Count == 0)
-                                {
-                                    break;
-                                }
-                            }
-                        }
+                        t.checkOrders(bid_top, ask_top);
 
                         committeeResponseHistory.Add(committeeResponse);
                         closeValueHistory.Add(closeValue);
-                        deposit1History.Add(deposit1);
-                        deposit2History.Add(deposit2);
+                        deposit1History.Add(t.deposit1);
+                        deposit2History.Add(t.deposit2);
                     }
                     else
                     {
@@ -252,7 +230,7 @@ namespace Экспертная_система
                     //   log("presentLine: " + presentLine);
 
                     reportLine += date1.ToString() + ';' + deposit1.ToString() + ';' + deposit2.ToString() + ';' + action + ';' + reward.ToString() + ';' + closeValue.ToString() + ';' + presentLine;
-                    report.Add(reportLine);
+                    //report.Add(reportLine);
 
                     if (period == "day")
                         date1 = date1.AddDays(1);
@@ -265,11 +243,11 @@ namespace Экспертная_система
             else
                 log("date1>date2 !");
             //выход с рынка
-            deposit2 = deposit2 + (closeValue * deposit1);
+            t.deposit2 = t.deposit2 + (closeValue * t.deposit1);
             deposit1 = 0;
             action = "exit";
             string reportLineExit = date1.ToString() + ';' + deposit1.ToString() + ';' + deposit2.ToString() + ';' + action + ';' + closeValue.ToString() + ';';
-            report.Add(reportLineExit);
+            //report.Add(reportLineExit);
 
             // запись отчёта
             reportPath = H.getValueByName("report_path");
@@ -280,7 +258,7 @@ namespace Экспертная_система
             File.WriteAllLines(reportPath + "\\report.csv", report);
 
 
-            H.setValueByName("expert_target_function", deposit2.ToString().Replace(',', '.'));
+            H.setValueByName("expert_target_function", t.deposit2.ToString().Replace(',', '.'));
             return "expert has been tested";
         }
 
@@ -317,8 +295,6 @@ namespace Экспертная_система
             buildNew(expertName, form1);
         }
 
-
-
         //возвращает  действие, о котором было принято решение
         public double MAVG_bid = 0;
         public string getDecision(string[] input)
@@ -331,7 +307,7 @@ namespace Экспертная_система
             {
                 w1 = int.Parse(H.getValueByName("w1"));
                 w2 = int.Parse(H.getValueByName("w2"));
-                take_pofit = double.Parse(H.getValueByName("take_pofit"));
+                take_profit = double.Parse(H.getValueByName("take_profit"));
                 drawdown = double.Parse(H.getValueByName("drawdown"));
             }
             if (input.Length != w1 + w2 + 1)
@@ -357,55 +333,6 @@ namespace Экспертная_система
             return "";
         }
 
-        void buy_test(double ask_top)
-        {
-            if (deposit2 > 0)
-            {
-                deposit1 = deposit1 + lot - (lot * 0.002);
-                deposit2 = deposit2 - (ask_top * lot);
-                purchase_limit_amount_left -= ask_top * lot;
-            }
-        }
-        void sell_test(double bid_top)
-        {
-            if (deposit1 > 0)
-            {
-                deposit1 = deposit1 - lot;
-                deposit2 = deposit2 + (bid_top * lot) - ((bid_top * lot) * 0.002);
-            }
-        }
-
-        void buy(double ask_top, DateTime current_time)
-        {
-            if (purchase_limit_amount_left - (ask_top * lot) > 0)
-            {
-                if (ENV == REAL)
-                { }
-                else
-                    buy_test(ask_top);
-            }
-            else
-            {
-                if (purchase_limit_timer_enabled == false)
-                {
-                    purchase_limit_timer_start = current_time;
-                    purchase_limit_timer_enabled = true;
-                }
-
-                if (purchase_limit_timer_start.AddMinutes(purchase_limit_interval) < current_time)
-                {
-                    purchase_limit_amount_left = purchase_limit_amount;
-                    purchase_limit_timer_enabled = false;
-                }
-            }
-        }
-        void sell(double bid_top)
-        {
-            if (ENV == REAL)
-            { }
-            else
-                sell_test(bid_top);
-        }
 
         //метод делающий из временного ряда *.csv датасет, пригодный для передачи в train_script.py 
         //возвращает путь к файлу датасета

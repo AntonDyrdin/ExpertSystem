@@ -1,3 +1,5 @@
+﻿# ENV - DEV, TEST, REAL
+
 STATION
 path_prefix:E:\Anton\Desktop\MAIN\
 python_path:C:\Program Files\Python36\python.exe
@@ -9,3 +11,6 @@ path_prefix:C:\Users\anton\Рабочий стол\MAIN\
 python_path:C:\Users\anton\AppData\Local\Programs\Python\Python36\python.exe
 log_path:C:\Users\anton\Рабочий стол\MAIN\log\
 mode:Скрипт
+ENV:DEV
+
+

@@ -17,7 +17,6 @@ namespace Экспертная_система
             InitializeComponent();
             linkLabel1.Text = Environment.MachineName;
 
-            this.AcceptButton = button1;
         }
 
         private void ModeSelector_Click(object sender, EventArgs e)

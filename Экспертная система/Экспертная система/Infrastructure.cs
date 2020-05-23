@@ -69,50 +69,66 @@ namespace Экспертная_система
             }
             ////////////////////////////////////////////////////////
 
-            if (is_newPC | h.getValueByName("mode") == null)
+            if (h.getValueByName("ENV") == "DEV")
+            {
+                form1.ENV = form1.DEV;
+            }
+            else if (h.getValueByName("ENV") == "REAL")
+            {
+                form1.ENV = form1.REAL;
+            }
+            else if (h.getValueByName("ENV") == "TEST")
+            {
+                form1.ENV = form1.TEST;
+            }
+
+            if (is_newPC | h.getValueByName("ENV") == null)
             {
                 showModeSelector();
+                ProcessStartInfo psi = new ProcessStartInfo();
+                psi.FileName = "notepad";
+                psi.Arguments = "config.txt";
+                Process.Start(psi);
             }
             else
             {
                 newLog();
+
+                // ИНИЦИАЛИЗАЦИЯ ГЛАВНОЙ ФОРМЫ
+
+                DpiFix();
+                form1.WindowState = FormWindowState.Minimized;
+
+                if (logPath != null)
+                {
+                    form1.vis = new MultiParameterVisualizer(form1.picBox, form1);
+
+                    mode = h.getValueByName("mode");
+
+                    form1.pathPrefix = h.getValueByName("path_prefix");
+
+                    form1.log("");
+                    form1.WindowState = FormWindowState.Maximized;
+                }
+                else
+                { }
+
+                // form1.logBox.Font = new Font(form1.logBox.Font.FontFamily, 10);
+                //form1.logBox.Text = File.ReadAllText("pic.txt");
+                //form1.logBox.Text = form1.logBox.Text.Replace("\n\n", "\n");
             }
-            // ИНИЦИАЛИЗАЦИЯ ГЛАВНОЙ ФОРМЫ
-
-
-
-            DpiFix();
-            form1.WindowState = FormWindowState.Minimized;
-
-            if (logPath != null)
-            {
-                form1.vis = new MultiParameterVisualizer(form1.picBox, form1);
-
-                mode = h.getValueByName("mode");
-
-                form1.pathPrefix = h.getValueByName("path_prefix");
-
-                form1.log("");
-                form1.WindowState = FormWindowState.Maximized;
-            }
-            else
-            { }
-
-            // form1.logBox.Font = new Font(form1.logBox.Font.FontFamily, 10);
-            //form1.logBox.Text = File.ReadAllText("pic.txt");
-            //form1.logBox.Text = form1.logBox.Text.Replace("\n\n", "\n");
         }
         private string mode;
 
         public void runSelectedMode()
         {
-            if (modeSelector == null)
+            if (form1.ENV != -1)
             {
 
                 form1.mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { form1.main_thread(); });
                 //form1.mainTask = System.Threading.Tasks.Task.Factory.StartNew(() => { form1.optimization_thread(); });
-                
-            //executionProgressForm = new ExecutionProgress();
+
+                //executionProgressForm = new ExecutionProgress();
                 //executionProgressForm.Show();
 
                 //form1.showInpOutp = new TextBoxes();
@@ -125,53 +141,8 @@ namespace Экспертная_система
         {
             modeSelector = new ModeSelector();
             modeSelector.Show();
-            modeSelector.button1.Click += new EventHandler(ModeSelectorButtonClick);
         }
 
-        private void ModeSelectorButtonClick(object sender, EventArgs e)
-        {
-            string mode = "";
-            foreach (var control in modeSelector.groupBox1.Controls)
-                if (control.GetType() == modeSelector.radioButton1.GetType())
-                {
-                    RadioButton rb = (RadioButton)control;
-                    if (rb.Checked)
-                    {
-                        mode = rb.Text;
-                    }
-                }
-
-            h.setValueByName("mode", mode);
-
-            var configLines = File.ReadAllLines("CONFIG.txt").ToList();
-
-            for (int i = 0; i < configLines.Count; i++)
-            {
-                //параметры конфигурации начинаются со строки содержащей имя компа
-                if (configLines[i].Contains(Environment.MachineName))
-                {
-                    for (int j = i + 1; j < configLines.Count; j++)
-                    {
-                        if (configLines[j].Contains("mode"))
-                        {
-                            configLines[j] = "mode:" + mode;
-                            break;
-                        }
-                        //параметры конфигурации заканчиваются, когда встречается пустая строка
-                        if (configLines[j] != "")
-                        { }
-                        else
-                        {
-                            configLines.Insert(j, "mode:" + mode);
-                            break;
-                        }
-                    }
-                    break;
-                }
-            }
-            File.WriteAllLines("CONFIG.txt", configLines.ToArray());
-            Application.Exit();
-        }
         [DllImport("user32.dll")]
         private static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
         [DllImport("user32.dll", SetLastError = true)]
