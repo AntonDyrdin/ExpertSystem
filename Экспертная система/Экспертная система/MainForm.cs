@@ -14,6 +14,7 @@ namespace Экспертная_система
     {
         // C:\Users\Антон\AppData\Local\Theano\compiledir_Windows-10-10.0.17134-SP0-Intel64_Family_6_Model_158_Stepping_9_GenuineIntel-3.6.1-64\lock_dir
         public int ENV = -1;
+        public int OPT = 2;
         public int DEV = 0;
         public int TEST = 0;
         public int REAL = 1;
@@ -34,7 +35,7 @@ namespace Экспертная_система
         public DecisionMakingSystem DMS;
         Report report;
 
-        string pair = "BTC_USD";
+        string pair = "BTC_USDT";
 
         public bool maintenance_in_progress = false;
         public bool connection_lost = false;
@@ -44,7 +45,7 @@ namespace Экспертная_система
         double bid_top = -1;
         double ask_top = -1;
 
-       internal Positions positions;
+        internal Positions positions;
         public void Form1_Load(object sender, EventArgs e)
         {
             I = new Infrastructure(this);
@@ -63,11 +64,11 @@ namespace Экспертная_система
             expert = new Expert("Test Expert MAVG", this);
             expert.H.setValueByName("w1", 78 * 60);//78
             expert.H.setValueByName("w2", 2 * 60);//2
-            expert.H.setValueByName("take_profit", 90);// 90 // > dues * 2 * bid_top
-            expert.H.setValueByName("drawdown", 0); // 81
+            expert.H.setValueByName("take_profit", 5);// 90 // > dues * 2 * bid_top
+            expert.H.setValueByName("drawdown", 10); // 81
             expert.H.setValueByName("lot", "0.001");
             expert.H.setValueByName("purchase_limit_amount", 30);// 100
-            expert.H.addVariable("purchase_limit_interval", 1, 12 * 60, 3 * 60);// 6 * 60
+            expert.H.addVariable("purchase_limit_interval", 1, 12 * 60,2);// 6 * 60
 
             trader = new Trader(this, expert.H);
 
@@ -94,8 +95,8 @@ namespace Экспертная_система
             //наименьшая цена, по которой можно покупать /\
             vis.parameters[0].functions.Add(new Function("ask_top", Color.Red));
             //наивысшая цена, по которой можно продать   \/
-            vis.parameters[0].functions.Add(new Function("bid_top", Color.Cyan));         
-            
+            vis.parameters[0].functions.Add(new Function("bid_top", Color.Cyan));
+
 
             vis.parameters[0].functions.Add(new Function("MAVG_bid", Color.Green));
 
@@ -114,12 +115,29 @@ namespace Экспертная_система
 
             rawInput.Add("<DATE_TIME>;<bid_top>;<bid_quantity>;<bid_amount>;<ask_top>;<ask_quantity>;<ask_amount>");
 
-            if (ENV != REAL)
+            if (!File.Exists(pair + "_exmo.txt"))
             {
-                string[] history = File.ReadAllLines(pair + "_exmo.txt");
-                for (int i = 0; i < window; i++)
-                    rawInput.Add(history[history.Length - window + i]);
+                File.WriteAllLines(pair + "_exmo.txt", new string[]{
+                    "<bid_top>;<bid_quantity>;<bid_amount>;<ask_top>;<ask_quantity>;<ask_amount>"});
             }
+            else
+            {
+                if (ENV != REAL)
+                {
+                    string[] history = File.ReadAllLines(pair + "_exmo.txt");
+                    if (history.Length > window)
+                    {
+                        for (int i = 0; i < window; i++)
+                            rawInput.Add(history[history.Length - window + i]);
+                    }
+                    else
+                    {
+                        for (int i = 0; i < history.Length; i++)
+                            rawInput.Add(history[i]);
+                    }
+                }
+            }
+
 
             string action = "";
             int last_minute = 0;
@@ -165,30 +183,31 @@ namespace Экспертная_система
 
                         trader.checkOrders(bid_top, ask_top);
 
-                        // if (DateTime.Now.Minute != last_minute)
-                        //{
-                        last_minute = DateTime.Now.Minute;
-                        rawInput.Add(predictors_line);
-                        rawInput.RemoveAt(0);
                         //запись входных данных
                         File.AppendAllText(pair + "_exmo.txt", predictors_line + "\n");
 
-                        double closeValue = bid_top;
-                        // что скажет эксперт?
-                        action = expert.getDecision(rawInput.ToArray());
-
-                        if (action == "buy")
+                        rawInput.Add(predictors_line);
+                        if (rawInput.Count > window)
                         {
-                            if (trader.deposit2 > ask_top * trader.lot)
+                            rawInput.RemoveAt(0);
+
+                            double closeValue = bid_top;
+                            // что скажет эксперт?
+                            action = expert.getDecision(rawInput.ToArray());
+
+                            if (action == "buy")
                             {
-                                trader.createBuyOrder(ask_top);
+                                if (trader.deposit2 > ask_top * trader.lot)
+                                {
+                                    trader.createBuyOrder(ask_top);
+                                }
                             }
                         }
                         if (DateTime.Now.Minute != last_minute)
                         {
                             vis.refresh();
+                            last_minute = DateTime.Now.Minute;
                         }
-                        // }
 
                         vis.parameters[0].addPoint(expert.MAVG_bid, "MAVG_bid");
                         vis.addPoint(expert.MAVG_bid - ask_top, "Просадка");
@@ -240,59 +259,58 @@ namespace Экспертная_система
         public void optimization_thread()
         {
             vis.enableGrid = false;
+            /* ENV = OPT;
 
-            expert = new Expert("Test Expert MAVG", this);
+              expert = new Expert("Test Expert MAVG", this);
+              expert.H.addVariable("w1", 30, 300, 78);//78
+              expert.H.addVariable("w2", 2,20,18);//2
+              expert.H.setValueByName("take_profit", 80);// 90 // > dues * 2 * bid_top
+              expert.H.addVariable("drawdown", 50, 80, 90); // 81
+              expert.H.setValueByName("lot", "0.001");
+              expert.H.setValueByName("purchase_limit_amount", 30);// 100
+              expert.H.addVariable("purchase_limit_interval", 1, 12 * 60, 6 * 60);// 6 * 60
 
-            expert.H.addVariable("w1", 30, 300, 78);//78
-            expert.H.setValueByName("w2", 2);//2
-            expert.H.setValueByName("take_profit", 80);// 90 // > dues * 2 * bid_top
-            expert.H.addVariable("drawdown", 50, 200, 90); // 81
-            expert.H.setValueByName("lot", "0.001");
-            expert.H.setValueByName("purchase_limit_amount", 30);// 100
-            expert.H.addVariable("purchase_limit_interval", 1, 12 * 60, 6 * 60);// 6 * 60
+              optimization = new ExpertOptimization(expert, this,
+                   population_value: 8,
+                   test_count: 1,
+                   mutation_rate: 8,
+                   elite_ratio: 0.25,
+                   Iterarions: 300,
+                   date1: new DateTime(2020, 04, 29, 14, 58, 0),
+                   date2: new DateTime(2020, 05, 5, 1, 0, 0),
+                   rawDatasetFilePath: pair + "_exmo.txt");
 
-            /*  expert.testExmo(date1: new DateTime(2020, 04, 27, 15, 58,0),
-                   date2: new DateTime(2020, 5, 2, 1, 50,0),
-                   rawDatasetFilePath: "Журнал торговли27.04.2020 14-58-51.txt");
+               optimization.run();
+             */
+            expert = Expert.Open(pathPrefix + "Optimization\\Test Expert MAVG\\Test Expert MAVG[0]", "Test Expert MAVG", this);
+            expert.testExmo(date1: new DateTime(2020, 05, 23, 4, 0, 0),
+                 date2: new DateTime(2020, 5, 24, 0, 22, 0),
+                 rawDatasetFilePath: "BTC_USD_exmo.txt");
+            //rawDatasetFilePath: "Журнал торговли27.04.2020 14-58-51.txt");
+            vis.addParameter("bid", Color.White, 460);
+            vis.parameters[0].functions.Add(new Function("bid_top", Color.Cyan));
+            vis.parameters[0].functions.Add(new Function("MAVG_bid", Color.Green));
+            vis.addParameter("BTC", Color.LightPink, 150);
+            //  vis.addCSV("Журнал торговли27.04.2020 14-58-51.txt", "test", "<bid_top>", "<bid_top>", 460, 0, 0, 50);
+            //  vis.addCSV("Журнал торговли27.04.2020 14-58-51.txt", "test", "<MAVG_bid>", "<MAVG_bid>", 460, 0, 0, 50);
+            //  vis.addCSV("Журнал торговли27.04.2020 14-58-51.txt", "<BTC_balance>", "<BTC_balance>", 150, 0, 0, 50);
+            vis.addParameter("EXIT", Color.Purple, 200);
 
-
-               vis.addParameter("bid", Color.White, 460);
-               vis.parameters[0].functions.Add(new Function("bid_top", Color.Cyan));
-               vis.parameters[0].functions.Add(new Function("MAVG_bid", Color.Green));
-               vis.addParameter("BTC", Color.LightPink, 150);
-             //  vis.addCSV("Журнал торговли27.04.2020 14-58-51.txt", "test", "<bid_top>", "<bid_top>", 460, 0, 0, 50);
-             //  vis.addCSV("Журнал торговли27.04.2020 14-58-51.txt", "test", "<MAVG_bid>", "<MAVG_bid>", 460, 0, 0, 50);
-             //  vis.addCSV("Журнал торговли27.04.2020 14-58-51.txt", "<BTC_balance>", "<BTC_balance>", 150, 0, 0, 50);
-               vis.addParameter("EXIT", Color.Purple, 200);
-
-               for (int i = 0; i < expert.deposit1History.Count; i++)
-               {
-                   vis.addPoint(expert.deposit1History[i], "BTC");
-                   vis.addPoint(expert.MAVG_bid_history[i], "MAVG_bid");
-                   vis.addPoint(expert.closeValueHistory[i], "bid_top");
-                   //if (expert.actionHistory[i] != "" && expert.actionHistory[i] != "date doesn't exist")
-                   //  vis.markLast("‾"+ expert.actionHistory[i], "bid_top");
-                   if (expert.actionHistory[i] == "buy")
-                     vis.markLast("‾", "bid_top");
-                   vis.addPoint(expert.deposit1History[i] * expert.closeValueHistory[i] + expert.deposit2History[i], "EXIT");
-               }
-               */
+            for (int i = 0; i < expert.deposit1History.Count; i++)
+            {
+                vis.addPoint(expert.deposit1History[i], "BTC");
+                vis.addPoint(expert.MAVG_bid_history[i], "MAVG_bid");
+                vis.addPoint(expert.closeValueHistory[i], "bid_top");
+                //if (expert.actionHistory[i] != "" && expert.actionHistory[i] != "date doesn't exist")
+                //  vis.markLast("‾"+ expert.actionHistory[i], "bid_top");
+                if (expert.actionHistory[i] == "buy")
+                    vis.markLast("‾", "bid_top");
+                vis.addPoint(expert.deposit1History[i] * expert.closeValueHistory[i] + expert.deposit2History[i], "EXIT");
+            }
             //  vis.addCSV("Журнал торговли27.04.2020 14-58-51.txt", "<EXIT>", "<EXIT>", 200, 0, 0, 40);
-            //   log((expert.t.deposit2).ToString());
+            log((expert.t.deposit2).ToString());
 
             vis.refresh();
-
-            optimization = new ExpertOptimization(expert, this,
-                population_value: 8,
-                test_count: 1,
-                mutation_rate: 8,
-                elite_ratio: 0.25,
-                Iterarions: 300,
-                date1: new DateTime(2020, 04, 29, 14, 58, 0),
-                date2: new DateTime(2020, 05, 5, 1, 0, 0),
-                rawDatasetFilePath: pair + "_exmo.txt");
-
-            optimization.run();
         }
         public void refresh_output()
         {

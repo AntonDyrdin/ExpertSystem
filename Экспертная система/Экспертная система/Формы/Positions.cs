@@ -34,10 +34,10 @@ namespace Экспертная_система
                 data[1] = positions[i].buyed_at.ToString();
                 data[2] = positions[i].buy_price.ToString();
                 if (positions[i].closed)
-                    data[3] = positions[i].sell_price.ToString();
+                    data[3] = ((positions[i].sell_price - positions[i].buy_price) * positions[i].quantity - (positions[i].sell_price * positions[i].quantity * dues) * 2).ToString();
                 else
                     data[3] = ((current_bid - positions[i].buy_price) * positions[i].quantity - (current_bid * positions[i].quantity * dues)*2).ToString();
-                if (positions[i].sell_order_id == -1)
+                if (positions[i].sell_order_id == "error")
                 {
                     data[4] = "Ошибка создания ордера на продажу";
                 }

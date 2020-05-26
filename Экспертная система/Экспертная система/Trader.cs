@@ -26,7 +26,7 @@ namespace Экспертная_система
         public double lot;
         public int take_profit;
 
-        public double dues = 0.004;
+        public double dues = 0;
         public Trader(MainForm mf, Hyperparameters h)
         {
             this.mf = mf;
@@ -45,7 +45,8 @@ namespace Экспертная_система
                 // ордер на покупку оказался дороже рыночной цены - сделка
                 if (buyOrders[i].price > ask_top)
                 {
-                    mf.log("Buy deal (" + buyOrders[i].price.ToString() + ") order_id:" + buyOrders[i].id.ToString(), Color.Cyan);
+                    if (mf.ENV != mf.OPT)
+                        mf.log("Buy deal (" + buyOrders[i].price.ToString() + ") order_id:" + buyOrders[i].id.ToString(), Color.Cyan);
                     buy(buyOrders[i].price);
                     var new_position = new Position(lot, buyOrders[i].price, positions.Count + 1);
                     buyOrders.RemoveAt(i);
@@ -59,7 +60,7 @@ namespace Экспертная_система
                 else
                 {
                     // удаление залежавшегося ордера на покупку 
-                    if((DateTime.Now - buyOrders[i].created_at).TotalSeconds > 60)
+                    if ((DateTime.Now - buyOrders[i].created_at).TotalSeconds > 60)
                     {
                         mf.log("Delete old buy order (" + buyOrders[i].price.ToString() + ") order_id:" + buyOrders[i].id.ToString(), Color.MediumVioletRed);
                         buyOrders.RemoveAt(i);
@@ -72,17 +73,17 @@ namespace Экспертная_система
                 // ордер на продажу оказался дешевле рыночной цены - сделка
                 if (sellOrders[i].price < bid_top)
                 {
-                    int sell_order_id = sellOrders[i].id;
-                    mf.log("Sell deal ( " + sellOrders[i].price.ToString() + " ) order_id:" + sell_order_id.ToString(), Color.Cyan);
+                    string sell_order_id = sellOrders[i].id;
+                    if (mf.ENV != mf.OPT) 
+                        mf.log("Sell deal ( " + sellOrders[i].price.ToString() + " ) order_id:" + sell_order_id.ToString(), Color.Cyan);
 
                     sell(sellOrders[i].price);
-
-                    sellOrders.RemoveAt(i);
-                    i--;
 
                     // ПОЗИЦИЯ ЗАКРЫТА
                     positions.Find((p) => (p.sell_order_id == sell_order_id)).closed = true;
                     positions.Find((p) => (p.sell_order_id == sell_order_id)).sell_price = sellOrders[i].price;
+                    sellOrders.RemoveAt(i);
+                    i--;
                 }
             }
         }
@@ -108,7 +109,8 @@ namespace Экспертная_система
                 if (purchase_limit_amount_left - (price * lot) > 0)
                 {
                     buyOrders.Add(new Order(OrderTypes.BUY, lot, price, (mf.ENV == mf.REAL)));
-                    mf.log("BUY ORDER (" + price.ToString() + "): " + buyOrders.Last().id.ToString(), Color.Cyan);
+                    if (mf.ENV != mf.OPT)
+                        mf.log("BUY ORDER (" + price.ToString() + "): " + buyOrders.Last().id.ToString(), Color.Cyan);
 
                     purchase_limit_amount_left -= price * lot;
                 }
@@ -118,12 +120,14 @@ namespace Экспертная_система
                     {
                         purchase_limit_timer_start = time;
                         purchase_limit_timer_enabled = true;
-                        mf.log("Таймер сброса лимита запущен: " + time.ToString());
+                        if (mf.ENV != mf.OPT) 
+                            mf.log("Таймер сброса лимита запущен: " + time.ToString());
                     }
 
                     if (purchase_limit_timer_start.AddMinutes(purchase_limit_interval) < time)
                     {
-                        mf.log("Сброса лимита: " + time.ToString());
+                        if (mf.ENV != mf.OPT) 
+                            mf.log("Сброса лимита: " + time.ToString());
 
                         purchase_limit_amount_left = purchase_limit_amount;
                         purchase_limit_timer_enabled = false;
@@ -140,15 +144,16 @@ namespace Экспертная_система
         /// </summary>
         /// <param name="price"></param>
         /// <param name="quantity"></param>
-        public int createSellOrder(double price, double quantity)
+        public string createSellOrder(double price, double quantity)
         {
             if (!mf.maintenance_in_progress && !mf.connection_lost)
             {
                 sellOrders.Add(new Order(OrderTypes.SELL, quantity, price, (mf.ENV == mf.REAL)));
-                mf.log("SELL ORDER (" + price.ToString() + "): " + sellOrders.Last().id.ToString(), Color.Pink);
+                if (mf.ENV != mf.OPT)
+                    mf.log("SELL ORDER (" + price.ToString() + "): " + sellOrders.Last().id.ToString(), Color.Pink);
                 return sellOrders.Last().id;
             }
-            return -1;
+            return "error";
         }
         /// <summary>
         /// Транзакция на виртуальном счёте
@@ -163,10 +168,13 @@ namespace Экспертная_система
                 deposit2 = deposit2 - (ask_top * lot);
 
                 mf.vis.markLast("‾BUY", "ask_top");
-                mf.log(DateTime.Now.ToString() + " BUY", Color.Blue);
-                mf.log(ask_top.ToString());
-                mf.log("   USD:" + deposit2.ToString());
-                mf.log("   BTC:" + deposit1.ToString());
+                if (mf.ENV != mf.OPT)
+                {
+                    mf.log(DateTime.Now.ToString() + " BUY", Color.Blue);
+                    mf.log(ask_top.ToString());
+                    mf.log("   USD:" + deposit2.ToString());
+                    mf.log("   BTC:" + deposit1.ToString());
+                }
             }
 
             mf.refresh_output();
@@ -184,10 +192,13 @@ namespace Экспертная_система
                     deposit2 = deposit2 + (bid_top * lot) - ((bid_top * lot) * dues);
 
                     mf.vis.markLast("‾SELL", "bid_top");
-                    mf.log(DateTime.Now.ToString() + " SELL", Color.Red);
-                    mf.log(bid_top.ToString());
-                    mf.log("   USD:" + deposit2.ToString());
-                    mf.log("   BTC:" + deposit1.ToString());
+                    if (mf.ENV != mf.OPT)
+                    {
+                        mf.log(DateTime.Now.ToString() + " SELL", Color.Red);
+                        mf.log(bid_top.ToString());
+                        mf.log("   USD:" + deposit2.ToString());
+                        mf.log("   BTC:" + deposit1.ToString());
+                    }
                 }
             mf.refresh_output();
         }
@@ -201,7 +212,7 @@ namespace Экспертная_система
         public OrderTypes type;
         public double quantity;
         public double price;
-        public int id;
+        public string id;
         public DateTime created_at;
 
         public bool is_real;
@@ -210,7 +221,7 @@ namespace Экспертная_система
         {
             this.quantity = quantity;
             this.price = price;
-            
+
             if (is_real)
             {
                 // ПУБЛИКАЦИЯ ОРДЕРА НА БИРЖЕ
@@ -219,7 +230,7 @@ namespace Экспертная_система
             else
             {
                 var n = DateTime.Now;
-                id = int.Parse(n.Day.ToString() + n.Hour.ToString() + n.Minute.ToString() + n.Second.ToString());
+                id = n.Month.ToString() + '.'+n.Day.ToString() +' '+ n.Hour.ToString() +':'+ n.Minute.ToString() +':'+ n.Second.ToString() + '.' + n.Millisecond.ToString();
                 created_at = DateTime.Now;
             }
 
@@ -231,7 +242,7 @@ namespace Экспертная_система
         public double quantity;
         public double buy_price;
         public int id;
-        public int sell_order_id;
+        public string sell_order_id;
         //public PositionState state;
         public bool closed = false;
         public double sell_price;
